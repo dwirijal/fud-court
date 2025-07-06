@@ -12,7 +12,8 @@ const MOCK_CRYPTO_DATA: CryptoData[] = [
     symbol: "BTC",
     price: 67123.45,
     change24h: 2.5,
-    marketCap: 1.32,
+    marketCap: 1320000000000,
+    volume24h: 45000000000,
     sparkline: [3, 5, 4, 6, 7, 5, 8, 9, 8, 10],
   },
   {
@@ -21,7 +22,8 @@ const MOCK_CRYPTO_DATA: CryptoData[] = [
     symbol: "ETH",
     price: 3456.78,
     change24h: -1.2,
-    marketCap: 415.2,
+    marketCap: 415200000000,
+    volume24h: 22000000000,
     sparkline: [9, 8, 9, 7, 6, 8, 7, 5, 6, 4],
   },
   {
@@ -30,7 +32,8 @@ const MOCK_CRYPTO_DATA: CryptoData[] = [
     symbol: "SOL",
     price: 145.67,
     change24h: 5.8,
-    marketCap: 67.1,
+    marketCap: 67100000000,
+    volume24h: 3500000000,
     sparkline: [3, 4, 5, 4, 6, 7, 8, 9, 10, 12],
   },
   {
@@ -39,7 +42,8 @@ const MOCK_CRYPTO_DATA: CryptoData[] = [
     symbol: "ADA",
     price: 0.45,
     change24h: 0.5,
-    marketCap: 16.2,
+    marketCap: 16200000000,
+    volume24h: 500000000,
     sparkline: [5, 6, 5, 6, 5, 7, 6, 7, 6, 7],
   },
 ];

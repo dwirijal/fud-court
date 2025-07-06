@@ -17,6 +17,7 @@ export interface CryptoData {
   symbol: string;
   price: number;
   change24h: number;
-  marketCap: number; // in trillions for BTC, billions for others
+  marketCap: number;
+  volume24h: number;
   sparkline: number[];
 }

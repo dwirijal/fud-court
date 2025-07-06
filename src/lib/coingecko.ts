@@ -8,7 +8,7 @@ const API_BASE_URL = 'https://api.coingecko.com/api/v3';
  * @returns A promise that resolves to an array of CryptoData objects.
  */
 export async function getTopCoins(limit: number = 100): Promise<CryptoData[]> {
-  const url = `${API_BASE_URL}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${limit}&page=1&sparkline=true&price_change_percentage=24h`;
+  const url = `${API_BASE_URL}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${limit}&page=1&sparkline=false&price_change_percentage=24h`;
   
   try {
     // Using Next.js extended fetch for caching and revalidation
@@ -28,5 +28,40 @@ export async function getTopCoins(limit: number = 100): Promise<CryptoData[]> {
   } catch (error) {
     console.error("An error occurred while fetching from CoinGecko API:", error);
     return []; // Return empty array on fetch error
+  }
+}
+
+/**
+ * Fetches specific cryptocurrencies by their CoinGecko IDs and preserves the order.
+ * @param ids An array of CoinGecko coin IDs.
+ * @returns A promise that resolves to an array of CryptoData objects in the same order as the input IDs.
+ */
+export async function getCoinsByIds(ids: string[]): Promise<CryptoData[]> {
+  if (ids.length === 0) {
+    return [];
+  }
+  const url = `${API_BASE_URL}/coins/markets?vs_currency=usd&ids=${ids.join(',')}&sparkline=false&price_change_percentage=24h`;
+  
+  try {
+    const response = await fetch(url, {
+      next: { revalidate: 300 } // Revalidate data every 5 minutes
+    });
+
+    if (!response.ok) {
+      console.error(`CoinGecko API request failed with status: ${response.status}, URL: ${url}`);
+      return [];
+    }
+    
+    const data: CryptoData[] = await response.json();
+    
+    // The API does not guarantee order, so we sort it based on the input 'ids' array.
+    const sortedData = ids
+      .map(id => data.find(coin => coin.id === id))
+      .filter((coin): coin is CryptoData => !!coin);
+
+    return sortedData;
+  } catch (error) {
+    console.error("An error occurred while fetching from CoinGecko API:", error);
+    return [];
   }
 }

@@ -136,11 +136,11 @@ export default function MarketsPage() {
   return (
     <AppShell>
       <div className="container mx-auto px-4 py-12 md:py-24">
-        <header className="mb-12">
+        <header className="mb-12 text-center">
           <h1 className="text-5xl md:text-6xl font-bold font-headline mb-2">
             Crypto Markets
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl">
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Explore real-time cryptocurrency prices, market caps, and trading
             volumes.
           </p>

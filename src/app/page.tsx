@@ -84,29 +84,41 @@ export default async function Home() {
         </div>
       </section>
 
-      <div className="container mx-auto px-4 space-y-16 pb-24">
-        <div>
-          <h2 className="text-4xl font-bold tracking-tight font-headline mb-8 text-center">
-            Market Overview
-          </h2>
+      <section className="py-16 md:py-24">
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-3xl mx-auto">
+            <h2 className="text-4xl font-bold tracking-tight font-headline mb-4">
+              Market Overview
+            </h2>
+            <p className="text-muted-foreground mb-12">
+              Get a quick glance at the latest movements in the crypto market.
+            </p>
+          </div>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {MOCK_CRYPTO_DATA.map((crypto) => (
               <CryptoCard key={crypto.id} data={crypto} />
             ))}
           </div>
         </div>
+      </section>
 
-        <div>
-           <h3 className="text-4xl font-bold tracking-tight font-headline mb-8 text-center">
-            Latest News
-          </h3>
+      <section className="py-16 md:py-24 bg-card/20 border-t border-b border-border">
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-3xl mx-auto">
+            <h2 className="text-4xl font-bold tracking-tight font-headline mb-4">
+              Latest News
+            </h2>
+            <p className="text-muted-foreground mb-12">
+              Stay informed with the latest updates and analysis from the crypto world.
+            </p>
+          </div>
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {posts.slice(0, 3).map((post) => (
               <NewsCard key={post.id} post={post} />
             ))}
           </div>
         </div>
-      </div>
+      </section>
     </AppShell>
   );
 }

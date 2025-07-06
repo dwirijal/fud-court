@@ -154,6 +154,7 @@ function UserMenu({ isMobile = false }: { isMobile?: boolean }) {
           <DropdownMenuContent align="end" className="w-56 mt-1">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
+            <DropdownMenuItem asChild><Link href="/admin/ghost" target="_blank">Ghost Dashboard</Link></DropdownMenuItem>
             <DropdownMenuItem asChild><Link href="/admin/create-post">Create Post</Link></DropdownMenuItem>
             <DropdownMenuItem>Profile</DropdownMenuItem>
             <DropdownMenuItem>Settings</DropdownMenuItem>
@@ -187,6 +188,7 @@ function UserMenu({ isMobile = false }: { isMobile?: boolean }) {
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
+        <DropdownMenuItem asChild><Link href="/admin/ghost" target="_blank">Ghost Dashboard</Link></DropdownMenuItem>
         <DropdownMenuItem asChild><Link href="/admin/create-post">Create Post</Link></DropdownMenuItem>
         <DropdownMenuItem>Profile</DropdownMenuItem>
         <DropdownMenuItem>Settings</DropdownMenuItem>

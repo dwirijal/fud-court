@@ -25,7 +25,7 @@ const navItems = [
   { href: "/portfolio", label: "Portfolio" },
 ];
 
-export function Header() {
+export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
   const pathname = usePathname();
   const [isHovered, setIsHovered] = useState(false);
 
@@ -71,7 +71,7 @@ export function Header() {
                 ))}
               </nav>
               <div className="mt-auto">
-                <UserMenu isMobile />
+                <UserMenu isMobile showAdminLinks={showAdminLinks} />
               </div>
             </div>
           </SheetContent>
@@ -118,7 +118,7 @@ export function Header() {
                 </Link>
               ))}
             </nav>
-            <UserMenu />
+            <UserMenu showAdminLinks={showAdminLinks} />
           </div>
         </div>
       </div>
@@ -126,7 +126,7 @@ export function Header() {
   );
 }
 
-function UserMenu({ isMobile = false }: { isMobile?: boolean }) {
+function UserMenu({ isMobile = false, showAdminLinks = false }: { isMobile?: boolean, showAdminLinks?: boolean }) {
   // A more compact menu for the mobile sheet
   if (isMobile) {
     return (
@@ -154,8 +154,12 @@ function UserMenu({ isMobile = false }: { isMobile?: boolean }) {
           <DropdownMenuContent align="end" className="w-56 mt-1">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild><Link href="/admin/ghost" target="_blank">Ghost Dashboard</Link></DropdownMenuItem>
-            <DropdownMenuItem asChild><Link href="/admin/create-post">Create Post</Link></DropdownMenuItem>
+            {showAdminLinks && (
+              <>
+                <DropdownMenuItem asChild><Link href="/admin/ghost" target="_blank">Ghost Dashboard</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link href="/admin/create-post">Create Post</Link></DropdownMenuItem>
+              </>
+            )}
             <DropdownMenuItem>Profile</DropdownMenuItem>
             <DropdownMenuItem>Settings</DropdownMenuItem>
             <DropdownMenuItem>Support</DropdownMenuItem>
@@ -188,8 +192,12 @@ function UserMenu({ isMobile = false }: { isMobile?: boolean }) {
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild><Link href="/admin/ghost" target="_blank">Ghost Dashboard</Link></DropdownMenuItem>
-        <DropdownMenuItem asChild><Link href="/admin/create-post">Create Post</Link></DropdownMenuItem>
+        {showAdminLinks && (
+            <>
+                <DropdownMenuItem asChild><Link href="/admin/ghost" target="_blank">Ghost Dashboard</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link href="/admin/create-post">Create Post</Link></DropdownMenuItem>
+            </>
+        )}
         <DropdownMenuItem>Profile</DropdownMenuItem>
         <DropdownMenuItem>Settings</DropdownMenuItem>
         <DropdownMenuItem>Support</DropdownMenuItem>

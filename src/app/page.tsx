@@ -4,6 +4,8 @@ import { NewsCard } from "@/components/molecules/news-card";
 import { Button } from "@/components/ui/button";
 import { getPosts } from "@/lib/ghost";
 import type { CryptoData } from "@/types";
+import Link from "next/link";
+import Image from "next/image";
 
 const MOCK_CRYPTO_DATA: CryptoData[] = [
   {
@@ -53,17 +55,31 @@ export default async function Home() {
 
   return (
     <AppShell>
-      <section className="py-24 md:py-32 text-center">
-        <div className="container mx-auto px-4">
-          <h1 className="text-5xl md:text-7xl font-bold font-headline mb-4 text-primary">
-            Fud Court
+      <section className="relative overflow-hidden py-24 md:py-40 text-center">
+        <div className="absolute inset-0 z-0 opacity-[0.03]">
+          <Image
+            src="https://placehold.co/1600x900.png"
+            alt="Abstract background grid"
+            fill
+            className="object-cover"
+            data-ai-hint="abstract grid"
+            priority
+          />
+        </div>
+        <div className="container relative z-10 mx-auto px-4">
+          <h1 className="text-5xl md:text-7xl font-bold font-headline tracking-tight mb-6">
+            Clarity in Chaos.
           </h1>
-          <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            Where crypto claims are put on trial. We cut through the noise to deliver data-driven insights and unbiased news, helping you make smarter investment decisions.
+          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10">
+            Fud Court cuts through the market noise with data-driven analysis and unbiased news, empowering you to make smarter crypto investment decisions.
           </p>
-          <div className="flex justify-center gap-4">
-            <Button size="lg">View Markets</Button>
-            <Button size="lg" variant="outline">Read News</Button>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Button size="lg" asChild>
+              <Link href="/markets">Explore Markets</Link>
+            </Button>
+            <Button size="lg" variant="outline" asChild>
+               <Link href="/news">Read Latest News</Link>
+            </Button>
           </div>
         </div>
       </section>
@@ -85,7 +101,7 @@ export default async function Home() {
             Latest News
           </h3>
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {posts.map((post) => (
+            {posts.slice(0, 3).map((post) => (
               <NewsCard key={post.id} post={post} />
             ))}
           </div>

@@ -84,7 +84,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="py-16 md:py-24">
+      <section className="min-h-screen flex items-center justify-center py-16 md:py-24">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto">
             <h2 className="text-4xl font-bold tracking-tight font-headline mb-4">

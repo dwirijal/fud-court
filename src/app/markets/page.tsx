@@ -10,113 +10,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card } from "@/components/ui/card";
-import type { CryptoData } from "@/types";
 import { cn } from "@/lib/utils";
+import { getTopCoins } from "@/lib/coingecko";
 import { TrendingDown, TrendingUp } from "lucide-react";
-
-// Expanded mock data for the markets page
-const MOCK_MARKETS_DATA: CryptoData[] = [
-  {
-    id: "bitcoin",
-    name: "Bitcoin",
-    symbol: "BTC",
-    price: 67123.45,
-    change24h: 2.5,
-    marketCap: 1320000000000,
-    volume24h: 45000000000,
-    sparkline: [3, 5, 4, 6, 7, 5, 8, 9, 8, 10],
-  },
-  {
-    id: "ethereum",
-    name: "Ethereum",
-    symbol: "ETH",
-    price: 3456.78,
-    change24h: -1.2,
-    marketCap: 415200000000,
-    volume24h: 22000000000,
-    sparkline: [9, 8, 9, 7, 6, 8, 7, 5, 6, 4],
-  },
-  {
-    id: "solana",
-    name: "Solana",
-    symbol: "SOL",
-    price: 145.67,
-    change24h: 5.8,
-    marketCap: 67100000000,
-    volume24h: 3500000000,
-    sparkline: [3, 4, 5, 4, 6, 7, 8, 9, 10, 12],
-  },
-  {
-    id: "tether",
-    name: "Tether",
-    symbol: "USDT",
-    price: 1.0,
-    change24h: 0.01,
-    marketCap: 112000000000,
-    volume24h: 90000000000,
-    sparkline: [5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
-  },
-  {
-    id: "binancecoin",
-    name: "BNB",
-    symbol: "BNB",
-    price: 590.12,
-    change24h: 1.5,
-    marketCap: 87000000000,
-    volume24h: 2100000000,
-    sparkline: [6, 7, 6, 8, 7, 8, 9, 8, 9, 8],
-  },
-  {
-    id: "ripple",
-    name: "XRP",
-    symbol: "XRP",
-    price: 0.52,
-    change24h: -0.8,
-    marketCap: 28700000000,
-    volume24h: 1200000000,
-    sparkline: [6, 5, 6, 5, 6, 5, 6, 5, 5, 5],
-  },
-  {
-    id: "cardano",
-    name: "Cardano",
-    symbol: "ADA",
-    price: 0.45,
-    change24h: 0.5,
-    marketCap: 16200000000,
-    volume24h: 500000000,
-    sparkline: [5, 6, 5, 6, 5, 7, 6, 7, 6, 7],
-  },
-  {
-    id: "dogecoin",
-    name: "Dogecoin",
-    symbol: "DOGE",
-    price: 0.16,
-    change24h: 3.2,
-    marketCap: 23000000000,
-    volume24h: 1800000000,
-    sparkline: [4, 5, 4, 6, 5, 7, 8, 7, 8, 9],
-  },
-  {
-    id: "avalanche-2",
-    name: "Avalanche",
-    symbol: "AVAX",
-    price: 35.8,
-    change24h: -2.1,
-    marketCap: 14100000000,
-    volume24h: 800000000,
-    sparkline: [8, 7, 8, 7, 6, 7, 6, 5, 6, 5],
-  },
-  {
-    id: "chainlink",
-    name: "Chainlink",
-    symbol: "LINK",
-    price: 17.5,
-    change24h: 4.1,
-    marketCap: 10200000000,
-    volume24h: 600000000,
-    sparkline: [5, 6, 7, 6, 8, 9, 8, 9, 10, 11],
-  },
-];
+import Image from "next/image";
 
 // Helper function to format large numbers
 const formatNumber = (num: number) => {
@@ -132,7 +29,9 @@ const formatNumber = (num: number) => {
   return `$${num.toLocaleString()}`;
 };
 
-export default function MarketsPage() {
+export default async function MarketsPage() {
+  const cryptoData = await getTopCoins(100);
+
   return (
     <AppShell>
       <div className="container mx-auto px-4 py-12 md:py-24">
@@ -164,8 +63,8 @@ export default function MarketsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {MOCK_MARKETS_DATA.map((crypto, index) => {
-                  const isPositive = crypto.change24h >= 0;
+                {cryptoData.map((crypto, index) => {
+                  const isPositive = crypto.price_change_percentage_24h >= 0;
                   return (
                     <TableRow key={crypto.id} className="border-border/50">
                       <TableCell className="font-medium text-muted-foreground pl-6">
@@ -173,19 +72,27 @@ export default function MarketsPage() {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-3">
+                          <Image
+                            src={crypto.image}
+                            alt={`${crypto.name} logo`}
+                            width={24}
+                            height={24}
+                            className="rounded-full"
+                          />
                           <div>
                             <div className="font-bold">{crypto.name}</div>
                             <div className="text-muted-foreground text-sm">
-                              {crypto.symbol}
+                              {crypto.symbol.toUpperCase()}
                             </div>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell className="text-right font-medium tabular-nums">
                         $
-                        {crypto.price.toLocaleString("en-US", {
+                        {crypto.current_price.toLocaleString("en-US", {
                           minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
+                          maximumFractionDigits:
+                            crypto.current_price < 1 ? 6 : 2,
                         })}
                       </TableCell>
                       <TableCell
@@ -202,19 +109,21 @@ export default function MarketsPage() {
                           ) : (
                             <TrendingDown className="h-4 w-4" />
                           )}
-                          <span>{crypto.change24h.toFixed(2)}%</span>
+                          <span>
+                            {crypto.price_change_percentage_24h.toFixed(2)}%
+                          </span>
                         </div>
                       </TableCell>
                       <TableCell className="text-right tabular-nums text-muted-foreground">
-                        {formatNumber(crypto.marketCap)}
+                        {formatNumber(crypto.market_cap)}
                       </TableCell>
                       <TableCell className="text-right tabular-nums text-muted-foreground">
-                        {formatNumber(crypto.volume24h)}
+                        {formatNumber(crypto.total_volume)}
                       </TableCell>
                       <TableCell>
                         <div className="h-12 w-full max-w-[150px] mx-auto">
                           <CryptoSparkline
-                            data={crypto.sparkline}
+                            data={crypto.sparkline_in_7d.price}
                             isPositive={isPositive}
                           />
                         </div>

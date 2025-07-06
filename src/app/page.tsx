@@ -3,55 +3,13 @@ import { CryptoCard } from "@/components/molecules/crypto-card";
 import { NewsCard } from "@/components/molecules/news-card";
 import { Button } from "@/components/ui/button";
 import { getPosts } from "@/lib/ghost";
-import type { CryptoData } from "@/types";
+import { getTopCoins } from "@/lib/coingecko";
 import Link from "next/link";
 import Image from "next/image";
 
-const MOCK_CRYPTO_DATA: CryptoData[] = [
-  {
-    id: "bitcoin",
-    name: "Bitcoin",
-    symbol: "BTC",
-    price: 67123.45,
-    change24h: 2.5,
-    marketCap: 1320000000000,
-    volume24h: 45000000000,
-    sparkline: [3, 5, 4, 6, 7, 5, 8, 9, 8, 10],
-  },
-  {
-    id: "ethereum",
-    name: "Ethereum",
-    symbol: "ETH",
-    price: 3456.78,
-    change24h: -1.2,
-    marketCap: 415200000000,
-    volume24h: 22000000000,
-    sparkline: [9, 8, 9, 7, 6, 8, 7, 5, 6, 4],
-  },
-  {
-    id: "solana",
-    name: "Solana",
-    symbol: "SOL",
-    price: 145.67,
-    change24h: 5.8,
-    marketCap: 67100000000,
-    volume24h: 3500000000,
-    sparkline: [3, 4, 5, 4, 6, 7, 8, 9, 10, 12],
-  },
-  {
-    id: "cardano",
-    name: "Cardano",
-    symbol: "ADA",
-    price: 0.45,
-    change24h: 0.5,
-    marketCap: 16200000000,
-    volume24h: 500000000,
-    sparkline: [5, 6, 5, 6, 5, 7, 6, 7, 6, 7],
-  },
-];
-
 export default async function Home() {
   const posts = await getPosts();
+  const cryptoData = await getTopCoins(4);
 
   return (
     <AppShell>
@@ -95,7 +53,7 @@ export default async function Home() {
             </p>
           </div>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {MOCK_CRYPTO_DATA.map((crypto) => (
+            {cryptoData.map((crypto) => (
               <CryptoCard key={crypto.id} data={crypto} />
             ))}
           </div>

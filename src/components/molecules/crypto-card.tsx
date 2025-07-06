@@ -8,21 +8,37 @@ import { CryptoSparkline } from "@/components/molecules/crypto-sparkline";
 import type { CryptoData } from "@/types";
 import { cn } from "@/lib/utils";
 import { TrendingDown, TrendingUp } from "lucide-react";
+import Image from "next/image";
 
 export function CryptoCard({ data }: { data: CryptoData }) {
-  const isPositive = data.change24h >= 0;
+  const isPositive = data.price_change_percentage_24h >= 0;
 
   return (
     <Card className="transform transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 bg-card">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{data.name}</CardTitle>
-        <span className="text-xs text-muted-foreground">{data.symbol}</span>
+        <div className="flex items-center gap-2">
+          <Image
+            src={data.image}
+            alt={`${data.name} logo`}
+            width={24}
+            height={24}
+            className="rounded-full"
+          />
+          <CardTitle className="text-sm font-medium">{data.name}</CardTitle>
+        </div>
+        <span className="text-xs text-muted-foreground">
+          {data.symbol.toUpperCase()}
+        </span>
       </CardHeader>
       <CardContent>
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <div className="text-2xl font-bold">
-              ${data.price.toLocaleString("en-US")}
+              $
+              {data.current_price.toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: data.current_price < 1 ? 6 : 2,
+              })}
             </div>
             <div
               className={cn(
@@ -35,11 +51,14 @@ export function CryptoCard({ data }: { data: CryptoData }) {
               ) : (
                 <TrendingDown className="h-4 w-4" />
               )}
-              <span>{data.change24h.toFixed(2)}% (24h)</span>
+              <span>{data.price_change_percentage_24h.toFixed(2)}% (24h)</span>
             </div>
           </div>
           <div className="h-12 w-24">
-            <CryptoSparkline data={data.sparkline} isPositive={isPositive} />
+            <CryptoSparkline
+              data={data.sparkline_in_7d.price}
+              isPositive={isPositive}
+            />
           </div>
         </div>
       </CardContent>

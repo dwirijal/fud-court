@@ -9,6 +9,7 @@ export interface Post {
     id: string;
     name: string;
   } | null;
+  html?: string;
 }
 
 export interface CryptoData {

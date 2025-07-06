@@ -1,6 +1,6 @@
-# CryptoPulse Roadmap
+# Fud Court Roadmap
 
-This document outlines the development roadmap for CryptoPulse, a news and data dashboard for the cryptocurrency space.
+This document outlines the development roadmap for Fud Court, a dashboard for adjudicating crypto claims.
 
 ## v0.1.0: Foundation & Core Setup (Current)
 

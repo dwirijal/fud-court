@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'CryptoPulse',
-  description: 'Your daily pulse on the crypto market.',
+  title: 'Fud Court',
+  description: 'Where crypto claims are put on trial.',
 };
 
 export default function RootLayout({

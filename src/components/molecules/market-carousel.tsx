@@ -19,7 +19,7 @@ interface MarketCarouselProps {
 
 export function MarketCarousel({ data }: MarketCarouselProps) {
   const plugin = React.useRef(
-    Autoplay({ delay: 2000, stopOnInteraction: true })
+    Autoplay({ delay: 2000, stopOnInteraction: false })
   );
 
   return (
@@ -30,8 +30,6 @@ export function MarketCarousel({ data }: MarketCarouselProps) {
         loop: true,
       }}
       className="w-full max-w-sm sm:max-w-xl md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mx-auto"
-      onMouseEnter={plugin.current.stop}
-      onMouseLeave={plugin.current.reset}
     >
       <CarouselContent className="-ml-4">
         {data.map((crypto) => (

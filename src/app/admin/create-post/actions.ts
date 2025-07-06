@@ -4,20 +4,22 @@ import GhostAdminAPI from '@tryghost/admin-api';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
-const url = process.env.GHOST_API_URL;
-const key = process.env.GHOST_ADMIN_API_KEY;
-
-if (!url || !key) {
-  throw new Error('Ghost Admin API URL or Key not configured.');
-}
-
-const api = new GhostAdminAPI({
-  url,
-  key,
-  version: 'v5.0',
-});
-
 export async function createPost(data: { title: string; content: string }) {
+  const url = process.env.GHOST_API_URL;
+  const key = process.env.GHOST_ADMIN_API_KEY;
+
+  if (!url || !key) {
+    // This error will now be caught by the form's try-catch block
+    // and displayed as a toast, which is much better than crashing.
+    throw new Error('Ghost Admin API URL or Key is not configured in .env.local');
+  }
+
+  const api = new GhostAdminAPI({
+    url,
+    key,
+    version: 'v5.0',
+  });
+
   try {
     const post = await api.posts.add(
       {

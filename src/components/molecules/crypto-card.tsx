@@ -4,7 +4,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CryptoSparkline } from "@/components/molecules/crypto-sparkline";
 import type { CryptoData } from "@/types";
 import { cn } from "@/lib/utils";
 import { TrendingDown, TrendingUp } from "lucide-react";
@@ -31,8 +30,7 @@ export function CryptoCard({ data, className }: { data: CryptoData, className?: 
         </span>
       </CardHeader>
       <CardContent>
-        <div className="flex items-center justify-between">
-          <div className="space-y-1">
+        <div className="flex items-end justify-between">
             <div className="text-2xl font-bold">
               $
               {data.current_price.toLocaleString("en-US", {
@@ -42,7 +40,7 @@ export function CryptoCard({ data, className }: { data: CryptoData, className?: 
             </div>
             <div
               className={cn(
-                "text-xs flex items-center gap-1",
+                "flex items-center gap-1 text-sm font-medium",
                 isPositive ? "text-[hsl(var(--chart-2))]" : "text-primary"
               )}
             >
@@ -51,15 +49,8 @@ export function CryptoCard({ data, className }: { data: CryptoData, className?: 
               ) : (
                 <TrendingDown className="h-4 w-4" />
               )}
-              <span>{data.price_change_percentage_24h.toFixed(2)}% (24h)</span>
+              <span>{data.price_change_percentage_24h.toFixed(2)}%</span>
             </div>
-          </div>
-          <div className="h-12 w-24">
-            <CryptoSparkline
-              data={data.sparkline_in_7d.price}
-              isPositive={isPositive}
-            />
-          </div>
         </div>
       </CardContent>
     </Card>

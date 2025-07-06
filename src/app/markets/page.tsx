@@ -1,5 +1,4 @@
 import { AppShell } from "@/components/organisms/app-shell";
-import { CryptoSparkline } from "@/components/molecules/crypto-sparkline";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -56,9 +55,6 @@ export default async function MarketsPage() {
                   <TableHead className="text-right">24h %</TableHead>
                   <TableHead className="text-right">Market Cap</TableHead>
                   <TableHead className="text-right">Volume (24h)</TableHead>
-                  <TableHead className="w-[150px] text-center">
-                    Last 7 Days
-                  </TableHead>
                   <TableHead className="w-[120px] text-right pr-6"> </TableHead>
                 </TableRow>
               </TableHeader>
@@ -119,14 +115,6 @@ export default async function MarketsPage() {
                       </TableCell>
                       <TableCell className="text-right tabular-nums text-muted-foreground">
                         {formatNumber(crypto.total_volume)}
-                      </TableCell>
-                      <TableCell>
-                        <div className="h-12 w-full max-w-[150px] mx-auto">
-                          <CryptoSparkline
-                            data={crypto.sparkline_in_7d.price}
-                            isPositive={isPositive}
-                          />
-                        </div>
                       </TableCell>
                       <TableCell className="text-right pr-6">
                         <Button variant="outline" size="sm">

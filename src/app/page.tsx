@@ -55,7 +55,7 @@ export default async function Home() {
 
   return (
     <AppShell>
-      <section className="relative flex items-center justify-center min-h-[calc(100vh-4rem)] overflow-hidden text-center">
+      <section className="relative flex items-center justify-center h-screen overflow-hidden text-center">
         <div className="absolute inset-0 z-0 opacity-[0.03]">
           <Image
             src="https://placehold.co/1600x900.png"

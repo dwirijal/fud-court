@@ -13,7 +13,7 @@ export function CryptoCard({ data }: { data: CryptoData }) {
   const isPositive = data.change24h >= 0;
 
   return (
-    <Card className="transform transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-card/50 hover:bg-card">
+    <Card className="transform transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 bg-card">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{data.name}</CardTitle>
         <span className="text-xs text-muted-foreground">{data.symbol}</span>
@@ -27,7 +27,7 @@ export function CryptoCard({ data }: { data: CryptoData }) {
             <div
               className={cn(
                 "text-xs flex items-center gap-1",
-                isPositive ? "text-emerald-400" : "text-primary"
+                isPositive ? "text-[hsl(var(--chart-2))]" : "text-primary"
               )}
             >
               {isPositive ? (

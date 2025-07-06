@@ -49,12 +49,12 @@ export default async function Home() {
 
   return (
     <AppShell>
-      <section className="py-20 text-center">
+      <section className="py-24 md:py-32 text-center">
         <div className="container mx-auto px-4">
-          <h1 className="text-4xl md:text-6xl font-bold font-headline mb-4 text-primary">
+          <h1 className="text-5xl md:text-7xl font-bold font-headline mb-4 text-primary">
             Fud Court
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
+          <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-8">
             Where crypto claims are put on trial. We cut through the noise to deliver data-driven insights and unbiased news, helping you make smarter investment decisions.
           </p>
           <div className="flex justify-center gap-4">
@@ -64,12 +64,12 @@ export default async function Home() {
         </div>
       </section>
 
-      <div className="container mx-auto px-4 space-y-12 pb-20">
+      <div className="container mx-auto px-4 space-y-16 pb-24">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight font-headline mb-6 text-center">
+          <h2 className="text-4xl font-bold tracking-tight font-headline mb-8 text-center">
             Market Overview
           </h2>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {MOCK_CRYPTO_DATA.map((crypto) => (
               <CryptoCard key={crypto.id} data={crypto} />
             ))}
@@ -77,10 +77,10 @@ export default async function Home() {
         </div>
 
         <div>
-           <h3 className="text-3xl font-bold tracking-tight font-headline mb-6 text-center">
+           <h3 className="text-4xl font-bold tracking-tight font-headline mb-8 text-center">
             Latest News
           </h3>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {posts.map((post) => (
               <NewsCard key={post.id} post={post} />
             ))}

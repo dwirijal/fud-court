@@ -14,7 +14,7 @@ import type { Post } from "@/types";
 export function NewsCard({ post }: { post: Post }) {
   return (
     <Link href={`/news/${post.slug}`} className="group block">
-      <Card className="h-full flex flex-col transform transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+      <Card className="h-full flex flex-col transform transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
         <CardHeader className="p-0">
           <div className="relative h-48 w-full">
             <Image

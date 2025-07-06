@@ -1,6 +1,7 @@
 import { AppShell } from "@/components/organisms/app-shell";
 import { CryptoCard } from "@/components/molecules/crypto-card";
 import { NewsCard } from "@/components/molecules/news-card";
+import { Button } from "@/components/ui/button";
 import { getPosts } from "@/lib/ghost";
 import type { CryptoData } from "@/types";
 
@@ -48,19 +49,35 @@ export default async function Home() {
 
   return (
     <AppShell>
-      <div className="flex-1 space-y-8 p-4 md:p-8 pt-6">
-        <h2 className="text-3xl font-bold tracking-tight font-headline">
-          Dashboard
-        </h2>
-        
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {MOCK_CRYPTO_DATA.map((crypto) => (
-            <CryptoCard key={crypto.id} data={crypto} />
-          ))}
+      <section className="py-20 text-center">
+        <div className="container mx-auto px-4">
+          <h1 className="text-4xl md:text-6xl font-bold font-headline mb-4 text-primary">
+            Fud Court
+          </h1>
+          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
+            Where crypto claims are put on trial. We cut through the noise to deliver data-driven insights and unbiased news, helping you make smarter investment decisions.
+          </p>
+          <div className="flex justify-center gap-4">
+            <Button size="lg">View Markets</Button>
+            <Button size="lg" variant="outline">Read News</Button>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 space-y-12 pb-20">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight font-headline mb-6 text-center">
+            Market Overview
+          </h2>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {MOCK_CRYPTO_DATA.map((crypto) => (
+              <CryptoCard key={crypto.id} data={crypto} />
+            ))}
+          </div>
         </div>
 
-        <div className="space-y-4">
-           <h3 className="text-2xl font-bold tracking-tight font-headline">
+        <div>
+           <h3 className="text-3xl font-bold tracking-tight font-headline mb-6 text-center">
             Latest News
           </h3>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

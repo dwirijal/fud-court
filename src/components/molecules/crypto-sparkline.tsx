@@ -28,9 +28,9 @@ export function CryptoSparkline({ data, isPositive }: CryptoSparklineProps) {
     value: value,
   }));
 
-  const strokeColor = isPositive ? "hsl(var(--chart-2))" : "hsl(var(--destructive))";
-  const gradientStartColor = isPositive ? "hsl(var(--chart-2))" : "hsl(var(--destructive))";
-  const gradientEndColor = isPositive ? "hsl(var(--background))" : "hsl(var(--background))";
+  const strokeColor = isPositive ? "hsl(var(--chart-2))" : "hsl(var(--primary))";
+  const gradientStartColor = isPositive ? "hsl(var(--chart-2))" : "hsl(var(--primary))";
+  const gradientEndColor = "hsl(var(--background))";
 
 
   return (

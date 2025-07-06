@@ -9,8 +9,6 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
 
 interface MarketCarouselProps {
@@ -43,8 +41,6 @@ export function MarketCarousel({ data }: MarketCarouselProps) {
           </CarouselItem>
         ))}
       </CarouselContent>
-      <CarouselPrevious className="hidden lg:flex" />
-      <CarouselNext className="hidden lg:flex" />
     </Carousel>
   );
 }

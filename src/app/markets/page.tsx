@@ -35,7 +35,7 @@ export default async function MarketsPage() {
     <AppShell>
       <div className="container mx-auto px-4 py-12 md:py-24">
         <header className="mb-12 text-center">
-          <h1 className="text-5xl md:text-6xl font-bold font-headline mb-2">
+          <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight mb-2">
             Crypto Markets
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
@@ -44,7 +44,7 @@ export default async function MarketsPage() {
           </p>
         </header>
 
-        <Card>
+        <Card className="bg-neutral-900/60 backdrop-blur-md">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
@@ -76,7 +76,7 @@ export default async function MarketsPage() {
                             className="rounded-full"
                           />
                           <div>
-                            <div className="font-bold">{crypto.name}</div>
+                            <div className="font-semibold">{crypto.name}</div>
                             <div className="text-muted-foreground text-sm">
                               {crypto.symbol.toUpperCase()}
                             </div>

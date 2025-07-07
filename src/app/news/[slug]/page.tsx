@@ -33,7 +33,7 @@ export default async function PostPage({ params }: PostPageProps) {
               {post.primary_tag.name}
             </Badge>
           )}
-          <h1 className="text-4xl md:text-5xl font-bold font-headline mb-4 leading-tight">
+          <h1 className="text-4xl md:text-5xl font-semibold font-headline tracking-tight mb-4 leading-tight">
             {post.title}
           </h1>
           <p className="text-muted-foreground text-lg">

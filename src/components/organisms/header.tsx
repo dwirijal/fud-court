@@ -16,7 +16,16 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/atoms/logo";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, ChevronRight } from "lucide-react";
+import {
+  Menu,
+  ChevronRight,
+  User,
+  Settings,
+  LifeBuoy,
+  LogOut,
+  PenSquare,
+  PlusCircle,
+} from "lucide-react";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -31,10 +40,10 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
   return (
     <>
       {/* Mobile Header: Standard sticky bar with a slide-out sheet menu. */}
-      <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-background/70 px-4 backdrop-blur-md md:hidden">
+      <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-neutral-800 bg-neutral-900/60 px-4 backdrop-blur-md md:hidden">
         <Link href="/" className="flex items-center gap-3">
           <Logo />
-          <span className="text-xl font-bold font-headline text-foreground">
+          <span className="text-xl font-semibold font-headline tracking-tight text-foreground">
             Fud Court
           </span>
         </Link>
@@ -49,7 +58,7 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
             <div className="flex h-full flex-col p-6">
               <Link href="/" className="flex items-center gap-3 mb-6">
                 <Logo />
-                <span className="text-xl font-bold font-headline text-foreground">
+                <span className="text-xl font-semibold font-headline tracking-tight text-foreground">
                   Fud Court
                 </span>
               </Link>
@@ -85,7 +94,7 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
       >
         <div
           className={cn(
-            "flex items-center justify-center rounded-full bg-card/70 border shadow-lg backdrop-blur-md transition-all duration-300 ease-in-out pointer-events-auto",
+            "flex items-center justify-center rounded-full bg-neutral-900/60 border border-neutral-800 shadow-lg backdrop-blur-md transition-all duration-200 ease-in-out pointer-events-auto",
             isHovered ? "px-4 py-2 gap-4" : "p-2.5 gap-0"
           )}
         >
@@ -95,7 +104,7 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
 
           <div
             className={cn(
-              "flex items-center transition-all duration-300 ease-in-out overflow-hidden",
+              "flex items-center transition-all duration-200 ease-in-out overflow-hidden",
               isHovered
                 ? "max-w-screen-lg opacity-100 gap-4"
                 : "max-w-0 opacity-0 gap-0"
@@ -125,7 +134,13 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
   );
 }
 
-function UserMenu({ isMobile = false, showAdminLinks = false }: { isMobile?: boolean, showAdminLinks?: boolean }) {
+function UserMenu({
+  isMobile = false,
+  showAdminLinks = false,
+}: {
+  isMobile?: boolean;
+  showAdminLinks?: boolean;
+}) {
   // A more compact menu for the mobile sheet
   if (isMobile) {
     return (
@@ -155,15 +170,38 @@ function UserMenu({ isMobile = false, showAdminLinks = false }: { isMobile?: boo
             <DropdownMenuSeparator />
             {showAdminLinks && (
               <>
-                <DropdownMenuItem asChild><Link href="/admin/ghost" target="_blank">Ghost Dashboard</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link href="/admin/create-post">Create Post</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/admin/ghost" target="_blank">
+                    <PenSquare className="h-4 w-4" />
+                    <span>Ghost Dashboard</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/admin/create-post">
+                    <PlusCircle className="h-4 w-4" />
+                    <span>Create Post</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
               </>
             )}
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem>Settings</DropdownMenuItem>
-            <DropdownMenuItem>Support</DropdownMenuItem>
+            <DropdownMenuItem>
+              <User className="h-4 w-4" />
+              <span>Profile</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Settings className="h-4 w-4" />
+              <span>Settings</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <LifeBuoy className="h-4 w-4" />
+              <span>Support</span>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Logout</DropdownMenuItem>
+            <DropdownMenuItem>
+              <LogOut className="h-4 w-4" />
+              <span>Logout</span>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -192,16 +230,39 @@ function UserMenu({ isMobile = false, showAdminLinks = false }: { isMobile?: boo
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {showAdminLinks && (
-            <>
-                <DropdownMenuItem asChild><Link href="/admin/ghost" target="_blank">Ghost Dashboard</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link href="/admin/create-post">Create Post</Link></DropdownMenuItem>
-            </>
+          <>
+            <DropdownMenuItem asChild>
+              <Link href="/admin/ghost" target="_blank">
+                <PenSquare className="h-4 w-4" />
+                <span>Ghost Dashboard</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/admin/create-post">
+                <PlusCircle className="h-4 w-4" />
+                <span>Create Post</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
         )}
-        <DropdownMenuItem>Profile</DropdownMenuItem>
-        <DropdownMenuItem>Settings</DropdownMenuItem>
-        <DropdownMenuItem>Support</DropdownMenuItem>
+        <DropdownMenuItem>
+          <User className="h-4 w-4" />
+          <span>Profile</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <Settings className="h-4 w-4" />
+          <span>Settings</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <LifeBuoy className="h-4 w-4" />
+          <span>Support</span>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Logout</DropdownMenuItem>
+        <DropdownMenuItem>
+          <LogOut className="h-4 w-4" />
+          <span>Logout</span>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

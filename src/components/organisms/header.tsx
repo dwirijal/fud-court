@@ -22,7 +22,6 @@ const navItems = [
   { href: "/", label: "Home" },
   { href: "/markets", label: "Markets" },
   { href: "/news", label: "News" },
-  { href: "/portfolio", label: "Portfolio" },
 ];
 
 export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {

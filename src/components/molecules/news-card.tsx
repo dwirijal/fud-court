@@ -12,20 +12,24 @@ import { ArrowRight } from "lucide-react";
 import type { Post } from "@/types";
 
 export function NewsCard({ post }: { post: Post }) {
+  const showImage = post.primary_tag?.name?.toLowerCase() !== 'news';
+
   return (
     <Link href={`/news/${post.slug}`} className="group block">
       <Card className="h-full flex flex-col transform transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
-        <CardHeader className="p-0">
-          <div className="relative h-48 w-full">
-            <Image
-              src={post.feature_image || "https://placehold.co/600x400.png"}
-              alt={post.title}
-              fill
-              className="object-cover rounded-t-lg"
-              data-ai-hint="crypto abstract"
-            />
-          </div>
-        </CardHeader>
+        {showImage && (
+          <CardHeader className="p-0">
+            <div className="relative h-48 w-full">
+              <Image
+                src={post.feature_image || "https://placehold.co/600x400.png"}
+                alt={post.title}
+                fill
+                className="object-cover rounded-t-lg"
+                data-ai-hint="crypto abstract"
+              />
+            </div>
+          </CardHeader>
+        )}
         <CardContent className="flex-grow p-6">
           <div className="space-y-3">
              {post.primary_tag && (

@@ -4,16 +4,30 @@ import type { Post } from "@/types";
 const GHOST_API_URL = process.env.GHOST_API_URL;
 const GHOST_CONTENT_API_KEY = process.env.GHOST_CONTENT_API_KEY;
 
-const api = (GHOST_API_URL && GHOST_CONTENT_API_KEY) 
-  ? new GhostContentAPI({
+// A helper function to initialize the API safely, preventing crashes from invalid credentials.
+function initializeGhostApi() {
+  if (!GHOST_API_URL || !GHOST_CONTENT_API_KEY) {
+    return null;
+  }
+  try {
+    return new GhostContentAPI({
       url: GHOST_API_URL,
       key: GHOST_CONTENT_API_KEY,
       version: "v5.0"
-    })
-  : null;
+    });
+  } catch (error) {
+    console.warn(
+      "Ghost Content API initialization failed. News will not be available.",
+      error instanceof Error ? error.message : String(error)
+    );
+    return null;
+  }
+}
+
+const api = initializeGhostApi();
 
 if (!api) {
-    console.warn("Ghost API URL or Key not configured. News will not be available.");
+    console.warn("Ghost API URL or Key not configured or invalid. News will not be available.");
 }
 
 // The Ghost API returns a lot more fields than we need.

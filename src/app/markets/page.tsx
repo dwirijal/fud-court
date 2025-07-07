@@ -48,7 +48,7 @@ export default async function MarketsPage() {
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="border-white/10">
+                <TableRow>
                   <TableHead className="w-[50px] pl-6">#</TableHead>
                   <TableHead>Name</TableHead>
                   <TableHead className="text-right">Price</TableHead>
@@ -62,7 +62,7 @@ export default async function MarketsPage() {
                 {cryptoData.map((crypto, index) => {
                   const isPositive = crypto.price_change_percentage_24h >= 0;
                   return (
-                    <TableRow key={crypto.id} className="border-white/10">
+                    <TableRow key={crypto.id}>
                       <TableCell className="font-medium text-muted-foreground pl-6">
                         {index + 1}
                       </TableCell>
@@ -96,7 +96,7 @@ export default async function MarketsPage() {
                           "text-right font-medium tabular-nums",
                           isPositive
                             ? "text-[hsl(var(--chart-2))]"
-                            : "text-primary"
+                            : "text-destructive"
                         )}
                       >
                         <div className="flex items-center justify-end gap-1.5">

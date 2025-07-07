@@ -31,7 +31,7 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
   return (
     <>
       {/* Mobile Header: Standard sticky bar with a slide-out sheet menu. */}
-      <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-white/10 bg-background/80 px-4 backdrop-blur-lg md:hidden">
+      <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-background/70 px-4 backdrop-blur-md md:hidden">
         <Link href="/" className="flex items-center gap-3">
           <Logo />
           <span className="text-xl font-bold font-headline text-foreground">
@@ -85,7 +85,7 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
       >
         <div
           className={cn(
-            "flex items-center justify-center rounded-full bg-card/60 border border-white/10 shadow-lg backdrop-blur-xl transition-all duration-300 ease-in-out pointer-events-auto",
+            "flex items-center justify-center rounded-full bg-card/70 border shadow-lg backdrop-blur-md transition-all duration-300 ease-in-out pointer-events-auto",
             isHovered ? "px-4 py-2 gap-4" : "p-2.5 gap-0"
           )}
         >

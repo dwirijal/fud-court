@@ -3,19 +3,17 @@ import Link from "next/link";
 import {
   Card,
   CardContent,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight } from "lucide-react";
 import type { Post } from "@/types";
 
 export function NewsCard({ post }: { post: Post }) {
   const showImage = post.primary_tag?.name?.toLowerCase() !== 'news';
 
   return (
-    <Link href={`/news/${post.slug}`} className="group block">
+    <Link href={`/news/${post.slug}`} className="group block h-full">
       <Card className="h-full flex flex-col transform transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
         {showImage && (
           <CardHeader className="p-0">
@@ -30,25 +28,17 @@ export function NewsCard({ post }: { post: Post }) {
             </div>
           </CardHeader>
         )}
-        <CardContent className="flex-grow p-6">
-          <div className="space-y-3">
-             {post.primary_tag && (
-              <Badge variant="secondary">{post.primary_tag.name}</Badge>
-            )}
-            <CardTitle className="text-xl font-headline leading-snug">
-              {post.title}
-            </CardTitle>
-            <p className="text-muted-foreground text-sm line-clamp-3">
-              {post.excerpt}
-            </p>
-          </div>
+        <CardContent className="flex-grow p-6 space-y-3">
+          {post.primary_tag && (
+            <Badge variant="secondary">{post.primary_tag.name}</Badge>
+          )}
+          <CardTitle className="text-xl font-headline leading-snug group-hover:text-primary transition-colors">
+            {post.title}
+          </CardTitle>
+          <p className="text-muted-foreground text-sm line-clamp-3">
+            {post.excerpt}
+          </p>
         </CardContent>
-        <CardFooter>
-          <div className="flex items-center text-sm font-medium text-primary group-hover:underline">
-            Read More
-            <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </div>
-        </CardFooter>
       </Card>
     </Link>
   );

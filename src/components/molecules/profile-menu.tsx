@@ -113,7 +113,7 @@ export function ProfileMenu({ showAdminLinks }: { showAdminLinks?: boolean }) {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href="/admin/create-post">
+              <Link href="/admin/posts/new">
                 <PlusCircle className="h-4 w-4" />
                 <span>Create Post</span>
               </Link>

@@ -28,7 +28,7 @@ export const getColumns = (): ColumnDef<AdminPost>[] => [
         header: 'Title',
         cell: ({ row }) => {
             const post = row.original;
-            const editUrl = `/admin/content/edit/${post.id}`;
+            const editUrl = `/admin/posts/${post.id}/edit`;
 
             return (
                 <Link href={editUrl} className="group inline-flex items-center gap-2 font-semibold hover:text-primary transition-colors">
@@ -63,7 +63,7 @@ export const getColumns = (): ColumnDef<AdminPost>[] => [
         id: 'actions',
         cell: ({ row }) => {
             const post = row.original;
-            const editUrl = `/admin/content/edit/${post.id}`;
+            const editUrl = `/admin/posts/${post.id}/edit`;
 
             return (
                  <div className="text-right">

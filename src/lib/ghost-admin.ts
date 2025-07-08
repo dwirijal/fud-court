@@ -4,7 +4,7 @@
 import GhostAdminAPI from '@tryghost/admin-api';
 import type { Post as GhostPost } from '@tryghost/content-api';
 
-// Simplified Post type for the admin queue
+// The AdminPost type now includes more fields for a richer editing experience.
 export interface AdminPost {
   id: string;
   uuid: string;
@@ -15,6 +15,8 @@ export interface AdminPost {
   published_at: string | null;
   url: string;
   html?: string | null;
+  excerpt?: string | null;
+  feature_image?: string | null;
 }
 
 function getAdminApi() {
@@ -49,6 +51,8 @@ function mapToAdminPost(post: GhostPost): AdminPost {
         published_at: post.published_at,
         url: post.url || '',
         html: post.html || null,
+        excerpt: post.excerpt || null,
+        feature_image: post.feature_image || null,
     };
 }
 
@@ -63,10 +67,8 @@ export async function getAllPosts(): Promise<AdminPost[]> {
     const posts = await api.posts.browse({
       limit: 'all',
       formats: ['html', 'mobiledoc'],
-      status: 'all', // This is the key to get draft, scheduled and published posts
+      status: 'all', 
     });
-    // The Admin API browse method returns a slighly different type, but it's compatible for our needs.
-    // We cast it to satisfy TypeScript.
     return (posts as unknown as GhostPost[]).map(mapToAdminPost);
   } catch (err) {
     console.error('Error fetching all posts from Ghost Admin API:', err);
@@ -79,7 +81,8 @@ export async function getPostById(id: string): Promise<AdminPost | null> {
   if (!api) return null;
 
   try {
-    const post = await api.posts.read({ id, formats: ['html'] });
+    // We now request the feature_image and excerpt fields as well.
+    const post = await api.posts.read({ id, formats: ['html'], include: ['tags'] });
     return mapToAdminPost(post);
   } catch (err) {
     console.error(`Error fetching post with ID ${id}:`, err);

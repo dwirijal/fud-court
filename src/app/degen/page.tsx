@@ -29,8 +29,9 @@ export default function DegenPage() {
         if (error) setError(null); // Clear previous errors on a successful fetch
       } catch (err) {
         console.error("Failed to fetch Moralis data:", err);
-        setError("An unexpected error occurred while fetching data.");
+        setError(err instanceof Error ? err.message : "An unexpected error occurred while fetching data.");
       } finally {
+        // Only set loading to false on the initial fetch
         if (isLoading) {
             setIsLoading(false);
         }

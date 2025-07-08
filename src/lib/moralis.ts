@@ -1,3 +1,4 @@
+
 import type { MoralisTrendingToken } from '@/types';
 
 const API_BASE_URL = 'https://deep-index.moralis.io/api/v2.2';
@@ -6,15 +7,10 @@ const API_BASE_URL = 'https://deep-index.moralis.io/api/v2.2';
  * Fetches the trending tokens from the Moralis API for a specific chain.
  * @param chain The blockchain to query, e.g., 'solana'.
  * @returns A promise that resolves to an array of MoralisTrendingToken objects.
+ * @throws Will throw an error if the API request fails.
  */
 export async function getTrendingTokens(chain: string = 'solana'): Promise<MoralisTrendingToken[]> {
   const apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6ImZmOWRiODg4LTg4ZjYtNDZkOS05MjEzLWY4YWFjODJiOGFjMyIsIm9yZ0lkIjoiNDU4MTU1IiwidXNlcklkIjoiNDcxMzYyIiwidHlwZUlkIjoiMTFjZWExNzMtZDkzYS00OGE1LWExYWYtMzk1OWRmYjQyNzBmIiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE3NTE5NTI1MTgsImV4cCI6NDkwNzcxMjUxOH0.scYNT8_E_1ZihNgda8CEH8VQH5zJPVQpMIq4loKeYro';
-
-  if (!apiKey) {
-    console.error("Moralis API key is not configured. Please set MORALIS_API_KEY in your .env.local file.");
-    // Return an empty array or throw an error to indicate misconfiguration.
-    return [];
-  }
 
   const url = `${API_BASE_URL}/tokens/trending?chain=${chain}`;
   
@@ -28,8 +24,9 @@ export async function getTrendingTokens(chain: string = 'solana'): Promise<Moral
     });
 
     if (!response.ok) {
-      console.error(`Moralis API request for trending tokens failed with status: ${response.status}`);
-      return [];
+      // Throw an error with the status text, so the UI can catch and display it.
+      const errorBody = await response.json().catch(() => ({ message: response.statusText }));
+      throw new Error(errorBody.message || `Request failed with status ${response.status}`);
     }
     
     const data = await response.json();
@@ -39,11 +36,13 @@ export async function getTrendingTokens(chain: string = 'solana'): Promise<Moral
       return data.tokens;
     }
 
+    // If the structure is unexpected, treat it as an error.
     console.warn("Unexpected data structure from Moralis trending tokens API:", data);
-    return [];
+    throw new Error("Received an unexpected data format from the Moralis API.");
 
   } catch (error) {
+    // Re-throw the error so the calling component can handle it.
     console.error("An error occurred while fetching from Moralis API:", error);
-    return [];
+    throw error;
   }
 }

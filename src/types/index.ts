@@ -73,3 +73,14 @@ export interface TokenProfile {
   description?: string;
   links?: DexLink[];
 }
+
+// Moralis Types
+export interface MoralisTrendingToken {
+  rank: number;
+  logo: string | null;
+  name: string;
+  symbol: string;
+  address: string;
+  price_change_24h: string;
+  price_usd: string;
+}

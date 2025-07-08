@@ -145,7 +145,7 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
 
           <div
             className={cn(
-              "flex items-center transition-all duration-200 ease-in-out overflow-hidden",
+              "flex items-center transition-all duration-200 ease-in-out",
               isIslandExpanded
                 ? "max-w-screen-lg opacity-100 gap-4"
                 : "max-w-0 opacity-0 gap-0"

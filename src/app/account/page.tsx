@@ -55,7 +55,7 @@ export default function AccountPage() {
   }
 
   return (
-    <div className="w-full lg:grid lg:min-h-[calc(100vh-4rem)] lg:grid-cols-2">
+    <div className="w-full h-full lg:grid lg:grid-cols-2">
       <div className="hidden bg-muted lg:block">
         <Image
           src="https://placehold.co/1080x1920.png"

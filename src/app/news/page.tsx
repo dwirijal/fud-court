@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { format } from "date-fns";
+import { id as idLocale } from "date-fns/locale";
 import { AppShell } from "@/components/organisms/app-shell";
 import { getPosts } from "@/lib/ghost";
 import type { Post } from "@/types";
@@ -31,21 +32,21 @@ export default async function NewsPage() {
         <Card className="bg-neutral-900/60 border border-neutral-800 backdrop-blur-md">
             <Table>
               <TableHeader>
-                <TableRow className="border-neutral-800">
+                <TableRow className="border-neutral-800/50">
                   <TableHead>Title</TableHead>
                   <TableHead className="w-[200px] text-right">Published Date</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {posts.map((post: Post) => (
-                  <TableRow key={post.id} className="border-neutral-800">
+                  <TableRow key={post.id} className="border-neutral-800/50">
                     <TableCell className="font-medium">
                       <Link href={`/news/${post.slug}`} className="hover:text-red-500 transition-colors">
                         {post.title}
                       </Link>
                     </TableCell>
                     <TableCell className="text-right text-muted-foreground">
-                      {format(new Date(post.published_at), "ss:mm:HH dd/MM")}
+                      {format(new Date(post.published_at), "dd MMMM", { locale: idLocale })}
                     </TableCell>
                   </TableRow>
                 ))}

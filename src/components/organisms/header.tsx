@@ -26,12 +26,16 @@ import {
   LogOut,
   PenSquare,
   PlusCircle,
+  BookOpen,
+  FileText,
 } from "lucide-react";
 
 const navItems = [
   { href: "/", label: "Home" },
   { href: "/markets", label: "Markets" },
   { href: "/news", label: "News" },
+  { href: "/articles", label: "Articles" },
+  { href: "/learn", label: "Learn" },
 ];
 
 export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {

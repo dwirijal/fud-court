@@ -1,3 +1,4 @@
+
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { getPostBySlug, getPosts } from "@/lib/ghost";
@@ -5,6 +6,7 @@ import { AppShell } from "@/components/organisms/app-shell";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import type { Post } from "@/types";
+import { Breadcrumbs } from "@/components/molecules/breadcrumbs";
 
 export async function generateStaticParams() {
     const posts = await getPosts();
@@ -26,9 +28,26 @@ export default async function PostPage({ params }: PostPageProps) {
     notFound();
   }
 
+  const breadcrumbItems = [
+    { label: 'Home', href: '/' },
+  ];
+
+  const tag = post.primary_tag?.name?.toLowerCase();
+  if (tag === 'news') {
+    breadcrumbItems.push({ label: 'News', href: '/news' });
+  } else if (tag === 'article') {
+    breadcrumbItems.push({ label: 'Articles', href: '/articles' });
+  } else if (tag === 'learn') {
+    breadcrumbItems.push({ label: 'Learn', href: '/learn' });
+  }
+
+  const truncatedTitle = post.title.length > 50 ? `${post.title.substring(0, 50)}...` : post.title;
+  breadcrumbItems.push({ label: truncatedTitle });
+
   return (
     <AppShell>
       <article className="container mx-auto px-4 py-12 md:py-24 max-w-4xl">
+        <Breadcrumbs items={breadcrumbItems} className="mb-8" />
         <header className="mb-8">
           {post.primary_tag && (
             <Badge variant="secondary" className="mb-4">

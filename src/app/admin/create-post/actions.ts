@@ -30,11 +30,10 @@ export async function createPost(data: { title: string; content: string }) {
       { source: 'html' }
     );
     
-    // Revalidate paths to show the new post immediately
+    // Revalidate paths to show the new post immediately.
+    // A new post created here has no tags, so it will only appear on the homepage
+    // and its own dedicated page. Revalidating only what's necessary is more stable.
     revalidatePath('/');
-    revalidatePath('/news');
-    revalidatePath('/articles');
-    revalidatePath('/learn');
     revalidatePath(`/news/${post.slug}`);
 
   } catch (err) {

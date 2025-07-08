@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -19,6 +20,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { createPost } from './actions';
 import { useState } from 'react';
+import { Breadcrumbs } from '@/components/molecules/breadcrumbs';
 
 const formSchema = z.object({
   title: z.string().min(1, 'Title is required.'),
@@ -51,9 +53,15 @@ export default function CreatePostPage() {
     }
   }
 
+  const breadcrumbItems = [
+    { label: 'Home', href: '/' },
+    { label: 'Create Post' }
+  ];
+
   return (
     <AppShell>
       <div className="container mx-auto px-4 py-12 md:py-24 max-w-2xl">
+        <Breadcrumbs items={breadcrumbItems} className="mb-8" />
         <Card>
             <CardHeader>
                 <CardTitle className="text-3xl font-headline">Create New Post</CardTitle>

@@ -34,7 +34,10 @@ export default function DegenPage() {
       } catch (error) {
         console.error("Failed to fetch degen data:", error);
       } finally {
-        if (isLoading) setIsLoading(false);
+        // This will only run on the first fetch because isLoading will be false afterwards
+        if (isLoading) {
+          setIsLoading(false);
+        }
       }
     };
 
@@ -42,7 +45,7 @@ export default function DegenPage() {
     const intervalId = setInterval(fetchData, 1000); // Fetch every second
 
     return () => clearInterval(intervalId); // Cleanup on component unmount
-  }, [isLoading]);
+  }, []); // The empty dependency array ensures this effect runs only once on mount.
 
   return (
     <div className="container mx-auto px-4 py-12 md:py-24">

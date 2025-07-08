@@ -38,12 +38,10 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 
-const navItems = [
+// Define navigation structure
+const mainNavLinks = [
   { href: "/", label: "Home" },
   { href: "/markets", label: "Markets" },
-  { href: "/news", label: "News" },
-  { href: "/articles", label: "Articles" },
-  { href: "/learn", label: "Learn" },
 ];
 
 const readingComponents: { title: string; href: string; description: string }[] = [
@@ -64,7 +62,10 @@ const readingComponents: { title: string; href: string; description: string }[] 
       href: "/learn",
       description: "Educational resources to help you understand the world of crypto.",
     },
-  ]
+];
+
+// For mobile, we flatten the structure into a single list.
+const mobileNavLinks = [...mainNavLinks, ...readingComponents.map(item => ({ href: item.href, label: item.title }))];
 
 export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
   const pathname = usePathname();
@@ -99,7 +100,7 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
                 </span>
               </Link>
               <nav className="grid gap-4 text-lg font-medium">
-                {navItems.map((item) => (
+                {mobileNavLinks.map((item) => (
                   <Link
                     key={item.label}
                     href={item.href}
@@ -148,43 +149,30 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
               "flex items-center transition-all duration-200 ease-in-out",
               isIslandExpanded
                 ? "max-w-screen-lg opacity-100 gap-4"
-                : "max-w-0 opacity-0 gap-0"
+                : "max-w-0 opacity-0"
             )}
           >
             <NavigationMenu onValueChange={setActiveMenu}>
               <NavigationMenuList>
-                <NavigationMenuItem>
-                  <NavigationMenuLink asChild>
-                    <Link
-                      href="/"
-                      className={cn(
-                        navigationMenuTriggerStyle(),
-                        "bg-transparent hover:bg-accent/50 text-sm font-medium",
-                        pathname === "/"
-                          ? "text-primary"
-                          : "text-foreground/70"
-                      )}
-                    >
-                      Home
-                    </Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <NavigationMenuLink asChild>
-                    <Link
-                      href="/markets"
-                      className={cn(
-                        navigationMenuTriggerStyle(),
-                        "bg-transparent hover:bg-accent/50 text-sm font-medium",
-                        pathname === "/markets"
-                          ? "text-primary"
-                          : "text-foreground/70"
-                      )}
-                    >
-                      Markets
-                    </Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
+                {mainNavLinks.map((item) => (
+                    <NavigationMenuItem key={item.label}>
+                        <NavigationMenuLink asChild>
+                            <Link
+                            href={item.href}
+                            className={cn(
+                                navigationMenuTriggerStyle(),
+                                "bg-transparent hover:bg-accent/50 text-sm font-medium",
+                                pathname === item.href
+                                ? "text-primary"
+                                : "text-foreground/70"
+                            )}
+                            >
+                            {item.label}
+                            </Link>
+                        </NavigationMenuLink>
+                    </NavigationMenuItem>
+                ))}
+
                 <NavigationMenuItem value="reading">
                     <NavigationMenuTrigger className="bg-transparent hover:bg-accent/50 text-sm font-medium data-[state=open]:bg-accent/50 text-foreground/70">
                         Reading
@@ -193,7 +181,7 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
                         <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] lg:w-[600px] grid-cols-[.75fr_1fr]">
                             <li className="row-span-3">
                                 <NavigationMenuLink asChild>
-                                <a
+                                <Link
                                     className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
                                     href="/"
                                 >
@@ -204,7 +192,7 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
                                     <p className="text-sm leading-tight text-muted-foreground">
                                         Where crypto claims are put on trial. Unbiased news and data.
                                     </p>
-                                </a>
+                                </Link>
                                 </NavigationMenuLink>
                             </li>
                             {readingComponents.map((component) => (

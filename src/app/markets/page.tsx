@@ -1,5 +1,4 @@
 import { AppShell } from "@/components/organisms/app-shell";
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -54,8 +53,7 @@ export default async function MarketsPage() {
                   <TableHead className="text-right">Price</TableHead>
                   <TableHead className="text-right">24h %</TableHead>
                   <TableHead className="text-right">Market Cap</TableHead>
-                  <TableHead className="text-right">Volume (24h)</TableHead>
-                  <TableHead className="w-[120px] text-right pr-6"> </TableHead>
+                  <TableHead className="text-right pr-6">Volume (24h)</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -113,13 +111,8 @@ export default async function MarketsPage() {
                       <TableCell className="text-right tabular-nums text-muted-foreground">
                         {formatNumber(crypto.market_cap)}
                       </TableCell>
-                      <TableCell className="text-right tabular-nums text-muted-foreground">
+                      <TableCell className="text-right tabular-nums text-muted-foreground pr-6">
                         {formatNumber(crypto.total_volume)}
-                      </TableCell>
-                      <TableCell className="text-right pr-6">
-                        <Button variant="outline" size="sm">
-                          Trade
-                        </Button>
                       </TableCell>
                     </TableRow>
                   );

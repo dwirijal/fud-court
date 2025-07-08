@@ -1,3 +1,4 @@
+
 export interface Post {
   id: string;
   slug: string;
@@ -24,4 +25,42 @@ export interface CryptoData {
   price_change_percentage_1h_in_currency: number;
   price_change_percentage_24h_in_currency: number;
   price_change_percentage_7d_in_currency: number;
+}
+
+// DexScreener Types
+interface DexToken {
+    address: string;
+    name: string;
+    symbol: string;
+}
+
+interface DexPair {
+    address: string;
+    url: string;
+    platform: {
+        id: string;
+    };
+    baseToken: DexToken;
+}
+
+export interface BoostedToken {
+    version: string;
+    token: DexToken;
+    pair: {
+        address: string;
+        url: string;
+    };
+    source: string;
+    timestamp: number;
+    audit: {
+        is_honeypot: boolean;
+        is_open_source: boolean;
+    };
+}
+
+export interface TokenProfile {
+    schemaVersion: string;
+    pair: DexPair;
+    websites?: { label: string; url: string }[];
+    socials?: { name: string; url: string }[];
 }

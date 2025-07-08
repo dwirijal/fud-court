@@ -74,7 +74,7 @@ export const columns: ColumnDef<CryptoData>[] = [
                 <div
                     className={cn(
                         'flex items-center justify-end gap-1 font-mono text-right',
-                        isPositive ? 'text-[hsl(var(--chart-2))]' : 'text-destructive'
+                        isPositive ? 'text-chart-2' : 'text-destructive'
                     )}
                 >
                     {isPositive ? <TrendingUp className="h-4 w-4 shrink-0" /> : <TrendingDown className="h-4 w-4 shrink-0" />}

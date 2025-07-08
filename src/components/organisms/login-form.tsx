@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -34,7 +33,6 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 export function LoginForm() {
-  const [activeTab, setActiveTab] = useState('login');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState('');
@@ -89,28 +87,10 @@ export function LoginForm() {
     );
   }
 
-  const formContent = (
-    <CardContent>
-      <FormField
-        control={form.control}
-        name="email"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Email Address</FormLabel>
-            <FormControl>
-              <Input type="email" placeholder="you@example.com" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    </CardContent>
-  );
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <Tabs defaultValue="login" className="w-full" onValueChange={setActiveTab}>
+        <Tabs defaultValue="login" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="login">Login</TabsTrigger>
             <TabsTrigger value="signup">Sign Up</TabsTrigger>
@@ -124,7 +104,21 @@ export function LoginForm() {
                   Enter your email below to receive a magic link to log into your account.
                 </CardDescription>
               </CardHeader>
-              {formContent}
+              <CardContent>
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email Address</FormLabel>
+                      <FormControl>
+                        <Input type="email" placeholder="you@example.com" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
               <CardFooter>
                 <Button type="submit" disabled={isSubmitting} className="w-full">
                   {isSubmitting ? "Sending..." : "Send Login Link"}
@@ -140,8 +134,22 @@ export function LoginForm() {
                 <CardDescription>
                   Enter your email to create an account. No password needed!
                 </CardDescription>
-              </Header>
-              {formContent}
+              </CardHeader>
+              <CardContent>
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email Address</FormLabel>
+                      <FormControl>
+                        <Input type="email" placeholder="you@example.com" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
               <CardFooter>
                 <Button type="submit" disabled={isSubmitting} className="w-full">
                   {isSubmitting ? "Sending..." : "Send Sign Up Link"}

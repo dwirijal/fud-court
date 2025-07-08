@@ -18,6 +18,8 @@ export function TokenProfileCard({ profile }: { profile: TokenProfile }) {
     // Use description as title, fallback to a truncated token address.
     const title = description || `${tokenAddress.slice(0, 6)}...${tokenAddress.slice(-4)}`;
 
+    const validLinks = (links || []).filter(link => link && link.label && link.url);
+
     return (
         <Card className="bg-card/60 backdrop-blur-md">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -35,7 +37,7 @@ export function TokenProfileCard({ profile }: { profile: TokenProfile }) {
             </CardHeader>
             <CardContent>
                 <div className="flex flex-wrap gap-2 mt-4">
-                    {(links || []).length > 0 ? links?.map((link) => (
+                    {validLinks.length > 0 ? validLinks.map((link) => (
                         <Button key={link.url} asChild size="sm" variant="outline">
                             <a href={link.url} target="_blank" rel="noopener noreferrer">
                                 {socialIconMap[link.label.toLowerCase()] || <LinkIcon className="h-4 w-4" />}

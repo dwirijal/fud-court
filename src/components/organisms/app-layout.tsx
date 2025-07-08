@@ -4,7 +4,12 @@
 import { usePathname } from 'next/navigation';
 import { AppShell } from '@/components/organisms/app-shell';
 
-export function AppLayout({ children }: { children: React.ReactNode }) {
+interface AppLayoutProps {
+  children: React.ReactNode;
+  showAdminLinks?: boolean;
+}
+
+export function AppLayout({ children, showAdminLinks }: AppLayoutProps) {
   const pathname = usePathname();
   const isLoginPage = pathname === '/login';
 
@@ -12,5 +17,5 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
 
-  return <AppShell>{children}</AppShell>;
+  return <AppShell showAdminLinks={showAdminLinks}>{children}</AppShell>;
 }

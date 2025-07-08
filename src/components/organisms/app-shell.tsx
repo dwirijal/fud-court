@@ -1,8 +1,12 @@
+
 import { Header } from "@/components/organisms/header";
 
-export function AppShell({ children }: { children: React.ReactNode }) {
-  const showAdminLinks = !!process.env.GHOST_API_URL && !!process.env.GHOST_ADMIN_API_KEY;
-  
+interface AppShellProps {
+  children: React.ReactNode;
+  showAdminLinks?: boolean;
+}
+
+export function AppShell({ children, showAdminLinks }: AppShellProps) {  
   return (
     <div className="flex flex-col min-h-screen">
       <Header showAdminLinks={showAdminLinks} />

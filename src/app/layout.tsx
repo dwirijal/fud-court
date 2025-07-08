@@ -29,6 +29,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const showAdminLinks = !!process.env.GHOST_API_URL && !!process.env.GHOST_ADMIN_API_KEY;
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
@@ -39,7 +41,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AppLayout>
+          <AppLayout showAdminLinks={showAdminLinks}>
             {children}
           </AppLayout>
           <Toaster />

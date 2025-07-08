@@ -1,5 +1,6 @@
 
 import { Header } from "@/components/organisms/header";
+import { Footer } from "@/components/organisms/footer";
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -11,6 +12,7 @@ export function AppShell({ children, showAdminLinks }: AppShellProps) {
     <div className="flex flex-col min-h-screen">
       <Header showAdminLinks={showAdminLinks} />
       <main className="flex-1">{children}</main>
+      <Footer />
     </div>
   );
 }

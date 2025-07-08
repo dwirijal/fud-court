@@ -110,7 +110,7 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
                   </Link>
                 ))}
                  <Link
-                    href="/account"
+                    href="/login"
                     className="text-muted-foreground transition-colors hover:text-primary"
                   >
                     Log In / Sign Up
@@ -148,7 +148,7 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
             className={cn(
               "flex items-center transition-all duration-200 ease-in-out",
               isIslandExpanded
-                ? "max-w-screen-lg opacity-100 gap-2"
+                ? "max-w-screen-lg opacity-100"
                 : "max-w-0 opacity-0"
             )}
           >
@@ -156,20 +156,19 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
               <NavigationMenuList>
                 {mainNavLinks.map((item) => (
                     <NavigationMenuItem key={item.label}>
-                        <NavigationMenuLink asChild>
-                            <Link
-                            href={item.href}
-                            className={cn(
-                                navigationMenuTriggerStyle(),
-                                "bg-transparent hover:bg-accent/50 text-sm font-medium",
-                                pathname === item.href
-                                ? "text-primary"
-                                : "text-foreground/70"
-                            )}
-                            >
-                            {item.label}
-                            </Link>
+                      <Link href={item.href} legacyBehavior passHref>
+                        <NavigationMenuLink
+                          className={cn(
+                            navigationMenuTriggerStyle(),
+                            "bg-transparent hover:bg-accent/50 text-sm font-medium",
+                            pathname === item.href
+                              ? "text-primary"
+                              : "text-foreground/70"
+                          )}
+                        >
+                          {item.label}
                         </NavigationMenuLink>
+                      </Link>
                     </NavigationMenuItem>
                 ))}
 
@@ -210,10 +209,10 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
               </NavigationMenuList>
             </NavigationMenu>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 ml-2">
               <ThemeToggle />
               <Button asChild variant="outline" size="sm">
-                <Link href="/account">Log In / Sign Up</Link>
+                <Link href="/login">Log In / Sign Up</Link>
               </Button>
               {showAdminLinks && <AdminMenu />}
             </div>
@@ -266,7 +265,7 @@ function AdminMenu({ isMobile = false }: { isMobile?: boolean }) {
 }
 
 const ListItem = React.forwardRef<
-  React.ElementRef<"a">,
+  React.ElementRef<typeof Link>,
   React.ComponentPropsWithoutRef<typeof Link>
 >(({ className, title, children, ...props }, ref) => {
   return (

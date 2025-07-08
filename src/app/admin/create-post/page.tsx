@@ -4,7 +4,6 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { AppShell } from '@/components/organisms/app-shell';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -62,69 +61,67 @@ export default function CreatePostPage() {
   }
 
   return (
-    <AppShell>
-      <div className="container mx-auto px-4 py-12 md:py-24 max-w-2xl">
-        <Breadcrumb className="mb-8">
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link href="/">Home</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Create Post</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-        <Card>
-            <CardHeader>
-                <CardTitle className="text-3xl font-headline">Create New Post</CardTitle>
-                <CardDescription>
-                    Write and publish a new article directly to your Ghost CMS.
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    <FormField
-                    control={form.control}
-                    name="title"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Title</FormLabel>
-                        <FormControl>
-                            <Input placeholder="Your post title" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                    <FormField
-                    control={form.control}
-                    name="content"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Content</FormLabel>
-                        <FormControl>
-                            <Textarea
-                            placeholder="Write your post content here. You can use HTML."
-                            className="min-h-[300px]"
-                            {...field}
-                            />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                    <Button type="submit" disabled={isSubmitting}>
-                        {isSubmitting ? 'Publishing...' : 'Publish Post'}
-                    </Button>
-                </form>
-                </Form>
-            </CardContent>
-        </Card>
-      </div>
-    </AppShell>
+    <div className="container mx-auto px-4 py-12 md:py-24 max-w-2xl">
+      <Breadcrumb className="mb-8">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link href="/">Home</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Create Post</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+      <Card>
+          <CardHeader>
+              <CardTitle className="text-3xl font-headline">Create New Post</CardTitle>
+              <CardDescription>
+                  Write and publish a new article directly to your Ghost CMS.
+              </CardDescription>
+          </CardHeader>
+          <CardContent>
+              <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                  <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                      <FormItem>
+                      <FormLabel>Title</FormLabel>
+                      <FormControl>
+                          <Input placeholder="Your post title" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                      </FormItem>
+                  )}
+                  />
+                  <FormField
+                  control={form.control}
+                  name="content"
+                  render={({ field }) => (
+                      <FormItem>
+                      <FormLabel>Content</FormLabel>
+                      <FormControl>
+                          <Textarea
+                          placeholder="Write your post content here. You can use HTML."
+                          className="min-h-[300px]"
+                          {...field}
+                          />
+                      </FormControl>
+                      <FormMessage />
+                      </FormItem>
+                  )}
+                  />
+                  <Button type="submit" disabled={isSubmitting}>
+                      {isSubmitting ? 'Publishing...' : 'Publish Post'}
+                  </Button>
+              </form>
+              </Form>
+          </CardContent>
+      </Card>
+    </div>
   );
 }

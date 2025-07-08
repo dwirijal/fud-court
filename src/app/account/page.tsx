@@ -4,7 +4,6 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { AppShell } from '@/components/organisms/app-shell';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -63,63 +62,61 @@ export default function AccountPage() {
   }
 
   return (
-    <AppShell>
-      <div className="container mx-auto px-4 py-12 md:py-24 max-w-md">
-        <Breadcrumb className="mb-8">
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link href="/">Home</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Account</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-        <Card>
-            <CardHeader>
-                <CardTitle className="text-3xl font-headline">
-                  {isSuccess ? 'Check Your Inbox' : 'Access Your Account'}
-                </CardTitle>
-                <CardDescription>
-                  {isSuccess 
-                    ? `We've sent a secure magic link to ${form.getValues('email')}. Click the link to sign in.`
-                    : 'Enter your email to sign up or log in. No password needed.'}
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {!isSuccess && (
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                      <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                          <FormItem>
-                          <FormLabel>Email Address</FormLabel>
-                          <FormControl>
-                              <Input placeholder="you@example.com" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                          </FormItem>
-                      )}
-                      />
-                      <Button type="submit" disabled={isSubmitting} className="w-full">
-                          {isSubmitting ? 'Sending...' : 'Send Magic Link'}
-                      </Button>
-                  </form>
-                </Form>
-              )}
-               {isSuccess && (
-                <Button onClick={() => setIsSuccess(false)} className="w-full" variant="outline">
-                  Use a different email
-                </Button>
-              )}
-            </CardContent>
-        </Card>
-      </div>
-    </AppShell>
+    <div className="container mx-auto px-4 py-12 md:py-24 max-w-md">
+      <Breadcrumb className="mb-8">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link href="/">Home</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Account</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+      <Card>
+          <CardHeader>
+              <CardTitle className="text-3xl font-headline">
+                {isSuccess ? 'Check Your Inbox' : 'Access Your Account'}
+              </CardTitle>
+              <CardDescription>
+                {isSuccess 
+                  ? `We've sent a secure magic link to ${form.getValues('email')}. Click the link to sign in.`
+                  : 'Enter your email to sign up or log in. No password needed.'}
+              </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {!isSuccess && (
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                    <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Email Address</FormLabel>
+                        <FormControl>
+                            <Input placeholder="you@example.com" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <Button type="submit" disabled={isSubmitting} className="w-full">
+                        {isSubmitting ? 'Sending...' : 'Send Magic Link'}
+                    </Button>
+                </form>
+              </Form>
+            )}
+             {isSuccess && (
+              <Button onClick={() => setIsSuccess(false)} className="w-full" variant="outline">
+                Use a different email
+              </Button>
+            )}
+          </CardContent>
+      </Card>
+    </div>
   );
 }

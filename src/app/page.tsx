@@ -1,4 +1,3 @@
-import { AppShell } from "@/components/organisms/app-shell";
 import { NewsCard } from "@/components/molecules/news-card";
 import { Button } from "@/components/ui/button";
 import { getPosts } from "@/lib/ghost";
@@ -12,7 +11,7 @@ export default async function Home() {
   const cryptoData = await getTopCoins(10);
 
   return (
-    <AppShell>
+    <>
       <section className="relative flex items-center justify-center h-screen overflow-hidden text-center">
         <div className="absolute inset-0 z-0 opacity-[0.03]">
           <Image
@@ -73,6 +72,6 @@ export default async function Home() {
           </div>
         </div>
       </section>
-    </AppShell>
+    </>
   );
 }

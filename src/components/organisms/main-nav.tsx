@@ -5,11 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
-  Newspaper,
-  BookOpen,
-  GraduationCap,
-  Flame,
-  CandlestickChart,
+  PenSquare,
+  PlusCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -20,12 +17,9 @@ import {
 } from "@/components/ui/tooltip";
 
 const navItems = [
-  { href: "/", label: "Home", icon: LayoutDashboard },
-  { href: "/markets", label: "Markets", icon: CandlestickChart },
-  { href: "/degen", label: "Degen", icon: Flame },
-  { href: "/news", label: "News", icon: Newspaper },
-  { href: "/articles", label: "Articles", icon: BookOpen },
-  { href: "/learn", label: "Learn", icon: GraduationCap },
+  { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin/create-post", label: "Create Post", icon: PlusCircle },
+  { href: "/admin/ghost", label: "Ghost Admin", icon: PenSquare, target: "_blank" },
 ];
 
 export function MainNav() {
@@ -35,12 +29,15 @@ export function MainNav() {
     <TooltipProvider delayDuration={0}>
       <nav className="flex flex-col items-start gap-1 p-2">
         {navItems.map((item) => {
-          const isActive = pathname === item.href;
+          // For external links, active state is not relevant.
+          const isActive = !item.target && pathname.startsWith(item.href);
           return (
             <Tooltip key={item.label}>
               <TooltipTrigger asChild>
                 <Link
                   href={item.href}
+                  target={item.target}
+                  rel={item.target === '_blank' ? 'noopener noreferrer' : undefined}
                   className={cn(
                     "flex items-center justify-center rounded-lg px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                     "group-data-[state=expanded]:w-full group-data-[state=expanded]:justify-start group-data-[state=expanded]:gap-3",

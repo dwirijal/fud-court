@@ -60,8 +60,8 @@ export function CurrencySwitcher({ value, onValueChange, className }: CurrencySw
                 <CommandItem
                   key={currency.value}
                   value={currency.value}
-                  onSelect={() => {
-                    onValueChange(currency.value)
+                  onSelect={(currentValue) => {
+                    onValueChange(currentValue)
                     setOpen(false)
                   }}
                 >

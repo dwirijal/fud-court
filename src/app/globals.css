@@ -5,63 +5,83 @@
 @layer base {
 :root {
   --radius: 0.8rem;
-  --background: oklch(0.97 0.003 280);
-  --foreground: oklch(0.2 0.01 280);
-  --card: oklch(0.99 0 0);
-  --card-foreground: oklch(0.2 0.01 280);
-  --popover: oklch(0.99 0 0);
-  --popover-foreground: oklch(0.2 0.01 280);
-  --primary: oklch(0.6 0.18 255);
-  --primary-foreground: oklch(0.98 0 0);
-  --secondary: oklch(0.95 0.005 280);
-  --secondary-foreground: oklch(0.2 0.01 280);
-  --muted: oklch(0.95 0.005 280);
-  --muted-foreground: oklch(0.45 0.01 280);
-  --accent: oklch(0.95 0.005 280);
-  --accent-foreground: oklch(0.2 0.01 280);
+  /* CryptoPulse Theme - Light */
+  --background: oklch(0.963 0 0); /* #F5F5F5 - Light Gray */
+  --foreground: oklch(0.2 0.02 260); /* Darker text for contrast */
+
+  --card: oklch(1 0 0); /* White cards */
+  --card-foreground: oklch(0.2 0.02 260);
+
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.2 0.02 260);
+
+  --primary: oklch(0.3072 0.103 262.3); /* #1A237E - Deep Blue */
+  --primary-foreground: oklch(0.98 0 0); /* White text on primary */
+
+  --secondary: oklch(0.9 0.01 260); /* Lighter gray */
+  --secondary-foreground: oklch(0.2 0.02 260);
+
+  --muted: oklch(0.92 0.01 260);
+  --muted-foreground: oklch(0.45 0.02 260);
+
+  --accent: oklch(0.551 0.089 198.05); /* #008080 - Teal */
+  --accent-foreground: oklch(0.98 0 0); /* White text on accent */
+
   --destructive: oklch(0.6 0.22 20);
-  --border: oklch(0.1 0.01 280 / 15%);
-  --input: oklch(0.1 0.01 280 / 10%);
-  --ring: oklch(0.6 0.18 255);
+  --border: oklch(0.1 0.02 260 / 20%);
+  --input: oklch(0.1 0.02 260 / 10%);
+  --ring: oklch(0.3072 0.103 262.3); /* Ring should match primary */
+
   --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-2: oklch(0.551 0.089 198.05); /* Use accent for one chart color */
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
+
   --sidebar: oklch(0.97 0.003 280);
   --sidebar-foreground: oklch(0.15 0.005 280);
-  --sidebar-primary: oklch(0.62 0.22 258);
+  --sidebar-primary: oklch(0.3072 0.103 262.3);
   --sidebar-primary-foreground: oklch(1 0 0);
   --sidebar-accent: oklch(0.95 0.005 280);
   --sidebar-accent-foreground: oklch(0.15 0.005 280);
   --sidebar-border: oklch(0.1 0.01 280 / 15%);
-  --sidebar-ring: oklch(0.62 0.22 258);
+  --sidebar-ring: oklch(0.3072 0.103 262.3);
 }
 
 .dark {
-  --background: oklch(0.18 0.005 280);
+  /* CryptoPulse Theme - Dark */
+  --background: oklch(0.1 0.02 260); /* Very dark blue-gray */
   --foreground: oklch(0.98 0 0);
-  --card: oklch(0.22 0.006 280);
+
+  --card: oklch(0.15 0.02 260);
   --card-foreground: oklch(0.98 0 0);
-  --popover: oklch(0.15 0.004 280);
+
+  --popover: oklch(0.12 0.02 260);
   --popover-foreground: oklch(0.98 0 0);
-  --primary: oklch(0.65 0.2 255);
+
+  --primary: oklch(0.65 0.2 255); /* Brighter blue for dark mode */
   --primary-foreground: oklch(0.1 0.01 260);
-  --secondary: oklch(0.25 0.008 280);
+
+  --secondary: oklch(0.2 0.02 260);
   --secondary-foreground: oklch(0.98 0 0);
-  --muted: oklch(0.25 0.008 280);
+
+  --muted: oklch(0.2 0.02 260);
   --muted-foreground: oklch(0.7 0.01 280);
-  --accent: oklch(0.25 0.008 280);
-  --accent-foreground: oklch(0.98 0 0);
+
+  --accent: oklch(0.65 0.12 198); /* Lighter teal for dark mode */
+  --accent-foreground: oklch(0.1 0.01 260);
+
   --destructive: oklch(0.65 0.22 25);
   --border: oklch(1 0 0 / 15%);
   --input: oklch(1 0 0 / 10%);
-  --ring: oklch(0.65 0.2 255);
+  --ring: oklch(0.65 0.2 255); /* Ring should match dark primary */
+
   --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-2: oklch(0.65 0.12 198); /* Use accent for one chart color */
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
+  
   --sidebar: oklch(0.12 0.002 280);
   --sidebar-foreground: oklch(0.98 0 0);
   --sidebar-primary: oklch(0.65 0.22 258);
@@ -79,9 +99,11 @@
   }
   body {
     @apply bg-background text-foreground;
-    background-image: linear-gradient(to bottom, oklch(0.98 0.003 280), oklch(0.95 0.005 280));
+    /* Updated gradient to match new background */
+    background-image: linear-gradient(to bottom, oklch(0.98 0 0), oklch(0.963 0 0));
   }
   .dark body {
-    background-image: linear-gradient(to bottom, oklch(0.18 0.005 280), oklch(0.15 0.004 280));
+    /* Updated gradient to match new dark background */
+    background-image: linear-gradient(to bottom, oklch(0.12 0.02 260), oklch(0.1 0.02 260));
   }
 }

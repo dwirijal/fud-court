@@ -12,7 +12,7 @@ export default async function Home() {
 
   return (
     <>
-      <section className="relative flex items-center justify-center h-screen overflow-hidden text-center">
+      <section className="relative flex items-center justify-center py-24 text-center md:py-48">
         <div className="absolute inset-0 z-0 opacity-[0.03]">
           <Image
             src="https://placehold.co/1600x900.png"
@@ -41,7 +41,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="min-h-screen flex items-center justify-center py-16 md:py-24">
+      <section className="py-16 md:py-24">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto">
             <h2 className="text-4xl font-semibold tracking-tight font-headline mb-4">

@@ -38,7 +38,8 @@ export default function DegenPage() {
     };
 
     fetchData(); // Fetch initial data
-    const intervalId = setInterval(fetchData, 1000); // Fetch every second
+    // 10 requests per hour = 1 request every 6 minutes (360,000 ms)
+    const intervalId = setInterval(fetchData, 360000); 
 
     return () => clearInterval(intervalId); // Cleanup on component unmount
   }, []); // Empty dependency array ensures this runs once and sets up the interval.
@@ -64,7 +65,7 @@ export default function DegenPage() {
                 Trending Tokens on Solana
             </h1>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                Real-time trending tokens from the Solana ecosystem, powered by Moralis.
+                Trending tokens from the Solana ecosystem, powered by Moralis. Data is updated every 6 minutes.
             </p>
         </div>
       </header>

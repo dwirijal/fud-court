@@ -14,6 +14,7 @@ export interface AdminPost {
   updated_at: string;
   published_at: string | null;
   url: string;
+  html?: string | null;
 }
 
 function getAdminApi() {
@@ -47,6 +48,7 @@ function mapToAdminPost(post: GhostPost): AdminPost {
         updated_at: post.updated_at || new Date().toISOString(),
         published_at: post.published_at,
         url: post.url || '',
+        html: post.html || null,
     };
 }
 
@@ -69,5 +71,18 @@ export async function getAllPosts(): Promise<AdminPost[]> {
   } catch (err) {
     console.error('Error fetching all posts from Ghost Admin API:', err);
     return [];
+  }
+}
+
+export async function getPostById(id: string): Promise<AdminPost | null> {
+  const api = getAdminApi();
+  if (!api) return null;
+
+  try {
+    const post = await api.posts.read({ id, formats: ['html'] });
+    return mapToAdminPost(post);
+  } catch (err) {
+    console.error(`Error fetching post with ID ${id}:`, err);
+    return null;
   }
 }

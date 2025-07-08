@@ -22,16 +22,16 @@ const getStatusVariant = (status: AdminPost['status']): 'default' | 'secondary' 
     }
 };
 
-export const getColumns = (ghostUrl: string): ColumnDef<AdminPost>[] => [
+export const getColumns = (): ColumnDef<AdminPost>[] => [
     {
         accessorKey: 'title',
         header: 'Title',
         cell: ({ row }) => {
             const post = row.original;
-            const editUrl = `${ghostUrl.replace(/\/$/, '')}/ghost/editor/post/${post.id}`;
+            const editUrl = `/admin/content/edit/${post.id}`;
 
             return (
-                <Link href={editUrl} target="_blank" rel="noopener noreferrer" className="group inline-flex items-center gap-2 font-semibold hover:text-primary transition-colors">
+                <Link href={editUrl} className="group inline-flex items-center gap-2 font-semibold hover:text-primary transition-colors">
                     <span>{post.title}</span>
                     <ArrowUpRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                 </Link>
@@ -63,13 +63,13 @@ export const getColumns = (ghostUrl: string): ColumnDef<AdminPost>[] => [
         id: 'actions',
         cell: ({ row }) => {
             const post = row.original;
-            const editUrl = `${ghostUrl.replace(/\/$/, '')}/ghost/editor/post/${post.id}`;
+            const editUrl = `/admin/content/edit/${post.id}`;
 
             return (
                  <div className="text-right">
                     <Button asChild variant="outline" size="sm">
-                        <Link href={editUrl} target="_blank" rel="noopener noreferrer">
-                            Edit in Ghost
+                        <Link href={editUrl}>
+                            Edit
                         </Link>
                     </Button>
                 </div>

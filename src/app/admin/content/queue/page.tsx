@@ -19,7 +19,6 @@ export const dynamic = 'force-dynamic';
 export default async function PostQueuePage() {
     const isGhostAdminConfigured = !!process.env.GHOST_API_URL && !!process.env.GHOST_ADMIN_API_KEY;
     const posts = isGhostAdminConfigured ? await getAllPosts() : [];
-    const ghostUrl = process.env.GHOST_API_URL || '';
     
     return (
         <div className="container mx-auto px-4 py-12 md:py-24">
@@ -69,7 +68,7 @@ export default async function PostQueuePage() {
                             </AlertDescription>
                         </Alert>
                     ) : (
-                        <PostQueueTable posts={posts} ghostUrl={ghostUrl} />
+                        <PostQueueTable posts={posts} />
                     )}
                 </CardContent>
             </Card>

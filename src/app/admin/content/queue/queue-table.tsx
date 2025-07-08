@@ -7,10 +7,9 @@ import { getColumns } from "./columns";
 
 interface PostQueueTableProps {
     posts: AdminPost[];
-    ghostUrl: string;
 }
 
-export function PostQueueTable({ posts, ghostUrl }: PostQueueTableProps) {
-    const columns = getColumns(ghostUrl);
+export function PostQueueTable({ posts }: PostQueueTableProps) {
+    const columns = getColumns();
     return <DataTable columns={columns} data={posts} />;
 }

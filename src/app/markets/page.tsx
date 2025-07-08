@@ -20,7 +20,7 @@ export default async function MarketsPage() {
           </p>
         </header>
 
-        <Card className="bg-card/60 backdrop-blur-md">
+        <Card className="bg-card/60 backdrop-blur-md -mx-4 border-x-0 rounded-none">
           <DataTable columns={columns} data={cryptoData} />
         </Card>
       </div>

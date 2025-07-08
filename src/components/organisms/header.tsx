@@ -36,7 +36,6 @@ import { LanguageSwitcher } from "@/components/molecules/language-switcher";
 
 // Define navigation structure
 const mainNavLinks = [
-  { href: "/", label: "Home" },
   { href: "/markets", label: "Markets" },
 ];
 
@@ -60,8 +59,12 @@ const readingComponents: { title: string; href: string; description: string }[] 
     },
 ];
 
-// For mobile, we flatten the structure into a single list.
-const mobileNavLinks = [...mainNavLinks, ...readingComponents.map(item => ({ href: item.href, label: item.title }))];
+// For mobile, we flatten the structure into a single list and ensure "Home" is present.
+const mobileNavLinks = [
+    { href: "/", label: "Home" },
+    ...mainNavLinks, 
+    ...readingComponents.map(item => ({ href: item.href, label: item.title }))
+];
 
 export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
   const pathname = usePathname();
@@ -181,23 +184,7 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
                         Reading
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>
-                        <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] lg:w-[600px] grid-cols-[.75fr_1fr]">
-                            <li className="row-span-3">
-                                <NavigationMenuLink asChild>
-                                <Link
-                                    className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-                                    href="/"
-                                >
-                                    <Logo />
-                                    <div className="mb-2 mt-4 text-lg font-medium">
-                                        Fud Court
-                                    </div>
-                                    <p className="text-sm leading-tight text-muted-foreground">
-                                        Where crypto claims are put on trial. Unbiased news and data.
-                                    </p>
-                                </Link>
-                                </NavigationMenuLink>
-                            </li>
+                        <ul className="grid w-[300px] gap-2 p-3">
                             {readingComponents.map((component) => (
                                 <ListItem
                                     key={component.title}

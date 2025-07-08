@@ -1,3 +1,4 @@
+
 import {
     Card,
     CardContent,
@@ -14,46 +15,9 @@ import {
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
-import { DashboardContent } from "./dashboard-content";
-import { db } from "@/lib/db";
-import { pageViews } from "@/lib/db/schema";
-import { count, desc } from "drizzle-orm";
-import { unstable_noStore as noStore } from 'next/cache';
-
-async function getPageAnalytics() {
-    noStore();
-    const data = await db
-        .select({
-            path: pageViews.path,
-            count: count(pageViews.path),
-        })
-        .from(pageViews)
-        .groupBy(pageViews.path)
-        .orderBy(desc(count(pageViews.path)));
-    return data;
-}
-
+import { Activity, Bot, Newspaper, Users } from "lucide-react";
 
 export default async function AdminDashboardPage() {
-    const isDbConfigured = !!process.env.DATABASE_URL;
-    let analytics = [];
-    let dbError: string | null = null;
-
-    if (isDbConfigured) {
-        try {
-            analytics = await getPageAnalytics();
-        } catch (error) {
-            // We are intentionally not logging the error to the console here.
-            // In a dev environment, this prevents the Next.js error overlay from appearing
-            // for configuration issues (like a wrong DB hostname), which can be confusing.
-            // The UI will render a friendly error message instead.
-            dbError = error instanceof Error ? error.message : "An unknown database error occurred.";
-        }
-    }
-
-    const totalViews = analytics.reduce((sum, item) => sum + item.count, 0);
-    const uniquePages = analytics.length;
-
     return (
         <div className="container mx-auto px-4 py-12 md:py-24">
             <Breadcrumb className="mb-8">
@@ -74,41 +38,71 @@ export default async function AdminDashboardPage() {
                     Admin Dashboard
                 </h1>
                 <p className="text-xl text-muted-foreground">
-                    An overview of your website's statistics.
+                    A central hub for managing your CryptoPulse application.
                 </p>
             </header>
 
-            {!isDbConfigured ? (
-                <Card>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                 <Card>
                     <CardHeader>
-                        <CardTitle>Database Not Configured</CardTitle>
-                        <CardDescription>
-                            Page analytics cannot be displayed because the database is not connected.
-                        </CardDescription>
+                        <CardTitle className="flex items-center gap-2">
+                            <Activity className="h-5 w-5" />
+                            Market Snapshot
+                        </CardTitle>
+                        <CardDescription>Under Construction</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <p className="text-sm text-muted-foreground">
-                            Please ensure the `DATABASE_URL` is correctly set in your `.env.local` file and restart the server.
+                            A real-time overview of key market indicators like BTC, ETH, and more will be displayed here.
                         </p>
                     </CardContent>
                 </Card>
-            ) : dbError ? (
-                <Card>
+
+                 <Card>
                     <CardHeader>
-                        <CardTitle>Database Connection Failed</CardTitle>
-                        <CardDescription>
-                           Could not connect to the database. This is often caused by an incorrect hostname or credentials in your `DATABASE_URL`.
-                        </CardDescription>
+                        <CardTitle className="flex items-center gap-2">
+                            <Bot className="h-5 w-5" />
+                           AI Signal Summary
+                        </CardTitle>
+                        <CardDescription>Under Construction</CardDescription>
                     </CardHeader>
                     <CardContent>
-                         <p className="text-sm text-destructive font-mono bg-destructive/10 p-4 rounded-md">
-                            {dbError}
+                        <p className="text-sm text-muted-foreground">
+                            AI-generated summaries of market signals, support/resistance levels, and macro events.
                         </p>
                     </CardContent>
                 </Card>
-            ) : (
-                <DashboardContent analytics={analytics} totalViews={totalViews} uniquePages={uniquePages} />
-            )}
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Users className="h-5 w-5" />
+                            Active Community
+                        </CardTitle>
+                        <CardDescription>Under Construction</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-sm text-muted-foreground">
+                            Metrics on trending community threads and most active users.
+                        </p>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Newspaper className="h-5 w-5" />
+                            Content Queue
+                        </CardTitle>
+                        <CardDescription>Under Construction</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-sm text-muted-foreground">
+                            A view of scheduled and queued posts or news articles.
+                        </p>
+                    </CardContent>
+                </Card>
+            </div>
         </div>
     );
 }

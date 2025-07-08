@@ -7,8 +7,11 @@ import {
   LayoutDashboard,
   Users,
   Settings,
-  History,
-  Bell,
+  Newspaper,
+  CandlestickChart,
+  AreaChart,
+  Library,
+  Wand2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -20,10 +23,13 @@ import {
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/users", label: "Users", icon: Users },
+  { href: "/admin/community", label: "Community", icon: Users },
+  { href: "/admin/content", label: "News & Content", icon: Newspaper },
+  { href: "/admin/markets", label: "Markets & Signals", icon: CandlestickChart },
+  { href: "/admin/analytics", label: "Analytics", icon: AreaChart },
+  { href: "/admin/library", label: "Content Library", icon: Library },
+  { href: "/admin/tools", label: "Tools & Automation", icon: Wand2 },
   { href: "/admin/settings", label: "Settings", icon: Settings },
-  { href: "/admin/logs", label: "Activity Logs", icon: History },
-  { href: "/admin/notifications", label: "Notifications", icon: Bell },
 ];
 
 export function MainNav() {

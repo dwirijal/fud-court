@@ -5,8 +5,32 @@ import type { Post } from '@/types'
 import { format } from 'date-fns'
 import { id as idLocale } from 'date-fns/locale'
 import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { ChevronRight } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 export const columns: ColumnDef<Post>[] = [
+    {
+      id: 'expander',
+      header: () => null,
+      cell: ({ row }) => {
+        return (
+          <Button
+            onClick={() => row.toggleExpanded()}
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+          >
+            <ChevronRight
+              className={cn(
+                'h-4 w-4 transition-transform duration-200',
+                row.getIsExpanded() && 'rotate-90'
+              )}
+            />
+          </Button>
+        )
+      },
+    },
     {
         accessorKey: 'title',
         header: 'Title',

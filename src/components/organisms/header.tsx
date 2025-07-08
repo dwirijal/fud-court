@@ -11,17 +11,25 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuPortal,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/atoms/logo";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { ThemeToggle } from "@/components/molecules/theme-toggle";
+import { useTheme } from "next-themes";
 import {
   Menu,
   PenSquare,
   PlusCircle,
+  Sun,
+  Moon,
+  Laptop,
+  Globe,
 } from "lucide-react";
 import {
   NavigationMenu,
@@ -32,7 +40,6 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { LanguageSwitcher } from "@/components/molecules/language-switcher";
 
 // Define navigation structure
 const mainNavLinks = [
@@ -119,16 +126,17 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
                   >
                     Log In / Sign Up
                   </Link>
+                   {showAdminLinks && (
+                    <>
+                        <Link href="/admin/ghost" target="_blank" className="text-muted-foreground transition-colors hover:text-primary">
+                            Ghost Dashboard
+                        </Link>
+                        <Link href="/admin/create-post" className="text-muted-foreground transition-colors hover:text-primary">
+                            Create Post
+                        </Link>
+                    </>
+                )}
               </nav>
-              <div className="mt-auto border-t border-border/50 pt-4">
-                <div className="flex items-center justify-between">
-                  {showAdminLinks && <AdminMenu isMobile />}
-                  <div className="flex items-center gap-1">
-                    <LanguageSwitcher />
-                    <ThemeToggle />
-                  </div>
-                </div>
-              </div>
             </div>
           </SheetContent>
         </Sheet>
@@ -201,12 +209,7 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
             </NavigationMenu>
 
             <div className="flex items-center gap-2 ml-2">
-              <LanguageSwitcher />
-              <ThemeToggle />
-              <Button asChild variant="outline" size="sm">
-                <Link href="/login">Log In / Sign Up</Link>
-              </Button>
-              {showAdminLinks && <AdminMenu />}
+              <ProfileMenu showAdminLinks={showAdminLinks} />
             </div>
           </div>
         </div>
@@ -215,46 +218,87 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
   );
 }
 
-function AdminMenu({ isMobile = false }: { isMobile?: boolean }) {
-  const trigger = isMobile ? (
-    <Button variant="ghost" className="w-full justify-start">Admin Actions</Button>
-  ) : (
-    <DropdownMenuTrigger asChild>
-      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
-        <Avatar className="h-8 w-8">
-            <AvatarImage
-              src="https://placehold.co/100x100.png"
-              alt="admin"
-              data-ai-hint="gear wrench"
-            />
-            <AvatarFallback>A</AvatarFallback>
-        </Avatar>
-      </Button>
-    </DropdownMenuTrigger>
-  );
+function ProfileMenu({ showAdminLinks }: { showAdminLinks?: boolean }) {
+    const { setTheme } = useTheme()
 
-  return (
-    <DropdownMenu>
-      {trigger}
-      <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel>Admin</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href="/admin/ghost" target="_blank">
-            <PenSquare className="h-4 w-4" />
-            <span>Ghost Dashboard</span>
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href="/admin/create-post">
-            <PlusCircle className="h-4 w-4" />
-            <span>Create Post</span>
-          </Link>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                    <Avatar className="h-8 w-8">
+                        <AvatarImage
+                            src="https://placehold.co/100x100.png"
+                            alt="User Profile"
+                            data-ai-hint="user avatar"
+                        />
+                        <AvatarFallback>U</AvatarFallback>
+                    </Avatar>
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem asChild>
+                    <Link href="/login">Log In / Sign Up</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                        <Sun className="h-4 w-4" />
+                        <span>Theme</span>
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuPortal>
+                        <DropdownMenuSubContent>
+                            <DropdownMenuItem onClick={() => setTheme("light")}>
+                                <Sun className="mr-2 h-4 w-4" />
+                                <span>Light</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setTheme("dark")}>
+                                <Moon className="mr-2 h-4 w-4" />
+                                <span>Dark</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setTheme("system")}>
+                                <Laptop className="mr-2 h-4 w-4" />
+                                <span>System</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuSubContent>
+                    </DropdownMenuPortal>
+                </DropdownMenuSub>
+                <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                        <Globe className="h-4 w-4" />
+                        <span>Language</span>
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuPortal>
+                        <DropdownMenuSubContent>
+                            <DropdownMenuItem>English</DropdownMenuItem>
+                            <DropdownMenuItem>Bahasa Indonesia</DropdownMenuItem>
+                            <DropdownMenuItem>Español</DropdownMenuItem>
+                        </DropdownMenuSubContent>
+                    </DropdownMenuPortal>
+                </DropdownMenuSub>
+
+                {showAdminLinks && (
+                    <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuLabel>Admin</DropdownMenuLabel>
+                        <DropdownMenuItem asChild>
+                            <Link href="/admin/ghost" target="_blank">
+                                <PenSquare className="h-4 w-4" />
+                                <span>Ghost Dashboard</span>
+                            </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link href="/admin/create-post">
+                                <PlusCircle className="h-4 w-4" />
+                                <span>Create Post</span>
+                            </Link>
+                        </DropdownMenuItem>
+                    </>
+                )}
+            </DropdownMenuContent>
+        </DropdownMenu>
+    )
 }
+
 
 const ListItem = React.forwardRef<
   React.ElementRef<typeof Link>,

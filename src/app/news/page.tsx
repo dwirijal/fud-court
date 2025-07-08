@@ -31,7 +31,7 @@ export default async function NewsPage() {
 
         <Card className="bg-neutral-900/60 border border-neutral-800 backdrop-blur-md">
             <Table>
-              <TableHeader>
+              <TableHeader className="sticky top-16 z-10 bg-neutral-900/60 backdrop-blur-md">
                 <TableRow className="border-neutral-800/50">
                   <TableHead>Title</TableHead>
                   <TableHead className="w-[200px] text-right">Published Date</TableHead>
@@ -39,9 +39,9 @@ export default async function NewsPage() {
               </TableHeader>
               <TableBody>
                 {posts.map((post: Post) => (
-                  <TableRow key={post.id} className="border-neutral-800/50">
+                  <TableRow key={post.id} className="border-b-white/5">
                     <TableCell className="font-medium">
-                      <Link href={`/news/${post.slug}`} className="hover:text-red-500 transition-colors">
+                      <Link href={`/news/${post.slug}`} className="hover:text-primary transition-colors">
                         {post.title}
                       </Link>
                     </TableCell>

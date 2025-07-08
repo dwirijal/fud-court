@@ -19,6 +19,28 @@ const formatNumber = (num: number) => {
     return `$${num.toLocaleString()}`
 }
 
+const PriceChangeCell = ({ value }: { value: number | null | undefined }) => {
+    const change = value;
+  
+    if (change === null || change === undefined || isNaN(change)) {
+      return <div className="font-mono text-right text-muted-foreground">-</div>;
+    }
+  
+    const isPositive = change >= 0;
+  
+    return (
+      <div
+        className={cn(
+          'flex items-center justify-end gap-1 font-mono text-right',
+          isPositive ? 'text-chart-2' : 'text-destructive'
+        )}
+      >
+        {isPositive ? <TrendingUp className="h-4 w-4 shrink-0" /> : <TrendingDown className="h-4 w-4 shrink-0" />}
+        <span>{change.toFixed(2)}%</span>
+      </div>
+    );
+  };
+
 
 export const columns: ColumnDef<CryptoData>[] = [
     {
@@ -65,23 +87,19 @@ export const columns: ColumnDef<CryptoData>[] = [
         },
     },
     {
-        accessorKey: 'price_change_percentage_24h',
+        accessorKey: 'price_change_percentage_1h_in_currency',
+        header: () => <div className="text-right">1h %</div>,
+        cell: ({ row }) => <PriceChangeCell value={row.getValue('price_change_percentage_1h_in_currency')} />,
+    },
+    {
+        accessorKey: 'price_change_percentage_24h_in_currency',
         header: () => <div className="text-right">24h %</div>,
-        cell: ({ row }) => {
-            const change = parseFloat(row.getValue('price_change_percentage_24h'))
-            const isPositive = change >= 0
-            return (
-                <div
-                    className={cn(
-                        'flex items-center justify-end gap-1 font-mono text-right',
-                        isPositive ? 'text-chart-2' : 'text-destructive'
-                    )}
-                >
-                    {isPositive ? <TrendingUp className="h-4 w-4 shrink-0" /> : <TrendingDown className="h-4 w-4 shrink-0" />}
-                    <span>{change.toFixed(2)}%</span>
-                </div>
-            )
-        },
+        cell: ({ row }) => <PriceChangeCell value={row.getValue('price_change_percentage_24h_in_currency')} />,
+    },
+    {
+        accessorKey: 'price_change_percentage_7d_in_currency',
+        header: () => <div className="text-right">7d %</div>,
+        cell: ({ row }) => <PriceChangeCell value={row.getValue('price_change_percentage_7d_in_currency')} />,
     },
     {
         accessorKey: 'market_cap',

@@ -10,7 +10,7 @@ import { TrendingDown, TrendingUp } from "lucide-react";
 import Image from "next/image";
 
 export function CryptoCard({ data, className }: { data: CryptoData, className?: string }) {
-  const isPositive = data.price_change_percentage_24h >= 0;
+  const isPositive = data.price_change_percentage_24h_in_currency >= 0;
 
   return (
     <Card className={cn("flex flex-col justify-between transform transition-all duration-200 ease-in-out hover:shadow-2xl hover:-translate-y-1 bg-card/60 backdrop-blur-md", className)}>
@@ -49,7 +49,7 @@ export function CryptoCard({ data, className }: { data: CryptoData, className?: 
               ) : (
                 <TrendingDown className="h-4 w-4" />
               )}
-              <span>{data.price_change_percentage_24h.toFixed(2)}%</span>
+              <span>{data.price_change_percentage_24h_in_currency.toFixed(2)}%</span>
             </div>
         </div>
       </CardContent>

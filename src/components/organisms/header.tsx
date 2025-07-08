@@ -30,6 +30,7 @@ import {
   Moon,
   Laptop,
   Globe,
+  BarChart,
 } from "lucide-react";
 import {
   NavigationMenu,
@@ -128,6 +129,9 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
                   </Link>
                    {showAdminLinks && (
                     <>
+                        <Link href="/admin/dashboard" className="text-muted-foreground transition-colors hover:text-primary">
+                            Dashboard
+                        </Link>
                         <Link href="/admin/ghost" target="_blank" className="text-muted-foreground transition-colors hover:text-primary">
                             Ghost Dashboard
                         </Link>
@@ -280,6 +284,12 @@ function ProfileMenu({ showAdminLinks }: { showAdminLinks?: boolean }) {
                     <>
                         <DropdownMenuSeparator />
                         <DropdownMenuLabel>Admin</DropdownMenuLabel>
+                         <DropdownMenuItem asChild>
+                            <Link href="/admin/dashboard">
+                                <BarChart className="h-4 w-4" />
+                                <span>Dashboard</span>
+                            </Link>
+                        </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                             <Link href="/admin/ghost" target="_blank">
                                 <PenSquare className="h-4 w-4" />

@@ -48,12 +48,12 @@ export default async function MarketsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[50px] pl-6">#</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead className="text-right">Price</TableHead>
-                  <TableHead className="text-right">24h %</TableHead>
-                  <TableHead className="text-right">Market Cap</TableHead>
-                  <TableHead className="text-right pr-6">Volume (24h)</TableHead>
+                  <TableHead className="w-[50px] pl-6 text-xs uppercase tracking-wider">#</TableHead>
+                  <TableHead className="text-xs uppercase tracking-wider">Name</TableHead>
+                  <TableHead className="text-right text-xs uppercase tracking-wider">Price</TableHead>
+                  <TableHead className="text-right text-xs uppercase tracking-wider">24h %</TableHead>
+                  <TableHead className="text-right text-xs uppercase tracking-wider">Market Cap</TableHead>
+                  <TableHead className="text-right pr-6 text-xs uppercase tracking-wider">Volume (24h)</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -65,17 +65,17 @@ export default async function MarketsPage() {
                         {index + 1}
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-4">
                           <Image
                             src={crypto.image}
                             alt={`${crypto.name} logo`}
-                            width={24}
-                            height={24}
+                            width={32}
+                            height={32}
                             className="rounded-full"
                           />
                           <div>
-                            <div className="font-semibold">{crypto.name}</div>
-                            <div className="text-muted-foreground text-sm">
+                            <div className="font-semibold text-base">{crypto.name}</div>
+                            <div className="text-muted-foreground text-xs">
                               {crypto.symbol.toUpperCase()}
                             </div>
                           </div>

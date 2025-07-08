@@ -2,12 +2,12 @@
 import type {Metadata} from 'next';
 import './globals.css';
 import { AppLayout } from '@/components/organisms/app-layout';
-import { Plus_Jakarta_Sans } from 'next/font/google';
+import { Inter } from 'next/font/google';
 
-const plusJakartaSans = Plus_Jakarta_Sans({
+const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-plus-jakarta-sans',
+  variable: '--font-inter',
 });
 
 export const metadata: Metadata = {
@@ -24,7 +24,7 @@ export default function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${plusJakartaSans.variable} font-body antialiased`}>
+      <body className={`${inter.variable} font-body antialiased`}>
         <AppLayout showAdminLinks={showAdminLinks}>
           {children}
         </AppLayout>

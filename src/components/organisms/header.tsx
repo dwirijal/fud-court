@@ -26,9 +26,14 @@ import {
   LogOut,
   PenSquare,
   PlusCircle,
-  BookOpen,
-  FileText,
 } from "lucide-react";
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -120,22 +125,28 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
                 : "max-w-0 opacity-0 gap-0"
             )}
           >
-            <nav className="flex items-center gap-5 text-sm font-medium">
-              {navItems.map((item) => (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  className={cn(
-                    "transition-colors hover:text-primary whitespace-nowrap",
-                    pathname === item.href
-                      ? "text-primary"
-                      : "text-foreground/70"
-                  )}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
+            <NavigationMenu>
+              <NavigationMenuList>
+                {navItems.map((item) => (
+                  <NavigationMenuItem key={item.label}>
+                    <Link href={item.href} legacyBehavior passHref>
+                      <NavigationMenuLink
+                        className={cn(
+                          navigationMenuTriggerStyle(),
+                          "bg-transparent hover:bg-accent/50 text-sm font-medium",
+                          pathname === item.href
+                            ? "text-primary"
+                            : "text-foreground/70"
+                        )}
+                      >
+                        {item.label}
+                      </NavigationMenuLink>
+                    </Link>
+                  </NavigationMenuItem>
+                ))}
+              </NavigationMenuList>
+            </NavigationMenu>
+
             <div className="flex items-center gap-2">
               <ThemeToggle />
               <UserMenu showAdminLinks={showAdminLinks} />

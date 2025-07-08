@@ -1,9 +1,13 @@
 
 'use client';
 
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import Image from 'next/image';
+import Link from 'next/link';
+
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -14,19 +18,8 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { sendMagicLink } from './actions';
-import { useState } from 'react';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import Link from 'next/link';
 
 const formSchema = z.object({
   email: z.string().email('Please enter a valid email address.'),
@@ -62,61 +55,80 @@ export default function AccountPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-24 max-w-md">
-      <Breadcrumb className="mb-8">
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href="/">Home</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>Account</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-      <Card>
-          <CardHeader>
-              <CardTitle className="text-3xl font-headline">
-                {isSuccess ? 'Check Your Inbox' : 'Access Your Account'}
-              </CardTitle>
-              <CardDescription>
-                {isSuccess 
-                  ? `We've sent a secure magic link to ${form.getValues('email')}. Click the link to sign in.`
-                  : 'Enter your email to sign up or log in. No password needed.'}
-              </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {!isSuccess && (
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Email Address</FormLabel>
-                        <FormControl>
-                            <Input placeholder="you@example.com" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                    <Button type="submit" disabled={isSubmitting} className="w-full">
-                        {isSubmitting ? 'Sending...' : 'Send Magic Link'}
-                    </Button>
-                </form>
-              </Form>
-            )}
-             {isSuccess && (
-              <Button onClick={() => setIsSuccess(false)} className="w-full" variant="outline">
-                Use a different email
-              </Button>
-            )}
-          </CardContent>
-      </Card>
+    <div className="w-full lg:grid lg:min-h-[calc(100vh-4rem)] lg:grid-cols-2">
+      <div className="hidden bg-muted lg:block">
+        <Image
+          src="https://placehold.co/1080x1920.png"
+          alt="Abstract image for login page"
+          width="1080"
+          height="1920"
+          className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+          data-ai-hint="crypto abstract"
+        />
+      </div>
+      <div className="flex items-center justify-center py-12 px-4">
+        <div className="mx-auto w-full max-w-sm space-y-6">
+          <div className="space-y-2 text-center">
+            <h1 className="text-3xl font-bold font-headline">
+              {isSuccess ? 'Check Your Inbox' : 'Access Your Account'}
+            </h1>
+            <p className="text-muted-foreground">
+              {isSuccess
+                ? `We've sent a secure magic link to ${form.getValues('email')}. Click the link to sign in.`
+                : 'Enter your email to sign up or log in. No password needed.'}
+            </p>
+          </div>
+          
+          {!isSuccess ? (
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email Address</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="email"
+                          placeholder="you@example.com"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" disabled={isSubmitting} className="w-full">
+                  {isSubmitting ? 'Sending Link...' : 'Send Magic Link'}
+                </Button>
+              </form>
+            </Form>
+          ) : (
+            <Button onClick={() => setIsSuccess(false)} className="w-full" variant="outline">
+              Use a different email
+            </Button>
+          )}
+
+          <p className="px-8 text-center text-sm text-muted-foreground">
+            By signing in, you agree to our{' '}
+            <Link
+              href="#"
+              className="underline underline-offset-4 hover:text-primary"
+            >
+              Terms of Service
+            </Link>{' '}
+            and{' '}
+            <Link
+              href="#"
+              className="underline underline-offset-4 hover:text-primary"
+            >
+              Privacy Policy
+            </Link>
+            .
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

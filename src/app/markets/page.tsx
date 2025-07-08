@@ -9,7 +9,7 @@ export default async function MarketsPage() {
 
   return (
     <AppShell>
-      <div className="container mx-auto px-4 py-12 md:py-24">
+      <div className="px-4 py-12 md:py-24">
         <header className="mb-12 text-center">
           <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight mb-2">
             Crypto Markets

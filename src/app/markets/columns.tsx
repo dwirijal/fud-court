@@ -7,7 +7,23 @@ import Image from 'next/image'
 import { cn } from '@/lib/utils'
 
 const formatCurrency = (amount: number, currency: string) => {
-    return new Intl.NumberFormat('en-US', {
+    // Handle XAU (Gold) as a special case, since it's not a standard currency for Intl.
+    if (currency.toLowerCase() === 'xau') {
+      const formattedAmount = new Intl.NumberFormat('en-US', {
+        notation: 'compact',
+        compactDisplay: 'short',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(amount);
+      // We use a prefix for consistency with other currency symbols
+      return `XAU ${formattedAmount}`;
+    }
+
+    // Use 'id-ID' locale for Indonesian Rupiah to display 'Rp' symbol.
+    // For other currencies, default to 'en-US'.
+    const locale = currency.toLowerCase() === 'idr' ? 'id-ID' : 'en-US';
+
+    return new Intl.NumberFormat(locale, {
       style: 'currency',
       currency: currency.toUpperCase(),
       notation: 'compact',
@@ -18,7 +34,20 @@ const formatCurrency = (amount: number, currency: string) => {
   };
   
 const formatPrice = (price: number, currency: string) => {
-    return new Intl.NumberFormat('en-US', {
+    // Handle XAU (Gold) as a special case.
+    if (currency.toLowerCase() === 'xau') {
+        const formattedPrice = new Intl.NumberFormat('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: price < 1 ? 6 : 2,
+        }).format(price);
+        // We return the formatted price with 'XAU' as a prefix.
+        return `XAU ${formattedPrice}`;
+    }
+
+    // Use 'id-ID' locale for Indonesian Rupiah.
+    const locale = currency.toLowerCase() === 'idr' ? 'id-ID' : 'en-US';
+    
+    return new Intl.NumberFormat(locale, {
         style: 'currency',
         currency: currency.toUpperCase(),
         minimumFractionDigits: 2,

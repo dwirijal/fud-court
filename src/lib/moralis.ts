@@ -31,12 +31,19 @@ export async function getTrendingTokens(chain: string = 'solana'): Promise<Moral
     
     const data = await response.json();
     
-    // The API returns an object with a "result" key containing the array.
+    // The Moralis API might return the data in different structures.
+    // We check for common patterns to be robust.
     if (Array.isArray(data?.result)) {
       return data.result;
     }
+    if (Array.isArray(data?.tokens)) {
+        return data.tokens;
+    }
+    if (Array.isArray(data)) {
+        return data;
+    }
 
-    // If the structure is unexpected, treat it as an error.
+    // If the structure is still unexpected, treat it as an error.
     console.warn("Unexpected data structure from Moralis trending tokens API:", data);
     throw new Error("Received an unexpected data format from the Moralis API.");
 

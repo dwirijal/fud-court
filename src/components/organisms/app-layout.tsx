@@ -2,7 +2,6 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { AppShell } from '@/components/organisms/app-shell';
 import { Header } from '@/components/organisms/header';
 import { Footer } from '@/components/organisms/footer';
 import { ThemeProvider } from '@/components/theme-provider';
@@ -15,25 +14,7 @@ interface AppLayoutProps {
 
 export function AppLayout({ children, showAdminLinks }: AppLayoutProps) {
   const pathname = usePathname();
-
-  let content;
-
-  if (pathname === '/login') {
-    // Special case: Login page has no layout chrome
-    content = <>{children}</>;
-  } else if (pathname.startsWith('/admin')) {
-    // All admin routes get the sidebar layout
-    content = <AppShell showAdminLinks={showAdminLinks}>{children}</AppShell>;
-  } else {
-    // All other pages get the "dynamic island" header and footer
-    content = (
-      <div className="flex min-h-screen flex-col">
-        <Header showAdminLinks={showAdminLinks} />
-        <main className="flex-1">{children}</main>
-        <Footer />
-      </div>
-    );
-  }
+  const isPublicPage = !pathname.startsWith('/admin') && pathname !== '/login';
 
   return (
     <ThemeProvider
@@ -42,7 +23,18 @@ export function AppLayout({ children, showAdminLinks }: AppLayoutProps) {
       enableSystem
       disableTransitionOnChange
     >
-      {content}
+      {isPublicPage ? (
+        <div className="flex min-h-screen flex-col">
+          <Header showAdminLinks={showAdminLinks} />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </div>
+      ) : (
+        // For admin and login pages, just render the children.
+        // The admin pages will be wrapped by admin/layout.tsx, which provides the AppShell.
+        // The login page has no shell.
+        <>{children}</>
+      )}
       <Toaster />
     </ThemeProvider>
   );

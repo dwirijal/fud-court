@@ -13,7 +13,7 @@ export const columns: ColumnDef<Post>[] = [
         cell: ({ row }) => {
             const post = row.original
             return (
-                <Link href={`/news/${post.slug}`} className="hover:text-primary transition-colors font-medium">
+                <Link href={`/news/${post.slug}`} className="hover:text-primary transition-colors font-semibold">
                     {post.title}
                 </Link>
             )
@@ -25,7 +25,7 @@ export const columns: ColumnDef<Post>[] = [
         cell: ({ row }) => {
             const date = new Date(row.getValue('published_at'))
             const formatted = format(date, "HH:mm:ss dd MMMM", { locale: idLocale });
-            return <div className="text-right text-muted-foreground">{formatted}</div>
+            return <div className="text-right tabular-nums text-muted-foreground">{formatted}</div>
         },
     },
 ]

@@ -23,7 +23,7 @@ export const columns: ColumnDef<CryptoData>[] = [
     {
         accessorKey: 'market_cap_rank',
         header: '#',
-        cell: ({ row }) => <div className="font-medium text-muted-foreground pl-2">{row.getValue('market_cap_rank')}</div>,
+        cell: ({ row }) => <div className="pl-2 font-medium text-muted-foreground">{row.getValue('market_cap_rank')}</div>,
     },
     {
         accessorKey: 'name',
@@ -31,17 +31,17 @@ export const columns: ColumnDef<CryptoData>[] = [
         cell: ({ row }) => {
             const crypto = row.original
             return (
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                     <Image
                         src={crypto.image}
                         alt={`${crypto.name} logo`}
                         width={32}
                         height={32}
-                        className="rounded-full"
+                        className="h-8 w-8 rounded-full"
                     />
-                    <div>
-                        <div className="font-semibold text-base">{crypto.name}</div>
-                        <div className="text-muted-foreground text-sm">
+                    <div className="flex flex-col">
+                        <div className="font-semibold">{crypto.name}</div>
+                        <div className="text-sm text-muted-foreground">
                             {crypto.symbol.toUpperCase()}
                         </div>
                     </div>
@@ -76,8 +76,8 @@ export const columns: ColumnDef<CryptoData>[] = [
                         isPositive ? 'text-[hsl(var(--chart-2))]' : 'text-destructive'
                     )}
                 >
-                    <div className="flex items-center justify-end gap-1.5">
-                        {isPositive ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
+                    <div className="flex items-center justify-end gap-1">
+                        {isPositive ? <TrendingUp className="h-4 w-4 shrink-0" /> : <TrendingDown className="h-4 w-4 shrink-0" />}
                         <span>{change.toFixed(2)}%</span>
                     </div>
                 </div>
@@ -87,11 +87,11 @@ export const columns: ColumnDef<CryptoData>[] = [
     {
         accessorKey: 'market_cap',
         header: () => <div className="text-right">Market Cap</div>,
-        cell: ({ row }) => <div className="text-right tabular-nums text-muted-foreground">{formatNumber(row.getValue('market_cap'))}</div>,
+        cell: ({ row }) => <div className="text-right font-medium tabular-nums text-muted-foreground">{formatNumber(row.getValue('market_cap'))}</div>,
     },
     {
         accessorKey: 'total_volume',
-        header: () => <div className="text-right pr-6">Volume (24h)</div>,
-        cell: ({ row }) => <div className="text-right tabular-nums text-muted-foreground pr-6">{formatNumber(row.getValue('total_volume'))}</div>,
+        header: () => <div className="text-right">Volume (24h)</div>,
+        cell: ({ row }) => <div className="text-right font-medium tabular-nums text-muted-foreground">{formatNumber(row.getValue('total_volume'))}</div>,
     },
 ]

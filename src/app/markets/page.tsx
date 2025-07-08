@@ -9,7 +9,7 @@ export default async function MarketsPage() {
 
   return (
     <AppShell>
-      <div className="px-4 py-12 md:py-24">
+      <div className="container mx-auto px-4 py-12 md:py-24">
         <header className="mb-12 text-center">
           <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight mb-2">
             Crypto Markets
@@ -20,9 +20,11 @@ export default async function MarketsPage() {
           </p>
         </header>
 
-        <Card className="bg-card/60 backdrop-blur-md -mx-4 border-x-0 rounded-none">
-          <DataTable columns={columns} data={cryptoData} />
-        </Card>
+        <div className="w-full overflow-x-auto">
+          <Card className="bg-card/60 backdrop-blur-md">
+            <DataTable columns={columns} data={cryptoData} />
+          </Card>
+        </div>
       </div>
     </AppShell>
   );

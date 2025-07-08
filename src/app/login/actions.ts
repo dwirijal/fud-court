@@ -32,7 +32,7 @@ export async function sendMagicLink(data: { email: string }, type: 'signin' | 's
       },
       body: JSON.stringify({
         email,
-        emailType: type, // Use the provided type
+        email_type: type, // Use the provided type
         labels: [], // Optional: assign labels on signup
       }),
     });

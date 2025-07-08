@@ -3,7 +3,7 @@ import { getPosts } from "@/lib/ghost";
 import { NewsTable } from "./news-table";
 
 export default async function NewsPage() {
-  const posts = await getPosts();
+  const posts = await getPosts({ tag: 'news' });
 
   return (
     <AppShell>

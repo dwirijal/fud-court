@@ -48,14 +48,20 @@ function mapGhostPost(post: PostOrPage): Post {
   }
 }
 
-export async function getPosts(): Promise<Post[]> {
+export async function getPosts(options?: { tag?: string }): Promise<Post[]> {
   if (!api) return [];
 
   try {
-    const posts = await api.posts.browse({
+    const browseOptions: Parameters<typeof api.posts.browse>[0] = {
       limit: 'all',
       include: ['tags'],
-    });
+    };
+
+    if (options?.tag) {
+      browseOptions.filter = `primary_tag:${options.tag}`;
+    }
+    
+    const posts = await api.posts.browse(browseOptions);
     return posts.map(mapGhostPost);
   } catch (error) {
     console.error("Error fetching posts from Ghost:", error);

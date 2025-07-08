@@ -76,7 +76,7 @@ export interface TokenProfile {
 
 // Moralis Types
 export interface MoralisTrendingToken {
-  rank: number;
+  rank: string;
   logo: string | null;
   name: string;
   symbol: string;

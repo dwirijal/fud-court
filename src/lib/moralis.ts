@@ -31,9 +31,9 @@ export async function getTrendingTokens(chain: string = 'solana'): Promise<Moral
     
     const data = await response.json();
     
-    // The API returns an object with a "tokens" key containing the array.
-    if (Array.isArray(data?.tokens)) {
-      return data.tokens;
+    // The API returns an object with a "result" key containing the array.
+    if (Array.isArray(data?.result)) {
+      return data.result;
     }
 
     // If the structure is unexpected, treat it as an error.

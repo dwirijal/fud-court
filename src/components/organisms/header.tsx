@@ -32,6 +32,7 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+import { LanguageSwitcher } from "@/components/molecules/language-switcher";
 
 // Define navigation structure
 const mainNavLinks = [
@@ -119,8 +120,10 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
               <div className="mt-auto border-t border-border/50 pt-4">
                 <div className="flex items-center justify-between">
                   {showAdminLinks && <AdminMenu isMobile />}
-                  <div className="flex-grow" />
-                  <ThemeToggle />
+                  <div className="flex items-center gap-1">
+                    <LanguageSwitcher />
+                    <ThemeToggle />
+                  </div>
                 </div>
               </div>
             </div>
@@ -211,6 +214,7 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
             </NavigationMenu>
 
             <div className="flex items-center gap-2 ml-2">
+              <LanguageSwitcher />
               <ThemeToggle />
               <Button asChild variant="outline" size="sm">
                 <Link href="/login">Log In / Sign Up</Link>

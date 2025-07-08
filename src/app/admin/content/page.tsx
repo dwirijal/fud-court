@@ -4,7 +4,7 @@ import {
     CardContent,
     CardHeader,
     CardTitle,
-    CardDescription
+    CardDescription,
 } from "@/components/ui/card";
 import {
     Breadcrumb,
@@ -15,6 +15,68 @@ import {
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
+import {
+    BotMessageSquare,
+    CalendarDays,
+    Flame,
+    Image as ImageIcon,
+    Languages,
+    Link as LinkIcon,
+    ListTodo,
+    Rss,
+} from "lucide-react";
+
+const contentFeatures = [
+    {
+        title: "Post & Thread Queue",
+        description: "View, manage, and prioritize scheduled and drafted content.",
+        icon: ListTodo,
+        href: "#",
+    },
+    {
+        title: "Content Generator",
+        description: "Use AI or manual tools to create new articles and threads.",
+        icon: BotMessageSquare,
+        href: "#",
+    },
+    {
+        title: "News Sources & Feeds",
+        description: "Manage RSS feeds from sources like Watcher Guru and Reuters.",
+        icon: Rss,
+        href: "#",
+    },
+    {
+        title: "Trending Topics Monitor",
+        description: "Track hot topics and keywords across the crypto space.",
+        icon: Flame,
+        href: "#",
+    },
+    {
+        title: "Translation Tools",
+        description: "Translate content between languages, such as EN to ID.",
+        icon: Languages,
+        href: "#",
+    },
+    {
+        title: "SEO & Linking Tools",
+        description: "Optimize content for search engines and manage internal links.",
+        icon: LinkIcon,
+        href: "#",
+    },
+    {
+        title: "Image Generator",
+        description: "Create unique images for your content using AI models.",
+        icon: ImageIcon,
+        href: "#",
+    },
+    {
+        title: "Content Schedule Calendar",
+        description: "Visualize your content pipeline on a weekly or monthly calendar.",
+        icon: CalendarDays,
+        href: "#",
+    },
+];
+
 
 export default function ContentPage() {
     return (
@@ -32,19 +94,33 @@ export default function ContentPage() {
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
-            <Card>
-                <CardHeader>
-                    <CardTitle>News & Content</CardTitle>
-                    <CardDescription>
-                        This page is under construction.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <p className="text-sm text-muted-foreground">
-                        Tools for content generation, scheduling, source management, and SEO will be implemented here.
-                    </p>
-                </CardContent>
-            </Card>
+            
+            <header className="mb-12">
+                <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight mb-2">
+                    News & Content Management
+                </h1>
+                <p className="text-xl text-muted-foreground">
+                    A powerful suite of tools for your entire content workflow.
+                </p>
+            </header>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {contentFeatures.map((feature) => (
+                    <Card key={feature.title} className="flex flex-col hover:border-primary/50 hover:shadow-lg transition-all">
+                        <CardHeader>
+                            <div className="flex items-center gap-4">
+                                <div className="bg-primary/10 text-primary p-2 rounded-lg">
+                                    <feature.icon className="h-6 w-6" />
+                                </div>
+                                <CardTitle className="text-lg font-headline">{feature.title}</CardTitle>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="flex-grow">
+                            <CardDescription>{feature.description}</CardDescription>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
         </div>
     );
 }

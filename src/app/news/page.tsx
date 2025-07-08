@@ -11,8 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 
 export default async function NewsPage() {
   const posts = await getPosts();
@@ -29,30 +28,24 @@ export default async function NewsPage() {
           </p>
         </header>
 
-        <Card className="bg-card/60 backdrop-blur-md">
+        <Card className="bg-neutral-900/60 border border-neutral-800 backdrop-blur-md">
             <Table>
               <TableHeader>
-                <TableRow>
+                <TableRow className="border-neutral-800">
                   <TableHead>Title</TableHead>
-                  <TableHead className="w-[150px] text-center">Category</TableHead>
                   <TableHead className="w-[200px] text-right">Published Date</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {posts.map((post: Post) => (
-                  <TableRow key={post.id}>
+                  <TableRow key={post.id} className="border-neutral-800">
                     <TableCell className="font-medium">
-                      <Link href={`/news/${post.slug}`} className="hover:text-primary transition-colors">
+                      <Link href={`/news/${post.slug}`} className="hover:text-red-500 transition-colors">
                         {post.title}
                       </Link>
                     </TableCell>
-                    <TableCell className="text-center">
-                      {post.primary_tag && (
-                        <Badge variant="secondary">{post.primary_tag.name}</Badge>
-                      )}
-                    </TableCell>
                     <TableCell className="text-right text-muted-foreground">
-                      {format(new Date(post.published_at), "HH:mm:ss, dd/MM/yyyy")}
+                      {format(new Date(post.published_at), "ss:mm:HH dd/MM")}
                     </TableCell>
                   </TableRow>
                 ))}

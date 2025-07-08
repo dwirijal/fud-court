@@ -14,7 +14,7 @@ export function NewsCard({ post }: { post: Post }) {
 
   return (
     <Link href={`/news/${post.slug}`} className="group block h-full">
-      <Card className="h-full flex flex-col transform transition-all duration-200 ease-in-out hover:shadow-2xl hover:-translate-y-1 bg-card/60 backdrop-blur-md">
+      <Card className="h-full flex flex-col bg-card/60 backdrop-blur-md">
         {showImage && (
           <CardHeader className="p-0">
             <div className="relative h-48 w-full">

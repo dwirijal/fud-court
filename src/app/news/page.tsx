@@ -52,7 +52,7 @@ export default async function NewsPage() {
                       )}
                     </TableCell>
                     <TableCell className="text-right text-muted-foreground">
-                      {format(new Date(post.published_at), "MMMM d, yyyy")}
+                      {format(new Date(post.published_at), "HH:mm:ss, dd/MM/yyyy")}
                     </TableCell>
                   </TableRow>
                 ))}

@@ -1,8 +1,6 @@
 
 import { NextResponse, type NextRequest } from 'next/server';
 import { createClient } from '@/utils/supabase/middleware';
-import { db } from '@/lib/db';
-import { pageViews } from '@/lib/db/schema';
 
 export async function middleware(request: NextRequest) {
   // Use the Supabase helper to handle session management.
@@ -25,9 +23,12 @@ export async function middleware(request: NextRequest) {
   // Also check for file extensions like .png, .jpg, etc.
   const isStaticFile = /\.(.*)$/.test(pathname);
 
-  // Log page view to the database if it's not an excluded path or a static file.
-  if (!isExcluded && !isStaticFile) {
+  // Log page view only if DATABASE_URL is configured and it's a valid page path.
+  if (process.env.DATABASE_URL && !isExcluded && !isStaticFile) {
     try {
+      // Dynamically import the db and schema to ensure they are only loaded when needed.
+      const { db } = await import('@/lib/db');
+      const { pageViews } = await import('@/lib/db/schema');
       await db.insert(pageViews).values({ path: pathname });
     } catch (error) {
       console.error('Failed to log page view:', error);

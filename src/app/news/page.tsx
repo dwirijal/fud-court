@@ -1,7 +1,18 @@
+import Link from "next/link";
+import { format } from "date-fns";
 import { AppShell } from "@/components/organisms/app-shell";
-import { NewsCard } from "@/components/molecules/news-card";
 import { getPosts } from "@/lib/ghost";
 import type { Post } from "@/types";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 export default async function NewsPage() {
   const posts = await getPosts();
@@ -18,11 +29,36 @@ export default async function NewsPage() {
           </p>
         </header>
 
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {posts.map((post: Post) => (
-            <NewsCard key={post.id} post={post} />
-          ))}
-        </div>
+        <Card className="bg-card/60 backdrop-blur-md">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Title</TableHead>
+                  <TableHead className="w-[150px] text-center">Category</TableHead>
+                  <TableHead className="w-[200px] text-right">Published Date</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {posts.map((post: Post) => (
+                  <TableRow key={post.id}>
+                    <TableCell className="font-medium">
+                      <Link href={`/news/${post.slug}`} className="hover:text-primary transition-colors">
+                        {post.title}
+                      </Link>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {post.primary_tag && (
+                        <Badge variant="secondary">{post.primary_tag.name}</Badge>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right text-muted-foreground">
+                      {format(new Date(post.published_at), "MMMM d, yyyy")}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+        </Card>
       </div>
     </AppShell>
   );

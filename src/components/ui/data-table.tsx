@@ -33,9 +33,9 @@ export function DataTable<TData, TValue>({
 
   return (
     <Table>
-      <TableHeader className="sticky top-16 z-10 bg-card/60 backdrop-blur-md md:top-24">
+      <TableHeader>
         {table.getHeaderGroups().map((headerGroup) => (
-          <TableRow key={headerGroup.id} className="border-b border-border/50 hover:bg-transparent">
+          <TableRow key={headerGroup.id}>
             {headerGroup.headers.map((header) => {
               return (
                 <TableHead key={header.id} className="text-xs uppercase tracking-wider text-muted-foreground">

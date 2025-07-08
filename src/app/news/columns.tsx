@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useState, useEffect } from 'react'
 
 export const columns: ColumnDef<Post>[] = [
     {
@@ -47,9 +48,19 @@ export const columns: ColumnDef<Post>[] = [
         accessorKey: 'published_at',
         header: () => <div className="text-right">Published Date</div>,
         cell: ({ row }) => {
-            const date = new Date(row.getValue('published_at'))
-            const formatted = format(date, "HH:mm:ss dd MMMM", { locale: idLocale });
-            return <div className="text-right tabular-nums text-muted-foreground">{formatted}</div>
+            const [formattedDate, setFormattedDate] = useState('');
+            const dateString = row.getValue('published_at') as string;
+
+            useEffect(() => {
+                // This code runs only on the client, after hydration.
+                // This avoids the mismatch between server-rendered and client-rendered time.
+                const date = new Date(dateString);
+                setFormattedDate(format(date, "HH:mm:ss dd MMMM", { locale: idLocale }));
+            }, [dateString]);
+            
+            // Render the formatted date once it's calculated on the client.
+            // Before that, it will be an empty string, preventing the hydration error.
+            return <div className="text-right tabular-nums text-muted-foreground">{formattedDate}</div>
         },
     },
 ]

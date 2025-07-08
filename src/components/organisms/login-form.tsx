@@ -33,6 +33,7 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 export function LoginForm() {
+  const [activeTab, setActiveTab] = useState<'signin' | 'signup'>('signin');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState('');
@@ -47,7 +48,7 @@ export function LoginForm() {
     setIsSubmitting(true);
     setIsSuccess(false);
     try {
-      await sendMagicLink(values);
+      await sendMagicLink(values, activeTab);
       setIsSuccess(true);
       setSubmittedEmail(values.email);
     } catch (error) {
@@ -87,10 +88,14 @@ export function LoginForm() {
     );
   }
 
+  const handleTabChange = (value: string) => {
+    setActiveTab(value === 'login' ? 'signin' : 'signup');
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <Tabs defaultValue="login" className="w-full">
+        <Tabs defaultValue="login" className="w-full" onValueChange={handleTabChange}>
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="login">Login</TabsTrigger>
             <TabsTrigger value="signup">Sign Up</TabsTrigger>

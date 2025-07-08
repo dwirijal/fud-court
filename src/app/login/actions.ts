@@ -6,7 +6,8 @@ const FormSchema = z.object({
   email: z.string().email('Please enter a valid email address.'),
 });
 
-export async function sendMagicLink(data: { email: string }) {
+// The type is now required to distinguish between login and signup.
+export async function sendMagicLink(data: { email: string }, type: 'signin' | 'signup') {
   const validatedFields = FormSchema.safeParse(data);
 
   if (!validatedFields.success) {
@@ -21,9 +22,6 @@ export async function sendMagicLink(data: { email: string }) {
     throw new Error('Ghost API URL or Content Key is not configured. Cannot send magic link.');
   }
 
-  // The Ghost Members API is not part of the official SDK, so we use fetch directly.
-  // This endpoint sends a magic link for both signing up and logging in.
-  // It requires the Content API Key to be passed as a URL query parameter.
   const membersApiUrl = `${url.replace(/\/$/, '')}/members/api/send-magic-link/?key=${key}`;
 
   try {
@@ -34,7 +32,7 @@ export async function sendMagicLink(data: { email: string }) {
       },
       body: JSON.stringify({
         email,
-        emailType: 'signin', // 'signin' works for both login and signup
+        emailType: type, // Use the provided type
         labels: [], // Optional: assign labels on signup
       }),
     });

@@ -46,7 +46,7 @@ export default async function NewsPage() {
                       </Link>
                     </TableCell>
                     <TableCell className="text-right text-muted-foreground">
-                      {format(new Date(post.published_at), "dd MMMM", { locale: idLocale })}
+                      {format(new Date(post.published_at), "HH:mm:ss dd MMMM", { locale: idLocale })}
                     </TableCell>
                   </TableRow>
                 ))}

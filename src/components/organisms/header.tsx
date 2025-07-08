@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -129,7 +130,7 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
               <NavigationMenuList>
                 {navItems.map((item) => (
                   <NavigationMenuItem key={item.label}>
-                    <Link href={item.href} legacyBehavior passHref>
+                    <Link href={item.href} asChild>
                       <NavigationMenuLink
                         className={cn(
                           navigationMenuTriggerStyle(),

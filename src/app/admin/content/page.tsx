@@ -31,7 +31,7 @@ const contentFeatures = [
         title: "Post & Thread Queue",
         description: "View, manage, and prioritize scheduled and drafted content.",
         icon: ListTodo,
-        href: "#",
+        href: "/admin/content/queue",
     },
     {
         title: "Content Generator",
@@ -106,19 +106,27 @@ export default function ContentPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {contentFeatures.map((feature) => (
-                    <Card key={feature.title} className="flex flex-col hover:border-primary/50 hover:shadow-lg transition-all">
-                        <CardHeader>
-                            <div className="flex items-center gap-4">
-                                <div className="bg-primary/10 text-primary p-2 rounded-lg">
-                                    <feature.icon className="h-6 w-6" />
+                    <Link
+                        href={feature.href}
+                        key={feature.title}
+                        className="group block h-full"
+                        aria-disabled={feature.href === '#'}
+                        onClick={(e) => { if (feature.href === '#') e.preventDefault(); }}
+                    >
+                        <Card className="flex flex-col hover:border-primary/50 hover:shadow-lg transition-all h-full group-aria-disabled:pointer-events-none group-aria-disabled:opacity-60">
+                            <CardHeader>
+                                <div className="flex items-center gap-4">
+                                    <div className="bg-primary/10 text-primary p-2 rounded-lg">
+                                        <feature.icon className="h-6 w-6" />
+                                    </div>
+                                    <CardTitle className="text-lg font-headline">{feature.title}</CardTitle>
                                 </div>
-                                <CardTitle className="text-lg font-headline">{feature.title}</CardTitle>
-                            </div>
-                        </CardHeader>
-                        <CardContent className="flex-grow">
-                            <CardDescription>{feature.description}</CardDescription>
-                        </CardContent>
-                    </Card>
+                            </CardHeader>
+                            <CardContent className="flex-grow">
+                                <CardDescription>{feature.description}</CardDescription>
+                            </CardContent>
+                        </Card>
+                    </Link>
                 ))}
             </div>
         </div>

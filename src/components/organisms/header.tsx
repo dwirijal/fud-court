@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/atoms/logo";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { ThemeToggle } from "@/components/molecules/theme-toggle";
 import {
   Menu,
   ChevronRight,
@@ -40,7 +41,7 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
   return (
     <>
       {/* Mobile Header: Standard sticky bar with a slide-out sheet menu. */}
-      <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-neutral-800 bg-neutral-900/60 px-4 backdrop-blur-md md:hidden">
+      <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-border bg-background/60 px-4 backdrop-blur-md md:hidden">
         <Link href="/" className="flex items-center gap-3">
           <Logo />
           <span className="text-xl font-semibold font-headline tracking-tight text-foreground">
@@ -78,8 +79,13 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
                   </Link>
                 ))}
               </nav>
-              <div className="mt-auto">
-                <UserMenu isMobile showAdminLinks={showAdminLinks} />
+              <div className="mt-auto border-t border-border/50 pt-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex-grow">
+                    <UserMenu isMobile showAdminLinks={showAdminLinks} />
+                  </div>
+                  <ThemeToggle />
+                </div>
               </div>
             </div>
           </SheetContent>
@@ -94,7 +100,7 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
       >
         <div
           className={cn(
-            "flex items-center justify-center rounded-full bg-neutral-900/60 border border-neutral-800 shadow-lg backdrop-blur-md transition-all duration-200 ease-in-out pointer-events-auto",
+            "flex items-center justify-center rounded-full bg-background/60 border border-border shadow-lg backdrop-blur-md transition-all duration-200 ease-in-out pointer-events-auto",
             isHovered ? "px-4 py-2 gap-4" : "p-2.5 gap-0"
           )}
         >
@@ -126,7 +132,10 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
                 </Link>
               ))}
             </nav>
-            <UserMenu showAdminLinks={showAdminLinks} />
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <UserMenu showAdminLinks={showAdminLinks} />
+            </div>
           </div>
         </div>
       </div>
@@ -144,67 +153,65 @@ function UserMenu({
   // A more compact menu for the mobile sheet
   if (isMobile) {
     return (
-      <div className="border-t border-border/50 pt-4">
-        <DropdownMenu>
-          <DropdownMenuTrigger className="w-full">
-            <div className="flex w-full items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Avatar className="h-9 w-9">
-                  <AvatarImage
-                    src="https://placehold.co/100x100.png"
-                    alt="@user"
-                    data-ai-hint="user avatar"
-                  />
-                  <AvatarFallback>U</AvatarFallback>
-                </Avatar>
-                <div className="text-left">
-                  <p className="font-medium text-sm">User</p>
-                  <p className="text-xs text-muted-foreground">View Account</p>
-                </div>
+      <DropdownMenu>
+        <DropdownMenuTrigger className="w-full">
+          <div className="flex w-full items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Avatar className="h-9 w-9">
+                <AvatarImage
+                  src="https://placehold.co/100x100.png"
+                  alt="@user"
+                  data-ai-hint="user avatar"
+                />
+                <AvatarFallback>U</AvatarFallback>
+              </Avatar>
+              <div className="text-left">
+                <p className="font-medium text-sm">User</p>
+                <p className="text-xs text-muted-foreground">View Account</p>
               </div>
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </div>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56 mt-1">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {showAdminLinks && (
-              <>
-                <DropdownMenuItem asChild>
-                  <Link href="/admin/ghost" target="_blank">
-                    <PenSquare className="h-4 w-4" />
-                    <span>Ghost Dashboard</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/admin/create-post">
-                    <PlusCircle className="h-4 w-4" />
-                    <span>Create Post</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-              </>
-            )}
-            <DropdownMenuItem>
-              <User className="h-4 w-4" />
-              <span>Profile</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Settings className="h-4 w-4" />
-              <span>Settings</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <LifeBuoy className="h-4 w-4" />
-              <span>Support</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <LogOut className="h-4 w-4" />
-              <span>Logout</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </div>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-56 mt-1">
+          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {showAdminLinks && (
+            <>
+              <DropdownMenuItem asChild>
+                <Link href="/admin/ghost" target="_blank">
+                  <PenSquare className="h-4 w-4" />
+                  <span>Ghost Dashboard</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/admin/create-post">
+                  <PlusCircle className="h-4 w-4" />
+                  <span>Create Post</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+            </>
+          )}
+          <DropdownMenuItem>
+            <User className="h-4 w-4" />
+            <span>Profile</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Settings className="h-4 w-4" />
+            <span>Settings</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <LifeBuoy className="h-4 w-4" />
+            <span>Support</span>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>
+            <LogOut className="h-4 w-4" />
+            <span>Logout</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     );
   }
 

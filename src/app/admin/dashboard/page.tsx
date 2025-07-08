@@ -1,7 +1,4 @@
 
-import { db } from "@/lib/db";
-import { pageViews } from "@/lib/db/schema";
-import { count, desc } from "drizzle-orm";
 import {
     Card,
     CardContent,
@@ -9,14 +6,6 @@ import {
     CardTitle,
     CardDescription
 } from "@/components/ui/card";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -26,31 +15,10 @@ import {
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
-import { unstable_noStore as noStore } from 'next/cache';
-
-
-async function getPageAnalytics() {
-    noStore(); // Opt out of caching for this data
-    try {
-        const data = await db
-            .select({
-                path: pageViews.path,
-                count: count(pageViews.path),
-            })
-            .from(pageViews)
-            .groupBy(pageViews.path)
-            .orderBy(desc(count(pageViews.path)));
-        return data;
-    } catch (error) {
-        console.error("Failed to fetch page analytics:", error);
-        // In a real app, you might want more robust error handling
-        return [];
-    }
-}
-
+import { DashboardContent } from "./dashboard-content";
 
 export default async function AdminDashboardPage() {
-    const analytics = await getPageAnalytics();
+    const isDbConfigured = !!process.env.DATABASE_URL;
 
     return (
         <div className="container mx-auto px-4 py-12 md:py-24">
@@ -76,40 +44,23 @@ export default async function AdminDashboardPage() {
                 </p>
             </header>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle>Page Views</CardTitle>
-                    <CardDescription>
-                        A summary of the most visited pages on your site.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Page Path</TableHead>
-                                <TableHead className="text-right">Views</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {analytics.length > 0 ? (
-                                analytics.map((item) => (
-                                    <TableRow key={item.path}>
-                                        <TableCell className="font-medium">{item.path}</TableCell>
-                                        <TableCell className="text-right font-mono">{item.count}</TableCell>
-                                    </TableRow>
-                                ))
-                            ) : (
-                                <TableRow>
-                                    <TableCell colSpan={2} className="text-center h-24">
-                                        No page view data yet. Refresh after navigating the site.
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
+            {isDbConfigured ? (
+                <DashboardContent />
+            ) : (
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Database Not Configured</CardTitle>
+                        <CardDescription>
+                            Page analytics cannot be displayed because the database is not connected.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-sm text-muted-foreground">
+                            Please ensure the `DATABASE_URL` is correctly set in your `.env.local` file and restart the server.
+                        </p>
+                    </CardContent>
+                </Card>
+            )}
         </div>
     );
 }

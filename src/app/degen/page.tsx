@@ -81,7 +81,7 @@ export default function DegenPage() {
             </div>
           ) : (
             tokens.length > 0 ? tokens.map((token) => (
-              <TrendingTokenCard key={token.address} token={token} />
+              <TrendingTokenCard key={`${token.rank}-${token.address}`} token={token} />
             )) : <p className="text-center text-muted-foreground">No trending tokens found at the moment.</p>
           )}
         </div>

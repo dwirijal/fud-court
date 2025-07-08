@@ -46,7 +46,7 @@ export default async function MarketsPage() {
         <Card className="bg-card/60 backdrop-blur-md">
           <div className="overflow-x-auto">
             <Table>
-              <TableHeader className="sticky top-16 z-10 bg-card/60 backdrop-blur-md">
+              <TableHeader className="sticky top-16 md:top-24 z-10 bg-card/60 backdrop-blur-md">
                 <TableRow>
                   <TableHead className="w-[50px] pl-6 text-xs uppercase tracking-wider">#</TableHead>
                   <TableHead className="text-xs uppercase tracking-wider">Name</TableHead>

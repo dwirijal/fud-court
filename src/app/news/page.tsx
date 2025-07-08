@@ -29,10 +29,10 @@ export default async function NewsPage() {
           </p>
         </header>
 
-        <Card className="bg-neutral-900/60 border border-neutral-800 backdrop-blur-md">
+        <Card className="bg-card/60 backdrop-blur-md">
             <Table>
-              <TableHeader className="sticky top-16 z-10 bg-neutral-900/60 backdrop-blur-md">
-                <TableRow className="border-neutral-800/50">
+              <TableHeader className="sticky top-16 md:top-24 z-10 bg-card/60 backdrop-blur-md">
+                <TableRow>
                   <TableHead>Title</TableHead>
                   <TableHead className="w-[200px] text-right">Published Date</TableHead>
                 </TableRow>

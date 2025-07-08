@@ -69,6 +69,9 @@ const readingComponents: { title: string; href: string; description: string }[] 
 export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
   const pathname = usePathname();
   const [isHovered, setIsHovered] = useState(false);
+  const [activeMenu, setActiveMenu] = useState("");
+
+  const isIslandExpanded = isHovered || activeMenu !== "";
 
   return (
     <>
@@ -133,7 +136,7 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
         <div
           className={cn(
             "flex items-center justify-center rounded-full bg-background/60 border border-border shadow-lg backdrop-blur-md transition-all duration-200 ease-in-out pointer-events-auto",
-            isHovered ? "px-4 py-2 gap-4" : "p-2.5 gap-0"
+            isIslandExpanded ? "px-4 py-2 gap-4" : "p-2.5 gap-0"
           )}
         >
           <Link href="/" className="flex-shrink-0">
@@ -143,12 +146,12 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
           <div
             className={cn(
               "flex items-center transition-all duration-200 ease-in-out overflow-hidden",
-              isHovered
+              isIslandExpanded
                 ? "max-w-screen-lg opacity-100 gap-4"
                 : "max-w-0 opacity-0 gap-0"
             )}
           >
-            <NavigationMenu>
+            <NavigationMenu onValueChange={setActiveMenu}>
               <NavigationMenuList>
                 <NavigationMenuItem>
                   <NavigationMenuLink asChild>
@@ -182,7 +185,7 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
                     </Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
-                <NavigationMenuItem>
+                <NavigationMenuItem value="reading">
                     <NavigationMenuTrigger className="bg-transparent hover:bg-accent/50 text-sm font-medium data-[state=open]:bg-accent/50 text-foreground/70">
                         Reading
                     </NavigationMenuTrigger>
@@ -364,7 +367,7 @@ function UserMenu({
 
 const ListItem = React.forwardRef<
   React.ElementRef<"a">,
-  React.ComponentPropsWithoutRef<"a">
+  React.ComponentPropsWithoutRef<typeof Link>
 >(({ className, title, children, ...props }, ref) => {
   return (
     <li>

@@ -2,29 +2,14 @@ import { AppShell } from "@/components/organisms/app-shell";
 import { NewsCard } from "@/components/molecules/news-card";
 import { Button } from "@/components/ui/button";
 import { getPosts } from "@/lib/ghost";
-import { getCoinsByIds } from "@/lib/coingecko";
+import { getTopCoins } from "@/lib/coingecko";
 import Link from "next/link";
 import Image from "next/image";
 import { MarketCarousel } from "@/components/molecules/market-carousel";
 
-const carouselCoinIds = [
-  'bitcoin',
-  'ethereum',
-  'binancecoin',
-  'solana',
-  'ripple',
-  'dogecoin',
-  'tron',
-  'avalanche-2',
-  'sui',
-  'sonic',
-  'tether',
-  'cardano',
-];
-
 export default async function Home() {
   const posts = await getPosts();
-  const cryptoData = await getCoinsByIds(carouselCoinIds);
+  const cryptoData = await getTopCoins(10);
 
   return (
     <AppShell>

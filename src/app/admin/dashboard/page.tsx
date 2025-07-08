@@ -16,9 +16,38 @@ import {
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
 import { DashboardContent } from "./dashboard-content";
+import { db } from "@/lib/db";
+import { pageViews } from "@/lib/db/schema";
+import { count, desc } from "drizzle-orm";
+import { unstable_noStore as noStore } from 'next/cache';
+
+async function getPageAnalytics() {
+    noStore();
+    const data = await db
+        .select({
+            path: pageViews.path,
+            count: count(pageViews.path),
+        })
+        .from(pageViews)
+        .groupBy(pageViews.path)
+        .orderBy(desc(count(pageViews.path)));
+    return data;
+}
+
 
 export default async function AdminDashboardPage() {
     const isDbConfigured = !!process.env.DATABASE_URL;
+    let analytics = [];
+    let dbError: string | null = null;
+
+    if (isDbConfigured) {
+        try {
+            analytics = await getPageAnalytics();
+        } catch (error) {
+            console.error("Failed to fetch page analytics:", error);
+            dbError = error instanceof Error ? error.message : "An unknown database error occurred.";
+        }
+    }
 
     return (
         <div className="container mx-auto px-4 py-12 md:py-24">
@@ -44,9 +73,7 @@ export default async function AdminDashboardPage() {
                 </p>
             </header>
 
-            {isDbConfigured ? (
-                <DashboardContent />
-            ) : (
+            {!isDbConfigured ? (
                 <Card>
                     <CardHeader>
                         <CardTitle>Database Not Configured</CardTitle>
@@ -60,6 +87,22 @@ export default async function AdminDashboardPage() {
                         </p>
                     </CardContent>
                 </Card>
+            ) : dbError ? (
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Database Connection Failed</CardTitle>
+                        <CardDescription>
+                           Could not connect to the database. This is often caused by an incorrect hostname or credentials in your `DATABASE_URL`.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                         <p className="text-sm text-destructive font-mono bg-destructive/10 p-4 rounded-md">
+                            {dbError}
+                        </p>
+                    </CardContent>
+                </Card>
+            ) : (
+                <DashboardContent analytics={analytics} />
             )}
         </div>
     );

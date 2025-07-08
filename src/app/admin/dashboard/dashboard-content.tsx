@@ -1,7 +1,4 @@
 
-import { db } from "@/lib/db";
-import { pageViews } from "@/lib/db/schema";
-import { count, desc } from "drizzle-orm";
 import {
     Card,
     CardContent,
@@ -17,32 +14,17 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { unstable_noStore as noStore } from 'next/cache';
 
-
-async function getPageAnalytics() {
-    noStore(); // Opt out of caching for this data
-    try {
-        const data = await db
-            .select({
-                path: pageViews.path,
-                count: count(pageViews.path),
-            })
-            .from(pageViews)
-            .groupBy(pageViews.path)
-            .orderBy(desc(count(pageViews.path)));
-        return data;
-    } catch (error) {
-        console.error("Failed to fetch page analytics:", error);
-        // In a real app, you might want more robust error handling
-        return [];
-    }
+interface AnalyticsData {
+    path: string;
+    count: number;
 }
 
+interface DashboardContentProps {
+    analytics: AnalyticsData[];
+}
 
-export async function DashboardContent() {
-    const analytics = await getPageAnalytics();
-
+export function DashboardContent({ analytics }: DashboardContentProps) {
     return (
         <Card>
             <CardHeader>

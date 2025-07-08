@@ -2,49 +2,51 @@
 import type { TokenProfile } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Globe, Twitter, ExternalLink, MessageCircle } from "lucide-react";
+import { Globe, Twitter, ExternalLink, MessageCircle, Link as LinkIcon } from "lucide-react";
+import Image from 'next/image';
 
-// A simple map to get an icon for a social media name
 const socialIconMap: { [key: string]: React.ReactNode } = {
   twitter: <Twitter className="h-4 w-4" />,
+  x: <Twitter className="h-4 w-4" />,
   telegram: <MessageCircle className="h-4 w-4" />,
   website: <Globe className="h-4 w-4" />,
 };
 
 export function TokenProfileCard({ profile }: { profile: TokenProfile }) {
-    const { pair, websites, socials } = profile;
+    const { url, tokenAddress, description, links, icon } = profile;
+    
+    // Use description as title, fallback to a truncated token address.
+    const title = description || `${tokenAddress.slice(0, 6)}...${tokenAddress.slice(-4)}`;
 
-  return (
-    <Card className="bg-card/60 backdrop-blur-md">
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-lg font-bold">
-                {pair.baseToken.symbol}
-            </CardTitle>
-             <a href={pair.url} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
-                View on DexScreener <ExternalLink className="h-4 w-4" />
-            </a>
-        </CardHeader>
-        <CardContent>
-            <p className="text-sm text-muted-foreground -mt-2 mb-4">{pair.baseToken.name}</p>
-            <div className="flex flex-wrap gap-2">
-                {websites?.map((site) => (
-                    <Button key={site.url} asChild size="sm" variant="outline">
-                        <a href={site.url} target="_blank" rel="noopener noreferrer">
-                            {socialIconMap[site.label.toLowerCase()] || <Globe className="h-4 w-4" />}
-                            <span>{site.label}</span>
-                        </a>
-                    </Button>
-                ))}
-                {socials?.map((social) => (
-                    <Button key={social.url} asChild size="sm" variant="outline">
-                        <a href={social.url} target="_blank" rel="noopener noreferrer">
-                             {socialIconMap[social.name.toLowerCase()] || <ExternalLink className="h-4 w-4" />}
-                             <span>{social.name}</span>
-                        </a>
-                    </Button>
-                ))}
-            </div>
-        </CardContent>
-    </Card>
-  );
+    return (
+        <Card className="bg-card/60 backdrop-blur-md">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <div className="flex items-center gap-3 overflow-hidden">
+                    {icon && (
+                        <Image src={icon} alt={title} width={24} height={24} className="rounded-full shrink-0" />
+                    )}
+                    <CardTitle className="text-lg font-bold truncate" title={title}>
+                        {title}
+                    </CardTitle>
+                </div>
+                <a href={url} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 shrink-0">
+                    View on DexScreener <ExternalLink className="h-4 w-4" />
+                </a>
+            </CardHeader>
+            <CardContent>
+                <div className="flex flex-wrap gap-2 mt-4">
+                    {(links || []).length > 0 ? links?.map((link) => (
+                        <Button key={link.url} asChild size="sm" variant="outline">
+                            <a href={link.url} target="_blank" rel="noopener noreferrer">
+                                {socialIconMap[link.label.toLowerCase()] || <LinkIcon className="h-4 w-4" />}
+                                <span>{link.label}</span>
+                            </a>
+                        </Button>
+                    )) : (
+                        <p className="text-sm text-muted-foreground">No links provided.</p>
+                    )}
+                </div>
+            </CardContent>
+        </Card>
+    );
 }

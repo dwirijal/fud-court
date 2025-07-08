@@ -58,9 +58,18 @@ export interface BoostedToken {
     };
 }
 
+// This is the new structure based on the user's example for token profiles.
+interface DexLink {
+  label: string;
+  url: string;
+}
+
 export interface TokenProfile {
-    schemaVersion: string;
-    pair: DexPair;
-    websites?: { label: string; url: string }[];
-    socials?: { name: string; url: string }[];
+  url: string;
+  chainId: string;
+  tokenAddress: string;
+  icon?: string;
+  header?: string;
+  description?: string;
+  links?: DexLink[];
 }

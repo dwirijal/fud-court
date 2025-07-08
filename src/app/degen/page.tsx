@@ -34,10 +34,7 @@ export default function DegenPage() {
       } catch (error) {
         console.error("Failed to fetch degen data:", error);
       } finally {
-        // This will only run on the first fetch because isLoading will be false afterwards
-        if (isLoading) {
-          setIsLoading(false);
-        }
+        setIsLoading(false);
       }
     };
 
@@ -49,7 +46,7 @@ export default function DegenPage() {
 
   // Filter out items that are missing essential data to prevent runtime errors.
   const validBoosts = boosts.filter(b => b && b.pair && b.token && b.pair.address && b.token.address);
-  const validProfiles = profiles.filter(p => p && p.pair && p.pair.baseToken && p.pair.address && p.pair.baseToken.address);
+  const validProfiles = profiles.filter(p => p && p.tokenAddress && p.url);
 
   return (
     <div className="container mx-auto px-4 py-12 md:py-24">
@@ -98,7 +95,7 @@ export default function DegenPage() {
                Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-24 w-full" />)
             ) : (
                 validProfiles.length > 0 ? validProfiles.map((profile) => (
-                    <TokenProfileCard key={`${profile.pair.address}-${profile.pair.baseToken.address}`} profile={profile} />
+                    <TokenProfileCard key={profile.tokenAddress} profile={profile} />
                 )) : <p className="text-center text-muted-foreground">No new profiles found.</p>
             )}
           </div>

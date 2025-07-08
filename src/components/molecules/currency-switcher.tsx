@@ -23,8 +23,7 @@ const currencies = [
   { value: "usd", label: "USD" },
   { value: "idr", label: "IDR" },
   { value: "eur", label: "EUR" },
-  { value: "gbp", label: "GBP" },
-  { value: "jpy", label: "JPY" },
+  { value: "xau", label: "XAU (Gold)" },
 ]
 
 interface CurrencySwitcherProps {
@@ -62,7 +61,7 @@ export function CurrencySwitcher({ value, onValueChange, className }: CurrencySw
                   key={currency.value}
                   value={currency.value}
                   onSelect={(currentValue) => {
-                    onValueChange(currentValue === value ? "" : currentValue)
+                    onValueChange(currentValue)
                     setOpen(false)
                   }}
                 >

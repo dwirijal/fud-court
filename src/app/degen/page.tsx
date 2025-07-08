@@ -25,23 +25,8 @@ export default function DegenPage() {
     const fetchData = async () => {
       try {
         const trendingTokens = await getTrendingTokens('solana');
-        
-        if (trendingTokens.length === 0 && !isLoading) {
-            // If already loaded and we get an empty list, it could be a transient issue.
-            // A more direct error is set on initial load if the API key is likely missing.
-        } else {
-            setTokens(trendingTokens);
-        }
-
-        // Only set the API key error on the initial load.
-        if (isLoading) {
-          if (trendingTokens.length === 0) {
-            setError("Could not fetch trending tokens. Please ensure your Moralis API key is set correctly in a .env.local file.");
-          } else {
-            setError(null);
-          }
-        }
-
+        setTokens(trendingTokens);
+        if (error) setError(null); // Clear previous errors on a successful fetch
       } catch (err) {
         console.error("Failed to fetch Moralis data:", err);
         setError("An unexpected error occurred while fetching data.");

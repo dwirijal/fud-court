@@ -15,14 +15,16 @@ export async function sendMagicLink(data: { email: string }) {
 
   const { email } = validatedFields.data;
   const url = process.env.GHOST_API_URL;
+  const key = process.env.GHOST_CONTENT_API_KEY;
 
-  if (!url) {
-    throw new Error('Ghost API URL is not configured. Cannot send magic link.');
+  if (!url || !key) {
+    throw new Error('Ghost API URL or Content Key is not configured. Cannot send magic link.');
   }
 
   // The Ghost Members API is not part of the official SDK, so we use fetch directly.
   // This endpoint sends a magic link for both signing up and logging in.
-  const membersApiUrl = `${url}/members/api/send-magic-link/`;
+  // It requires the Content API Key to be passed as a URL query parameter.
+  const membersApiUrl = `${url.replace(/\/$/, '')}/members/api/send-magic-link/?key=${key}`;
 
   try {
     const response = await fetch(membersApiUrl, {
@@ -40,8 +42,8 @@ export async function sendMagicLink(data: { email: string }) {
     if (!response.ok) {
       // Try to parse the error message from Ghost's response
       const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.message || `Request failed with status ${response.status}`;
-      console.error('Ghost Members API error:', errorMessage);
+      const errorMessage = errorData.errors?.[0]?.message || `Request failed with status ${response.status}`;
+      console.error('Ghost Members API error:', errorMessage, errorData);
       throw new Error(`Could not send magic link: ${errorMessage}`);
     }
 

@@ -56,7 +56,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
           <CardDescription>
             {isSuccess
               ? `We've sent a secure magic link to ${form.getValues('email')}.`
-              : 'Enter your email to receive a magic link to sign in.'}
+              : 'Enter your email to sign up or log in. No password needed.'}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -66,13 +66,13 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
             </Button>
           ) : (
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormField
                   control={form.control}
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="sr-only">Email</FormLabel>
+                      <FormLabel>Email Address</FormLabel>
                       <FormControl>
                         <Input
                           type="email"

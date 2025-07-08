@@ -1,8 +1,6 @@
 
 import type {Metadata} from 'next';
 import './globals.css';
-import { Toaster } from "@/components/ui/toaster";
-import { ThemeProvider } from '@/components/theme-provider';
 import { AppLayout } from '@/components/organisms/app-layout';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 
@@ -26,19 +24,10 @@ export default function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <head />
       <body className={`${plusJakartaSans.variable} font-body antialiased`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <AppLayout showAdminLinks={showAdminLinks}>
-            {children}
-          </AppLayout>
-          <Toaster />
-        </ThemeProvider>
+        <AppLayout showAdminLinks={showAdminLinks}>
+          {children}
+        </AppLayout>
       </body>
     </html>
   );

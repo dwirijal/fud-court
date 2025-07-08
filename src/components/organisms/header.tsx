@@ -37,7 +37,6 @@ import {
 const mainNavLinks = [
   { href: "/", label: "Home" },
   { href: "/markets", label: "Markets" },
-  { href: "/degen", label: "Degen" },
 ];
 
 const readingComponents: { title: string; href: string; description: string }[] = [

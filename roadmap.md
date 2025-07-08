@@ -39,6 +39,10 @@ The initial version focuses on setting up the technical foundation of the projec
 - [ ] **Feature**: Allow users to save their watchlist to their account.
 - [ ] **Feature**: Personalized news feeds based on user interests or watchlist.
 
+## v0.5.0: Degen Zone & Advanced Features
+
+- [ ] **Feature**: Implement a "Degen" page to show real-time trending tokens.
+
 ## Future Milestones (Placeholder)
 
 - **Milestone**: Portfolio Tracking

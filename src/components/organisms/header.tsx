@@ -20,11 +20,6 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/molecules/theme-toggle";
 import {
   Menu,
-  ChevronRight,
-  User,
-  Settings,
-  LifeBuoy,
-  LogOut,
   PenSquare,
   PlusCircle,
 } from "lucide-react";
@@ -114,12 +109,17 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
                     {item.label}
                   </Link>
                 ))}
+                 <Link
+                    href="/account"
+                    className="text-muted-foreground transition-colors hover:text-primary"
+                  >
+                    Log In / Sign Up
+                  </Link>
               </nav>
               <div className="mt-auto border-t border-border/50 pt-4">
                 <div className="flex items-center justify-between">
-                  <div className="flex-grow">
-                    <UserMenu isMobile showAdminLinks={showAdminLinks} />
-                  </div>
+                  {showAdminLinks && <AdminMenu isMobile />}
+                  <div className="flex-grow" />
                   <ThemeToggle />
                 </div>
               </div>
@@ -137,7 +137,7 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
         <div
           className={cn(
             "flex items-center justify-center rounded-full bg-background/60 border border-border shadow-lg backdrop-blur-md transition-all duration-200 ease-in-out pointer-events-auto",
-            isIslandExpanded ? "px-4 py-2 gap-4" : "p-2.5 gap-0"
+            isIslandExpanded ? "px-4 py-2 gap-2" : "p-2.5 gap-0"
           )}
         >
           <Link href="/" className="flex-shrink-0">
@@ -148,11 +148,11 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
             className={cn(
               "flex items-center transition-all duration-200 ease-in-out",
               isIslandExpanded
-                ? "max-w-screen-lg opacity-100 gap-4"
+                ? "max-w-screen-lg opacity-100 gap-2"
                 : "max-w-0 opacity-0"
             )}
           >
-            <NavigationMenu onValueChange={setActiveMenu}>
+            <NavigationMenu onValueChange={setActiveMenu} >
               <NavigationMenuList>
                 {mainNavLinks.map((item) => (
                     <NavigationMenuItem key={item.label}>
@@ -212,7 +212,10 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
 
             <div className="flex items-center gap-2">
               <ThemeToggle />
-              <UserMenu showAdminLinks={showAdminLinks} />
+              <Button asChild variant="outline" size="sm">
+                <Link href="/account">Log In / Sign Up</Link>
+              </Button>
+              {showAdminLinks && <AdminMenu />}
             </div>
           </div>
         </div>
@@ -221,132 +224,41 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
   );
 }
 
-function UserMenu({
-  isMobile = false,
-  showAdminLinks = false,
-}: {
-  isMobile?: boolean;
-  showAdminLinks?: boolean;
-}) {
-  // A more compact menu for the mobile sheet
-  if (isMobile) {
-    return (
-      <DropdownMenu>
-        <DropdownMenuTrigger className="w-full">
-          <div className="flex w-full items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Avatar className="h-9 w-9">
-                <AvatarImage
-                  src="https://placehold.co/100x100.png"
-                  alt="@user"
-                  data-ai-hint="user avatar"
-                />
-                <AvatarFallback>U</AvatarFallback>
-              </Avatar>
-              <div className="text-left">
-                <p className="font-medium text-sm">User</p>
-                <p className="text-xs text-muted-foreground">View Account</p>
-              </div>
-            </div>
-            <ChevronRight className="h-4 w-4 text-muted-foreground" />
-          </div>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56 mt-1">
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          {showAdminLinks && (
-            <>
-              <DropdownMenuItem asChild>
-                <Link href="/admin/ghost" target="_blank">
-                  <PenSquare className="h-4 w-4" />
-                  <span>Ghost Dashboard</span>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/admin/create-post">
-                  <PlusCircle className="h-4 w-4" />
-                  <span>Create Post</span>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-            </>
-          )}
-          <DropdownMenuItem>
-            <User className="h-4 w-4" />
-            <span>Profile</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Settings className="h-4 w-4" />
-            <span>Settings</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <LifeBuoy className="h-4 w-4" />
-            <span>Support</span>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <LogOut className="h-4 w-4" />
-            <span>Logout</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    );
-  }
-
-  // User menu for the desktop dynamic island
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          className="rounded-full h-10 w-10 p-0 hover:bg-white/10"
-        >
-          <Avatar className="h-8 w-8">
+function AdminMenu({ isMobile = false }: { isMobile?: boolean }) {
+  const trigger = isMobile ? (
+    <Button variant="ghost" className="w-full justify-start">Admin Actions</Button>
+  ) : (
+    <DropdownMenuTrigger asChild>
+      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+        <Avatar className="h-8 w-8">
             <AvatarImage
               src="https://placehold.co/100x100.png"
-              alt="@user"
-              data-ai-hint="user avatar"
+              alt="admin"
+              data-ai-hint="gear wrench"
             />
-            <AvatarFallback>U</AvatarFallback>
-          </Avatar>
-        </Button>
-      </DropdownMenuTrigger>
+            <AvatarFallback>A</AvatarFallback>
+        </Avatar>
+      </Button>
+    </DropdownMenuTrigger>
+  );
+
+  return (
+    <DropdownMenu>
+      {trigger}
       <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        <DropdownMenuLabel>Admin</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {showAdminLinks && (
-          <>
-            <DropdownMenuItem asChild>
-              <Link href="/admin/ghost" target="_blank">
-                <PenSquare className="h-4 w-4" />
-                <span>Ghost Dashboard</span>
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href="/admin/create-post">
-                <PlusCircle className="h-4 w-4" />
-                <span>Create Post</span>
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-          </>
-        )}
-        <DropdownMenuItem>
-          <User className="h-4 w-4" />
-          <span>Profile</span>
+        <DropdownMenuItem asChild>
+          <Link href="/admin/ghost" target="_blank">
+            <PenSquare className="h-4 w-4" />
+            <span>Ghost Dashboard</span>
+          </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Settings className="h-4 w-4" />
-          <span>Settings</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <LifeBuoy className="h-4 w-4" />
-          <span>Support</span>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <LogOut className="h-4 w-4" />
-          <span>Logout</span>
+        <DropdownMenuItem asChild>
+          <Link href="/admin/create-post">
+            <PlusCircle className="h-4 w-4" />
+            <span>Create Post</span>
+          </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

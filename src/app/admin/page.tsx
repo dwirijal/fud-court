@@ -43,7 +43,10 @@ export default async function AdminDashboardPage() {
         try {
             analytics = await getPageAnalytics();
         } catch (error) {
-            console.error("Failed to fetch page analytics:", error);
+            // We are intentionally not logging the error to the console here.
+            // In a dev environment, this prevents the Next.js error overlay from appearing
+            // for configuration issues (like a wrong DB hostname), which can be confusing.
+            // The UI will render a friendly error message instead.
             dbError = error instanceof Error ? error.message : "An unknown database error occurred.";
         }
     }

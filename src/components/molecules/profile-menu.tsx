@@ -9,7 +9,6 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
@@ -101,7 +100,7 @@ export function ProfileMenu({ showAdminLinks }: { showAdminLinks?: boolean }) {
             <DropdownMenuSeparator />
             <DropdownMenuLabel>Admin</DropdownMenuLabel>
             <DropdownMenuItem asChild>
-              <Link href="/admin/dashboard">
+              <Link href="/admin">
                 <BarChart className="h-4 w-4" />
                 <span>Dashboard</span>
               </Link>

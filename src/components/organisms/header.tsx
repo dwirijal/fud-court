@@ -129,7 +129,7 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
                   </Link>
                    {showAdminLinks && (
                     <>
-                        <Link href="/admin/dashboard" className="text-muted-foreground transition-colors hover:text-primary">
+                        <Link href="/admin" className="text-muted-foreground transition-colors hover:text-primary">
                             Dashboard
                         </Link>
                         <Link href="/admin/ghost" target="_blank" className="text-muted-foreground transition-colors hover:text-primary">
@@ -285,7 +285,7 @@ function ProfileMenu({ showAdminLinks }: { showAdminLinks?: boolean }) {
                         <DropdownMenuSeparator />
                         <DropdownMenuLabel>Admin</DropdownMenuLabel>
                          <DropdownMenuItem asChild>
-                            <Link href="/admin/dashboard">
+                            <Link href="/admin">
                                 <BarChart className="h-4 w-4" />
                                 <span>Dashboard</span>
                             </Link>

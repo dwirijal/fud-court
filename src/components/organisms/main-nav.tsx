@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/tooltip";
 
 const navItems = [
-  { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/settings", label: "Settings", icon: Settings },
   { href: "/admin/logs", label: "Activity Logs", icon: History },
@@ -33,7 +33,7 @@ export function MainNav() {
     <TooltipProvider delayDuration={0}>
       <nav className="flex flex-col items-start gap-1 p-2">
         {navItems.map((item) => {
-          const isActive = pathname.startsWith(item.href);
+          const isActive = item.href === '/admin' ? pathname === item.href : pathname.startsWith(item.href);
           return (
             <Tooltip key={item.label}>
               <TooltipTrigger asChild>

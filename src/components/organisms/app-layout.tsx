@@ -21,8 +21,8 @@ export function AppLayout({ children, showAdminLinks }: AppLayoutProps) {
   if (pathname === '/login') {
     // Special case: Login page has no layout chrome
     content = <>{children}</>;
-  } else if (pathname.startsWith('/admin/dashboard')) {
-    // Dashboard and its potential sub-routes get the sidebar layout
+  } else if (pathname.startsWith('/admin')) {
+    // All admin routes get the sidebar layout
     content = <AppShell showAdminLinks={showAdminLinks}>{children}</AppShell>;
   } else {
     // All other pages get the "dynamic island" header and footer

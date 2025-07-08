@@ -17,9 +17,9 @@ export async function getBoostedTokens(): Promise<BoostedToken[]> {
       return [];
     }
     const data = await response.json();
-    // The API might return the array directly, or nested under a 'boosts' property.
-    // This handles both cases and ensures data is parsed correctly.
-    return (data.boosts || data) || [];
+    // Ensure we are returning the 'boosts' array, or an empty array if it's not present.
+    // This prevents returning the whole data object if the 'boosts' key is missing.
+    return Array.isArray(data.boosts) ? data.boosts : [];
   } catch (error) {
     console.error("An error occurred while fetching from DexScreener token-boosts API:", error);
     return [];
@@ -40,9 +40,8 @@ export async function getLatestTokenProfiles(): Promise<TokenProfile[]> {
       return [];
     }
     const data = await response.json();
-    // The API might return the array directly, or nested under a 'tokenProfiles' property.
-    // This handles both cases and ensures data is parsed correctly.
-    return (data.tokenProfiles || data) || [];
+    // Ensure we are returning the 'tokenProfiles' array, or an empty array if it's not present.
+    return Array.isArray(data.tokenProfiles) ? data.tokenProfiles : [];
   } catch (error) {
     console.error("An error occurred while fetching from DexScreener token-profiles API:", error);
     return [];

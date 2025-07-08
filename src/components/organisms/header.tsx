@@ -130,8 +130,9 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
               <NavigationMenuList>
                 {navItems.map((item) => (
                   <NavigationMenuItem key={item.label}>
-                    <Link href={item.href} asChild>
-                      <NavigationMenuLink
+                    <NavigationMenuLink asChild>
+                      <Link
+                        href={item.href}
                         className={cn(
                           navigationMenuTriggerStyle(),
                           "bg-transparent hover:bg-accent/50 text-sm font-medium",
@@ -141,8 +142,8 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
                         )}
                       >
                         {item.label}
-                      </NavigationMenuLink>
-                    </Link>
+                      </Link>
+                    </NavigationMenuLink>
                   </NavigationMenuItem>
                 ))}
               </NavigationMenuList>

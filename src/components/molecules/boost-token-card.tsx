@@ -2,7 +2,7 @@
 import type { BoostedToken } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Link, ShieldCheck, ShieldX, ExternalLink } from "lucide-react";
+import { ShieldCheck, ShieldX } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function BoostTokenCard({ boost }: { boost: BoostedToken }) {
@@ -15,9 +15,6 @@ export function BoostTokenCard({ boost }: { boost: BoostedToken }) {
             <CardTitle className="text-lg font-bold">
                 {boost.token.symbol}
             </CardTitle>
-            <a href={boost.pair.url} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
-                View on DexScreener <ExternalLink className="h-4 w-4" />
-            </a>
         </CardHeader>
         <CardContent>
             <p className="text-sm text-muted-foreground -mt-2 mb-4">{boost.token.name}</p>

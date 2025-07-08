@@ -2,7 +2,7 @@
 import type { TokenProfile } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Globe, Twitter, ExternalLink, MessageCircle, Link as LinkIcon } from "lucide-react";
+import { Globe, Twitter, MessageCircle, Link as LinkIcon } from "lucide-react";
 import Image from 'next/image';
 
 const socialIconMap: { [key: string]: React.ReactNode } = {
@@ -31,9 +31,6 @@ export function TokenProfileCard({ profile }: { profile: TokenProfile }) {
                         {title}
                     </CardTitle>
                 </div>
-                <a href={url} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 shrink-0">
-                    View on DexScreener <ExternalLink className="h-4 w-4" />
-                </a>
             </CardHeader>
             <CardContent>
                 <div className="flex flex-wrap gap-2 mt-4">

@@ -1,18 +1,8 @@
-import Link from "next/link";
-import { format } from "date-fns";
-import { id as idLocale } from "date-fns/locale";
 import { AppShell } from "@/components/organisms/app-shell";
 import { getPosts } from "@/lib/ghost";
-import type { Post } from "@/types";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Card } from "@/components/ui/card";
+import { columns } from "./columns";
+import { DataTable } from "@/components/ui/data-table";
 
 export default async function NewsPage() {
   const posts = await getPosts();
@@ -30,28 +20,7 @@ export default async function NewsPage() {
         </header>
 
         <Card className="bg-card/60 backdrop-blur-md">
-            <Table>
-              <TableHeader className="sticky top-16 md:top-24 z-10 bg-card/60 backdrop-blur-md">
-                <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead className="w-[200px] text-right">Published Date</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {posts.map((post: Post) => (
-                  <TableRow key={post.id} className="border-b-white/5">
-                    <TableCell className="font-medium">
-                      <Link href={`/news/${post.slug}`} className="hover:text-primary transition-colors">
-                        {post.title}
-                      </Link>
-                    </TableCell>
-                    <TableCell className="text-right text-muted-foreground">
-                      {format(new Date(post.published_at), "HH:mm:ss dd MMMM", { locale: idLocale })}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <DataTable columns={columns} data={posts} />
         </Card>
       </div>
     </AppShell>

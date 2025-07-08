@@ -1,12 +1,20 @@
 
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import { getPostBySlug, getPosts } from "@/lib/ghost";
 import { AppShell } from "@/components/organisms/app-shell";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import type { Post } from "@/types";
-import { Breadcrumbs } from "@/components/molecules/breadcrumbs";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 export async function generateStaticParams() {
     const posts = await getPosts();
@@ -28,26 +36,45 @@ export default async function PostPage({ params }: PostPageProps) {
     notFound();
   }
 
-  const breadcrumbItems = [
-    { label: 'Home', href: '/' },
-  ];
-
   const tag = post.primary_tag?.name?.toLowerCase();
+  const truncatedTitle = post.title.length > 50 ? `${post.title.substring(0, 50)}...` : post.title;
+  let tagLink: React.ReactNode = null;
+
   if (tag === 'news') {
-    breadcrumbItems.push({ label: 'News', href: '/news' });
+    tagLink = <Link href="/news">News</Link>;
   } else if (tag === 'article') {
-    breadcrumbItems.push({ label: 'Articles', href: '/articles' });
+    tagLink = <Link href="/articles">Articles</Link>;
   } else if (tag === 'learn') {
-    breadcrumbItems.push({ label: 'Learn', href: '/learn' });
+    tagLink = <Link href="/learn">Learn</Link>;
   }
 
-  const truncatedTitle = post.title.length > 50 ? `${post.title.substring(0, 50)}...` : post.title;
-  breadcrumbItems.push({ label: truncatedTitle });
 
   return (
     <AppShell>
       <article className="container mx-auto px-4 py-12 md:py-24 max-w-4xl">
-        <Breadcrumbs items={breadcrumbItems} className="mb-8" />
+        <Breadcrumb className="mb-8">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/">Home</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            {tagLink && (
+              <>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    {tagLink}
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </>
+            )}
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{truncatedTitle}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
         <header className="mb-8">
           {post.primary_tag && (
             <Badge variant="secondary" className="mb-4">

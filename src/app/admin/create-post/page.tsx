@@ -20,7 +20,15 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { createPost } from './actions';
 import { useState } from 'react';
-import { Breadcrumbs } from '@/components/molecules/breadcrumbs';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import Link from 'next/link';
 
 const formSchema = z.object({
   title: z.string().min(1, 'Title is required.'),
@@ -53,15 +61,22 @@ export default function CreatePostPage() {
     }
   }
 
-  const breadcrumbItems = [
-    { label: 'Home', href: '/' },
-    { label: 'Create Post' }
-  ];
-
   return (
     <AppShell>
       <div className="container mx-auto px-4 py-12 md:py-24 max-w-2xl">
-        <Breadcrumbs items={breadcrumbItems} className="mb-8" />
+        <Breadcrumb className="mb-8">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/">Home</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Create Post</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
         <Card>
             <CardHeader>
                 <CardTitle className="text-3xl font-headline">Create New Post</CardTitle>

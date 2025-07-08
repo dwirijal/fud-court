@@ -10,7 +10,15 @@ import type { CryptoData } from "@/types";
 import { useState, useEffect } from "react";
 import { CurrencySwitcher } from "@/components/molecules/currency-switcher";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Breadcrumbs } from "@/components/molecules/breadcrumbs";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import Link from "next/link";
 
 export default function MarketsPage() {
   const [data, setData] = useState<CryptoData[]>([]);
@@ -29,16 +37,23 @@ export default function MarketsPage() {
 
   const columns = getColumns(currency);
 
-  const breadcrumbItems = [
-    { label: "Home", href: "/" },
-    { label: "Markets" },
-  ];
-
   return (
     <AppShell>
       <div className="container mx-auto px-4 py-12 md:py-24">
         <header className="mb-12">
-          <Breadcrumbs items={breadcrumbItems} className="mb-4" />
+          <Breadcrumb className="mb-4">
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link href="/">Home</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Markets</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="text-center sm:text-left">
               <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight mb-2">

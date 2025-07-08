@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,9 +30,11 @@ import {
 } from "lucide-react";
 import {
   NavigationMenu,
+  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
+  NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 
@@ -43,6 +45,26 @@ const navItems = [
   { href: "/articles", label: "Articles" },
   { href: "/learn", label: "Learn" },
 ];
+
+const readingComponents: { title: string; href: string; description: string }[] = [
+    {
+      title: "News",
+      href: "/news",
+      description:
+        "Latest updates and breaking stories from the crypto world.",
+    },
+    {
+      title: "Articles",
+      href: "/articles",
+      description:
+        "In-depth analysis and long-form content on the crypto landscape.",
+    },
+    {
+      title: "Learn",
+      href: "/learn",
+      description: "Educational resources to help you understand the world of crypto.",
+    },
+  ]
 
 export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
   const pathname = usePathname();
@@ -128,24 +150,72 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
           >
             <NavigationMenu>
               <NavigationMenuList>
-                {navItems.map((item) => (
-                  <NavigationMenuItem key={item.label}>
-                    <NavigationMenuLink asChild>
-                      <Link
-                        href={item.href}
-                        className={cn(
-                          navigationMenuTriggerStyle(),
-                          "bg-transparent hover:bg-accent/50 text-sm font-medium",
-                          pathname === item.href
-                            ? "text-primary"
-                            : "text-foreground/70"
-                        )}
-                      >
-                        {item.label}
-                      </Link>
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-                ))}
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link
+                      href="/"
+                      className={cn(
+                        navigationMenuTriggerStyle(),
+                        "bg-transparent hover:bg-accent/50 text-sm font-medium",
+                        pathname === "/"
+                          ? "text-primary"
+                          : "text-foreground/70"
+                      )}
+                    >
+                      Home
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link
+                      href="/markets"
+                      className={cn(
+                        navigationMenuTriggerStyle(),
+                        "bg-transparent hover:bg-accent/50 text-sm font-medium",
+                        pathname === "/markets"
+                          ? "text-primary"
+                          : "text-foreground/70"
+                      )}
+                    >
+                      Markets
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                    <NavigationMenuTrigger className="bg-transparent hover:bg-accent/50 text-sm font-medium data-[state=open]:bg-accent/50 text-foreground/70">
+                        Reading
+                    </NavigationMenuTrigger>
+                    <NavigationMenuContent>
+                        <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] lg:w-[600px] grid-cols-[.75fr_1fr]">
+                            <li className="row-span-3">
+                                <NavigationMenuLink asChild>
+                                <a
+                                    className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                                    href="/"
+                                >
+                                    <Logo />
+                                    <div className="mb-2 mt-4 text-lg font-medium">
+                                        Fud Court
+                                    </div>
+                                    <p className="text-sm leading-tight text-muted-foreground">
+                                        Where crypto claims are put on trial. Unbiased news and data.
+                                    </p>
+                                </a>
+                                </NavigationMenuLink>
+                            </li>
+                            {readingComponents.map((component) => (
+                                <ListItem
+                                    key={component.title}
+                                    href={component.href}
+                                    title={component.title}
+                                >
+                                    {component.description}
+                                </ListItem>
+                            ))}
+                        </ul>
+                    </NavigationMenuContent>
+                </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
 
@@ -291,3 +361,29 @@ function UserMenu({
     </DropdownMenu>
   );
 }
+
+const ListItem = React.forwardRef<
+  React.ElementRef<"a">,
+  React.ComponentPropsWithoutRef<"a">
+>(({ className, title, children, ...props }, ref) => {
+  return (
+    <li>
+      <NavigationMenuLink asChild>
+        <a
+          ref={ref}
+          className={cn(
+            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+            className
+          )}
+          {...props}
+        >
+          <div className="text-sm font-medium leading-none">{title}</div>
+          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+            {children}
+          </p>
+        </a>
+      </NavigationMenuLink>
+    </li>
+  );
+});
+ListItem.displayName = "ListItem";

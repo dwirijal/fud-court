@@ -1,14 +1,16 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { getPostBySlug } from "@/lib/ghost";
+import { getPostBySlug, getPosts } from "@/lib/ghost";
 import { AppShell } from "@/components/organisms/app-shell";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import type { Post } from "@/types";
 
 export async function generateStaticParams() {
-    // This is not strictly necessary for mock data but good practice for real CMS
-    return [];
+    const posts = await getPosts();
+    return posts.map((post) => ({
+        slug: post.slug,
+    }));
 }
 
 interface PostPageProps {
@@ -36,9 +38,11 @@ export default async function PostPage({ params }: PostPageProps) {
           <h1 className="text-4xl md:text-5xl font-semibold font-headline tracking-tight mb-4 leading-tight">
             {post.title}
           </h1>
-          <p className="text-muted-foreground text-lg">
-            {post.excerpt}
-          </p>
+          {post.primary_tag?.name?.toLowerCase() !== 'news' && (
+            <p className="text-muted-foreground text-lg">
+              {post.excerpt}
+            </p>
+          )}
           <time dateTime={post.published_at} className="text-sm text-muted-foreground mt-4 block">
             Published on {format(new Date(post.published_at), "MMMM d, yyyy")}
           </time>

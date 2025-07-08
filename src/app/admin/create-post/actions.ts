@@ -30,10 +30,12 @@ export async function createPost(data: { title: string; content: string }) {
       { source: 'html' }
     );
     
-    // Revalidate the news page to show the new post immediately
-    revalidatePath('/news');
-    revalidatePath('/news/[slug]', 'page');
+    // Revalidate paths to show the new post immediately
     revalidatePath('/');
+    revalidatePath('/news');
+    revalidatePath('/articles');
+    revalidatePath('/learn');
+    revalidatePath(`/news/${post.slug}`);
 
   } catch (err) {
     console.error(err);

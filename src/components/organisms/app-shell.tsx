@@ -43,7 +43,7 @@ export function AppShell({ children, showAdminLinks }: AppShellProps) {
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <div className="absolute right-4 top-4 md:hidden">
+        <div className="absolute right-4 top-4">
           <SidebarTrigger />
         </div>
         {children}

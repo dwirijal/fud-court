@@ -49,6 +49,9 @@ export default async function AdminDashboardPage() {
         }
     }
 
+    const totalViews = analytics.reduce((sum, item) => sum + item.count, 0);
+    const uniquePages = analytics.length;
+
     return (
         <div className="container mx-auto px-4 py-12 md:py-24">
             <Breadcrumb className="mb-8">
@@ -102,7 +105,7 @@ export default async function AdminDashboardPage() {
                     </CardContent>
                 </Card>
             ) : (
-                <DashboardContent analytics={analytics} />
+                <DashboardContent analytics={analytics} totalViews={totalViews} uniquePages={uniquePages} />
             )}
         </div>
     );

@@ -1,13 +1,22 @@
 
+'use client';
+
 import type { BoostedToken } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ShieldCheck, ShieldX } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useState, useEffect } from "react";
 
 export function BoostTokenCard({ boost }: { boost: BoostedToken }) {
   const auditOk = boost.audit.is_open_source && !boost.audit.is_honeypot;
-  const time = new Date(boost.timestamp * 1000).toLocaleTimeString();
+  const [time, setTime] = useState('');
+
+  useEffect(() => {
+    // This ensures the time is formatted only on the client, after hydration,
+    // avoiding a mismatch with the server-rendered HTML.
+    setTime(new Date(boost.timestamp * 1000).toLocaleTimeString());
+  }, [boost.timestamp]);
 
   return (
     <Card className="bg-card/60 backdrop-blur-md">

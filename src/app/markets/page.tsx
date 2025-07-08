@@ -44,7 +44,7 @@ export default async function MarketsPage() {
           </p>
         </header>
 
-        <Card className="bg-neutral-900/60 backdrop-blur-md">
+        <Card className="bg-card/60 backdrop-blur-md">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>

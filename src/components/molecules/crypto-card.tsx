@@ -13,7 +13,7 @@ export function CryptoCard({ data, className }: { data: CryptoData, className?: 
   const isPositive = data.price_change_percentage_24h >= 0;
 
   return (
-    <Card className={cn("flex flex-col justify-between transform transition-all duration-200 ease-in-out hover:shadow-2xl hover:-translate-y-1 bg-neutral-900/60 backdrop-blur-md", className)}>
+    <Card className={cn("flex flex-col justify-between transform transition-all duration-200 ease-in-out hover:shadow-2xl hover:-translate-y-1 bg-card/60 backdrop-blur-md", className)}>
       <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
         <div className="flex items-center gap-2">
           <Image

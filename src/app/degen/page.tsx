@@ -45,6 +45,8 @@ export default function DegenPage() {
     return () => clearInterval(intervalId); // Cleanup on component unmount
   }, []); // Empty dependency array ensures this runs once and sets up the interval.
 
+  const validTokens = tokens.filter(token => token && token.address);
+
   return (
     <div className="container mx-auto px-4 py-12 md:py-24">
       <header className="mb-12">
@@ -80,7 +82,7 @@ export default function DegenPage() {
                 <p className="font-semibold">{error}</p>
             </div>
           ) : (
-            tokens.length > 0 ? tokens.map((token) => (
+            validTokens.length > 0 ? validTokens.map((token) => (
               <TrendingTokenCard key={`${token.rank}-${token.address}`} token={token} />
             )) : <p className="text-center text-muted-foreground">No trending tokens found at the moment.</p>
           )}

@@ -71,7 +71,7 @@ export function LoginForm() {
   
   if (isSuccess) {
     return (
-        <Card className="w-full border-0 shadow-none sm:border sm:shadow-lg">
+        <Card className="w-full border-0 shadow-none">
             <CardHeader className="text-center">
                 <CardTitle className="text-2xl">Check Your Inbox</CardTitle>
                 <CardDescription>
@@ -89,20 +89,20 @@ export function LoginForm() {
   }
 
   const handleTabChange = (value: string) => {
-    setActiveTab(value === 'login' ? 'signin' : 'signup');
+    setActiveTab(value as 'signin' | 'signup');
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <Tabs defaultValue="login" className="w-full" onValueChange={handleTabChange}>
+        <Tabs defaultValue="signin" className="w-full" onValueChange={handleTabChange}>
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="login">Login</TabsTrigger>
+            <TabsTrigger value="signin">Login</TabsTrigger>
             <TabsTrigger value="signup">Sign Up</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="login">
-            <Card className="border-0 shadow-none sm:border sm:shadow-lg">
+          <TabsContent value="signin">
+            <Card className="border-0 shadow-none">
               <CardHeader>
                 <CardTitle>Welcome Back</CardTitle>
                 <CardDescription>
@@ -133,7 +133,7 @@ export function LoginForm() {
           </TabsContent>
 
           <TabsContent value="signup">
-            <Card className="border-0 shadow-none sm:border sm:shadow-lg">
+            <Card className="border-0 shadow-none">
               <CardHeader>
                 <CardTitle>Create an Account</CardTitle>
                 <CardDescription>

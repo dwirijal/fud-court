@@ -71,7 +71,7 @@ export function LoginForm() {
   
   if (isSuccess) {
     return (
-        <Card className="w-full border-0 shadow-none">
+        <Card className="w-full">
             <CardHeader className="text-center">
                 <CardTitle className="text-2xl">Check Your Inbox</CardTitle>
                 <CardDescription>
@@ -102,7 +102,7 @@ export function LoginForm() {
           </TabsList>
           
           <TabsContent value="signin">
-            <Card className="border-0 shadow-none">
+            <Card>
               <CardHeader>
                 <CardTitle>Welcome Back</CardTitle>
                 <CardDescription>
@@ -133,7 +133,7 @@ export function LoginForm() {
           </TabsContent>
 
           <TabsContent value="signup">
-            <Card className="border-0 shadow-none">
+            <Card>
               <CardHeader>
                 <CardTitle>Create an Account</CardTitle>
                 <CardDescription>

@@ -6,29 +6,20 @@ import { Logo } from '@/components/atoms/logo';
 
 export default function LoginPage() {
   return (
-    <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
-      <div className="relative hidden bg-muted lg:block">
-        <Link
+    <div className="relative min-h-screen w-full">
+      <Image
+        src="https://firebasestorage.googleapis.com/v0/b/project-sx-test-and-demo.appspot.com/o/images%2F668bf65499a071f02b54d6be%2Fimage.png?alt=media&token=425d50ae-70c8-4775-8163-f09d57a41926"
+        alt="Futuristic crypto park with cute animal characters"
+        fill
+        className="object-cover dark:brightness-[0.4]"
+        data-ai-hint="futuristic crypto park"
+        priority
+      />
+      
+      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center p-6">
+         <Link
             href="/"
-            className="absolute left-8 top-8 z-10 flex items-center gap-2 rounded-md bg-foreground/30 p-2 text-sm font-medium text-background backdrop-blur-sm transition-colors hover:bg-foreground/50"
-        >
-            <ArrowLeft className="h-4 w-4" />
-            <span>Back to Home</span>
-        </Link>
-        <Image
-          src="https://firebasestorage.googleapis.com/v0/b/project-sx-test-and-demo.appspot.com/o/images%2F668bf65499a071f02b54d6be%2Fimage.png?alt=media&token=425d50ae-70c8-4775-8163-f09d57a41926"
-          alt="Futuristic crypto park with cute animal characters"
-          width="1920"
-          height="1080"
-          className="h-full w-full object-cover dark:brightness-[0.8]"
-          data-ai-hint="futuristic crypto park"
-          priority
-        />
-      </div>
-      <div className="relative flex items-center justify-center p-6 py-12">
-        <Link
-            href="/"
-            className="absolute left-4 top-4 flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground md:left-8 md:top-8 lg:hidden"
+            className="absolute left-4 top-4 flex items-center gap-2 rounded-lg bg-black/30 px-3 py-2 text-sm text-background backdrop-blur-sm transition-colors hover:bg-black/50 md:left-8 md:top-8"
         >
             <ArrowLeft className="h-4 w-4" />
             <span>Back to Home</span>

@@ -55,7 +55,7 @@ const contentFeatures = [
         title: "SEO & Linking Tools",
         description: "Optimize content for search engines and manage internal links.",
         icon: LinkIcon,
-        href: "#",
+        href: "/admin/seo",
     },
     {
         title: "Image Generator",

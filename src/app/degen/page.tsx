@@ -7,14 +7,6 @@ import { getTrendingTokens } from "@/lib/moralis";
 import type { MoralisTrendingToken } from "@/types";
 import { TrendingTokenCard } from "@/components/molecules/trending-token-card";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 
 export default function DegenPage() {
   const [tokens, setTokens] = useState<MoralisTrendingToken[]>([]);
@@ -49,28 +41,13 @@ export default function DegenPage() {
 
   return (
     <div className="container mx-auto px-4 py-12 md:py-24">
-      <header className="mb-12">
-        <Breadcrumb className="mb-4">
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link href="/">Home</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Degen</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-        <div className="text-center">
-            <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight mb-2">
-                Trending Tokens on Solana
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                Trending tokens from the Solana ecosystem, powered by Moralis. Data is updated every 6 minutes.
-            </p>
-        </div>
+      <header className="mb-12 text-center">
+        <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight mb-2">
+            Trending Tokens on Solana
+        </h1>
+        <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            Trending tokens from the Solana ecosystem, powered by Moralis. Data is updated every 6 minutes.
+        </p>
       </header>
 
       <div className="max-w-2xl mx-auto">

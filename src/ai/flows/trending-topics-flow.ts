@@ -10,7 +10,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 
-export const TrendingTopicsInputSchema = z.object({
+const TrendingTopicsInputSchema = z.object({
   articles: z.array(
     z.object({
       title: z.string().describe('The title of the news article.'),
@@ -20,7 +20,7 @@ export const TrendingTopicsInputSchema = z.object({
 });
 export type TrendingTopicsInput = z.infer<typeof TrendingTopicsInputSchema>;
 
-export const TrendingTopicsOutputSchema = z.object({
+const TrendingTopicsOutputSchema = z.object({
   topics: z.array(
     z.object({
       topic: z.string().describe('A concise name for the trending topic (e.g., "SEC Regulations", "Solana Memecoin Surge").'),

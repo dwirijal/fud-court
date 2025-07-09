@@ -6,6 +6,7 @@ import { Header } from '@/components/organisms/header';
 import { Footer } from '@/components/organisms/footer';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
+import { AppShell } from './app-shell';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -14,7 +15,8 @@ interface AppLayoutProps {
 
 export function AppLayout({ children, showAdminLinks }: AppLayoutProps) {
   const pathname = usePathname();
-  const isPublicPage = !pathname.startsWith('/admin') && pathname !== '/login';
+  const isAdminPage = pathname.startsWith('/admin');
+  const isLoginPage = pathname === '/login';
 
   return (
     <ThemeProvider
@@ -23,17 +25,16 @@ export function AppLayout({ children, showAdminLinks }: AppLayoutProps) {
       enableSystem
       disableTransitionOnChange
     >
-      {isPublicPage ? (
+      {isAdminPage ? (
+        <AppShell showAdminLinks={showAdminLinks}>{children}</AppShell>
+      ) : isLoginPage ? (
+        <>{children}</>
+      ) : (
         <div className="flex min-h-screen flex-col">
           <Header showAdminLinks={showAdminLinks} />
           <main className="flex-1">{children}</main>
           <Footer />
         </div>
-      ) : (
-        // For admin and login pages, just render the children.
-        // The admin pages will be wrapped by admin/layout.tsx, which provides the AppShell.
-        // The login page has no shell.
-        <>{children}</>
       )}
       <Toaster />
     </ThemeProvider>

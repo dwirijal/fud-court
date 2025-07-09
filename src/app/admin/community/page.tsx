@@ -12,28 +12,29 @@ import Link from "next/link";
 import {
     Users,
     Mail,
-    Ticket,
-    BarChart3
+    BarChart3,
+    Bot
 } from "lucide-react";
 
 const communityFeatures = [
     {
-        title: "Member Directory",
-        description: "View, search, and manage all registered members from your Ghost publication.",
+        title: "User Management",
+        description: "View and manage all registered members of your user base.",
         icon: Users,
-        href: "#",
+        href: "/admin/users",
     },
     {
-        title: "Email Newsletters",
-        description: "Create and send one-off email newsletters directly to your audience segments.",
+        title: "Discord Integration",
+        description: "Connect and manage your Discord server, roles, and automations.",
+        icon: Bot,
+        href: "/admin/community/discord",
+    },
+    {
+        title: "Email & Offer Tools",
+        description: "Manage newsletters and member offers directly in your Ghost Admin Dashboard.",
         icon: Mail,
-        href: "#",
-    },
-    {
-        title: "Offer Management",
-        description: "Create special offers and unique discount codes for your paid membership tiers.",
-        icon: Ticket,
-        href: "#",
+        href: "/admin/ghost",
+        external: true,
     },
     {
         title: "Engagement Analytics",
@@ -64,6 +65,7 @@ export default function CommunityPage() {
                         className="group block h-full"
                         aria-disabled={feature.href === '#'}
                         onClick={(e) => { if (feature.href === '#') e.preventDefault(); }}
+                        {...(feature.external && { target: '_blank', rel: 'noopener noreferrer' })}
                     >
                         <Card className="flex flex-col hover:border-primary/50 hover:shadow-lg transition-all h-full group-aria-disabled:pointer-events-none group-aria-disabled:opacity-60">
                             <CardHeader>

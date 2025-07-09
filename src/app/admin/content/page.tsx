@@ -42,9 +42,9 @@ const contentFeatures = [
     },
     {
         title: "News Sources & Feeds",
-        description: "Manage RSS feeds from sources like Watcher Guru and Reuters.",
+        description: "View the configured RSS feeds that power the content pipeline.",
         icon: Rss,
-        href: "#",
+        href: "/admin/content/feeds",
     },
     {
         title: "Trending Topics Monitor",

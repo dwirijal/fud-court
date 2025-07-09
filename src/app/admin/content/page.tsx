@@ -48,9 +48,9 @@ const contentFeatures = [
     },
     {
         title: "Trending Topics Monitor",
-        description: "Track hot topics and keywords across the crypto space.",
+        description: "Use AI to analyze news feeds and identify key market narratives.",
         icon: Flame,
-        href: "#",
+        href: "/admin/content/trending",
     },
     {
         title: "Translation Tools",

@@ -94,12 +94,6 @@ export default function EditPostPage() {
                 <Link href="/admin/content">News & Content</Link>
                 </BreadcrumbLink>
             </BreadcrumbItem>
-             <BreadcrumbSeparator />
-            <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                <Link href="/admin/content/queue">Post Queue</Link>
-                </BreadcrumbLink>
-            </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
                 <BreadcrumbPage>Edit Post</BreadcrumbPage>

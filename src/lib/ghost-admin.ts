@@ -2,9 +2,10 @@
 'use server';
 
 import GhostAdminAPI from '@tryghost/admin-api';
+// We are using a generic Post type from the content-api, then casting as needed.
+// This is because the Admin API client doesn't export as many detailed types.
 import type { Post as GhostPost } from '@tryghost/content-api';
 
-// The AdminPost type now includes more fields for a richer editing experience.
 export interface AdminPost {
   id: string;
   uuid: string;
@@ -17,6 +18,27 @@ export interface AdminPost {
   html?: string | null;
   excerpt?: string | null;
   feature_image?: string | null;
+  
+  // Optional fields
+  feature_image_alt?: string | null;
+  feature_image_caption?: string | null;
+  visibility?: 'public' | 'members' | 'paid';
+  // The API returns tags and authors as arrays of objects
+  tags?: { id: string; name: string; slug: string }[];
+  authors?: { id: string; name: string; slug: string }[];
+  meta_title?: string | null;
+  meta_description?: string | null;
+  og_title?: string | null;
+  og_description?: string | null;
+  og_image?: string | null;
+  twitter_title?: string | null;
+  twitter_description?: string | null;
+  twitter_image?: string | null;
+  canonical_url?: string | null;
+  email_subject?: string | null;
+  send_email_when_published?: boolean;
+  codeinjection_head?: string | null;
+  codeinjection_foot?: string | null;
 }
 
 function getAdminApi() {
@@ -40,7 +62,7 @@ function getAdminApi() {
     }
 }
 
-function mapToAdminPost(post: GhostPost): AdminPost {
+function mapToAdminPost(post: any): AdminPost {
     return {
         id: post.id,
         uuid: post.uuid,
@@ -51,8 +73,28 @@ function mapToAdminPost(post: GhostPost): AdminPost {
         published_at: post.published_at,
         url: post.url || '',
         html: post.html || null,
-        excerpt: post.excerpt || null,
+        excerpt: post.custom_excerpt || post.excerpt || null,
         feature_image: post.feature_image || null,
+
+        // Map optional fields
+        feature_image_alt: post.feature_image_alt,
+        feature_image_caption: post.feature_image_caption,
+        visibility: post.visibility,
+        tags: post.tags,
+        authors: post.authors,
+        meta_title: post.meta_title,
+        meta_description: post.meta_description,
+        og_title: post.og_title,
+        og_description: post.og_description,
+        og_image: post.og_image,
+        twitter_title: post.twitter_title,
+        twitter_description: post.twitter_description,
+        twitter_image: post.twitter_image,
+        canonical_url: post.canonical_url,
+        email_subject: post.email_subject,
+        send_email_when_published: post.send_email_when_published,
+        codeinjection_head: post.codeinjection_head,
+        codeinjection_foot: post.codeinjection_foot,
     };
 }
 
@@ -66,7 +108,8 @@ export async function getAllPosts(): Promise<AdminPost[]> {
   try {
     const posts = await api.posts.browse({
       limit: 'all',
-      formats: ['html', 'mobiledoc'],
+      formats: ['html'],
+      include: ['tags', 'authors'],
       status: 'all', 
     });
     return (posts as unknown as GhostPost[]).map(mapToAdminPost);
@@ -81,8 +124,7 @@ export async function getPostById(id: string): Promise<AdminPost | null> {
   if (!api) return null;
 
   try {
-    // We now request the feature_image and excerpt fields as well.
-    const post = await api.posts.read({ id, formats: ['html'], include: ['tags'] });
+    const post = await api.posts.read({ id, formats: ['html'], include: ['tags', 'authors'] });
     return mapToAdminPost(post);
   } catch (err) {
     console.error(`Error fetching post with ID ${id}:`, err);

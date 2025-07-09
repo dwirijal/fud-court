@@ -17,21 +17,46 @@ function getApi() {
   return new GhostAdminAPI({ url, key, version: 'v5.0' });
 }
 
+// Helper to build the post data object for the API
+function buildPostData(post: Post) {
+  return {
+    title: post.title,
+    slug: post.slug || undefined,
+    html: post.html,
+    status: post.status,
+    feature_image: post.featureImage || undefined,
+    custom_excerpt: post.excerpt || undefined,
+    
+    // Optional fields
+    feature_image_alt: post.feature_image_alt || undefined,
+    feature_image_caption: post.feature_image_caption || undefined,
+    published_at: post.published_at || undefined,
+    visibility: post.visibility || undefined,
+    tags: post.tags,
+    authors: post.authors,
+    meta_title: post.meta_title || undefined,
+    meta_description: post.meta_description || undefined,
+    og_title: post.og_title || undefined,
+    og_description: post.og_description || undefined,
+    og_image: post.og_image || undefined,
+    twitter_title: post.twitter_title || undefined,
+    twitter_description: post.twitter_description || undefined,
+    twitter_image: post.twitter_image || undefined,
+    canonical_url: post.canonical_url || undefined,
+    email_subject: post.email_subject || undefined,
+    send_email_when_published: post.send_email_when_published,
+    codeinjection_head: post.codeinjection_head || undefined,
+    codeinjection_foot: post.codeinjection_foot || undefined,
+  };
+}
+
+
 export async function createPost(post: Post) {
   const api = getApi();
 
   try {
-    const result = await api.posts.add(
-      {
-        title: post.title,
-        slug: post.slug || undefined,
-        html: post.html,
-        status: post.status,
-        feature_image: post.featureImage || undefined,
-        custom_excerpt: post.excerpt || undefined,
-      },
-      { source: 'html' }
-    );
+    const postData = buildPostData(post);
+    const result = await api.posts.add(postData, { source: 'html' });
     
     revalidatePath('/admin/content/queue');
     revalidatePath('/');
@@ -57,19 +82,12 @@ export async function updatePost(post: Post) {
   }
 
   try {
-    const result = await api.posts.edit(
-      {
+    const postData = {
+        ...buildPostData(post),
         id: post.id,
         updated_at: post.updated_at,
-        title: post.title,
-        slug: post.slug || undefined,
-        html: post.html,
-        status: post.status,
-        feature_image: post.featureImage || undefined,
-        custom_excerpt: post.excerpt || undefined,
-      },
-      { source: 'html' }
-    );
+    };
+    const result = await api.posts.edit(postData, { source: 'html' });
     
     revalidatePath('/admin/content/queue');
     revalidatePath('/');

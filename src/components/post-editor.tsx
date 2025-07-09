@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Post } from "@/types/post"
 import { useToast } from '@/hooks/use-toast'
 import { useRouter } from 'next/navigation'
+import { TiptapEditor } from './tiptap-editor'
 
 type Props = {
   initial?: Partial<Post>
@@ -36,6 +37,10 @@ export function PostEditor({ initial = {}, onSubmit, isSubmitting, setIsSubmitti
     const { name, value } = e.target
     setPost(prev => ({ ...prev, [name]: value }))
   }
+
+  const handleContentChange = (newContent: string) => {
+    setPost(prev => ({ ...prev, html: newContent }));
+  };
   
   const handleFormSubmit = async (newStatus: Post['status']) => {
     setIsSubmitting(true);
@@ -81,8 +86,12 @@ export function PostEditor({ initial = {}, onSubmit, isSubmitting, setIsSubmitti
       </div>
 
       <div>
-        <Label htmlFor="html">Content (HTML)</Label>
-        <Textarea id="html" name="html" value={post.html} onChange={handleChange} rows={15} placeholder="<h1>Your Content Here</h1>" className="font-mono" disabled={isSubmitting} />
+        <Label htmlFor="html-editor">Content</Label>
+        <TiptapEditor
+          content={post.html}
+          onChange={handleContentChange}
+          disabled={isSubmitting}
+        />
       </div>
 
       <div className="flex justify-between items-center">

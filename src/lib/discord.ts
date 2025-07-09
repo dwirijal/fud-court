@@ -5,27 +5,48 @@ import type { DiscordMember, DiscordChannel } from '@/types';
 
 const API_BASE_URL = 'https://discord.com/api/v10';
 
-async function discordApiFetch(endpoint: string): Promise<any> {
+interface FetchOptions {
+    method?: 'GET' | 'POST' | 'PATCH' | 'DELETE' | 'PUT';
+    body?: Record<string, any>;
+}
+
+async function discordApiFetch(endpoint: string, options: FetchOptions = {}): Promise<any> {
+    const { method = 'GET', body } = options;
     const token = process.env.DISCORD_BOT_TOKEN;
     if (!token) {
         throw new Error('Discord Bot Token is not configured.');
     }
 
     const url = `${API_BASE_URL}${endpoint}`;
-    const response = await fetch(url, {
+    
+    const fetchOptions: RequestInit = {
+        method,
         headers: {
-            Authorization: `Bot ${token}`,
+            'Authorization': `Bot ${token}`,
         },
-        cache: 'no-store', // Data can change frequently, so don't cache
-    });
+        cache: 'no-store',
+    };
+
+    if (body) {
+        // Only add Content-Type header if there is a body
+        (fetchOptions.headers as Record<string, string>)['Content-Type'] = 'application/json';
+        fetchOptions.body = JSON.stringify(body);
+    }
+    
+    const response = await fetch(url, fetchOptions);
 
     if (!response.ok) {
         const errorBody = await response.json().catch(() => ({ message: response.statusText }));
         // Provide a more specific error for common issues like missing permissions.
         if (response.status === 403) {
-            throw new Error(`Discord API Forbidden (403): Check if the bot has the required permissions (e.g., 'View Channels', 'Manage Roles') in this server.`);
+            throw new Error(`Discord API Forbidden (403): Check if the bot has the required permissions (e.g., 'Manage Channels') in this server.`);
         }
         throw new Error(`Discord API request failed: ${errorBody.message || response.statusText}`);
+    }
+    
+    // Handle responses with no content, like a successful PATCH or DELETE
+    if (response.status === 204) {
+        return null;
     }
 
     return response.json();
@@ -100,6 +121,24 @@ export async function getGuildChannels(guildId: string): Promise<DiscordChannel[
             });
     } catch (error) {
         console.error('Failed to fetch guild channels from Discord:', error);
+        throw error;
+    }
+}
+
+/**
+ * Edits a Discord channel.
+ * @param channelId The ID of the channel to edit.
+ * @param data The data to update, e.g., { name: 'new-name' }.
+ * @returns A promise that resolves when the channel is edited.
+ */
+export async function editChannel(channelId: string, data: { name: string }): Promise<void> {
+    try {
+        await discordApiFetch(`/channels/${channelId}`, {
+            method: 'PATCH',
+            body: data,
+        });
+    } catch (error) {
+        console.error(`Failed to edit channel ${channelId}:`, error);
         throw error;
     }
 }

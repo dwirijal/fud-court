@@ -26,10 +26,6 @@ import {
     Shield,
     Bot,
     AlertTriangle,
-    MoreHorizontal,
-    Edit,
-    PlusCircle,
-    Trash2,
 } from "lucide-react";
 import {
     Table,
@@ -45,18 +41,12 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getGuildMembers, getGuildChannels } from "@/lib/discord";
 import type { DiscordMember, DiscordChannel } from "@/types";
 import { format } from "date-fns";
+import { ChannelActions } from "@/components/molecules/channel-actions";
 
 const automationFeatures = [
     { title: "Welcome Messages", description: "Automatically greet new members.", icon: MessageSquare },
@@ -245,28 +235,7 @@ export default async function DiscordIntegrationPage() {
                                                                     <span className="font-medium">{channel.name}</span>
                                                                     <Badge variant="outline">{channel.type}</Badge>
                                                                 </div>
-                                                                <DropdownMenu>
-                                                                    <DropdownMenuTrigger asChild>
-                                                                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                                                                            <MoreHorizontal className="h-4 w-4" />
-                                                                            <span className="sr-only">Channel actions</span>
-                                                                        </Button>
-                                                                    </DropdownMenuTrigger>
-                                                                    <DropdownMenuContent align="end">
-                                                                        <DropdownMenuItem disabled>
-                                                                            <Edit className="mr-2 h-4 w-4" />
-                                                                            <span>Edit Channel</span>
-                                                                        </DropdownMenuItem>
-                                                                        <DropdownMenuItem disabled>
-                                                                            <PlusCircle className="mr-2 h-4 w-4" />
-                                                                            <span>Create Thread</span>
-                                                                        </DropdownMenuItem>
-                                                                        <DropdownMenuItem disabled className="text-destructive focus:text-destructive">
-                                                                            <Trash2 className="mr-2 h-4 w-4" />
-                                                                            <span>Delete Channel</span>
-                                                                        </DropdownMenuItem>
-                                                                    </DropdownMenuContent>
-                                                                </DropdownMenu>
+                                                                <ChannelActions channel={channel} />
                                                             </div>
                                                         ))}
                                                     </div>

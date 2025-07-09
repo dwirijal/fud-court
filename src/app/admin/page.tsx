@@ -6,33 +6,11 @@ import {
     CardTitle,
     CardDescription
 } from "@/components/ui/card";
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import Link from "next/link";
 import { Activity, Bot, Newspaper, Users } from "lucide-react";
 
 export default async function AdminDashboardPage() {
     return (
         <div className="container mx-auto px-4 py-12 md:py-24">
-            <Breadcrumb className="mb-8">
-                <BreadcrumbList>
-                    <BreadcrumbItem>
-                        <BreadcrumbLink asChild>
-                            <Link href="/">Home</Link>
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbPage>Admin Dashboard</BreadcrumbPage>
-                    </BreadcrumbItem>
-                </BreadcrumbList>
-            </Breadcrumb>
             <header className="mb-12">
                 <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight mb-2">
                     Admin Dashboard

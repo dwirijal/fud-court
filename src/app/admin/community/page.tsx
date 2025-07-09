@@ -8,14 +8,6 @@ import {
     CardTitle,
     CardDescription,
 } from "@/components/ui/card";
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import Link from "next/link";
 import {
     Users,
@@ -55,20 +47,6 @@ const communityFeatures = [
 export default function CommunityPage() {
     return (
         <div className="container mx-auto px-4 py-12 md:py-24">
-            <Breadcrumb className="mb-8">
-                <BreadcrumbList>
-                    <BreadcrumbItem>
-                        <BreadcrumbLink asChild>
-                            <Link href="/admin">Admin</Link>
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbPage>Community Hub</BreadcrumbPage>
-                    </BreadcrumbItem>
-                </BreadcrumbList>
-            </Breadcrumb>
-            
             <header className="mb-12">
                 <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight mb-2">
                     Community Hub

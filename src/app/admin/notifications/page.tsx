@@ -6,32 +6,10 @@ import {
     CardTitle,
     CardDescription
 } from "@/components/ui/card";
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import Link from "next/link";
 
 export default function NotificationsPage() {
     return (
         <div className="container mx-auto px-4 py-12 md:py-24">
-            <Breadcrumb className="mb-8">
-                <BreadcrumbList>
-                    <BreadcrumbItem>
-                        <BreadcrumbLink asChild>
-                            <Link href="/admin">Admin</Link>
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbPage>Notifications</BreadcrumbPage>
-                    </BreadcrumbItem>
-                </BreadcrumbList>
-            </Breadcrumb>
             <Card>
                 <CardHeader>
                     <CardTitle>System Notifications</CardTitle>

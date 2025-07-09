@@ -26,6 +26,10 @@ import {
     Shield,
     Bot,
     AlertTriangle,
+    MoreHorizontal,
+    Edit,
+    PlusCircle,
+    Trash2,
 } from "lucide-react";
 import {
     Table,
@@ -35,6 +39,19 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getGuildMembers, getGuildChannels } from "@/lib/discord";
@@ -55,6 +72,7 @@ export default async function DiscordIntegrationPage() {
     let members: DiscordMember[] = [];
     let channels: DiscordChannel[] = [];
     let apiError: string | null = null;
+    let channelsByCategory: Record<string, DiscordChannel[]> = {};
 
     if (isDiscordConfigured) {
         try {
@@ -63,6 +81,16 @@ export default async function DiscordIntegrationPage() {
                 getGuildMembers(guildId!),
                 getGuildChannels(guildId!)
             ]);
+
+            channelsByCategory = channels.reduce((acc, channel) => {
+                const category = channel.category || 'Uncategorized';
+                if (!acc[category]) {
+                    acc[category] = [];
+                }
+                acc[category].push(channel);
+                return acc;
+            }, {} as Record<string, DiscordChannel[]>);
+
         } catch (error) {
             apiError = error instanceof Error ? error.message : "An unknown API error occurred.";
         }
@@ -194,27 +222,58 @@ export default async function DiscordIntegrationPage() {
                                         <Hash className="h-5 w-5" />
                                         Server Channels
                                     </CardTitle>
-                                    <CardDescription>A list of channels in your server.</CardDescription>
+                                    <CardDescription>
+                                        Channels in your server, grouped by category. Click to expand.
+                                    </CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead>Channel Name</TableHead>
-                                                <TableHead>Type</TableHead>
-                                                <TableHead>Category</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {channels.map(channel => (
-                                                <TableRow key={channel.id}>
-                                                    <TableCell className="font-medium">#{channel.name}</TableCell>
-                                                    <TableCell>{channel.type}</TableCell>
-                                                    <TableCell><Badge variant="outline">{channel.category}</Badge></TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
+                                    <Accordion type="multiple" className="w-full">
+                                        {Object.entries(channelsByCategory).map(([category, categoryChannels]) => (
+                                            <AccordionItem key={category} value={category}>
+                                                <AccordionTrigger className="hover:no-underline px-2 rounded-md hover:bg-muted/50">
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">{category}</span>
+                                                        <Badge variant="secondary">{categoryChannels.length}</Badge>
+                                                    </div>
+                                                </AccordionTrigger>
+                                                <AccordionContent>
+                                                    <div className="space-y-1 pt-2">
+                                                        {categoryChannels.map(channel => (
+                                                            <div key={channel.id} className="flex items-center justify-between rounded-md p-2 hover:bg-muted/50 ml-4">
+                                                                <div className="flex items-center gap-3">
+                                                                    <Hash className="h-4 w-4 text-muted-foreground" />
+                                                                    <span className="font-medium">{channel.name}</span>
+                                                                    <Badge variant="outline">{channel.type}</Badge>
+                                                                </div>
+                                                                <DropdownMenu>
+                                                                    <DropdownMenuTrigger asChild>
+                                                                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                                            <MoreHorizontal className="h-4 w-4" />
+                                                                            <span className="sr-only">Channel actions</span>
+                                                                        </Button>
+                                                                    </DropdownMenuTrigger>
+                                                                    <DropdownMenuContent align="end">
+                                                                        <DropdownMenuItem disabled>
+                                                                            <Edit className="mr-2 h-4 w-4" />
+                                                                            <span>Edit Channel</span>
+                                                                        </DropdownMenuItem>
+                                                                        <DropdownMenuItem disabled>
+                                                                            <PlusCircle className="mr-2 h-4 w-4" />
+                                                                            <span>Create Thread</span>
+                                                                        </DropdownMenuItem>
+                                                                        <DropdownMenuItem disabled className="text-destructive focus:text-destructive">
+                                                                            <Trash2 className="mr-2 h-4 w-4" />
+                                                                            <span>Delete Channel</span>
+                                                                        </DropdownMenuItem>
+                                                                    </DropdownMenuContent>
+                                                                </DropdownMenu>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </AccordionContent>
+                                            </AccordionItem>
+                                        ))}
+                                    </Accordion>
                                 </CardContent>
                             </Card>
                         </>

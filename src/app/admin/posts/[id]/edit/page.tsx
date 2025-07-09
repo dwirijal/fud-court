@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { notFound } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import { PostEditor } from '@/components/post-editor';
 import { updatePost } from '@/lib/actions/posts';
 import { getPostById } from "@/lib/ghost-admin";
@@ -21,15 +21,18 @@ import {
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 
-export default function EditPostPage({ params }: { params: { id: string } }) {
+export default function EditPostPage() {
+  const params = useParams<{ id: string }>();
   const [post, setPost] = useState<AdminPost | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
+    if (!params.id) return;
+
     const fetchPost = async () => {
       setIsLoading(true);
-      const fetchedPost = await getPostById(params.id);
+      const fetchedPost = await getPostById(params.id as string);
       if (!fetchedPost) {
         notFound();
       }

@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -69,6 +70,11 @@ const SidebarProvider = React.forwardRef<
   ) => {
     const isMobile = useIsMobile()
     const [openMobile, setOpenMobile] = React.useState(false)
+    const [isMounted, setIsMounted] = React.useState(false)
+
+    React.useEffect(() => {
+      setIsMounted(true)
+    }, [])
 
     // This is the internal state of the sidebar.
     // We use openProp and setOpenProp for control from outside the component.
@@ -128,6 +134,34 @@ const SidebarProvider = React.forwardRef<
       }),
       [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
     )
+
+    if (!isMounted) {
+      return (
+        <div className="group/sidebar-wrapper flex min-h-svh w-full">
+          <div className="hidden h-svh w-[16rem] flex-col border-r bg-muted/20 md:flex">
+            <div className="flex flex-col gap-2 p-3">
+              <Skeleton className="h-10 w-full" />
+            </div>
+            <div className="flex flex-1 flex-col gap-1 overflow-auto p-2">
+              {Array.from({ length: 7 }).map((_, i) => (
+                <Skeleton key={i} className="h-10 w-full" />
+              ))}
+            </div>
+            <div className="p-2">
+              <Skeleton className="h-12 w-full" />
+            </div>
+          </div>
+          <main className="relative flex min-h-svh flex-1 flex-col bg-background p-4">
+            <div className="absolute right-4 top-4">
+              <Skeleton className="h-7 w-7" />
+            </div>
+            <div className="flex-1">
+              {/* Children will be rendered here by Next.js, no need to add a skeleton for them */}
+            </div>
+          </main>
+        </div>
+      )
+    }
 
     return (
       <SidebarContext.Provider value={contextValue}>

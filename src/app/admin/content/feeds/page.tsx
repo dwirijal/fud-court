@@ -15,17 +15,10 @@ import {
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
-import { Rss, ExternalLink } from "lucide-react";
+import { Rss } from "lucide-react";
 import Parser from 'rss-parser';
-import { format } from 'date-fns';
+import { FeedsTable } from "./feeds-table";
+import type { FeedItem } from "./columns";
 
 // Force dynamic rendering to fetch fresh data on each request
 export const dynamic = 'force-dynamic';
@@ -42,14 +35,6 @@ const feedSources = [
     { name: "ForexLive (Central Banks)", url: "https://www.forexlive.com/feed/centralbank" },
     { name: "FXStreet", url: "https://www.fxstreet.com/rss/news" },
 ];
-
-interface FeedItem {
-    source: string;
-    title: string;
-    link: string;
-    pubDate: string;
-    isoDate: string;
-}
 
 async function fetchAllFeeds(): Promise<FeedItem[]> {
     const promises = feedSources.map(async (source) => {
@@ -68,6 +53,7 @@ async function fetchAllFeeds(): Promise<FeedItem[]> {
                 link: item.link || '#',
                 pubDate: item.pubDate || new Date().toISOString(),
                 isoDate: item.isoDate || new Date().toISOString(),
+                content: item.content || item['content:encoded'] || item.summary,
             })).slice(0, 20); // Limit to 20 items per feed to keep the page snappy
         } catch (error) {
             console.warn(`Failed to fetch or parse RSS feed from ${source.name}:`, error);
@@ -128,49 +114,17 @@ export default async function NewsFeedsPage() {
                         Aggregated Feed
                     </CardTitle>
                     <CardDescription>
-                       A combined list of recent articles from all your news sources.
+                       A combined list of recent articles from all your news sources. Click the arrow to expand an article.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-[150px] hidden sm:table-cell">Source</TableHead>
-                                <TableHead>Title</TableHead>
-                                <TableHead className="text-right w-[180px] hidden md:table-cell">Published</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {feedItems.length > 0 ? (
-                                feedItems.map((item, index) => (
-                                    <TableRow key={`${item.link}-${index}`}>
-                                        <TableCell className="font-semibold hidden sm:table-cell">{item.source}</TableCell>
-                                        <TableCell>
-                                            <a href={item.link} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-                                                {item.title}
-                                                <ExternalLink className="h-3 w-3 inline-block ml-1.5 opacity-60" />
-                                            </a>
-                                            <div className="text-xs text-muted-foreground md:hidden mt-1">
-                                                {format(new Date(item.isoDate), "d MMM yyyy, HH:mm")}
-                                            </div>
-                                             <div className="text-xs text-muted-foreground sm:hidden mt-1">
-                                                {item.source}
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="text-right font-mono text-xs text-muted-foreground hidden md:table-cell">
-                                            {format(new Date(item.isoDate), "d MMM yyyy, HH:mm")}
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            ) : (
-                                 <TableRow>
-                                    <TableCell colSpan={3} className="text-center h-24">
-                                        Could not fetch any articles from the configured feeds. Check server logs for details.
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
+                    {feedItems.length > 0 ? (
+                        <FeedsTable items={feedItems} />
+                    ) : (
+                        <div className="flex h-24 items-center justify-center text-center text-muted-foreground">
+                            Could not fetch any articles from the configured feeds. Check server logs for details.
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         </div>

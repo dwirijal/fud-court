@@ -1,4 +1,5 @@
 
+
 export interface Post {
   id: string;
   slug: string;
@@ -83,4 +84,20 @@ export interface MoralisTrendingToken {
   address: string;
   price_change_24h: string;
   price_usd: string;
+}
+
+// Discord Types
+export interface DiscordMember {
+  id: string;
+  name: string;
+  avatarUrl: string;
+  roles: string[];
+  joinedAt: string;
+}
+
+export interface DiscordChannel {
+    id: string;
+    name: string;
+    type: 'Text' | 'Voice' | 'Announcement';
+    category: string;
 }

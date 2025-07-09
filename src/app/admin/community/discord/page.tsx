@@ -24,7 +24,8 @@ import {
     Settings, 
     MessageSquare,
     Shield,
-    Bot
+    Bot,
+    AlertTriangle,
 } from "lucide-react";
 import {
     Table,
@@ -36,20 +37,9 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
-// Mock Data - In a real implementation, this would come from the Discord API
-const mockMembers = [
-    { id: '1', name: 'CryptoChad', roles: ['Admin', 'Trader'], joinedAt: '2023-01-15' },
-    { id: '2', name: 'DiamondHands', roles: ['Member'], joinedAt: '2023-02-20' },
-    { id: '3', name: 'MoonLambo', roles: ['Member', 'OG'], joinedAt: '2022-11-10' },
-];
-
-const mockChannels = [
-    { id: '1', name: 'general-chat', type: 'Text', category: 'COMMUNITY' },
-    { id: '2', name: 'alpha-calls', type: 'Text', category: 'TRADING' },
-    { id: '3', name: 'memes', type: 'Text', category: 'COMMUNITY' },
-    { id: '4', name: 'Trading Floor', type: 'Voice', category: 'TRADING' },
-];
+import { getGuildMembers, getGuildChannels } from "@/lib/discord";
+import type { DiscordMember, DiscordChannel } from "@/types";
+import { format } from "date-fns";
 
 const automationFeatures = [
     { title: "Welcome Messages", description: "Automatically greet new members.", icon: MessageSquare },
@@ -58,9 +48,25 @@ const automationFeatures = [
     { title: "Logging & Moderation", description: "Configure logging channels for server events.", icon: Settings },
 ];
 
-export default function DiscordIntegrationPage() {
-    // This check determines whether to show the configuration message or the dashboard.
-    const isDiscordConfigured = !!process.env.DISCORD_BOT_TOKEN;
+export default async function DiscordIntegrationPage() {
+    const guildId = process.env.DISCORD_GUILD_ID;
+    const isDiscordConfigured = !!process.env.DISCORD_BOT_TOKEN && !!guildId;
+    
+    let members: DiscordMember[] = [];
+    let channels: DiscordChannel[] = [];
+    let apiError: string | null = null;
+
+    if (isDiscordConfigured) {
+        try {
+            // Fetch both in parallel to speed things up
+            [members, channels] = await Promise.all([
+                getGuildMembers(guildId!),
+                getGuildChannels(guildId!)
+            ]);
+        } catch (error) {
+            apiError = error instanceof Error ? error.message : "An unknown API error occurred.";
+        }
+    }
 
     return (
         <div className="container mx-auto px-4 py-12 md:py-24">
@@ -101,12 +107,12 @@ export default function DiscordIntegrationPage() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    {!isDiscordConfigured ? (
+                    {!process.env.DISCORD_BOT_TOKEN || !process.env.DISCORD_GUILD_ID ? (
                          <Alert variant="destructive">
                             <Terminal className="h-4 w-4" />
                             <AlertTitle>Configuration Missing</AlertTitle>
                             <AlertDescription>
-                                Discord Bot Token is not configured. Please set `DISCORD_BOT_TOKEN` in your environment variables to enable this feature. You can get a token from the Discord Developer Portal.
+                                Your Discord Bot Token and/or Server ID are not configured. Please set `DISCORD_BOT_TOKEN` and `DISCORD_GUILD_ID` in your environment variables to enable this feature.
                             </AlertDescription>
                         </Alert>
                     ) : (
@@ -114,7 +120,7 @@ export default function DiscordIntegrationPage() {
                             <CheckCircle className="h-4 w-4 text-chart-2" />
                             <AlertTitle>Successfully Connected</AlertTitle>
                             <AlertDescription>
-                                Your Discord Bot Token is configured correctly. You can now build features that interact with the Discord API.
+                                Your Discord credentials are configured correctly.
                             </AlertDescription>
                         </Alert>
                     )}
@@ -123,79 +129,96 @@ export default function DiscordIntegrationPage() {
 
             {isDiscordConfigured && (
                 <div className="space-y-12">
-                    {/* Server Members Section */}
-                    <Card>
-                        <CardHeader>
-                             <CardTitle className="flex items-center gap-2">
-                                <Users className="h-5 w-5" />
-                                Server Members
-                            </CardTitle>
-                            <CardDescription>A list of the most recent members in your server. (Mock Data)</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>User</TableHead>
-                                        <TableHead>Roles</TableHead>
-                                        <TableHead className="text-right">Joined At</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {mockMembers.map(member => (
-                                        <TableRow key={member.id}>
-                                            <TableCell className="flex items-center gap-2">
-                                                <Avatar className="h-8 w-8">
-                                                     <AvatarImage src={`https://placehold.co/40x40.png`} data-ai-hint="user avatar"/>
-                                                     <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
-                                                </Avatar>
-                                                <span className="font-medium">{member.name}</span>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="flex flex-wrap gap-1">
-                                                    {member.roles.map(role => (
-                                                        <Badge key={role} variant="secondary">{role}</Badge>
-                                                    ))}
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="text-right font-mono text-xs">{member.joinedAt}</TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardContent>
-                    </Card>
+                     {apiError ? (
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2 text-destructive">
+                                    <AlertTriangle className="h-5 w-5" />
+                                    API Request Failed
+                                </CardTitle>
+                                <CardDescription>Could not fetch data from the Discord API. Please check your Bot Token, Server ID, and that your bot has been invited to the server with the correct permissions.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-sm text-destructive font-mono bg-destructive/10 p-4 rounded-md">{apiError}</p>
+                            </CardContent>
+                        </Card>
+                    ) : (
+                        <>
+                            {/* Server Members Section */}
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <Users className="h-5 w-5" />
+                                        Recent Server Members
+                                    </CardTitle>
+                                    <CardDescription>A list of the most recent members in your server.</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>User</TableHead>
+                                                <TableHead>Roles</TableHead>
+                                                <TableHead className="text-right">Joined At</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {members.map(member => (
+                                                <TableRow key={member.id}>
+                                                    <TableCell className="flex items-center gap-2">
+                                                        <Avatar className="h-8 w-8">
+                                                            <AvatarImage src={member.avatarUrl} alt={`${member.name}'s avatar`} data-ai-hint="user avatar" />
+                                                            <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
+                                                        </Avatar>
+                                                        <span className="font-medium">{member.name}</span>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <div className="flex flex-wrap gap-1">
+                                                            {member.roles.length > 0 ? member.roles.map(role => (
+                                                                <Badge key={role} variant="secondary">{role}</Badge>
+                                                            )) : <span className="text-xs text-muted-foreground">No roles</span>}
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell className="text-right font-mono text-xs">{format(new Date(member.joinedAt), 'd MMM yyyy')}</TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </CardContent>
+                            </Card>
 
-                    {/* Server Channels Section */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Hash className="h-5 w-5" />
-                                Server Channels
-                            </CardTitle>
-                            <CardDescription>A list of channels in your server. (Mock Data)</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Channel Name</TableHead>
-                                        <TableHead>Type</TableHead>
-                                        <TableHead>Category</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {mockChannels.map(channel => (
-                                        <TableRow key={channel.id}>
-                                            <TableCell className="font-medium">#{channel.name}</TableCell>
-                                            <TableCell>{channel.type}</TableCell>
-                                            <TableCell><Badge variant="outline">{channel.category}</Badge></TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardContent>
-                    </Card>
+                            {/* Server Channels Section */}
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <Hash className="h-5 w-5" />
+                                        Server Channels
+                                    </CardTitle>
+                                    <CardDescription>A list of channels in your server.</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>Channel Name</TableHead>
+                                                <TableHead>Type</TableHead>
+                                                <TableHead>Category</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {channels.map(channel => (
+                                                <TableRow key={channel.id}>
+                                                    <TableCell className="font-medium">#{channel.name}</TableCell>
+                                                    <TableCell>{channel.type}</TableCell>
+                                                    <TableCell><Badge variant="outline">{channel.category}</Badge></TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </CardContent>
+                            </Card>
+                        </>
+                    )}
                     
                     {/* Automation & Settings Section */}
                      <div>

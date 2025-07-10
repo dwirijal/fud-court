@@ -41,6 +41,11 @@ export interface AdminPost {
   codeinjection_foot?: string | null;
 }
 
+export interface ImageAsset {
+    url: string;
+    alt: string | null;
+}
+
 function getAdminApi() {
     const url = process.env.GHOST_API_URL;
     const key = process.env.GHOST_ADMIN_API_KEY;
@@ -130,4 +135,53 @@ export async function getPostById(id: string): Promise<AdminPost | null> {
     console.error(`Error fetching post with ID ${id}:`, err);
     return null;
   }
+}
+
+export async function getRecentImages(): Promise<ImageAsset[]> {
+    const api = getAdminApi();
+    if (!api) {
+        return [];
+    }
+
+    try {
+        const posts = await api.posts.browse({
+            limit: 20, // Fetch recent 20 posts to find images
+            fields: 'feature_image, feature_image_alt, html',
+            formats: ['html'],
+            status: 'published',
+        });
+
+        const imageUrls = new Set<string>();
+        const imageAssets: ImageAsset[] = [];
+
+        for (const post of posts) {
+            // Add feature image
+            if (post.feature_image && !imageUrls.has(post.feature_image)) {
+                imageUrls.add(post.feature_image);
+                imageAssets.push({
+                    url: post.feature_image,
+                    alt: post.feature_image_alt || null,
+                });
+            }
+
+            // Extract images from post content (HTML)
+            if (post.html) {
+                const imageRegex = /<img[^>]+src="([^">]+)"[^>]*alt="([^"]*)"/g;
+                let match;
+                while ((match = imageRegex.exec(post.html)) !== null) {
+                    const url = match[1];
+                    const alt = match[2];
+                    if (!imageUrls.has(url)) {
+                        imageUrls.add(url);
+                        imageAssets.push({ url, alt });
+                    }
+                }
+            }
+        }
+
+        return imageAssets;
+    } catch (err) {
+        console.error('Error fetching recent images from Ghost Admin API:', err);
+        return [];
+    }
 }

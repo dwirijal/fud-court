@@ -152,11 +152,15 @@ function CreateChannelDialog({ categories, open, onOpenChange, onFormSubmit }: {
     );
 }
 
+// This page now needs to be wrapped in a Server Component to fetch data server-side
+// and check environment variables before rendering the client component.
+export default function ManageChannelsPageWrapper() {
+    const isDiscordConfigured = !!process.env.DISCORD_BOT_TOKEN && !!process.env.DISCORD_GUILD_ID;
+    return <ManageChannelsPage isDiscordConfigured={isDiscordConfigured} />;
+}
 
-export default function ManageChannelsPage() {
-    const guildId = process.env.NEXT_PUBLIC_DISCORD_GUILD_ID;
-    const isDiscordConfigured = !!process.env.NEXT_PUBLIC_DISCORD_BOT_TOKEN && !!guildId;
-    
+
+function ManageChannelsPage({ isDiscordConfigured }: { isDiscordConfigured: boolean }) {
     const [channels, setChannels] = useState<DiscordChannel[]>([]);
     const [apiError, setApiError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -167,7 +171,10 @@ export default function ManageChannelsPage() {
         if (isDiscordConfigured) {
             try {
                 setIsLoading(true);
-                const fetchedChannels = await getGuildChannels(guildId!);
+                const guildId = process.env.NEXT_PUBLIC_DISCORD_GUILD_ID;
+                if (!guildId) throw new Error("Discord Guild ID is not configured on the client. This should not happen if isDiscordConfigured is true.");
+                
+                const fetchedChannels = await getGuildChannels();
 
                 setChannels(fetchedChannels);
 
@@ -196,7 +203,7 @@ export default function ManageChannelsPage() {
 
     useEffect(() => {
         fetchChannels();
-    }, [isDiscordConfigured, guildId]);
+    }, [isDiscordConfigured]);
 
     const getStatus = () => {
         if (!isDiscordConfigured) {
@@ -275,7 +282,7 @@ export default function ManageChannelsPage() {
                             Configuration Missing
                         </CardTitle>
                         <CardDescription>
-                            Your Discord Bot Token and/or Server ID are not configured. Please set `NEXT_PUBLIC_DISCORD_BOT_TOKEN` and `NEXT_PUBLIC_DISCORD_GUILD_ID` in your environment variables to enable this feature.
+                            Your Discord Bot Token and/or Server ID are not configured. Please set `DISCORD_BOT_TOKEN` and `DISCORD_GUILD_ID` in your environment variables to enable this feature.
                         </CardDescription>
                     </CardHeader>
                 </Card>
@@ -338,3 +345,6 @@ export default function ManageChannelsPage() {
         </div>
     );
 }
+
+// Remove the default export from the client component
+// export default ManageChannelsPage;

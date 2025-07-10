@@ -7,9 +7,6 @@ import { createChannel, deleteChannel, editChannel, createThread } from '../disc
 const revalidate = () => revalidatePath('/admin/community/channels');
 
 export async function updateChannelName(channelId: string, newName: string) {
-    if (!process.env.DISCORD_GUILD_ID) {
-        throw new Error('Discord Guild ID is not configured.');
-    }
     if (!newName || newName.trim().length === 0) {
         throw new Error('Channel name cannot be empty.');
     }
@@ -38,11 +35,6 @@ export async function deleteChannelAction(channelId: string) {
 }
 
 export async function createChannelAction(formData: FormData) {
-    const guildId = process.env.DISCORD_GUILD_ID;
-    if (!guildId) {
-        throw new Error('Discord Guild ID is not configured.');
-    }
-
     const name = formData.get('name') as string;
     const type = parseInt(formData.get('type') as string, 10);
     const category = formData.get('category') as string;
@@ -55,7 +47,7 @@ export async function createChannelAction(formData: FormData) {
     }
 
     try {
-        await createChannel(guildId, {
+        await createChannel({
             name,
             type,
             parent_id: category || undefined,

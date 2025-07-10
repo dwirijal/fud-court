@@ -58,11 +58,13 @@ async function discordApiFetch(endpoint: string, options: FetchOptions = {}): Pr
 
 /**
  * Fetches members and their roles from a Discord guild.
- * @param guildId The ID of the Discord server.
  * @param limit The number of members to fetch. Defaults to 25.
  * @returns A promise that resolves to an array of DiscordMember objects.
  */
-export async function getGuildMembers(guildId: string, limit: number = 25): Promise<DiscordMember[]> {
+export async function getGuildMembers(limit: number = 25): Promise<DiscordMember[]> {
+    const guildId = process.env.DISCORD_GUILD_ID;
+    if (!guildId) throw new Error('Discord Guild ID is not configured.');
+
     try {
         const [members, rolesData] = await Promise.all([
             discordApiFetch(`/guilds/${guildId}/members?limit=${limit}`),
@@ -94,10 +96,12 @@ export async function getGuildMembers(guildId: string, limit: number = 25): Prom
 
 /**
  * Fetches channels from a Discord guild.
- * @param guildId The ID of the Discord server.
  * @returns A promise that resolves to an array of DiscordChannel objects.
  */
-export async function getGuildChannels(guildId: string): Promise<DiscordChannel[]> {
+export async function getGuildChannels(): Promise<DiscordChannel[]> {
+    const guildId = process.env.DISCORD_GUILD_ID;
+    if (!guildId) throw new Error('Discord Guild ID is not configured.');
+
      try {
         const channels: any[] = await discordApiFetch(`/guilds/${guildId}/channels`, { noCache: true });
         
@@ -167,11 +171,13 @@ export async function deleteChannel(channelId: string): Promise<void> {
 
 /**
  * Creates a new channel in a Discord guild.
- * @param guildId The ID of the Discord server.
  * @param data The channel creation data.
  * @returns A promise that resolves with the created channel data.
  */
-export async function createChannel(guildId: string, data: { name: string; type: number; parent_id?: string }): Promise<DiscordChannel> {
+export async function createChannel(data: { name: string; type: number; parent_id?: string }): Promise<DiscordChannel> {
+    const guildId = process.env.DISCORD_GUILD_ID;
+    if (!guildId) throw new Error('Discord Guild ID is not configured.');
+    
     try {
         return await discordApiFetch(`/guilds/${guildId}/channels`, {
             method: 'POST',
@@ -204,14 +210,16 @@ export async function createThread(channelId: string, data: { name: string; auto
 
 /**
  * Fetches comprehensive data about a Discord guild.
- * @param guildId The ID of the Discord server.
  * @returns A promise that resolves to an object with guild details.
  */
-export async function getGuildData(guildId: string) {
+export async function getGuildData() {
+    const guildId = process.env.DISCORD_GUILD_ID;
+    if (!guildId) throw new Error('Discord Guild ID is not configured.');
+
     try {
         const [guild, channels] = await Promise.all([
             discordApiFetch(`/guilds/${guildId}?with_counts=true`),
-            getGuildChannels(guildId)
+            getGuildChannels()
         ]);
 
         return {

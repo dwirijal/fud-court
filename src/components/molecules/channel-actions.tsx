@@ -35,7 +35,7 @@ import { MoreHorizontal, Edit, MessageSquarePlus, Trash2, Loader2, Image as Imag
 import type { DiscordChannel } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import { updateChannelName, deleteChannelAction, createThreadInChannel } from '@/lib/actions/discord';
-import { TiptapEditor } from '../tiptap-editor';
+import { Textarea } from '../ui/textarea';
 
 interface ChannelActionsProps {
     channel: DiscordChannel;
@@ -48,10 +48,6 @@ function CreateThreadDialog({ channel, open, onOpenChange, onActionComplete }: {
     const [threadName, setThreadName] = useState('');
     const [messageContent, setMessageContent] = useState('');
     const [imageFile, setImageFile] = useState<File | null>(null);
-
-    const handleContentChange = useCallback((newContent: string) => {
-        setMessageContent(newContent);
-    }, []);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -70,7 +66,7 @@ function CreateThreadDialog({ channel, open, onOpenChange, onActionComplete }: {
             const formData = new FormData();
             formData.append('channelId', channel.id);
             formData.append('threadName', threadName);
-            formData.append('messageContent', messageContent); // HTML content
+            formData.append('messageContent', messageContent);
             if (imageFile) {
                 formData.append('image', imageFile);
             }
@@ -105,7 +101,7 @@ function CreateThreadDialog({ channel, open, onOpenChange, onActionComplete }: {
                 <DialogHeader>
                     <DialogTitle>Create New Thread in #{channel.name}</DialogTitle>
                     <DialogDescription>
-                        Start a new discussion. The first message will be formatted using Discord's Markdown.
+                        Start a new discussion. The first message will be sent with the thread.
                     </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleFormSubmit}>
@@ -122,11 +118,14 @@ function CreateThreadDialog({ channel, open, onOpenChange, onActionComplete }: {
                             />
                         </div>
                         <div>
-                            <Label>Message</Label>
-                            <TiptapEditor
-                                content={messageContent}
-                                onChange={handleContentChange}
+                            <Label htmlFor="message-content">Message (Optional)</Label>
+                            <Textarea
+                                id="message-content"
+                                value={messageContent}
+                                onChange={(e) => setMessageContent(e.target.value)}
+                                placeholder="Your first message in the thread..."
                                 disabled={isSubmitting}
+                                rows={5}
                             />
                         </div>
                         <div>

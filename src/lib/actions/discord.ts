@@ -3,7 +3,6 @@
 
 import { revalidatePath } from 'next/cache';
 import { createChannel, deleteChannel, editChannel, createThread } from '../discord';
-import TurndownService from 'turndown';
 
 const revalidate = () => revalidatePath('/admin/community/channels');
 
@@ -64,7 +63,7 @@ export async function createChannelAction(formData: FormData) {
 export async function createThreadInChannel(formData: FormData) {
     const channelId = formData.get('channelId') as string;
     const threadName = formData.get('threadName') as string;
-    const htmlContent = formData.get('messageContent') as string;
+    const messageContent = formData.get('messageContent') as string;
     const imageFile = formData.get('image') as File;
 
     if (!threadName || threadName.trim().length === 0) {
@@ -74,17 +73,17 @@ export async function createThreadInChannel(formData: FormData) {
         throw new Error('Channel ID is missing.');
     }
 
-    // Initialize Turndown to convert HTML to Markdown
-    const turndownService = new TurndownService();
-    const markdownContent = turndownService.turndown(htmlContent);
-
     try {
-        const threadData = {
+        const threadData: { name: string; message?: { content: string } } = {
             name: threadName,
-            message: {
-                content: markdownContent,
-            }
         };
+        
+        // Only include the message object if there is content.
+        if (messageContent && messageContent.trim().length > 0) {
+            threadData.message = {
+                content: messageContent,
+            };
+        }
 
         const threadCreationFormData = new FormData();
         threadCreationFormData.append('payload_json', JSON.stringify(threadData));

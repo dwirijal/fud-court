@@ -28,20 +28,20 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MoreHorizontal, Edit, PlusCircle, Trash2, MessageSquarePlus } from "lucide-react";
+import { MoreHorizontal, Edit, MessageSquarePlus, Trash2 } from "lucide-react";
 import type { DiscordChannel } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import { updateChannelName, deleteChannelAction, createThreadInChannel } from '@/lib/actions/discord';
 
 interface ChannelActionsProps {
     channel: DiscordChannel;
+    onActionComplete: () => void;
 }
 
-export function ChannelActions({ channel }: ChannelActionsProps) {
+export function ChannelActions({ channel, onActionComplete }: ChannelActionsProps) {
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     
@@ -52,6 +52,10 @@ export function ChannelActions({ channel }: ChannelActionsProps) {
     // State for Thread Dialog
     const [isThreadDialogOpen, setIsThreadDialogOpen] = useState(false);
     const [threadName, setThreadName] = useState('');
+
+    // State for Delete Alert
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
 
     const handleEditSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -65,6 +69,7 @@ export function ChannelActions({ channel }: ChannelActionsProps) {
                 description: `Channel renamed to "${newChannelName}".`,
             });
             setIsEditDialogOpen(false);
+            onActionComplete();
         } catch (error) {
             toast({
                 title: 'Error',
@@ -84,6 +89,8 @@ export function ChannelActions({ channel }: ChannelActionsProps) {
                 title: 'Success',
                 description: `Channel "${channel.name}" has been deleted.`,
             });
+            setIsDeleteDialogOpen(false);
+            onActionComplete();
         } catch (error) {
              toast({
                 title: 'Error',
@@ -108,6 +115,7 @@ export function ChannelActions({ channel }: ChannelActionsProps) {
             });
             setIsThreadDialogOpen(false);
             setThreadName('');
+            onActionComplete();
         } catch (error) {
             toast({
                 title: 'Error',
@@ -141,30 +149,10 @@ export function ChannelActions({ channel }: ChannelActionsProps) {
                         <span>Create Thread</span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                            <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 text-destructive focus:text-destructive">
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                <span>Delete Channel</span>
-                            </div>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                This action cannot be undone. This will permanently delete the
-                                <span className="font-bold"> #{channel.name} </span>
-                                channel and all of its messages.
-                            </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                            <AlertDialogCancel disabled={isSubmitting}>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleDelete} disabled={isSubmitting}>
-                                {isSubmitting ? 'Deleting...' : 'Continue'}
-                            </AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
+                    <DropdownMenuItem onSelect={() => setIsDeleteDialogOpen(true)} className="text-destructive focus:text-destructive">
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        <span>Delete Channel</span>
+                    </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
 
@@ -244,6 +232,26 @@ export function ChannelActions({ channel }: ChannelActionsProps) {
                     </form>
                 </DialogContent>
             </Dialog>
+
+            {/* Delete Channel Alert Dialog */}
+             <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete the
+                        <span className="font-bold"> #{channel.name} </span>
+                        channel and all of its messages.
+                    </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                    <AlertDialogCancel disabled={isSubmitting}>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDelete} disabled={isSubmitting} className="bg-destructive hover:bg-destructive/90">
+                        {isSubmitting ? 'Deleting...' : 'Continue'}
+                    </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </>
     );
 }

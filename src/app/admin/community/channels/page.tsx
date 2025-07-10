@@ -171,9 +171,6 @@ function ManageChannelsPage({ isDiscordConfigured }: { isDiscordConfigured: bool
         if (isDiscordConfigured) {
             try {
                 setIsLoading(true);
-                const guildId = process.env.NEXT_PUBLIC_DISCORD_GUILD_ID;
-                if (!guildId) throw new Error("Discord Guild ID is not configured on the client. This should not happen if isDiscordConfigured is true.");
-                
                 const fetchedChannels = await getGuildChannels();
 
                 setChannels(fetchedChannels);
@@ -282,7 +279,7 @@ function ManageChannelsPage({ isDiscordConfigured }: { isDiscordConfigured: bool
                             Configuration Missing
                         </CardTitle>
                         <CardDescription>
-                            Your Discord Bot Token and/or Server ID are not configured. Please set `DISCORD_BOT_TOKEN` and `DISCORD_GUILD_ID` in your environment variables to enable this feature.
+                            Your Discord Bot Token and/or Server ID are not configured. Please set `DISCORD_BOT_TOKEN` and `DISCORD_GUILD_ID` in your `.env.local` file to enable this feature.
                         </CardDescription>
                     </CardHeader>
                 </Card>
@@ -329,7 +326,7 @@ function ManageChannelsPage({ isDiscordConfigured }: { isDiscordConfigured: bool
                                                         <span className="font-medium">{channel.name}</span>
                                                         <Badge variant="outline">{channel.type}</Badge>
                                                     </div>
-                                                    <ChannelActions channel={channel} />
+                                                    <ChannelActions channel={channel} onActionComplete={fetchChannels} />
                                                 </div>
                                             ))}
                                         </div>
@@ -345,6 +342,3 @@ function ManageChannelsPage({ isDiscordConfigured }: { isDiscordConfigured: bool
         </div>
     );
 }
-
-// Remove the default export from the client component
-// export default ManageChannelsPage;

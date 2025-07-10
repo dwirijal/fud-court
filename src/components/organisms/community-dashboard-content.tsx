@@ -28,19 +28,19 @@ const quickActionFeatures = [
         title: "Manage Channels",
         description: "View and edit all server channels.",
         icon: Hash,
-        href: "/admin/community/discord",
+        href: "/admin/community/channels",
     },
     {
         title: "Send Announcement",
         description: "Broadcast a message to a channel.",
         icon: MessageSquare,
-        href: "#",
+        href: "/admin/community/broadcast",
     },
     {
         title: "Manage Members",
         description: "View and manage all members.",
         icon: Users,
-        href: "#",
+        href: "/admin/community/members",
     },
 ];
 
@@ -111,10 +111,10 @@ export function CommunityDashboardContent({ guildData }: CommunityDashboardConte
                             </CardHeader>
                             <CardContent>
                                 <CardDescription className="mb-4">{feature.description}</CardDescription>
-                                <Button asChild variant="outline" size="sm" className="w-full" disabled={feature.href === '#'}>
+                                <Button asChild variant="outline" size="sm" className="w-full">
                                     <Link href={feature.href}>
-                                        {feature.href === '#' ? 'Coming Soon' : 'Go to Page'}
-                                        {feature.href !== '#' && <ArrowUpRight className="ml-2 h-4 w-4" />}
+                                        Go to Page
+                                        <ArrowUpRight className="ml-2 h-4 w-4" />
                                     </Link>
                                 </Button>
                             </CardContent>

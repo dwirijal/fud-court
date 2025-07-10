@@ -58,9 +58,10 @@ const slowmodeOptions = [
 interface ChannelEditorProps {
     channel: DiscordChannel;
     onActionComplete: () => void;
+    onClose: () => void;
 }
 
-export function ChannelEditor({ channel, onActionComplete }: ChannelEditorProps) {
+export function ChannelEditor({ channel, onActionComplete, onClose }: ChannelEditorProps) {
     const [name, setName] = useState(channel.name);
     const [topic, setTopic] = useState(channel.topic || '');
     const [nsfw, setNsfw] = useState(channel.nsfw);
@@ -117,6 +118,7 @@ export function ChannelEditor({ channel, onActionComplete }: ChannelEditorProps)
                 description: `Channel "${channel.name}" has been deleted.`,
             });
             setIsDeleteDialogOpen(false);
+            onClose(); // This will close the sheet
             onActionComplete(); // This will trigger a re-fetch and remove the item
         } catch (error) {
             toast({
@@ -134,7 +136,7 @@ export function ChannelEditor({ channel, onActionComplete }: ChannelEditorProps)
 
     return (
         <>
-            <div className="space-y-6 py-4">
+            <div className="p-6 space-y-6 flex-grow overflow-y-auto">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                         <Label htmlFor={`name-${channel.id}`}>Channel Name</Label>
@@ -169,19 +171,17 @@ export function ChannelEditor({ channel, onActionComplete }: ChannelEditorProps)
                     <Switch id={`nsfw-${channel.id}`} checked={nsfw} onCheckedChange={setNsfw} disabled={isSubmitting} />
                     <Label htmlFor={`nsfw-${channel.id}`}>Age-Restricted (NSFW)</Label>
                 </div>
-            </div>
-            <div className="flex justify-between items-center mt-auto pt-4 border-t">
-                <div className="flex gap-2">
-                     {canHaveThreads && (
-                        <Button onClick={() => setIsThreadDialogOpen(true)} variant="outline" size="sm" disabled={isSubmitting}>
-                            <MessageSquarePlus className="mr-2 h-4 w-4" /> Create Thread
-                        </Button>
-                    )}
-                    <Button onClick={() => setIsDeleteDialogOpen(true)} variant="destructive" size="sm" disabled={isSubmitting || isDeleting}>
-                        {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
-                        Delete
+                 {canHaveThreads && (
+                    <Button onClick={() => setIsThreadDialogOpen(true)} variant="outline" size="sm" disabled={isSubmitting}>
+                        <MessageSquarePlus className="mr-2 h-4 w-4" /> Create Thread
                     </Button>
-                </div>
+                )}
+            </div>
+            <div className="flex justify-between items-center p-6 border-t bg-background">
+                <Button onClick={() => setIsDeleteDialogOpen(true)} variant="destructive" size="sm" disabled={isSubmitting || isDeleting}>
+                    {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
+                    Delete
+                </Button>
                  <Button onClick={handleSave} size="sm" disabled={!hasChanges || isSubmitting}>
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Save Changes
@@ -330,3 +330,5 @@ function CreateThreadDialog({ channel, open, onOpenChange, onActionComplete }: {
         </Dialog>
     );
 }
+
+    

@@ -15,10 +15,8 @@ import {
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { 
     Terminal, 
-    CheckCircle, 
     Users, 
     Hash, 
     Settings, 
@@ -26,6 +24,8 @@ import {
     Shield,
     Bot,
     AlertTriangle,
+    WifiOff,
+    Wifi,
 } from "lucide-react";
 import {
     Table,
@@ -47,6 +47,7 @@ import { getGuildMembers, getGuildChannels } from "@/lib/discord";
 import type { DiscordMember, DiscordChannel } from "@/types";
 import { format } from "date-fns";
 import { ChannelActions } from "@/components/molecules/channel-actions";
+import { cn } from "@/lib/utils";
 
 const automationFeatures = [
     { title: "Welcome Messages", description: "Automatically greet new members.", icon: MessageSquare },
@@ -86,6 +87,33 @@ export default async function DiscordIntegrationPage() {
         }
     }
 
+    const getStatus = () => {
+        if (!isDiscordConfigured) {
+            return {
+                text: 'Not Configured',
+                icon: WifiOff,
+                variant: 'secondary',
+                className: 'bg-amber-500/10 text-amber-500 border-amber-500/20',
+            } as const;
+        }
+        if (apiError) {
+            return {
+                text: 'API Error',
+                icon: AlertTriangle,
+                variant: 'destructive',
+            } as const;
+        }
+        return {
+            text: 'Connected',
+            icon: Wifi,
+            variant: 'default',
+            className: 'bg-chart-2/10 text-chart-2 border-chart-2/20',
+        } as const;
+    };
+
+    const status = getStatus();
+
+
     return (
         <div className="container mx-auto px-4 py-12 md:py-24">
             <Breadcrumb className="mb-8">
@@ -109,36 +137,34 @@ export default async function DiscordIntegrationPage() {
             </Breadcrumb>
             
             <header className="mb-12">
-                <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight mb-2">
-                    Discord Integration
-                </h1>
-                <p className="text-xl text-muted-foreground">
+                <div className="flex items-center gap-4">
+                     <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight">
+                        Discord Integration
+                    </h1>
+                     <Badge variant={status.variant} className={cn("text-xs font-mono", status.className)}>
+                        <status.icon className="mr-1.5 h-3 w-3" />
+                        {status.text}
+                    </Badge>
+                </div>
+
+                <p className="text-xl text-muted-foreground mt-2">
                     Manage your Discord server connection and automations.
                 </p>
             </header>
 
-             <div className="mb-8">
-                {!isDiscordConfigured ? (
-                        <Alert variant="destructive">
-                        <Terminal className="h-4 w-4" />
-                        <AlertTitle>Configuration Missing</AlertTitle>
-                        <AlertDescription>
+            {!isDiscordConfigured ? (
+                 <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Terminal className="h-5 w-5" />
+                            Configuration Missing
+                        </CardTitle>
+                        <CardDescription>
                             Your Discord Bot Token and/or Server ID are not configured. Please set `DISCORD_BOT_TOKEN` and `DISCORD_GUILD_ID` in your environment variables to enable this feature.
-                        </AlertDescription>
-                    </Alert>
-                ) : !apiError ? (
-                    <Alert>
-                        <CheckCircle className="h-4 w-4 text-chart-2" />
-                        <AlertTitle>Successfully Connected</AlertTitle>
-                        <AlertDescription>
-                            Your Discord credentials are configured correctly and API data is being fetched.
-                        </AlertDescription>
-                    </Alert>
-                ) : null }
-             </div>
-
-
-            {isDiscordConfigured && (
+                        </CardDescription>
+                    </CardHeader>
+                </Card>
+            ) : (
                 <div className="space-y-12">
                      {apiError ? (
                         <Card>

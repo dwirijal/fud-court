@@ -205,13 +205,13 @@ export function ChannelsDashboard({ initialChannels, isDiscordConfigured, apiErr
 
     return (
         <>
-            <header className="flex justify-between items-center mb-12">
-                 <div>
+            <header className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-12">
+                <div className="flex-grow">
                     <div className="flex items-center gap-4">
-                         <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight">
-                            Manage Discord Channels
+                        <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight">
+                            Manage Channels
                         </h1>
-                         <Badge variant={status.variant} className={cn("text-xs font-mono", status.className)}>
+                        <Badge variant={status.variant} className={cn("text-xs font-mono", status.className)}>
                             <StatusDot color={status.color} />
                             <span className="ml-1.5">{status.text}</span>
                         </Badge>
@@ -219,13 +219,13 @@ export function ChannelsDashboard({ initialChannels, isDiscordConfigured, apiErr
                     <p className="text-xl text-muted-foreground mt-2">
                         View, edit, and organize your Discord server channels.
                     </p>
-                 </div>
-                 {isDiscordConfigured && (
+                </div>
+                {isDiscordConfigured && (
                     <Button onClick={() => setIsCreateDialogOpen(true)}>
                         <PlusCircle className="mr-2 h-4 w-4" />
                         Create Channel
                     </Button>
-                 )}
+                )}
             </header>
 
             {isLoading ? (

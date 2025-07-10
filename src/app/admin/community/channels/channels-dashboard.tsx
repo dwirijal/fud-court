@@ -367,18 +367,20 @@ export function ChannelsDashboard({ initialChannels, isDiscordConfigured, apiErr
                        <Accordion type="multiple" className="w-full space-y-2">
                             {Object.entries(channelsByCategory).map(([categoryName, categoryChannels]) => (
                                 <AccordionItem key={categoryName} value={categoryName} className="border-none">
-                                    <AccordionTrigger className="p-3 hover:bg-muted/50 rounded-lg flex justify-between items-center text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                                       <div className="flex items-center gap-2">
-                                            <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
-                                            {categoryName}
-                                       </div>
-                                       {categoryName !== 'Uncategorized' && (
-                                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); setEditingCategory(getCategoryByName(categoryName) || null); }}>
+                                    <div className="flex items-center justify-between p-3 hover:bg-muted/50 rounded-lg text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                                        <AccordionTrigger className="p-0 flex-1 hover:no-underline">
+                                            <div className="flex items-center gap-2">
+                                                <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
+                                                {categoryName}
+                                            </div>
+                                        </AccordionTrigger>
+                                        {categoryName !== 'Uncategorized' && (
+                                            <Button variant="ghost" size="icon" className="h-6 w-6 ml-2" onClick={(e) => { e.stopPropagation(); setEditingCategory(getCategoryByName(categoryName) || null); }}>
                                                 <Edit className="h-3 w-3" />
                                                 <span className="sr-only">Edit Category</span>
                                             </Button>
                                         )}
-                                    </AccordionTrigger>
+                                    </div>
                                     <AccordionContent className="p-0 pl-4">
                                         <div className="border-l py-2 space-y-1">
                                             {categoryChannels.map(channel => (

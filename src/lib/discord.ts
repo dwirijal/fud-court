@@ -24,13 +24,16 @@ async function discordApiFetch(endpoint: string, options: FetchOptions = {}): Pr
         headers: {
             'Authorization': `Bot ${token}`,
         },
-        cache: 'no-store',
+        // Use a short revalidation time for guild data to keep it fresh
+        next: { revalidate: 60 }, 
     };
 
     if (body) {
         // Only add Content-Type header if there is a body
         (fetchOptions.headers as Record<string, string>)['Content-Type'] = 'application/json';
         fetchOptions.body = JSON.stringify(body);
+        // Don't cache mutating requests
+        delete (fetchOptions as any).next;
     }
     
     const response = await fetch(url, fetchOptions);
@@ -139,6 +142,31 @@ export async function editChannel(channelId: string, data: { name: string }): Pr
         });
     } catch (error) {
         console.error(`Failed to edit channel ${channelId}:`, error);
+        throw error;
+    }
+}
+
+/**
+ * Fetches comprehensive data about a Discord guild.
+ * @param guildId The ID of the Discord server.
+ * @returns A promise that resolves to an object with guild details.
+ */
+export async function getGuildData(guildId: string) {
+    try {
+        const [guild, channels] = await Promise.all([
+            discordApiFetch(`/guilds/${guildId}?with_counts=true`),
+            getGuildChannels(guildId)
+        ]);
+
+        return {
+            name: guild.name,
+            iconUrl: guild.icon ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png` : null,
+            totalMembers: guild.approximate_member_count,
+            onlineMembers: guild.approximate_presence_count,
+            totalChannels: channels.length,
+        };
+    } catch (error) {
+        console.error('Failed to fetch comprehensive guild data from Discord:', error);
         throw error;
     }
 }

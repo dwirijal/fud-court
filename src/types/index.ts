@@ -101,3 +101,11 @@ export interface DiscordChannel {
     type: 'Text' | 'Voice' | 'Announcement';
     category: string;
 }
+
+export interface DiscordGuildData {
+    name: string;
+    iconUrl: string | null;
+    totalMembers: number;
+    onlineMembers: number;
+    totalChannels: number;
+}

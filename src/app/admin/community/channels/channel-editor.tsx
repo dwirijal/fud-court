@@ -2,16 +2,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSidebar } from '@/components/ui/sidebar';
-import {
-    Sheet,
-    SheetContent,
-    SheetHeader,
-    SheetTitle,
-    SheetDescription,
-    SheetFooter,
-    SheetClose,
-} from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -65,18 +55,16 @@ const slowmodeOptions = [
     { value: 21600, label: '6 hours' },
 ];
 
-interface ChannelEditorSheetProps {
-    channel: DiscordChannel | null;
-    onOpenChange: (isOpen: boolean) => void;
+interface ChannelEditorProps {
+    channel: DiscordChannel;
     onActionComplete: () => void;
 }
 
-export function ChannelEditorSheet({ channel, onOpenChange, onActionComplete }: ChannelEditorSheetProps) {
-    const { setOpen: setSidebarOpen } = useSidebar();
-    const [name, setName] = useState('');
-    const [topic, setTopic] = useState('');
-    const [nsfw, setNsfw] = useState(false);
-    const [slowmode, setSlowmode] = useState(0);
+export function ChannelEditor({ channel, onActionComplete }: ChannelEditorProps) {
+    const [name, setName] = useState(channel.name);
+    const [topic, setTopic] = useState(channel.topic || '');
+    const [nsfw, setNsfw] = useState(channel.nsfw);
+    const [slowmode, setSlowmode] = useState(channel.rate_limit_per_user || 0);
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -85,23 +73,14 @@ export function ChannelEditorSheet({ channel, onOpenChange, onActionComplete }: 
     
     const { toast } = useToast();
 
-    const isOpen = !!channel;
-
+    // Reset state if channel prop changes
     useEffect(() => {
-        if (channel) {
-            setName(channel.name);
-            setTopic(channel.topic || '');
-            setNsfw(channel.nsfw);
-            setSlowmode(channel.rate_limit_per_user || 0);
-            setSidebarOpen(false); // Collapse sidebar when sheet opens
-        } else {
-            // Optional: restore sidebar when sheet closes
-            // setSidebarOpen(true); 
-        }
-    }, [channel, setSidebarOpen]);
+        setName(channel.name);
+        setTopic(channel.topic || '');
+        setNsfw(channel.nsfw);
+        setSlowmode(channel.rate_limit_per_user || 0);
+    }, [channel]);
     
-    if (!channel) return null;
-
     const hasChanges = name !== channel.name || topic !== (channel.topic || '') || nsfw !== channel.nsfw || slowmode !== (channel.rate_limit_per_user || 0);
 
     const handleSave = async () => {
@@ -111,7 +90,7 @@ export function ChannelEditorSheet({ channel, onOpenChange, onActionComplete }: 
                 name: name !== channel.name ? name : undefined,
                 topic: topic !== (channel.topic || '') ? topic : undefined,
                 nsfw: nsfw !== channel.nsfw ? nsfw : undefined,
-                rate_limit_per_user: slowmode !== channel.rate_limit_per_user ? slowmode : undefined,
+                rate_limit_per_user: slowmode !== (channel.rate_limit_per_user || 0) ? slowmode : undefined,
             });
             toast({
                 title: "Success",
@@ -138,8 +117,7 @@ export function ChannelEditorSheet({ channel, onOpenChange, onActionComplete }: 
                 description: `Channel "${channel.name}" has been deleted.`,
             });
             setIsDeleteDialogOpen(false);
-            onOpenChange(false); // Close the sheet after deletion
-            onActionComplete();
+            onActionComplete(); // This will trigger a re-fetch and remove the item
         } catch (error) {
             toast({
                 title: 'Error',
@@ -150,33 +128,24 @@ export function ChannelEditorSheet({ channel, onOpenChange, onActionComplete }: 
             setIsDeleting(false);
         }
     };
-
+    
     const canHaveThreads = channel.type === 'Text' || channel.type === 'Announcement';
+    const isVoiceChannel = channel.type === 'Voice';
 
     return (
-        <Sheet open={isOpen} onOpenChange={onOpenChange}>
-            <SheetContent className="sm:max-w-xl w-full flex flex-col">
-                <SheetHeader>
-                    <SheetTitle>Edit Channel</SheetTitle>
-                    <SheetDescription>
-                        Editing <span className="font-semibold text-primary">#{channel.name}</span>. Click save when you're done.
-                    </SheetDescription>
-                </SheetHeader>
-                <div className="flex-1 overflow-y-auto pr-6 -mr-6 space-y-6 py-4">
+        <>
+            <div className="space-y-6 py-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                         <Label htmlFor={`name-${channel.id}`}>Channel Name</Label>
                         <Input id={`name-${channel.id}`} value={name} onChange={(e) => setName(e.target.value)} disabled={isSubmitting} />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor={`topic-${channel.id}`}>Channel Description (Topic)</Label>
-                        <Textarea id={`topic-${channel.id}`} value={topic} onChange={(e) => setTopic(e.target.value)} disabled={isSubmitting} placeholder="Let people know what this channel is for." />
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor={`slowmode-${channel.id}`}>Slowmode</Label>
                         <Select
                             value={slowmode?.toString()}
                             onValueChange={(v) => setSlowmode(parseInt(v, 10))}
-                            disabled={isSubmitting || channel.type === 'Voice'}
+                            disabled={isSubmitting || isVoiceChannel}
                         >
                             <SelectTrigger id={`slowmode-${channel.id}`}>
                                 <SelectValue placeholder="Select slowmode" />
@@ -187,31 +156,38 @@ export function ChannelEditorSheet({ channel, onOpenChange, onActionComplete }: 
                                 ))}
                             </SelectContent>
                         </Select>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <Switch id={`nsfw-${channel.id}`} checked={nsfw} onCheckedChange={setNsfw} disabled={isSubmitting} />
-                        <Label htmlFor={`nsfw-${channel.id}`}>Age-Restricted (NSFW)</Label>
+                         {isVoiceChannel && <p className="text-xs text-muted-foreground">Slowmode not applicable for voice channels.</p>}
                     </div>
                 </div>
-                <SheetFooter className="mt-auto pt-4 border-t">
-                    <div className="flex justify-between w-full">
-                        <div className="flex gap-2">
-                            <Button onClick={() => setIsThreadDialogOpen(true)} variant="outline" size="sm" disabled={!canHaveThreads || isSubmitting}>
-                                <MessageSquarePlus className="mr-2 h-4 w-4" /> Create Thread
-                            </Button>
-                            <Button onClick={() => setIsDeleteDialogOpen(true)} variant="destructive" size="sm" disabled={isSubmitting || isDeleting}>
-                                {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
-                                Delete
-                            </Button>
-                        </div>
-                         <Button onClick={handleSave} size="sm" disabled={!hasChanges || isSubmitting}>
-                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Save Changes
-                        </Button>
+                 {!isVoiceChannel && (
+                    <div className="space-y-2">
+                        <Label htmlFor={`topic-${channel.id}`}>Channel Description (Topic)</Label>
+                        <Textarea id={`topic-${channel.id}`} value={topic} onChange={(e) => setTopic(e.target.value)} disabled={isSubmitting} placeholder="Let people know what this channel is for." />
                     </div>
-                </SheetFooter>
-            </SheetContent>
-
+                )}
+                <div className="flex items-center space-x-2">
+                    <Switch id={`nsfw-${channel.id}`} checked={nsfw} onCheckedChange={setNsfw} disabled={isSubmitting} />
+                    <Label htmlFor={`nsfw-${channel.id}`}>Age-Restricted (NSFW)</Label>
+                </div>
+            </div>
+            <div className="flex justify-between items-center mt-auto pt-4 border-t">
+                <div className="flex gap-2">
+                     {canHaveThreads && (
+                        <Button onClick={() => setIsThreadDialogOpen(true)} variant="outline" size="sm" disabled={isSubmitting}>
+                            <MessageSquarePlus className="mr-2 h-4 w-4" /> Create Thread
+                        </Button>
+                    )}
+                    <Button onClick={() => setIsDeleteDialogOpen(true)} variant="destructive" size="sm" disabled={isSubmitting || isDeleting}>
+                        {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
+                        Delete
+                    </Button>
+                </div>
+                 <Button onClick={handleSave} size="sm" disabled={!hasChanges || isSubmitting}>
+                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Save Changes
+                </Button>
+            </div>
+            
              <CreateThreadDialog 
                 channel={channel} 
                 open={isThreadDialogOpen} 
@@ -236,10 +212,9 @@ export function ChannelEditorSheet({ channel, onOpenChange, onActionComplete }: 
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-        </Sheet>
+        </>
     );
 }
-
 
 function CreateThreadDialog({ channel, open, onOpenChange, onActionComplete }: { channel: DiscordChannel, open: boolean, onOpenChange: (open: boolean) => void, onActionComplete: () => void }) {
     const { toast } = useToast();
@@ -277,12 +252,7 @@ function CreateThreadDialog({ channel, open, onOpenChange, onActionComplete }: {
                 description: `Thread "${threadName}" created successfully in #${channel.name}.`,
             });
             onActionComplete();
-            onOpenChange(false);
-            // Reset form
-            setThreadName('');
-            setMessageContent('');
-            setImageFile(null);
-
+            onOpenChange(false); // Close dialog
         } catch (error) {
             toast({
                 title: 'Error',
@@ -293,6 +263,15 @@ function CreateThreadDialog({ channel, open, onOpenChange, onActionComplete }: {
             setIsSubmitting(false);
         }
     };
+    
+    // Reset form when dialog is closed
+    useEffect(() => {
+        if (!open) {
+            setThreadName('');
+            setMessageContent('');
+            setImageFile(null);
+        }
+    }, [open]);
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>

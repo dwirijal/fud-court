@@ -40,10 +40,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createChannelAction } from '@/lib/actions/discord';
+import { createChannelAction, updateChannelAction } from '@/lib/actions/discord';
 import { useToast } from "@/hooks/use-toast";
-import { ChannelEditorSheet } from './channel-editor-sheet';
-
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/ui/accordion";
+import { ChannelEditor } from './channel-editor';
 
 const StatusDot = ({ color }: { color: 'green' | 'red' | 'amber' }) => {
     const colorClasses = {
@@ -55,22 +60,31 @@ const StatusDot = ({ color }: { color: 'green' | 'red' | 'amber' }) => {
 };
 
 
-function CreateChannelDialog({ categories, open, onOpenChange, onFormSubmit }: { categories: DiscordChannel[], open: boolean, onOpenChange: (open: boolean) => void, onFormSubmit: () => void }) {
+function CreateChannelDialog({ categories, open, onOpenChange, onActionComplete }: { categories: DiscordChannel[], open: boolean, onOpenChange: (open: boolean) => void, onActionComplete: () => void }) {
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [name, setName] = useState('');
+    const [type, setType] = useState<string | undefined>(undefined);
+    const [category, setCategory] = useState<string | undefined>(undefined);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setIsSubmitting(true);
         try {
-            const formData = new FormData(event.currentTarget);
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('type', type!);
+            if (category) {
+                formData.append('category', category);
+            }
+            
             await createChannelAction(formData);
             toast({
                 title: "Success",
-                description: `Channel "${formData.get('name')}" has been created.`,
+                description: `Item "${name}" has been created.`,
             });
-            onOpenChange(false);
-            onFormSubmit();
+            onOpenChange(false); // Close dialog on success
+            onActionComplete(); // Refresh data
         } catch (error) {
             toast({
                 title: "Error",
@@ -81,56 +95,68 @@ function CreateChannelDialog({ categories, open, onOpenChange, onFormSubmit }: {
             setIsSubmitting(false);
         }
     };
+    
+    // Reset state when dialog closes
+    useEffect(() => {
+        if (!open) {
+            setName('');
+            setType(undefined);
+            setCategory(undefined);
+        }
+    }, [open]);
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent>
                 <form onSubmit={handleSubmit}>
                     <DialogHeader>
-                        <DialogTitle>Create New Channel</DialogTitle>
+                        <DialogTitle>Create New Item</DialogTitle>
                         <DialogDescription>
-                            Configure the details for your new Discord channel.
+                            Configure a new channel or category for your Discord server.
                         </DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="name" className="text-right">Name</Label>
-                            <Input id="name" name="name" className="col-span-3" placeholder="general-chat" required disabled={isSubmitting} />
+                        <div className="space-y-2">
+                            <Label htmlFor="name">Name</Label>
+                            <Input id="name" name="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="general-chat" required disabled={isSubmitting} />
                         </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="type" className="text-right">Type</Label>
-                            <Select name="type" required disabled={isSubmitting}>
-                                <SelectTrigger className="col-span-3">
-                                    <SelectValue placeholder="Select a channel type" />
+                        <div className="space-y-2">
+                            <Label htmlFor="type">Type</Label>
+                            <Select name="type" required disabled={isSubmitting} onValueChange={setType} value={type}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select an item type" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="0">Text Channel</SelectItem>
                                     <SelectItem value="2">Voice Channel</SelectItem>
                                     <SelectItem value="5">Announcement Channel</SelectItem>
+                                    <SelectItem value="4">Category</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
-                         <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="category" className="text-right">Category</Label>
-                             <Select name="category" disabled={isSubmitting}>
-                                <SelectTrigger className="col-span-3">
-                                    <SelectValue placeholder="(Optional) Select a category" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {categories.map(cat => (
-                                        <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
+                         {type !== '4' && ( // Don't show category selector if creating a category
+                            <div className="space-y-2">
+                                <Label htmlFor="category">Category (Optional)</Label>
+                                <Select name="category" disabled={isSubmitting} onValueChange={setCategory} value={category}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select a category" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {categories.map(cat => (
+                                            <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        )}
                     </div>
                     <DialogFooter>
                         <DialogClose asChild>
                             <Button type="button" variant="secondary" disabled={isSubmitting}>Cancel</Button>
                         </DialogClose>
-                        <Button type="submit" disabled={isSubmitting}>
+                        <Button type="submit" disabled={isSubmitting || !name || !type}>
                             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {isSubmitting ? 'Creating...' : 'Create Channel'}
+                            {isSubmitting ? 'Creating...' : 'Create Item'}
                         </Button>
                     </DialogFooter>
                 </form>
@@ -139,6 +165,67 @@ function CreateChannelDialog({ categories, open, onOpenChange, onFormSubmit }: {
     );
 }
 
+function EditCategoryDialog({ category, open, onOpenChange, onActionComplete }: { category: DiscordChannel | null, open: boolean, onOpenChange: (open: boolean) => void, onActionComplete: () => void }) {
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [name, setName] = useState('');
+
+    useEffect(() => {
+        if (category) {
+            setName(category.name);
+        }
+    }, [category]);
+    
+    if (!category) return null;
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        try {
+            await updateChannelAction(category.id, { name });
+            toast({
+                title: "Success",
+                description: `Category "${name}" has been updated.`,
+            });
+            onOpenChange(false);
+            onActionComplete();
+        } catch (error) {
+            toast({
+                title: 'Error',
+                description: error instanceof Error ? error.message : "Failed to update category.",
+                variant: 'destructive'
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+    
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent>
+                <form onSubmit={handleSubmit}>
+                    <DialogHeader>
+                        <DialogTitle>Edit Category</DialogTitle>
+                        <DialogDescription>Update the name for the <span className="font-semibold">{category.name}</span> category.</DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <Label htmlFor="category-name">Category Name</Label>
+                        <Input id="category-name" value={name} onChange={(e) => setName(e.target.value)} required disabled={isSubmitting} />
+                    </div>
+                    <DialogFooter>
+                        <DialogClose asChild>
+                            <Button variant="secondary" disabled={isSubmitting}>Cancel</Button>
+                        </DialogClose>
+                        <Button type="submit" disabled={isSubmitting || name === category.name}>
+                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Save Changes
+                        </Button>
+                    </DialogFooter>
+                </form>
+            </DialogContent>
+        </Dialog>
+    )
+}
 
 interface ChannelsDashboardProps {
     initialChannels: DiscordChannel[];
@@ -152,14 +239,14 @@ export function ChannelsDashboard({ initialChannels, isDiscordConfigured, apiErr
     const [isLoading, setIsLoading] = useState(false);
     const [channelsByCategory, setChannelsByCategory] = useState<Record<string, DiscordChannel[]>>({});
     const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-    const [editingChannel, setEditingChannel] = useState<DiscordChannel | null>(null);
+    const [editingCategory, setEditingCategory] = useState<DiscordChannel | null>(null);
 
     const groupChannels = (channelsToGroup: DiscordChannel[]) => {
         const categories = channelsToGroup.filter(c => c.type === 'Category');
         const categoryMap = categories.reduce((acc, cat) => {
-            acc[cat.id] = { name: cat.name, position: cat.position };
+            acc[cat.id] = { name: cat.name, position: cat.position, id: cat.id };
             return acc;
-        }, {} as Record<string, { name: string; position: number }>);
+        }, {} as Record<string, { name: string; position: number; id: string; }>);
 
         const grouped = channelsToGroup
          .filter(c => c.type !== 'Category')
@@ -172,11 +259,14 @@ export function ChannelsDashboard({ initialChannels, isDiscordConfigured, apiErr
             return acc;
         }, {} as Record<string, DiscordChannel[]>);
         
-        const categoryPositions = { ...categoryMap, 'Uncategorized': { name: 'Uncategorized', position: 9999 } };
+        const categoryPositions: Record<string, { name: string; position: number, id: string | null }> = { 'Uncategorized': { name: 'Uncategorized', position: 9999, id: null } };
+        categories.forEach(cat => {
+            categoryPositions[cat.name] = { name: cat.name, position: cat.position, id: cat.id };
+        });
         
         const sortedCategoryNames = Object.keys(grouped).sort((a,b) => {
-            const posA = categoryPositions[a as keyof typeof categoryPositions]?.position ?? 9999;
-            const posB = categoryPositions[b as keyof typeof categoryPositions]?.position ?? 9999;
+            const posA = categoryPositions[a]?.position ?? 9999;
+            const posB = categoryPositions[b]?.position ?? 9999;
             return posA - posB;
         });
         
@@ -196,7 +286,6 @@ export function ChannelsDashboard({ initialChannels, isDiscordConfigured, apiErr
         if (!isDiscordConfigured) return;
 
         setIsLoading(true);
-        setEditingChannel(null); // Close sheet on refresh
         try {
             const fetchedChannels = await getGuildChannels();
             setChannels(fetchedChannels);
@@ -219,7 +308,9 @@ export function ChannelsDashboard({ initialChannels, isDiscordConfigured, apiErr
     };
 
     const status = getStatus();
-    const categories = channels.filter(c => c.type === 'Category');
+    const categories = channels.filter(c => c.type === 'Category').sort((a, b) => a.position - b.position);
+
+    const getCategoryByName = (name: string) => categories.find(c => c.name === name);
 
     return (
         <>
@@ -240,96 +331,79 @@ export function ChannelsDashboard({ initialChannels, isDiscordConfigured, apiErr
 
             {isLoading ? (
                  <Card>
-                    <CardHeader>
-                        <CardTitle>Loading...</CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex justify-center items-center h-48">
-                       <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                    </CardContent>
+                    <CardHeader><CardTitle>Loading...</CardTitle></CardHeader>
+                    <CardContent className="flex justify-center items-center h-48"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></CardContent>
                 </Card>
             ) : !isDiscordConfigured ? (
                  <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Terminal className="h-5 w-5" />
-                            Configuration Missing
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-muted-foreground">Your Discord Bot Token and/or Server ID are not configured. Please set `DISCORD_BOT_TOKEN` and `DISCORD_GUILD_ID` in your `.env.local` file to enable this feature.</p>
-                    </CardContent>
+                    <CardHeader><CardTitle className="flex items-center gap-2"><Terminal className="h-5 w-5" />Configuration Missing</CardTitle></CardHeader>
+                    <CardContent><p className="text-muted-foreground">Your Discord Bot Token and/or Server ID are not configured. Please set `DISCORD_BOT_TOKEN` and `DISCORD_GUILD_ID` in your `.env.local` file to enable this feature.</p></CardContent>
                 </Card>
             ) : apiError ? (
                 <Card>
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-destructive">
-                            <AlertTriangle className="h-5 w-5" />
-                            API Request Failed
-                        </CardTitle>
+                        <CardTitle className="flex items-center gap-2 text-destructive"><AlertTriangle className="h-5 w-5" />API Request Failed</CardTitle>
                         <CardDescription>Could not fetch data from the Discord API. Please check your Bot Token, Server ID, and that your bot has been invited to the server with the correct permissions.</CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <p className="text-sm text-destructive font-mono bg-destructive/10 p-4 rounded-md">{apiError}</p>
-                    </CardContent>
+                    <CardContent><p className="text-sm text-destructive font-mono bg-destructive/10 p-4 rounded-md">{apiError}</p></CardContent>
                 </Card>
             ) : (
                 <Card>
                     <CardHeader className="flex flex-col sm:flex-row justify-between sm:items-start gap-4">
                         <div className="flex-grow">
-                            <CardTitle className="flex items-center gap-2">
-                                <Hash className="h-5 w-5" />
-                                Server Channels
-                            </CardTitle>
-                            <CardDescription className="mt-1">
-                                Channels in your server, grouped by category. Click "Edit" to manage a channel.
-                            </CardDescription>
+                            <CardTitle className="flex items-center gap-2"><Hash className="h-5 w-5" />Server Channels</CardTitle>
+                            <CardDescription className="mt-1">Expand a channel to manage its settings.</CardDescription>
                         </div>
                          {isDiscordConfigured && (
                             <Button onClick={() => setIsCreateDialogOpen(true)} size="sm">
                                 <PlusCircle className="mr-2 h-4 w-4" />
-                                Create Channel
+                                Create Item
                             </Button>
                         )}
                     </CardHeader>
                     <CardContent className="space-y-6">
-                        {Object.entries(channelsByCategory).map(([category, categoryChannels]) => (
-                            <div key={category}>
-                                <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-2 px-1">{category}</h3>
-                                <div className="divide-y border rounded-lg">
-                                    {categoryChannels.map(channel => (
-                                        <div key={channel.id} className="flex items-center justify-between p-3 hover:bg-muted/50">
-                                            <div className="flex items-center gap-3">
-                                                <Hash className="h-4 w-4 text-muted-foreground" />
-                                                <div className="flex flex-col">
-                                                    <span className="font-medium">{channel.name}</span>
-                                                    <div className="flex items-center gap-2">
-                                                        <Badge variant="outline" className="text-xs h-5">{channel.type}</Badge>
-                                                        {channel.nsfw && <Badge variant="destructive" className="text-xs h-5">NSFW</Badge>}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <Button variant="outline" size="sm" onClick={() => setEditingChannel(channel)}>
-                                                <Edit className="mr-2 h-4 w-4" />
-                                                Edit
+                        <Accordion type="single" collapsible className="w-full space-y-4">
+                            {Object.entries(channelsByCategory).map(([categoryName, categoryChannels]) => (
+                                <div key={categoryName}>
+                                    <div className="flex justify-between items-center mb-2 px-1">
+                                        <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">{categoryName}</h3>
+                                        {categoryName !== 'Uncategorized' && (
+                                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setEditingCategory(getCategoryByName(categoryName) || null)}>
+                                                <Edit className="h-3 w-3" />
+                                                <span className="sr-only">Edit Category</span>
                                             </Button>
-                                        </div>
-                                    ))}
+                                        )}
+                                    </div>
+                                    <div className="border rounded-lg">
+                                        {categoryChannels.map(channel => (
+                                            <AccordionItem key={channel.id} value={channel.id} className="border-b last:border-b-0">
+                                                <AccordionTrigger className="p-3 hover:bg-muted/50 rounded-t-lg data-[state=open]:rounded-b-none">
+                                                    <div className="flex items-center gap-3">
+                                                        <Hash className="h-4 w-4 text-muted-foreground" />
+                                                        <div className="flex flex-col text-left">
+                                                            <span className="font-medium">{channel.name}</span>
+                                                            <div className="flex items-center gap-2">
+                                                                <Badge variant="outline" className="text-xs h-5">{channel.type}</Badge>
+                                                                {channel.nsfw && <Badge variant="destructive" className="text-xs h-5">NSFW</Badge>}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </AccordionTrigger>
+                                                <AccordionContent className="p-4 ml-8 bg-background rounded-b-md border">
+                                                    <ChannelEditor channel={channel} onActionComplete={fetchChannels} />
+                                                </AccordionContent>
+                                            </AccordionItem>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))}
+                        </Accordion>
                     </CardContent>
                 </Card>
             )}
-            
-            <ChannelEditorSheet
-                channel={editingChannel}
-                onOpenChange={(isOpen) => {
-                    if (!isOpen) setEditingChannel(null);
-                }}
-                onActionComplete={fetchChannels}
-            />
 
-            <CreateChannelDialog categories={categories} open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} onFormSubmit={fetchChannels} />
+            <CreateChannelDialog categories={categories} open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} onActionComplete={fetchChannels} />
+            <EditCategoryDialog category={editingCategory} open={!!editingCategory} onOpenChange={() => setEditingCategory(null)} onActionComplete={fetchChannels} />
         </>
     );
 }

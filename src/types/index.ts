@@ -102,6 +102,8 @@ export interface DiscordChannel {
     topic: string | null;
     category: string;
     parentId: string | null;
+    nsfw: boolean;
+    rate_limit_per_user: number;
 }
 
 export interface DiscordGuildData {

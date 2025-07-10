@@ -27,17 +27,23 @@ async function discordApiFetch(endpoint: string, options: FetchOptions = {}): Pr
     const fetchOptions: RequestInit = {
         method,
         headers,
-        next: noCache ? undefined : { revalidate: 60 }, 
+        next: noCache ? { revalidate: 0 } : { revalidate: 60 },
     };
 
     if (body) {
         if (body instanceof FormData) {
+            // Let the browser/runtime set the Content-Type header for FormData
             fetchOptions.body = body;
         } else {
             headers['Content-Type'] = 'application/json';
             fetchOptions.body = JSON.stringify(body);
         }
-        if (method !== 'GET') {
+    }
+    
+    // Disable caching for mutating requests
+    if (method !== 'GET') {
+        fetchOptions.cache = 'no-store';
+        if (fetchOptions.next) {
             delete (fetchOptions as any).next;
         }
     }
@@ -132,6 +138,8 @@ export async function getGuildChannels(): Promise<DiscordChannel[]> {
                     topic: channel.topic,
                     category: channel.parent_id ? channelCategories[channel.parent_id]?.name || 'Uncategorized' : 'Uncategorized',
                     parentId: channel.parent_id,
+                    nsfw: channel.nsfw || false,
+                    rate_limit_per_user: channel.rate_limit_per_user || 0,
                 };
             });
     } catch (error) {
@@ -146,7 +154,7 @@ export async function getGuildChannels(): Promise<DiscordChannel[]> {
  * @param data The data to update, e.g., { name: 'new-name', topic: 'new-topic' }.
  * @returns A promise that resolves when the channel is edited.
  */
-export async function editChannel(channelId: string, data: { name?: string, topic?: string }): Promise<void> {
+export async function editChannel(channelId: string, data: { name?: string; topic?: string, nsfw?: boolean, rate_limit_per_user?: number }): Promise<void> {
     try {
         await discordApiFetch(`/channels/${channelId}`, {
             method: 'PATCH',

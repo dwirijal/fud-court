@@ -6,19 +6,16 @@ import { createChannel, deleteChannel, editChannel, createThread } from '../disc
 
 const revalidate = () => revalidatePath('/admin/community/channels');
 
-export async function updateChannelAction(channelId: string, data: { name?: string; topic?: string }) {
-    if (!data.name && !data.topic) {
-        throw new Error('At least a name or topic must be provided to update.');
+export async function updateChannelAction(channelId: string, data: { name?: string; topic?: string; nsfw?: boolean; rate_limit_per_user?: number; }) {
+    if (!data.name && !data.topic && data.nsfw === undefined && data.rate_limit_per_user === undefined) {
+        throw new Error('At least one property must be provided to update.');
     }
     if (data.name && data.name.trim().length === 0) {
         throw new Error('Channel name cannot be empty.');
     }
 
     try {
-        await editChannel(channelId, { 
-            name: data.name,
-            topic: data.topic
-        });
+        await editChannel(channelId, data);
         revalidate();
     } catch (error) {
         console.error('Server action updateChannelAction failed:', error);
@@ -81,18 +78,21 @@ export async function createThreadInChannel(formData: FormData) {
 
     try {
         const discordApiFormData = new FormData();
-        
-        const payload: { name: string; type: number; message?: { content?: string } } = {
+
+        const threadPayload: { name: string; type: number; message?: { content: string } } = {
             name: threadName,
             type: 11, // Public Thread
         };
 
-        if (messageContent) {
-            payload.message = { content: messageContent };
+        // If there's content OR an image, we need a message object.
+        if (messageContent || (imageFile && imageFile.size > 0)) {
+            threadPayload.message = {
+                content: messageContent,
+            };
         }
         
-        discordApiFormData.append('payload_json', JSON.stringify(payload));
-
+        discordApiFormData.append('payload_json', JSON.stringify(threadPayload));
+        
         if (imageFile && imageFile.size > 0) {
              discordApiFormData.append('files[0]', imageFile, imageFile.name);
         }

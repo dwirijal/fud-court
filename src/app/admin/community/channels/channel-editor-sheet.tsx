@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/sheet";
 import type { DiscordChannel } from "@/types";
 import { ChannelEditor } from './channel-editor';
-import { useSidebar } from "@/hooks/use-sidebar";
+import { useSidebar } from "@/components/ui/sidebar";
 import { useEffect } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 

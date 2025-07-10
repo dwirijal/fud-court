@@ -117,33 +117,26 @@ export default async function DiscordIntegrationPage() {
                 </p>
             </header>
 
-            <Card className="mb-8">
-                <CardHeader>
-                    <CardTitle>Connection Status</CardTitle>
-                    <CardDescription>
-                        Check if your application is successfully connected to the Discord API.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    {!process.env.DISCORD_BOT_TOKEN || !process.env.DISCORD_GUILD_ID ? (
-                         <Alert variant="destructive">
-                            <Terminal className="h-4 w-4" />
-                            <AlertTitle>Configuration Missing</AlertTitle>
-                            <AlertDescription>
-                                Your Discord Bot Token and/or Server ID are not configured. Please set `DISCORD_BOT_TOKEN` and `DISCORD_GUILD_ID` in your environment variables to enable this feature.
-                            </AlertDescription>
-                        </Alert>
-                    ) : (
-                         <Alert>
-                            <CheckCircle className="h-4 w-4 text-chart-2" />
-                            <AlertTitle>Successfully Connected</AlertTitle>
-                            <AlertDescription>
-                                Your Discord credentials are configured correctly.
-                            </AlertDescription>
-                        </Alert>
-                    )}
-                </CardContent>
-            </Card>
+             <div className="mb-8">
+                {!isDiscordConfigured ? (
+                        <Alert variant="destructive">
+                        <Terminal className="h-4 w-4" />
+                        <AlertTitle>Configuration Missing</AlertTitle>
+                        <AlertDescription>
+                            Your Discord Bot Token and/or Server ID are not configured. Please set `DISCORD_BOT_TOKEN` and `DISCORD_GUILD_ID` in your environment variables to enable this feature.
+                        </AlertDescription>
+                    </Alert>
+                ) : !apiError ? (
+                    <Alert>
+                        <CheckCircle className="h-4 w-4 text-chart-2" />
+                        <AlertTitle>Successfully Connected</AlertTitle>
+                        <AlertDescription>
+                            Your Discord credentials are configured correctly and API data is being fetched.
+                        </AlertDescription>
+                    </Alert>
+                ) : null }
+             </div>
+
 
             {isDiscordConfigured && (
                 <div className="space-y-12">

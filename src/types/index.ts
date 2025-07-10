@@ -99,6 +99,7 @@ export interface DiscordChannel {
     id: string;
     name: string;
     type: 'Text' | 'Voice' | 'Announcement' | 'Category';
+    topic: string | null;
     category: string;
     parentId: string | null;
 }

@@ -287,10 +287,17 @@ export function ChannelsDashboard({ initialChannels, isDiscordConfigured, apiErr
                                         <div className="space-y-1 pt-2">
                                             {categoryChannels.map(channel => (
                                                 <div key={channel.id} className="flex items-center justify-between rounded-md p-2 hover:bg-muted/50 ml-4">
-                                                    <div className="flex items-center gap-3">
-                                                        <Hash className="h-4 w-4 text-muted-foreground" />
-                                                        <span className="font-medium">{channel.name}</span>
-                                                        <Badge variant="outline">{channel.type}</Badge>
+                                                    <div className="flex flex-col gap-1 items-start">
+                                                        <div className="flex items-center gap-2">
+                                                            <Hash className="h-4 w-4 text-muted-foreground" />
+                                                            <span className="font-medium">{channel.name}</span>
+                                                            <Badge variant="outline">{channel.type}</Badge>
+                                                        </div>
+                                                         {channel.topic && (
+                                                            <p className="text-xs text-muted-foreground pl-6 truncate max-w-md" title={channel.topic}>
+                                                                {channel.topic}
+                                                            </p>
+                                                        )}
                                                     </div>
                                                     <ChannelActions channel={channel} onActionComplete={fetchChannels} />
                                                 </div>

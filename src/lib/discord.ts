@@ -27,27 +27,25 @@ async function discordApiFetch(endpoint: string, options: FetchOptions = {}): Pr
     const fetchOptions: RequestInit = {
         method,
         headers,
-        // Use a short revalidation time for guild data to keep it fresh, unless noCache is specified
         next: noCache ? undefined : { revalidate: 60 }, 
     };
 
     if (body) {
         if (body instanceof FormData) {
-            // Let fetch set the Content-Type header automatically for FormData
             fetchOptions.body = body;
         } else {
             headers['Content-Type'] = 'application/json';
             fetchOptions.body = JSON.stringify(body);
         }
-        // Don't cache mutating requests
-        delete (fetchOptions as any).next;
+        if (method !== 'GET') {
+            delete (fetchOptions as any).next;
+        }
     }
     
     const response = await fetch(url, fetchOptions);
 
     if (!response.ok) {
         const errorBody = await response.json().catch(() => ({ message: response.statusText, ...response }));
-        // Provide a more specific error for common issues like missing permissions.
         if (response.status === 403) {
             throw new Error(`Discord API Forbidden (403): Check if the bot has the required permissions (e.g., 'Manage Channels', 'Create Public Threads') in this server.`);
         }
@@ -55,7 +53,6 @@ async function discordApiFetch(endpoint: string, options: FetchOptions = {}): Pr
         throw new Error(`Discord API request failed: ${apiErrorMessage}`);
     }
     
-    // Handle responses with no content, like a successful PATCH or DELETE
     if (response.status === 204) {
         return null;
     }
@@ -132,6 +129,7 @@ export async function getGuildChannels(): Promise<DiscordChannel[]> {
                     id: channel.id,
                     name: channel.name,
                     type,
+                    topic: channel.topic,
                     category: channel.parent_id ? channelCategories[channel.parent_id]?.name || 'Uncategorized' : 'Uncategorized',
                     parentId: channel.parent_id,
                 };
@@ -145,10 +143,10 @@ export async function getGuildChannels(): Promise<DiscordChannel[]> {
 /**
  * Edits a Discord channel.
  * @param channelId The ID of the channel to edit.
- * @param data The data to update, e.g., { name: 'new-name' }.
+ * @param data The data to update, e.g., { name: 'new-name', topic: 'new-topic' }.
  * @returns A promise that resolves when the channel is edited.
  */
-export async function editChannel(channelId: string, data: { name: string }): Promise<void> {
+export async function editChannel(channelId: string, data: { name?: string, topic?: string }): Promise<void> {
     try {
         await discordApiFetch(`/channels/${channelId}`, {
             method: 'PATCH',
@@ -204,7 +202,6 @@ export async function createChannel(data: { name: string; type: number; parent_i
  */
 export async function createThread(channelId: string, data: FormData): Promise<any> {
      try {
-        // The body is already FormData, so we pass it directly
         return await discordApiFetch(`/channels/${channelId}/threads`, {
             method: 'POST',
             body: data,

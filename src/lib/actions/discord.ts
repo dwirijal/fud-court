@@ -6,16 +6,22 @@ import { createChannel, deleteChannel, editChannel, createThread } from '../disc
 
 const revalidate = () => revalidatePath('/admin/community/channels');
 
-export async function updateChannelName(channelId: string, newName: string) {
-    if (!newName || newName.trim().length === 0) {
+export async function updateChannelAction(channelId: string, data: { name?: string; topic?: string }) {
+    if (!data.name && !data.topic) {
+        throw new Error('At least a name or topic must be provided to update.');
+    }
+    if (data.name && data.name.trim().length === 0) {
         throw new Error('Channel name cannot be empty.');
     }
 
     try {
-        await editChannel(channelId, { name: newName });
+        await editChannel(channelId, { 
+            name: data.name,
+            topic: data.topic
+        });
         revalidate();
     } catch (error) {
-        console.error('Server action updateChannelName failed:', error);
+        console.error('Server action updateChannelAction failed:', error);
         const message = error instanceof Error ? error.message : 'An unknown error occurred.';
         // Re-throw the error to be caught by the client component
         throw new Error(message);
@@ -74,29 +80,19 @@ export async function createThreadInChannel(formData: FormData) {
     }
 
     try {
-        // Create a new FormData object to send to the Discord API.
         const discordApiFormData = new FormData();
         
-        // This is the payload for the thread itself. It must always be present.
-        const threadPayload: { name: string; type: number; message?: { content?: string } } = {
+        const payload: { name: string; type: number; message?: { content?: string } } = {
             name: threadName,
-            type: 11, // 11 = Public Thread
+            type: 11, // Public Thread
         };
 
-        // If there's content OR an image, we need to construct a message payload.
-        if (messageContent || (imageFile && imageFile.size > 0)) {
-            const message: { content?: string } = {};
-            if (messageContent) {
-                message.content = messageContent;
-            }
-             // Add the message object to the thread payload
-            threadPayload.message = message;
+        if (messageContent) {
+            payload.message = { content: messageContent };
         }
         
-        // Append the final JSON payload to the form data.
-        discordApiFormData.append('payload_json', JSON.stringify(threadPayload));
+        discordApiFormData.append('payload_json', JSON.stringify(payload));
 
-        // Attach the image file if it exists, using the correct field name `files[0]`.
         if (imageFile && imageFile.size > 0) {
              discordApiFormData.append('files[0]', imageFile, imageFile.name);
         }

@@ -31,10 +31,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MoreHorizontal, Edit, MessageSquarePlus, Trash2, Loader2, Image as ImageIcon } from "lucide-react";
+import { MoreHorizontal, Edit, MessageSquarePlus, Trash2, Loader2, Image as ImageIcon, Webhook, FileText } from "lucide-react";
 import type { DiscordChannel } from "@/types";
 import { useToast } from "@/hooks/use-toast";
-import { updateChannelName, deleteChannelAction, createThreadInChannel } from '@/lib/actions/discord';
+import { updateChannelAction, deleteChannelAction, createThreadInChannel } from '@/lib/actions/discord';
 import { Textarea } from '../ui/textarea';
 
 interface ChannelActionsProps {
@@ -161,7 +161,8 @@ export function ChannelActions({ channel, onActionComplete }: ChannelActionsProp
     
     // State for Edit Dialog
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-    const [newChannelName, setNewChannelName] = useState(channel.name);
+    const [channelName, setChannelName] = useState(channel.name);
+    const [channelTopic, setChannelTopic] = useState(channel.topic || '');
 
     // State for Thread Dialog
     const [isThreadDialogOpen, setIsThreadDialogOpen] = useState(false);
@@ -172,21 +173,26 @@ export function ChannelActions({ channel, onActionComplete }: ChannelActionsProp
 
     const handleEditSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (newChannelName === channel.name || newChannelName.trim() === '') return;
+        const hasNameChanged = channelName !== channel.name;
+        const hasTopicChanged = channelTopic !== (channel.topic || '');
+        if (!hasNameChanged && !hasTopicChanged) return;
         
         setIsSubmitting(true);
         try {
-            await updateChannelName(channel.id, newChannelName);
+            await updateChannelAction(channel.id, {
+                name: hasNameChanged ? channelName : undefined,
+                topic: hasTopicChanged ? channelTopic : undefined,
+            });
             toast({
                 title: 'Success',
-                description: `Channel renamed to "${newChannelName}".`,
+                description: `Channel #${channel.name} has been updated.`,
             });
             setIsEditDialogOpen(false);
             onActionComplete();
         } catch (error) {
             toast({
                 title: 'Error',
-                description: error instanceof Error ? error.message : "Failed to rename channel.",
+                description: error instanceof Error ? error.message : "Failed to update channel.",
                 variant: 'destructive',
             });
         } finally {
@@ -230,11 +236,19 @@ export function ChannelActions({ channel, onActionComplete }: ChannelActionsProp
                 <DropdownMenuContent align="end">
                     <DropdownMenuItem onSelect={() => setIsEditDialogOpen(true)}>
                         <Edit className="mr-2 h-4 w-4" />
-                        <span>Edit Channel</span>
+                        <span>Edit Name/Description</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem onSelect={() => setIsThreadDialogOpen(true)} disabled={!canHaveThreads}>
                         <MessageSquarePlus className="mr-2 h-4 w-4" />
                         <span>Create Thread</span>
+                    </DropdownMenuItem>
+                     <DropdownMenuItem disabled>
+                        <Webhook className="mr-2 h-4 w-4" />
+                        <span>Manage Webhooks</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem disabled>
+                        <FileText className="mr-2 h-4 w-4" />
+                        <span>Channel Rules</span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onSelect={() => setIsDeleteDialogOpen(true)} className="text-destructive focus:text-destructive">
@@ -255,16 +269,29 @@ export function ChannelActions({ channel, onActionComplete }: ChannelActionsProp
                     </DialogHeader>
                     <form onSubmit={handleEditSubmit}>
                         <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="name" className="text-right">
-                                    Name
+                            <div>
+                                <Label htmlFor="name" className="text-left">
+                                    Channel Name
                                 </Label>
                                 <Input
                                     id="name"
-                                    value={newChannelName}
-                                    onChange={(e) => setNewChannelName(e.target.value)}
+                                    value={channelName}
+                                    onChange={(e) => setChannelName(e.target.value)}
                                     className="col-span-3"
                                     disabled={isSubmitting}
+                                />
+                            </div>
+                             <div>
+                                <Label htmlFor="topic" className="text-left">
+                                    Channel Description (Topic)
+                                </Label>
+                                <Textarea
+                                    id="topic"
+                                    value={channelTopic}
+                                    onChange={(e) => setChannelTopic(e.target.value)}
+                                    className="col-span-3"
+                                    disabled={isSubmitting}
+                                    placeholder="A short description for your channel."
                                 />
                             </div>
                         </div>
@@ -274,7 +301,7 @@ export function ChannelActions({ channel, onActionComplete }: ChannelActionsProp
                                     Cancel
                                 </Button>
                             </DialogClose>
-                            <Button type="submit" disabled={isSubmitting || newChannelName.trim() === '' || newChannelName === channel.name}>
+                            <Button type="submit" disabled={isSubmitting || (channelName.trim() === '' || channelName === channel.name && channelTopic === (channel.topic || ''))}>
                                 {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Save Changes'}
                             </Button>
                         </DialogFooter>

@@ -5,7 +5,6 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import {
   Select,
@@ -37,6 +36,8 @@ import { Loader2, Trash2, MessageSquarePlus } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { updateChannelAction, deleteChannelAction, createThreadInChannel } from '@/lib/actions/discord';
 import type { DiscordChannel } from '@/types';
+import { DiscordTopicEditor } from '@/components/discord-topic-editor';
+import { Textarea } from '@/components/ui/textarea';
 
 const slowmodeOptions = [
     { value: 0, label: 'Off' },
@@ -164,7 +165,12 @@ export function ChannelEditor({ channel, onActionComplete, onClose }: ChannelEdi
                  {!isVoiceChannel && (
                     <div className="space-y-2">
                         <Label htmlFor={`topic-${channel.id}`}>Channel Description (Topic)</Label>
-                        <Textarea id={`topic-${channel.id}`} value={topic} onChange={(e) => setTopic(e.target.value)} disabled={isSubmitting} placeholder="Let people know what this channel is for." />
+                        <DiscordTopicEditor 
+                            content={topic} 
+                            onChange={setTopic}
+                            disabled={isSubmitting} 
+                            placeholder="Let people know what this channel is for."
+                        />
                     </div>
                 )}
                 <div className="flex items-center space-x-2">
@@ -330,5 +336,3 @@ function CreateThreadDialog({ channel, open, onOpenChange, onActionComplete }: {
         </Dialog>
     );
 }
-
-    

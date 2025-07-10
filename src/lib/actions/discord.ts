@@ -3,15 +3,23 @@
 
 import { revalidatePath } from 'next/cache';
 import { createChannel, deleteChannel, editChannel, createThread } from '../discord';
+import TurndownService from 'turndown';
 
 const revalidate = () => revalidatePath('/admin/community/channels');
 
 export async function updateChannelAction(channelId: string, data: { name?: string; topic?: string; nsfw?: boolean; rate_limit_per_user?: number; }) {
     const updates: { [key: string]: any } = {};
+
     if (data.name !== undefined) updates.name = data.name;
-    if (data.topic !== undefined) updates.topic = data.topic;
     if (data.nsfw !== undefined) updates.nsfw = data.nsfw;
     if (data.rate_limit_per_user !== undefined) updates.rate_limit_per_user = data.rate_limit_per_user;
+    
+    // Convert topic from HTML to Markdown if it exists
+    if (data.topic !== undefined) {
+        const turndownService = new TurndownService();
+        updates.topic = turndownService.turndown(data.topic);
+    }
+
 
     if (Object.keys(updates).length === 0) {
         throw new Error('At least one property must be provided to update.');

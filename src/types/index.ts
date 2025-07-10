@@ -1,5 +1,6 @@
 
 
+
 export interface Post {
   id: string;
   slug: string;
@@ -87,21 +88,13 @@ export interface MoralisTrendingToken {
 }
 
 // Discord Types
-export interface DiscordMember {
-  id: string;
-  name: string;
-  avatarUrl: string;
-  roles: string[];
-  joinedAt: string;
-}
-
 export interface DiscordChannel {
     id: string;
     name: string;
     type: 'Text' | 'Voice' | 'Announcement' | 'Category';
     topic: string | null;
-    category: string;
     parentId: string | null;
+    position: number;
     nsfw: boolean;
     rate_limit_per_user: number;
 }

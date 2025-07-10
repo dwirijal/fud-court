@@ -1,7 +1,7 @@
 
 'use server';
 
-import type { DiscordMember, DiscordChannel, DiscordGuildData } from '@/types';
+import type { DiscordChannel, DiscordGuildData } from '@/types';
 
 const API_BASE_URL = 'https://discord.com/api/v10';
 
@@ -27,24 +27,18 @@ async function discordApiFetch(endpoint: string, options: FetchOptions = {}): Pr
     const fetchOptions: RequestInit = {
         method,
         headers,
-        next: noCache ? { revalidate: 0 } : { revalidate: 60 },
+        // Caching strategy: no-cache for mutations, 60s for GET
+        cache: (method !== 'GET' || noCache) ? 'no-store' : undefined,
+        next: (method === 'GET' && !noCache) ? { revalidate: 60 } : undefined,
     };
 
     if (body) {
         if (body instanceof FormData) {
-            // Let the browser/runtime set the Content-Type header for FormData
+            // Let the runtime set the Content-Type header for FormData
             fetchOptions.body = body;
         } else {
             headers['Content-Type'] = 'application/json';
             fetchOptions.body = JSON.stringify(body);
-        }
-    }
-    
-    // Disable caching for mutating requests
-    if (method !== 'GET') {
-        fetchOptions.cache = 'no-store';
-        if (fetchOptions.next) {
-            delete (fetchOptions as any).next;
         }
     }
     
@@ -66,43 +60,6 @@ async function discordApiFetch(endpoint: string, options: FetchOptions = {}): Pr
     return response.json();
 }
 
-/**
- * Fetches members and their roles from a Discord guild.
- * @param limit The number of members to fetch. Defaults to 25.
- * @returns A promise that resolves to an array of DiscordMember objects.
- */
-export async function getGuildMembers(limit: number = 25): Promise<DiscordMember[]> {
-    const guildId = process.env.DISCORD_GUILD_ID;
-    if (!guildId) throw new Error('Discord Guild ID is not configured.');
-
-    try {
-        const [members, rolesData] = await Promise.all([
-            discordApiFetch(`/guilds/${guildId}/members?limit=${limit}`),
-            discordApiFetch(`/guilds/${guildId}/roles`)
-        ]);
-
-        const rolesMap = rolesData.reduce((acc: any, role: any) => {
-            acc[role.id] = role.name;
-            return acc;
-        }, {} as Record<string, string>);
-
-        return members.map((member: any) => ({
-            id: member.user.id,
-            name: member.nick || member.user.global_name || member.user.username,
-            avatarUrl: member.user.avatar
-                ? `https://cdn.discordapp.com/avatars/${member.user.id}/${member.user.avatar}.png`
-                : `https://cdn.discordapp.com/embed/avatars/${parseInt(member.user.discriminator) % 5}.png`,
-            roles: member.roles
-                .map((roleId: string) => rolesMap[roleId])
-                .filter((roleName: string | undefined) => roleName && roleName !== '@everyone'),
-            joinedAt: member.joined_at,
-        }));
-    } catch (error) {
-        console.error('Failed to fetch guild members from Discord:', error);
-        throw error; // Re-throw to be caught by the page component
-    }
-}
-
 
 /**
  * Fetches channels from a Discord guild.
@@ -115,16 +72,8 @@ export async function getGuildChannels(): Promise<DiscordChannel[]> {
      try {
         const channels: any[] = await discordApiFetch(`/guilds/${guildId}/channels`, { noCache: true });
         
-        const channelCategories = channels.reduce((acc, channel) => {
-            if (channel.type === 4) { // GUILD_CATEGORY
-                acc[channel.id] = { name: channel.name, position: channel.position };
-            }
-            return acc;
-        }, {} as Record<string, { name: string, position: number }>);
-
         return channels
             .filter(channel => [0, 2, 5, 4].includes(channel.type)) // Text, Voice, Announcement, Category channels
-            .sort((a, b) => (a.position || 0) - (b.position || 0)) // Sort by position
             .map((channel: any) => {
                 let type: DiscordChannel['type'] = 'Text';
                 if (channel.type === 2) type = 'Voice';
@@ -136,8 +85,8 @@ export async function getGuildChannels(): Promise<DiscordChannel[]> {
                     name: channel.name,
                     type,
                     topic: channel.topic,
-                    category: channel.parent_id ? channelCategories[channel.parent_id]?.name || 'Uncategorized' : 'Uncategorized',
                     parentId: channel.parent_id,
+                    position: channel.position,
                     nsfw: channel.nsfw || false,
                     rate_limit_per_user: channel.rate_limit_per_user || 0,
                 };

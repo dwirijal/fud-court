@@ -1,6 +1,8 @@
 
 import { NextResponse, type NextRequest } from 'next/server';
 import { createClient } from '@/utils/supabase/middleware';
+import { db } from '@/lib/db';
+import { pageViews } from '@/lib/db/schema';
 
 export async function middleware(request: NextRequest) {
   // Use the Supabase helper to handle session management.
@@ -23,22 +25,18 @@ export async function middleware(request: NextRequest) {
   // Also check for file extensions like .png, .jpg, etc.
   const isStaticFile = /\.(.*)$/.test(pathname);
 
-  // Log page view only if the necessary Supabase env vars are configured and it's a valid page path.
-  const isDbConfigured = !!process.env.NEXT_PUBLIC_SUPABASE_URL && !!process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (isDbConfigured && !isExcluded && !isStaticFile) {
+  // Log page view if the database is configured and it's a valid page path.
+  if (db && !isExcluded && !isStaticFile) {
     try {
-      // Dynamically import the db and schema to ensure they are only loaded when needed.
-      const { db } = await import('@/lib/db');
-      const { pageViews } = await import('@/lib/db/schema');
-      
-      // The db object can be null if config is missing, so we must check.
-      if (db) {
-        await db.insert(pageViews).values({ path: pathname });
-      }
+      // The `db` object is now a singleton managed by getDbInstance(),
+      // so we can use it directly without dynamic imports.
+      await db.insert(pageViews).values({ path: pathname });
     } catch (error) {
-      console.error('Failed to log page view:', error);
-      // Don't block the request if logging fails.
+      // Don't log the error if it's a connection issue, as it can be noisy.
+      // We already log the initial connection failure in db/index.ts.
+      if (!(error instanceof Error && error.message.includes('connect'))) {
+        console.error('Failed to log page view:', error);
+      }
     }
   }
 

@@ -46,12 +46,13 @@ async function discordApiFetch(endpoint: string, options: FetchOptions = {}): Pr
     const response = await fetch(url, fetchOptions);
 
     if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({ message: response.statusText }));
+        const errorBody = await response.json().catch(() => ({ message: response.statusText, ...response }));
         // Provide a more specific error for common issues like missing permissions.
         if (response.status === 403) {
             throw new Error(`Discord API Forbidden (403): Check if the bot has the required permissions (e.g., 'Manage Channels', 'Create Public Threads') in this server.`);
         }
-        throw new Error(`Discord API request failed: ${errorBody.message || response.statusText}`);
+        const apiErrorMessage = errorBody.message || JSON.stringify(errorBody);
+        throw new Error(`Discord API request failed: ${apiErrorMessage}`);
     }
     
     // Handle responses with no content, like a successful PATCH or DELETE

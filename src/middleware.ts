@@ -23,13 +23,19 @@ export async function middleware(request: NextRequest) {
   // Also check for file extensions like .png, .jpg, etc.
   const isStaticFile = /\.(.*)$/.test(pathname);
 
-  // Log page view only if DATABASE_URL is configured and it's a valid page path.
-  if (process.env.DATABASE_URL && !isExcluded && !isStaticFile) {
+  // Log page view only if the necessary Supabase env vars are configured and it's a valid page path.
+  const isDbConfigured = !!process.env.NEXT_PUBLIC_SUPABASE_URL && !!process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (isDbConfigured && !isExcluded && !isStaticFile) {
     try {
       // Dynamically import the db and schema to ensure they are only loaded when needed.
       const { db } = await import('@/lib/db');
       const { pageViews } = await import('@/lib/db/schema');
-      await db.insert(pageViews).values({ path: pathname });
+      
+      // The db object can be null if config is missing, so we must check.
+      if (db) {
+        await db.insert(pageViews).values({ path: pathname });
+      }
     } catch (error) {
       console.error('Failed to log page view:', error);
       // Don't block the request if logging fails.

@@ -14,6 +14,10 @@ import { unstable_noStore as noStore } from 'next/cache';
 
 async function getPageAnalytics() {
     noStore();
+    // Check if db is configured before using it
+    if (!db) {
+        throw new Error("Database is not configured.");
+    }
     const data = await db
         .select({
             path: pageViews.path,
@@ -27,7 +31,8 @@ async function getPageAnalytics() {
 
 
 export default async function AnalyticsPage() {
-    const isDbConfigured = !!process.env.DATABASE_URL;
+    // Check if db is available from the lib
+    const isDbConfigured = !!db;
     let analytics = [];
     let dbError: string | null = null;
 
@@ -67,7 +72,7 @@ export default async function AnalyticsPage() {
                     </CardHeader>
                     <CardContent>
                         <p className="text-sm text-muted-foreground">
-                            Please ensure the `DATABASE_URL` is correctly set in your `.env.local` file and restart the server.
+                            Please ensure `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are correctly set in your environment variables and restart the server.
                         </p>
                     </CardContent>
                 </Card>
@@ -76,7 +81,7 @@ export default async function AnalyticsPage() {
                     <CardHeader>
                         <CardTitle>Database Connection Failed</CardTitle>
                         <CardDescription>
-                           Could not connect to the database. This is often caused by an incorrect hostname or credentials in your `DATABASE_URL`.
+                           Could not connect to the database. This is often caused by an incorrect hostname or credentials.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>

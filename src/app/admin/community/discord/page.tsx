@@ -23,9 +23,6 @@ import {
     MessageSquare,
     Shield,
     Bot,
-    AlertTriangle,
-    WifiOff,
-    Wifi,
 } from "lucide-react";
 import {
     Table,
@@ -55,6 +52,16 @@ const automationFeatures = [
     { title: "Custom Commands", description: "Set up custom bot commands for your server.", icon: Bot },
     { title: "Logging & Moderation", description: "Configure logging channels for server events.", icon: Settings },
 ];
+
+const StatusDot = ({ color }: { color: 'green' | 'red' | 'amber' }) => {
+    const colorClasses = {
+        green: 'bg-chart-2',
+        red: 'bg-destructive',
+        amber: 'bg-amber-500',
+    };
+    return <span className={cn('h-2.5 w-2.5 rounded-full', colorClasses[color])} />;
+};
+
 
 export default async function DiscordIntegrationPage() {
     const guildId = process.env.DISCORD_GUILD_ID;
@@ -91,7 +98,7 @@ export default async function DiscordIntegrationPage() {
         if (!isDiscordConfigured) {
             return {
                 text: 'Not Configured',
-                icon: WifiOff,
+                color: 'amber',
                 variant: 'secondary',
                 className: 'bg-amber-500/10 text-amber-500 border-amber-500/20',
             } as const;
@@ -99,13 +106,13 @@ export default async function DiscordIntegrationPage() {
         if (apiError) {
             return {
                 text: 'API Error',
-                icon: AlertTriangle,
+                color: 'red',
                 variant: 'destructive',
             } as const;
         }
         return {
             text: 'Connected',
-            icon: Wifi,
+            color: 'green',
             variant: 'default',
             className: 'bg-chart-2/10 text-chart-2 border-chart-2/20',
         } as const;
@@ -142,8 +149,8 @@ export default async function DiscordIntegrationPage() {
                         Discord Integration
                     </h1>
                      <Badge variant={status.variant} className={cn("text-xs font-mono", status.className)}>
-                        <status.icon className="mr-1.5 h-3 w-3" />
-                        {status.text}
+                        <StatusDot color={status.color} />
+                        <span className="ml-1.5">{status.text}</span>
                     </Badge>
                 </div>
 
@@ -170,7 +177,7 @@ export default async function DiscordIntegrationPage() {
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2 text-destructive">
-                                    <AlertTriangle className="h-5 w-5" />
+                                    <StatusDot color="red" />
                                     API Request Failed
                                 </CardTitle>
                                 <CardDescription>Could not fetch data from the Discord API. Please check your Bot Token, Server ID, and that your bot has been invited to the server with the correct permissions.</CardDescription>

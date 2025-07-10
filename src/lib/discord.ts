@@ -7,7 +7,7 @@ const API_BASE_URL = 'https://discord.com/api/v10';
 
 interface FetchOptions {
     method?: 'GET' | 'POST' | 'PATCH' | 'DELETE' | 'PUT';
-    body?: Record<string, any>;
+    body?: Record<string, any> | FormData;
     noCache?: boolean;
 }
 
@@ -20,19 +20,25 @@ async function discordApiFetch(endpoint: string, options: FetchOptions = {}): Pr
 
     const url = `${API_BASE_URL}${endpoint}`;
     
+    const headers: Record<string, string> = {
+        'Authorization': `Bot ${token}`,
+    };
+    
     const fetchOptions: RequestInit = {
         method,
-        headers: {
-            'Authorization': `Bot ${token}`,
-        },
+        headers,
         // Use a short revalidation time for guild data to keep it fresh, unless noCache is specified
         next: noCache ? undefined : { revalidate: 60 }, 
     };
 
     if (body) {
-        // Only add Content-Type header if there is a body
-        (fetchOptions.headers as Record<string, string>)['Content-Type'] = 'application/json';
-        fetchOptions.body = JSON.stringify(body);
+        if (body instanceof FormData) {
+            // Let fetch set the Content-Type header automatically for FormData
+            fetchOptions.body = body;
+        } else {
+            headers['Content-Type'] = 'application/json';
+            fetchOptions.body = JSON.stringify(body);
+        }
         // Don't cache mutating requests
         delete (fetchOptions as any).next;
     }
@@ -192,11 +198,12 @@ export async function createChannel(data: { name: string; type: number; parent_i
 /**
  * Creates a new thread in a channel.
  * @param channelId The ID of the parent channel.
- * @param data The thread creation data.
+ * @param data The thread creation data, as FormData.
  * @returns A promise that resolves with the created thread data.
  */
-export async function createThread(channelId: string, data: { name: string; auto_archive_duration?: number; }): Promise<any> {
+export async function createThread(channelId: string, data: FormData): Promise<any> {
      try {
+        // The body is already FormData, so we pass it directly
         return await discordApiFetch(`/channels/${channelId}/threads`, {
             method: 'POST',
             body: data,

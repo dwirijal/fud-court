@@ -3,6 +3,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { createChannel, deleteChannel, editChannel, createThread } from '../discord';
+import TurndownService from 'turndown';
 
 const revalidate = () => revalidatePath('/admin/community/channels');
 
@@ -60,13 +61,39 @@ export async function createChannelAction(formData: FormData) {
     }
 }
 
-export async function createThreadInChannel(channelId: string, threadName: string) {
+export async function createThreadInChannel(formData: FormData) {
+    const channelId = formData.get('channelId') as string;
+    const threadName = formData.get('threadName') as string;
+    const htmlContent = formData.get('messageContent') as string;
+    const imageFile = formData.get('image') as File;
+
     if (!threadName || threadName.trim().length === 0) {
         throw new Error('Thread name cannot be empty.');
     }
+     if (!channelId) {
+        throw new Error('Channel ID is missing.');
+    }
+
+    // Initialize Turndown to convert HTML to Markdown
+    const turndownService = new TurndownService();
+    const markdownContent = turndownService.turndown(htmlContent);
 
     try {
-        await createThread(channelId, { name: threadName });
+        const threadData = {
+            name: threadName,
+            message: {
+                content: markdownContent,
+            }
+        };
+
+        const threadCreationFormData = new FormData();
+        threadCreationFormData.append('payload_json', JSON.stringify(threadData));
+
+        if (imageFile && imageFile.size > 0) {
+             threadCreationFormData.append(`files[0]`, imageFile, imageFile.name);
+        }
+
+        await createThread(channelId, threadCreationFormData);
         revalidate();
     } catch (error) {
         console.error('Server action createThreadInChannel failed:', error);

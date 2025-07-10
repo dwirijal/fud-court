@@ -64,7 +64,7 @@ export async function createThreadInChannel(formData: FormData) {
     const channelId = formData.get('channelId') as string;
     const threadName = formData.get('threadName') as string;
     const messageContent = formData.get('messageContent') as string;
-    const imageFile = formData.get('image') as File;
+    const imageFile = formData.get('image') as File | null;
 
     if (!threadName || threadName.trim().length === 0) {
         throw new Error('Thread name cannot be empty.');
@@ -74,22 +74,26 @@ export async function createThreadInChannel(formData: FormData) {
     }
 
     try {
-        // Define the payload for the thread itself.
-        // Type 11 is for Public Threads.
-        const threadPayload: { name: string; type: number; message?: { content: string } } = {
+        // Create a new FormData object to send to the Discord API.
+        const discordApiFormData = new FormData();
+        
+        // This is the payload for the thread itself. It must always be present.
+        const threadPayload: { name: string; type: number; message?: { content?: string } } = {
             name: threadName,
             type: 11, // 11 = Public Thread
         };
-        
-        // Only include the message object if there is content.
-        if (messageContent && messageContent.trim().length > 0) {
-            threadPayload.message = {
-                content: messageContent,
-            };
-        }
 
-        // Create a new FormData object to send to the Discord API.
-        const discordApiFormData = new FormData();
+        // If there's content OR an image, we need to construct a message payload.
+        if (messageContent || (imageFile && imageFile.size > 0)) {
+            const message: { content?: string } = {};
+            if (messageContent) {
+                message.content = messageContent;
+            }
+             // Add the message object to the thread payload
+            threadPayload.message = message;
+        }
+        
+        // Append the final JSON payload to the form data.
         discordApiFormData.append('payload_json', JSON.stringify(threadPayload));
 
         // Attach the image file if it exists, using the correct field name `files[0]`.

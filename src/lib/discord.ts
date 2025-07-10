@@ -1,7 +1,7 @@
 
 'use server';
 
-import type { DiscordMember, DiscordChannel } from '@/types';
+import type { DiscordMember, DiscordChannel, DiscordGuildData } from '@/types';
 
 const API_BASE_URL = 'https://discord.com/api/v10';
 
@@ -220,7 +220,7 @@ export async function createThread(channelId: string, data: FormData): Promise<a
  * Fetches comprehensive data about a Discord guild.
  * @returns A promise that resolves to an object with guild details.
  */
-export async function getGuildData() {
+export async function getGuildData(): Promise<DiscordGuildData> {
     const guildId = process.env.DISCORD_GUILD_ID;
     if (!guildId) throw new Error('Discord Guild ID is not configured.');
 

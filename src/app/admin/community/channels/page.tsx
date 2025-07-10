@@ -1,4 +1,7 @@
 
+'use client';
+
+import { useState, useEffect } from 'react';
 import {
     Card,
     CardContent,
@@ -17,21 +20,10 @@ import {
 import Link from "next/link";
 import { 
     Terminal, 
-    Users, 
     Hash, 
-    Settings, 
-    MessageSquare,
-    Shield,
-    Bot,
+    PlusCircle,
+    Loader2
 } from "lucide-react";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
 import {
     Accordion,
     AccordionContent,
@@ -39,12 +31,32 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getGuildMembers, getGuildChannels } from "@/lib/discord";
-import type { DiscordMember, DiscordChannel } from "@/types";
-import { format } from "date-fns";
+import { getGuildChannels } from "@/lib/discord";
+import type { DiscordChannel } from "@/types";
 import { ChannelActions } from "@/components/molecules/channel-actions";
 import { cn } from "@/lib/utils";
+import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+    DialogFooter,
+    DialogClose,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { createChannelAction } from '@/lib/actions/discord';
+import { useToast } from "@/hooks/use-toast";
+
 
 const StatusDot = ({ color }: { color: 'green' | 'red' | 'amber' }) => {
     const colorClasses = {
@@ -56,57 +68,148 @@ const StatusDot = ({ color }: { color: 'green' | 'red' | 'amber' }) => {
 };
 
 
-export default async function ManageChannelsPage() {
-    const guildId = process.env.DISCORD_GUILD_ID;
-    const isDiscordConfigured = !!process.env.DISCORD_BOT_TOKEN && !!guildId;
-    
-    let channels: DiscordChannel[] = [];
-    let apiError: string | null = null;
-    let channelsByCategory: Record<string, DiscordChannel[]> = {};
+function CreateChannelDialog({ categories, open, onOpenChange, onFormSubmit }: { categories: DiscordChannel[], open: boolean, onOpenChange: (open: boolean) => void, onFormSubmit: () => void }) {
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    if (isDiscordConfigured) {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        setIsSubmitting(true);
         try {
-            channels = await getGuildChannels(guildId!);
-
-            channelsByCategory = channels.reduce((acc, channel) => {
-                const category = channel.category || 'Uncategorized';
-                if (!acc[category]) {
-                    acc[category] = [];
-                }
-                acc[category].push(channel);
-                return acc;
-            }, {} as Record<string, DiscordChannel[]>);
-
+            const formData = new FormData(event.currentTarget);
+            await createChannelAction(formData);
+            toast({
+                title: "Success",
+                description: `Channel "${formData.get('name')}" has been created.`,
+            });
+            onOpenChange(false);
+            onFormSubmit();
         } catch (error) {
-            apiError = error instanceof Error ? error.message : "An unknown API error occurred.";
+            toast({
+                title: "Error",
+                description: error instanceof Error ? error.message : "Failed to create channel.",
+                variant: "destructive",
+            });
+        } finally {
+            setIsSubmitting(false);
         }
-    }
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent>
+                <form onSubmit={handleSubmit}>
+                    <DialogHeader>
+                        <DialogTitle>Create New Channel</DialogTitle>
+                        <DialogDescription>
+                            Configure the details for your new Discord channel.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="name" className="text-right">Name</Label>
+                            <Input id="name" name="name" className="col-span-3" placeholder="general-chat" required disabled={isSubmitting} />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="type" className="text-right">Type</Label>
+                            <Select name="type" required disabled={isSubmitting}>
+                                <SelectTrigger className="col-span-3">
+                                    <SelectValue placeholder="Select a channel type" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="0">Text Channel</SelectItem>
+                                    <SelectItem value="2">Voice Channel</SelectItem>
+                                    <SelectItem value="5">Announcement Channel</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                         <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="category" className="text-right">Category</Label>
+                             <Select name="category" disabled={isSubmitting}>
+                                <SelectTrigger className="col-span-3">
+                                    <SelectValue placeholder="(Optional) Select a category" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {categories.map(cat => (
+                                        <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <DialogClose asChild>
+                            <Button type="button" variant="secondary" disabled={isSubmitting}>Cancel</Button>
+                        </DialogClose>
+                        <Button type="submit" disabled={isSubmitting}>
+                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            {isSubmitting ? 'Creating...' : 'Create Channel'}
+                        </Button>
+                    </DialogFooter>
+                </form>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+
+export default function ManageChannelsPage() {
+    const guildId = process.env.NEXT_PUBLIC_DISCORD_GUILD_ID;
+    const isDiscordConfigured = !!process.env.NEXT_PUBLIC_DISCORD_BOT_TOKEN && !!guildId;
+    
+    const [channels, setChannels] = useState<DiscordChannel[]>([]);
+    const [apiError, setApiError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [channelsByCategory, setChannelsByCategory] = useState<Record<string, DiscordChannel[]>>({});
+    const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+
+    const fetchChannels = async () => {
+        if (isDiscordConfigured) {
+            try {
+                setIsLoading(true);
+                const fetchedChannels = await getGuildChannels(guildId!);
+
+                setChannels(fetchedChannels);
+
+                const grouped = fetchedChannels
+                 .filter(c => c.type !== 'Category')
+                 .reduce((acc, channel) => {
+                    const category = channel.category || 'Uncategorized';
+                    if (!acc[category]) {
+                        acc[category] = [];
+                    }
+                    acc[category].push(channel);
+                    return acc;
+                }, {} as Record<string, DiscordChannel[]>);
+
+                setChannelsByCategory(grouped);
+
+            } catch (error) {
+                setApiError(error instanceof Error ? error.message : "An unknown API error occurred.");
+            } finally {
+                setIsLoading(false);
+            }
+        } else {
+             setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchChannels();
+    }, [isDiscordConfigured, guildId]);
 
     const getStatus = () => {
         if (!isDiscordConfigured) {
-            return {
-                text: 'Not Configured',
-                color: 'amber',
-                variant: 'secondary',
-                className: 'bg-amber-500/10 text-amber-500 border-amber-500/20',
-            } as const;
+            return { text: 'Not Configured', color: 'amber', variant: 'secondary', className: 'bg-amber-500/10 text-amber-500 border-amber-500/20' } as const;
         }
         if (apiError) {
-            return {
-                text: 'API Error',
-                color: 'red',
-                variant: 'destructive',
-            } as const;
+            return { text: 'API Error', color: 'red', variant: 'destructive' } as const;
         }
-        return {
-            text: 'Connected',
-            color: 'green',
-            variant: 'default',
-            className: 'bg-chart-2/10 text-chart-2 border-chart-2/20',
-        } as const;
+        return { text: 'Connected', color: 'green', variant: 'default', className: 'bg-chart-2/10 text-chart-2 border-chart-2/20' } as const;
     };
 
     const status = getStatus();
+    const categories = channels.filter(c => c.type === 'Category');
 
 
     return (
@@ -131,23 +234,40 @@ export default async function ManageChannelsPage() {
                 </BreadcrumbList>
             </Breadcrumb>
             
-            <header className="mb-12">
-                <div className="flex items-center gap-4">
-                     <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight">
-                        Manage Discord Channels
-                    </h1>
-                     <Badge variant={status.variant} className={cn("text-xs font-mono", status.className)}>
-                        <StatusDot color={status.color} />
-                        <span className="ml-1.5">{status.text}</span>
-                    </Badge>
-                </div>
+            <header className="flex justify-between items-center mb-12">
+                 <div>
+                    <div className="flex items-center gap-4">
+                         <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight">
+                            Manage Discord Channels
+                        </h1>
+                         <Badge variant={status.variant} className={cn("text-xs font-mono", status.className)}>
+                            <StatusDot color={status.color} />
+                            <span className="ml-1.5">{status.text}</span>
+                        </Badge>
+                    </div>
 
-                <p className="text-xl text-muted-foreground mt-2">
-                    View, edit, and organize your Discord server channels.
-                </p>
+                    <p className="text-xl text-muted-foreground mt-2">
+                        View, edit, and organize your Discord server channels.
+                    </p>
+                 </div>
+                 {isDiscordConfigured && (
+                    <Button onClick={() => setIsCreateDialogOpen(true)}>
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Create Channel
+                    </Button>
+                 )}
             </header>
 
-            {!isDiscordConfigured ? (
+            {isLoading ? (
+                 <Card>
+                    <CardHeader>
+                        <CardTitle>Loading...</CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex justify-center items-center h-48">
+                       <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                    </CardContent>
+                </Card>
+            ) : !isDiscordConfigured ? (
                  <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
@@ -155,7 +275,7 @@ export default async function ManageChannelsPage() {
                             Configuration Missing
                         </CardTitle>
                         <CardDescription>
-                            Your Discord Bot Token and/or Server ID are not configured. Please set `DISCORD_BOT_TOKEN` and `DISCORD_GUILD_ID` in your environment variables to enable this feature.
+                            Your Discord Bot Token and/or Server ID are not configured. Please set `NEXT_PUBLIC_DISCORD_BOT_TOKEN` and `NEXT_PUBLIC_DISCORD_GUILD_ID` in your environment variables to enable this feature.
                         </CardDescription>
                     </CardHeader>
                 </Card>
@@ -213,6 +333,8 @@ export default async function ManageChannelsPage() {
                     </CardContent>
                 </Card>
             )}
+
+            <CreateChannelDialog categories={categories} open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} onFormSubmit={fetchChannels} />
         </div>
     );
 }

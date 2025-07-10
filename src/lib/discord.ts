@@ -8,10 +8,11 @@ const API_BASE_URL = 'https://discord.com/api/v10';
 interface FetchOptions {
     method?: 'GET' | 'POST' | 'PATCH' | 'DELETE' | 'PUT';
     body?: Record<string, any>;
+    noCache?: boolean;
 }
 
 async function discordApiFetch(endpoint: string, options: FetchOptions = {}): Promise<any> {
-    const { method = 'GET', body } = options;
+    const { method = 'GET', body, noCache = false } = options;
     const token = process.env.DISCORD_BOT_TOKEN;
     if (!token) {
         throw new Error('Discord Bot Token is not configured.');
@@ -24,8 +25,8 @@ async function discordApiFetch(endpoint: string, options: FetchOptions = {}): Pr
         headers: {
             'Authorization': `Bot ${token}`,
         },
-        // Use a short revalidation time for guild data to keep it fresh
-        next: { revalidate: 60 }, 
+        // Use a short revalidation time for guild data to keep it fresh, unless noCache is specified
+        next: noCache ? undefined : { revalidate: 60 }, 
     };
 
     if (body) {
@@ -42,7 +43,7 @@ async function discordApiFetch(endpoint: string, options: FetchOptions = {}): Pr
         const errorBody = await response.json().catch(() => ({ message: response.statusText }));
         // Provide a more specific error for common issues like missing permissions.
         if (response.status === 403) {
-            throw new Error(`Discord API Forbidden (403): Check if the bot has the required permissions (e.g., 'Manage Channels') in this server.`);
+            throw new Error(`Discord API Forbidden (403): Check if the bot has the required permissions (e.g., 'Manage Channels', 'Create Public Threads') in this server.`);
         }
         throw new Error(`Discord API request failed: ${errorBody.message || response.statusText}`);
     }
@@ -98,28 +99,30 @@ export async function getGuildMembers(guildId: string, limit: number = 25): Prom
  */
 export async function getGuildChannels(guildId: string): Promise<DiscordChannel[]> {
      try {
-        const channels: any[] = await discordApiFetch(`/guilds/${guildId}/channels`);
+        const channels: any[] = await discordApiFetch(`/guilds/${guildId}/channels`, { noCache: true });
         
         const channelCategories = channels.reduce((acc, channel) => {
             if (channel.type === 4) { // GUILD_CATEGORY
-                acc[channel.id] = channel.name;
+                acc[channel.id] = { name: channel.name, position: channel.position };
             }
             return acc;
-        }, {} as Record<string, string>);
+        }, {} as Record<string, { name: string, position: number }>);
 
         return channels
-            .filter(channel => [0, 2, 5].includes(channel.type)) // Text, Voice, Announcement channels
+            .filter(channel => [0, 2, 5, 4].includes(channel.type)) // Text, Voice, Announcement, Category channels
             .sort((a, b) => (a.position || 0) - (b.position || 0)) // Sort by position
             .map((channel: any) => {
                 let type: DiscordChannel['type'] = 'Text';
                 if (channel.type === 2) type = 'Voice';
                 if (channel.type === 5) type = 'Announcement';
+                if (channel.type === 4) type = 'Category';
 
                 return {
                     id: channel.id,
                     name: channel.name,
                     type,
-                    category: channel.parent_id ? channelCategories[channel.parent_id] || 'Uncategorized' : 'Uncategorized',
+                    category: channel.parent_id ? channelCategories[channel.parent_id]?.name || 'Uncategorized' : 'Uncategorized',
+                    parentId: channel.parent_id,
                 };
             });
     } catch (error) {
@@ -147,6 +150,59 @@ export async function editChannel(channelId: string, data: { name: string }): Pr
 }
 
 /**
+ * Deletes a Discord channel.
+ * @param channelId The ID of the channel to delete.
+ * @returns A promise that resolves when the channel is deleted.
+ */
+export async function deleteChannel(channelId: string): Promise<void> {
+    try {
+        await discordApiFetch(`/channels/${channelId}`, {
+            method: 'DELETE',
+        });
+    } catch (error) {
+        console.error(`Failed to delete channel ${channelId}:`, error);
+        throw error;
+    }
+}
+
+/**
+ * Creates a new channel in a Discord guild.
+ * @param guildId The ID of the Discord server.
+ * @param data The channel creation data.
+ * @returns A promise that resolves with the created channel data.
+ */
+export async function createChannel(guildId: string, data: { name: string; type: number; parent_id?: string }): Promise<DiscordChannel> {
+    try {
+        return await discordApiFetch(`/guilds/${guildId}/channels`, {
+            method: 'POST',
+            body: data,
+        });
+    } catch (error) {
+        console.error(`Failed to create channel in guild ${guildId}:`, error);
+        throw error;
+    }
+}
+
+/**
+ * Creates a new thread in a channel.
+ * @param channelId The ID of the parent channel.
+ * @param data The thread creation data.
+ * @returns A promise that resolves with the created thread data.
+ */
+export async function createThread(channelId: string, data: { name: string; auto_archive_duration?: number; }): Promise<any> {
+     try {
+        return await discordApiFetch(`/channels/${channelId}/threads`, {
+            method: 'POST',
+            body: data,
+        });
+    } catch (error) {
+        console.error(`Failed to create thread in channel ${channelId}:`, error);
+        throw error;
+    }
+}
+
+
+/**
  * Fetches comprehensive data about a Discord guild.
  * @param guildId The ID of the Discord server.
  * @returns A promise that resolves to an object with guild details.
@@ -163,7 +219,7 @@ export async function getGuildData(guildId: string) {
             iconUrl: guild.icon ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png` : null,
             totalMembers: guild.approximate_member_count,
             onlineMembers: guild.approximate_presence_count,
-            totalChannels: channels.length,
+            totalChannels: channels.filter(c => c.type !== 'Category').length,
         };
     } catch (error) {
         console.error('Failed to fetch comprehensive guild data from Discord:', error);

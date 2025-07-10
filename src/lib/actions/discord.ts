@@ -2,7 +2,9 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { editChannel } from '../discord';
+import { createChannel, deleteChannel, editChannel, createThread } from '../discord';
+
+const revalidate = () => revalidatePath('/admin/community/channels');
 
 export async function updateChannelName(channelId: string, newName: string) {
     if (!process.env.DISCORD_GUILD_ID) {
@@ -14,11 +16,69 @@ export async function updateChannelName(channelId: string, newName: string) {
 
     try {
         await editChannel(channelId, { name: newName });
-        revalidatePath('/admin/community/discord');
+        revalidate();
     } catch (error) {
         console.error('Server action updateChannelName failed:', error);
         const message = error instanceof Error ? error.message : 'An unknown error occurred.';
         // Re-throw the error to be caught by the client component
+        throw new Error(message);
+    }
+}
+
+
+export async function deleteChannelAction(channelId: string) {
+    try {
+        await deleteChannel(channelId);
+        revalidate();
+    } catch (error) {
+        console.error('Server action deleteChannelAction failed:', error);
+        const message = error instanceof Error ? error.message : 'An unknown error occurred.';
+        throw new Error(message);
+    }
+}
+
+export async function createChannelAction(formData: FormData) {
+    const guildId = process.env.DISCORD_GUILD_ID;
+    if (!guildId) {
+        throw new Error('Discord Guild ID is not configured.');
+    }
+
+    const name = formData.get('name') as string;
+    const type = parseInt(formData.get('type') as string, 10);
+    const category = formData.get('category') as string;
+
+    if (!name || name.trim().length === 0) {
+        throw new Error('Channel name is required.');
+    }
+     if (isNaN(type)) {
+        throw new Error('Channel type is required.');
+    }
+
+    try {
+        await createChannel(guildId, {
+            name,
+            type,
+            parent_id: category || undefined,
+        });
+        revalidate();
+    } catch (error) {
+        console.error('Server action createChannelAction failed:', error);
+        const message = error instanceof Error ? error.message : 'An unknown error occurred.';
+        throw new Error(message);
+    }
+}
+
+export async function createThreadInChannel(channelId: string, threadName: string) {
+    if (!threadName || threadName.trim().length === 0) {
+        throw new Error('Thread name cannot be empty.');
+    }
+
+    try {
+        await createThread(channelId, { name: threadName });
+        revalidate();
+    } catch (error) {
+        console.error('Server action createThreadInChannel failed:', error);
+        const message = error instanceof Error ? error.message : 'An unknown error occurred.';
         throw new Error(message);
     }
 }

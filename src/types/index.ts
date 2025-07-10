@@ -98,8 +98,9 @@ export interface DiscordMember {
 export interface DiscordChannel {
     id: string;
     name: string;
-    type: 'Text' | 'Voice' | 'Announcement';
+    type: 'Text' | 'Voice' | 'Announcement' | 'Category';
     category: string;
+    parentId: string | null;
 }
 
 export interface DiscordGuildData {

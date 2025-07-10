@@ -7,6 +7,7 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -18,12 +19,23 @@ import {
     DialogFooter,
     DialogClose,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MoreHorizontal, Edit, PlusCircle, Trash2 } from "lucide-react";
+import { MoreHorizontal, Edit, PlusCircle, Trash2, MessageSquarePlus } from "lucide-react";
 import type { DiscordChannel } from "@/types";
 import { useToast } from "@/hooks/use-toast";
-import { updateChannelName } from '@/lib/actions/discord';
+import { updateChannelName, deleteChannelAction, createThreadInChannel } from '@/lib/actions/discord';
 
 interface ChannelActionsProps {
     channel: DiscordChannel;
@@ -31,15 +43,20 @@ interface ChannelActionsProps {
 
 export function ChannelActions({ channel }: ChannelActionsProps) {
     const { toast } = useToast();
-    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    
+    // State for Edit Dialog
+    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [newChannelName, setNewChannelName] = useState(channel.name);
+
+    // State for Thread Dialog
+    const [isThreadDialogOpen, setIsThreadDialogOpen] = useState(false);
+    const [threadName, setThreadName] = useState('');
 
     const handleEditSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (newChannelName === channel.name || newChannelName.trim() === '') {
-            return;
-        }
+        if (newChannelName === channel.name || newChannelName.trim() === '') return;
+        
         setIsSubmitting(true);
         try {
             await updateChannelName(channel.id, newChannelName);
@@ -59,6 +76,52 @@ export function ChannelActions({ channel }: ChannelActionsProps) {
         }
     };
 
+    const handleDelete = async () => {
+        setIsSubmitting(true);
+        try {
+            await deleteChannelAction(channel.id);
+             toast({
+                title: 'Success',
+                description: `Channel "${channel.name}" has been deleted.`,
+            });
+        } catch (error) {
+             toast({
+                title: 'Error',
+                description: error instanceof Error ? error.message : "Failed to delete channel.",
+                variant: 'destructive',
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
+     const handleCreateThread = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (threadName.trim() === '') return;
+
+        setIsSubmitting(true);
+        try {
+            await createThreadInChannel(channel.id, threadName);
+            toast({
+                title: 'Success',
+                description: `Thread "${threadName}" created in #${channel.name}.`,
+            });
+            setIsThreadDialogOpen(false);
+            setThreadName('');
+        } catch (error) {
+            toast({
+                title: 'Error',
+                description: error instanceof Error ? error.message : "Failed to create thread.",
+                variant: 'destructive',
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const canHaveThreads = channel.type === 'Text' || channel.type === 'Announcement';
+
+
     return (
         <>
             <DropdownMenu>
@@ -73,17 +136,39 @@ export function ChannelActions({ channel }: ChannelActionsProps) {
                         <Edit className="mr-2 h-4 w-4" />
                         <span>Edit Channel</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem disabled>
-                        <PlusCircle className="mr-2 h-4 w-4" />
+                    <DropdownMenuItem onSelect={() => setIsThreadDialogOpen(true)} disabled={!canHaveThreads}>
+                        <MessageSquarePlus className="mr-2 h-4 w-4" />
                         <span>Create Thread</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem disabled className="text-destructive focus:text-destructive">
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        <span>Delete Channel</span>
-                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 text-destructive focus:text-destructive">
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                <span>Delete Channel</span>
+                            </div>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This action cannot be undone. This will permanently delete the
+                                <span className="font-bold"> #{channel.name} </span>
+                                channel and all of its messages.
+                            </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                            <AlertDialogCancel disabled={isSubmitting}>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleDelete} disabled={isSubmitting}>
+                                {isSubmitting ? 'Deleting...' : 'Continue'}
+                            </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
                 </DropdownMenuContent>
             </DropdownMenu>
 
+            {/* Edit Channel Dialog */}
             <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
@@ -115,6 +200,45 @@ export function ChannelActions({ channel }: ChannelActionsProps) {
                             </DialogClose>
                             <Button type="submit" disabled={isSubmitting || newChannelName.trim() === '' || newChannelName === channel.name}>
                                 {isSubmitting ? 'Saving...' : 'Save Changes'}
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
+
+            {/* Create Thread Dialog */}
+            <Dialog open={isThreadDialogOpen} onOpenChange={setIsThreadDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Create New Thread in #{channel.name}</DialogTitle>
+                        <DialogDescription>
+                            Enter a name for your new thread.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleCreateThread}>
+                        <div className="grid gap-4 py-4">
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="thread-name" className="text-right">
+                                    Thread Name
+                                </Label>
+                                <Input
+                                    id="thread-name"
+                                    value={threadName}
+                                    onChange={(e) => setThreadName(e.target.value)}
+                                    className="col-span-3"
+                                    disabled={isSubmitting}
+                                    placeholder="e.g., Weekly AMA discussion"
+                                />
+                            </div>
+                        </div>
+                        <DialogFooter>
+                            <DialogClose asChild>
+                                <Button type="button" variant="secondary" disabled={isSubmitting}>
+                                    Cancel
+                                </Button>
+                            </DialogClose>
+                            <Button type="submit" disabled={isSubmitting || threadName.trim() === ''}>
+                                {isSubmitting ? 'Creating...' : 'Create Thread'}
                             </Button>
                         </DialogFooter>
                     </form>

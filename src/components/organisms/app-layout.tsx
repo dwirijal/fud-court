@@ -7,7 +7,7 @@ import { Footer } from '@/components/organisms/footer';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
 import { AppShell } from './app-shell';
-import { SidebarProvider } from '../ui/sidebar';
+import { SidebarProvider } from '@/hooks/use-sidebar';
 
 interface AppLayoutProps {
   children: React.ReactNode;

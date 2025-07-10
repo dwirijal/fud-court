@@ -74,25 +74,30 @@ export async function createThreadInChannel(formData: FormData) {
     }
 
     try {
-        const threadData: { name: string; message?: { content: string } } = {
+        // Define the payload for the thread itself.
+        // Type 11 is for Public Threads.
+        const threadPayload: { name: string; type: number; message?: { content: string } } = {
             name: threadName,
+            type: 11, // 11 = Public Thread
         };
         
         // Only include the message object if there is content.
         if (messageContent && messageContent.trim().length > 0) {
-            threadData.message = {
+            threadPayload.message = {
                 content: messageContent,
             };
         }
 
-        const threadCreationFormData = new FormData();
-        threadCreationFormData.append('payload_json', JSON.stringify(threadData));
+        // Create a new FormData object to send to the Discord API.
+        const discordApiFormData = new FormData();
+        discordApiFormData.append('payload_json', JSON.stringify(threadPayload));
 
+        // Attach the image file if it exists, using the correct field name `files[0]`.
         if (imageFile && imageFile.size > 0) {
-             threadCreationFormData.append(`files[0]`, imageFile, imageFile.name);
+             discordApiFormData.append('files[0]', imageFile, imageFile.name);
         }
 
-        await createThread(channelId, threadCreationFormData);
+        await createThread(channelId, discordApiFormData);
         revalidate();
     } catch (error) {
         console.error('Server action createThreadInChannel failed:', error);

@@ -308,7 +308,3 @@ export function ChannelsDashboard({ initialChannels, isDiscordConfigured, apiErr
         </>
     );
 }
-
-    
-
-    

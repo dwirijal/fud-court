@@ -10,8 +10,9 @@ import {
 } from "@/components/ui/sheet";
 import type { DiscordChannel } from "@/types";
 import { ChannelEditor } from './channel-editor';
-import { useSidebar } from "@/components/ui/sidebar";
+import { useSidebar } from "@/hooks/use-sidebar";
 import { useEffect } from "react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ChannelEditorSheetProps {
     channel: DiscordChannel | null;
@@ -24,7 +25,6 @@ export function ChannelEditorSheet({ channel, open, onOpenChange, onActionComple
     const { setOpen: setSidebarOpen } = useSidebar();
 
     useEffect(() => {
-        // Collapse sidebar when sheet opens, but only on desktop
         if (open && window.innerWidth > 768) {
             setSidebarOpen(false);
         }
@@ -41,14 +41,14 @@ export function ChannelEditorSheet({ channel, open, onOpenChange, onActionComple
                         Manage settings for <span className="font-semibold text-primary">#{channel.name}</span>
                     </SheetDescription>
                 </SheetHeader>
-                <ChannelEditor 
-                    channel={channel} 
-                    onActionComplete={onActionComplete} 
-                    onClose={() => onOpenChange(false)}
-                />
+                <ScrollArea className="flex-grow">
+                    <ChannelEditor 
+                        channel={channel} 
+                        onActionComplete={onActionComplete} 
+                        onClose={() => onOpenChange(false)}
+                    />
+                </ScrollArea>
             </SheetContent>
         </Sheet>
     )
 }
-
-    

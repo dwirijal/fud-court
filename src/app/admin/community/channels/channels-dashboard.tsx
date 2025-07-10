@@ -10,12 +10,19 @@ import {
     CardDescription
 } from "@/components/ui/card";
 import {
-    Terminal, 
-    Hash, 
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
+    Terminal,
+    Hash,
     PlusCircle,
     Loader2,
     AlertTriangle,
-    Edit
+    Edit,
+    ChevronDown,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { getGuildChannels } from "@/lib/discord";
@@ -43,6 +50,7 @@ import {
 import { createChannelAction, updateChannelAction } from '@/lib/actions/discord';
 import { useToast } from "@/hooks/use-toast";
 import { ChannelEditorSheet } from './channel-editor-sheet';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const StatusDot = ({ color }: { color: 'green' | 'red' | 'amber' }) => {
     const colorClasses = {
@@ -52,7 +60,6 @@ const StatusDot = ({ color }: { color: 'green' | 'red' | 'amber' }) => {
     };
     return <span className={cn('h-2.5 w-2.5 rounded-full', colorClasses[color])} />;
 };
-
 
 function CreateChannelDialog({ categories, open, onOpenChange, onActionComplete }: { categories: DiscordChannel[], open: boolean, onOpenChange: (open: boolean) => void, onActionComplete: () => void }) {
     const { toast } = useToast();
@@ -347,49 +354,56 @@ export function ChannelsDashboard({ initialChannels, isDiscordConfigured, apiErr
                     <CardHeader className="flex flex-col sm:flex-row justify-between sm:items-start gap-4">
                         <div className="flex-grow">
                             <CardTitle className="flex items-center gap-2"><Hash className="h-5 w-5" />Server Channels</CardTitle>
-                            <CardDescription className="mt-1">Click a channel to manage its settings.</CardDescription>
+                            <CardDescription className="mt-1">Expand a category to see its channels. Click a channel to edit.</CardDescription>
                         </div>
                          {isDiscordConfigured && (
                             <Button onClick={() => setIsCreateDialogOpen(true)} size="sm">
                                 <PlusCircle className="mr-2 h-4 w-4" />
-                                Create Channel
+                                Create Item
                             </Button>
                         )}
                     </CardHeader>
-                    <CardContent className="space-y-6">
-                        {Object.entries(channelsByCategory).map(([categoryName, categoryChannels]) => (
-                            <div key={categoryName}>
-                                <div className="flex justify-between items-center mb-2 px-1">
-                                    <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">{categoryName}</h3>
-                                    {categoryName !== 'Uncategorized' && (
-                                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setEditingCategory(getCategoryByName(categoryName) || null)}>
-                                            <Edit className="h-3 w-3" />
-                                            <span className="sr-only">Edit Category</span>
-                                        </Button>
-                                    )}
-                                </div>
-                                <div className="border rounded-lg divide-y divide-border">
-                                    {categoryChannels.map(channel => (
-                                        <div key={channel.id} className="flex items-center justify-between p-3 hover:bg-muted/50">
-                                            <div className="flex items-center gap-3">
-                                                <Hash className="h-4 w-4 text-muted-foreground" />
-                                                <div className="flex flex-col text-left">
-                                                    <span className="font-medium">{channel.name}</span>
-                                                    <div className="flex items-center gap-2">
-                                                        <Badge variant="outline" className="text-xs h-5">{channel.type}</Badge>
-                                                        {channel.nsfw && <Badge variant="destructive" className="text-xs h-5">NSFW</Badge>}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <Button variant="outline" size="sm" onClick={() => setEditingChannel(channel)}>
-                                                <Edit className="mr-2 h-4 w-4" />
-                                                Edit
+                    <CardContent>
+                       <Accordion type="multiple" className="w-full space-y-2">
+                            {Object.entries(channelsByCategory).map(([categoryName, categoryChannels]) => (
+                                <AccordionItem key={categoryName} value={categoryName} className="border-none">
+                                    <AccordionTrigger className="p-3 hover:bg-muted/50 rounded-lg flex justify-between items-center text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                                       <div className="flex items-center gap-2">
+                                            <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
+                                            {categoryName}
+                                       </div>
+                                       {categoryName !== 'Uncategorized' && (
+                                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); setEditingCategory(getCategoryByName(categoryName) || null); }}>
+                                                <Edit className="h-3 w-3" />
+                                                <span className="sr-only">Edit Category</span>
                                             </Button>
+                                        )}
+                                    </AccordionTrigger>
+                                    <AccordionContent className="p-0 pl-4">
+                                        <div className="border-l py-2 space-y-1">
+                                            {categoryChannels.map(channel => (
+                                                <div key={channel.id} className="flex items-center justify-between p-2 pl-4 rounded-md hover:bg-muted/50">
+                                                    <div className="flex items-center gap-3">
+                                                        <Hash className="h-4 w-4 text-muted-foreground" />
+                                                        <div className="flex flex-col text-left">
+                                                            <span className="font-medium">{channel.name}</span>
+                                                            <div className="flex items-center gap-2">
+                                                                <Badge variant="outline" className="text-xs h-5">{channel.type}</Badge>
+                                                                {channel.nsfw && <Badge variant="destructive" className="text-xs h-5">NSFW</Badge>}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <Button variant="outline" size="sm" onClick={() => setEditingChannel(channel)}>
+                                                        <Edit className="mr-2 h-4 w-4" />
+                                                        Edit
+                                                    </Button>
+                                                </div>
+                                            ))}
                                         </div>
-                                    ))}
-                                </div>
-                            </div>
-                        ))}
+                                    </AccordionContent>
+                                </AccordionItem>
+                            ))}
+                        </Accordion>
                     </CardContent>
                 </Card>
             )}
@@ -406,11 +420,9 @@ export function ChannelsDashboard({ initialChannels, isDiscordConfigured, apiErr
                 }}
                 onActionComplete={() => {
                     fetchChannels();
-                    setEditingChannel(null);
+                    // Keep sheet open for further edits, user can close it manually
                 }}
             />
         </>
     );
 }
-
-    

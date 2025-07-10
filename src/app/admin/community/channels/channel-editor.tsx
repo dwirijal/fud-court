@@ -137,7 +137,7 @@ export function ChannelEditor({ channel, onActionComplete, onClose }: ChannelEdi
 
     return (
         <>
-            <div className="p-6 space-y-6 flex-grow overflow-y-auto">
+            <div className="p-6 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                         <Label htmlFor={`name-${channel.id}`}>Channel Name</Label>
@@ -183,7 +183,7 @@ export function ChannelEditor({ channel, onActionComplete, onClose }: ChannelEdi
                     </Button>
                 )}
             </div>
-            <div className="flex justify-between items-center p-6 border-t bg-background">
+            <div className="flex justify-between items-center p-6 border-t bg-background sticky bottom-0">
                 <Button onClick={() => setIsDeleteDialogOpen(true)} variant="destructive" size="sm" disabled={isSubmitting || isDeleting}>
                     {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
                     Delete

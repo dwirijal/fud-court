@@ -7,6 +7,7 @@ import { Footer } from '@/components/organisms/footer';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
 import { AppShell } from './app-shell';
+import { SidebarProvider } from '../ui/sidebar';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -26,7 +27,9 @@ export function AppLayout({ children, showAdminLinks }: AppLayoutProps) {
       disableTransitionOnChange
     >
       {isAdminPage ? (
-        <AppShell showAdminLinks={showAdminLinks}>{children}</AppShell>
+        <SidebarProvider>
+            <AppShell showAdminLinks={showAdminLinks}>{children}</AppShell>
+        </SidebarProvider>
       ) : isLoginPage ? (
         <>{children}</>
       ) : (

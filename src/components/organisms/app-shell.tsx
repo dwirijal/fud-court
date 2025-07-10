@@ -3,7 +3,6 @@
 
 import Link from 'next/link';
 import {
-  SidebarProvider,
   Sidebar,
   SidebarHeader,
   SidebarTrigger,
@@ -22,7 +21,7 @@ interface AppShellProps {
 
 export function AppShell({ children, showAdminLinks }: AppShellProps) {
   return (
-    <SidebarProvider>
+    <>
       <Sidebar collapsible="icon">
         <SidebarHeader className="p-3">
           <Link
@@ -48,6 +47,6 @@ export function AppShell({ children, showAdminLinks }: AppShellProps) {
         </div>
         {children}
       </SidebarInset>
-    </SidebarProvider>
+    </>
   );
 }

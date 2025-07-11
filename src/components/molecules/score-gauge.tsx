@@ -9,8 +9,8 @@ import {
 } from '@/components/ui/chart';
 
 const chartConfig = {
-  value: {
-    label: 'Value',
+  score: {
+    label: 'Score',
   },
   bearish: {
     label: 'Bearish',
@@ -54,9 +54,9 @@ export function ScoreGauge({
   score: number;
 }) {
   const chartData = [
-    { name: 'bearish', value: 40, fill: chartConfig.bearish.color },
-    { name: 'neutral', value: 20, fill: chartConfig.neutral.color },
-    { name: 'bullish', value: 40, fill: chartConfig.bullish.color },
+    { sentiment: 'bearish', value: 40 },
+    { sentiment: 'neutral', value: 20 },
+    { sentiment: 'bullish', value: 40 },
   ];
 
   return (
@@ -68,7 +68,7 @@ export function ScoreGauge({
         <Pie
           data={chartData}
           dataKey="value"
-          nameKey="name"
+          nameKey="sentiment"
           innerRadius={80}
           outerRadius={100}
           startAngle={180}
@@ -78,7 +78,7 @@ export function ScoreGauge({
           cornerRadius={5}
         >
           {chartData.map((entry) => (
-            <Cell key={`cell-${entry.name}`} fill={entry.fill} />
+            <Cell key={`cell-${entry.sentiment}`} fill={`var(--color-${entry.sentiment})`} />
           ))}
           {({ cx, cy }) => {
             if (cx && cy) {

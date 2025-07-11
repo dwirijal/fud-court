@@ -148,7 +148,8 @@ export const MarketAnalysisOutputSchema = z.object({
     fearGreedScore: z.number(),
     athScore: z.number(),
     marketBreadthScore: z.number(),
-  }).describe('The individual scores for each component of the analysis.')
+  }).describe('The individual scores for each component of the analysis.'),
+  confidenceScore: z.number().min(0).max(100).describe('A score from 0 to 100 representing the confidence in the analysis based on the quality and completeness of the input data.'),
 });
 export type MarketAnalysisOutput = z.infer<typeof MarketAnalysisOutputSchema>;
 

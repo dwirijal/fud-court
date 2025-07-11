@@ -4,6 +4,9 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ChartContainer, ChartConfig } from "@/components/ui/chart";
 import { Pie, PieChart, Cell } from "recharts";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle } from "lucide-react";
 
 const chartConfig = {
   value: {
@@ -24,7 +27,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 
-export function ScoreGauge({ score, interpretation, summary }: { score: number, interpretation: string, summary: string }) {
+export function ScoreGauge({ score, interpretation, summary, confidenceScore }: { score: number, interpretation: string, summary: string, confidenceScore: number }) {
   const chartData = [
     { name: "value", value: score, fill: "transparent" },
     { name: "background", value: 100 - score, fill: "hsl(var(--muted))" },
@@ -93,6 +96,19 @@ export function ScoreGauge({ score, interpretation, summary }: { score: number, 
               >
                   {interpretation}
               </span>
+              <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Badge variant="secondary" className="mt-2 cursor-help">
+                            <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
+                            Confidence: {confidenceScore}%
+                        </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>Confidence in this analysis based on data quality.</p>
+                    </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
           </div>
       </Card>
   );

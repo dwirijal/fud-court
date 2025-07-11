@@ -108,6 +108,7 @@ export function MarketSummaryCard() {
                     score={analysisResult.macroScore} 
                     interpretation={analysisResult.marketCondition}
                     summary="A macro sentiment score based on 5 key market indicators."
+                    confidenceScore={analysisResult.confidenceScore}
                 />
             </div>
             <div className="md:col-span-3 flex flex-col">
@@ -164,4 +165,3 @@ export function MarketSummaryCard() {
     </Card>
   );
 }
-

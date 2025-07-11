@@ -20,6 +20,30 @@ const weights = {
   marketBreadth: 0.10   // S5
 };
 
+/**
+ * Calculates a confidence score based on the validity and completeness of the input data.
+ * @param input The market analysis input data.
+ * @returns A confidence score between 0 and 100.
+ */
+function calculateConfidenceScore(input: MarketAnalysisInput): number {
+    let confidence = 100;
+
+    // Deduct points for invalid or missing core metrics
+    if (input.totalMarketCap <= 0) confidence -= 25;
+    if (input.totalVolume24h <= 0) confidence -= 25;
+    if (input.fearAndGreedIndex < 0 || input.fearAndGreedIndex > 100) confidence -= 15;
+
+    // Deduct points if the topCoins array is incomplete
+    const expectedCoins = 20; // Based on the number of coins we fetch in coingecko.ts
+    if (input.topCoins.length < expectedCoins) {
+        const missingPercentage = (expectedCoins - input.topCoins.length) / expectedCoins;
+        confidence -= missingPercentage * 35; // Max 35 points penalty for missing coins
+    }
+
+    // Ensure confidence is not below 0
+    return Math.max(0, Math.round(confidence));
+}
+
 const marketAnalysisFlow = ai.defineFlow(
   {
     name: 'marketAnalysisFlow',
@@ -88,6 +112,8 @@ const marketAnalysisFlow = ai.defineFlow(
     } else {
         marketCondition = 'Capitulation / Fear ekstrem';
     }
+    
+    const confidenceScore = calculateConfidenceScore(input);
 
     return {
       macroScore: finalScore,
@@ -98,7 +124,8 @@ const marketAnalysisFlow = ai.defineFlow(
         fearGreedScore: Math.round(finalScores.fearAndGreed),
         athScore: Math.round(finalScores.ath),
         marketBreadthScore: Math.round(finalScores.marketBreadth),
-      }
+      },
+      confidenceScore,
     };
   }
 );

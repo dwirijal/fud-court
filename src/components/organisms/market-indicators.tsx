@@ -104,7 +104,11 @@ export function MarketIndicators() {
                 <div className="container mx-auto px-4">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <Skeleton className="h-64 md:col-span-1" />
-                        <Skeleton className="h-64 md:col-span-2" />
+                        <div className="md:col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-6">
+                            {Array.from({ length: 8 }).map((_, i) => (
+                                <Skeleton key={i} className="h-28" />
+                            ))}
+                        </div>
                     </div>
                 </div>
             </section>
@@ -143,4 +147,3 @@ export function MarketIndicators() {
         </section>
     );
 }
-

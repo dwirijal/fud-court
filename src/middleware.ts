@@ -1,8 +1,6 @@
 
 import { NextResponse, type NextRequest } from 'next/server';
 import { createClient } from '@/utils/supabase/middleware';
-import { db } from '@/lib/db';
-import { pageViews } from '@/lib/db/schema';
 
 export async function middleware(request: NextRequest) {
   // Use the Supabase helper to handle session management.
@@ -11,6 +9,7 @@ export async function middleware(request: NextRequest) {
   await supabase.auth.getSession();
 
   const { pathname } = request.nextUrl;
+  const url = request.nextUrl.clone()
 
   // List of paths to exclude from page view tracking.
   const excludedPaths = [
@@ -25,19 +24,16 @@ export async function middleware(request: NextRequest) {
   // Also check for file extensions like .png, .jpg, etc.
   const isStaticFile = /\.(.*)$/.test(pathname);
 
-  // Log page view if the database is configured and it's a valid page path.
-  if (db && !isExcluded && !isStaticFile) {
-    try {
-      // The `db` object is now a singleton managed by getDbInstance(),
-      // so we can use it directly without dynamic imports.
-      await db.insert(pageViews).values({ path: pathname });
-    } catch (error) {
-      // Don't log the error if it's a connection issue, as it can be noisy.
-      // We already log the initial connection failure in db/index.ts.
-      if (!(error instanceof Error && error.message.includes('connect'))) {
-        console.error('Failed to log page view:', error);
-      }
-    }
+  // Log page view by calling our new API route.
+  if (!isExcluded && !isStaticFile) {
+    // We use 'fetch' to call the API route.
+    // We don't await this, as we don't want to block the middleware.
+    // This is a "fire-and-forget" request.
+    fetch(`${url.origin}/api/track`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: pathname }),
+    }).catch(console.error);
   }
 
   // Return the response object from the Supabase helper.

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { fetchMarketData } from '@/lib/coingecko';
@@ -19,6 +19,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import anime from 'animejs';
 
 const indicatorExplanations: Record<string, string> = {
     marketCapScore: "Measures current market valuation against its historical peak.",
@@ -44,6 +45,54 @@ const getActiveColorClass = (interpretation: string) => {
     }
     return 'text-muted-foreground';
 };
+
+const AnimatedNumber = ({ to, className, delay = 0 }: { to: number, className?: string, delay?: number }) => {
+    const [value, setValue] = useState(0);
+    const hasAnimated = useRef(false);
+
+    useEffect(() => {
+        if (hasAnimated.current) return;
+        hasAnimated.current = true;
+
+        anime({
+            targets: { value: 0 },
+            value: to,
+            round: 1,
+            duration: 1200,
+            delay: delay,
+            easing: 'easeOutCubic',
+            update: (anim) => {
+                setValue((anim.targets[0] as any).value);
+            }
+        });
+    }, [to, delay]);
+
+    return <p className={className}>{value}</p>;
+}
+
+const AnimatedProgress = ({ value, className, indicatorClassName }: { value: number, className?: string, indicatorClassName?: string }) => {
+    const [progressValue, setProgressValue] = useState(0);
+    const hasAnimated = useRef(false);
+
+    useEffect(() => {
+        if (hasAnimated.current) return;
+        hasAnimated.current = true;
+
+        anime({
+            targets: { value: 0 },
+            value: value,
+            duration: 1200,
+            delay: 400,
+            easing: 'easeOutCubic',
+            update: (anim) => {
+                setProgressValue((anim.targets[0] as any).value);
+            }
+        });
+    }, [value]);
+    
+    return <Progress value={progressValue} className={className} indicatorClassName={indicatorClassName} />
+}
+
 
 export function MarketSummaryCard() {
   const [isLoading, setIsLoading] = useState(true);
@@ -137,14 +186,14 @@ export function MarketSummaryCard() {
                             </Badge>
                         </div>
                         <div className="text-right flex-shrink-0 pl-4">
-                            <p className={cn("text-6xl font-bold tracking-tighter", activeColorClass)}>{analysisResult.macroScore}</p>
+                            <AnimatedNumber to={analysisResult.macroScore} className={cn("text-6xl font-bold tracking-tighter", activeColorClass)} />
                             <p className={cn("font-semibold text-xl", activeColorClass)}>{analysisResult.marketCondition}</p>
                         </div>
                     </div>
                 </Card>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {indicators.map((indicator) => (
+                    {indicators.map((indicator, index) => (
                         <Card key={indicator.name} className="flex flex-col">
                            <CardContent className="p-4 flex flex-1 items-center justify-between gap-4">
                                 <div className="space-y-1 flex-grow">
@@ -162,8 +211,8 @@ export function MarketSummaryCard() {
                                     <p className="text-xs text-muted-foreground line-clamp-2">{indicator.description}</p>
                                 </div>
                                 <div className="text-right flex-shrink-0 pl-2">
-                                    <p className="text-3xl font-mono font-bold">{indicator.value}</p>
-                                    <Progress value={indicator.value} className="h-1.5 w-[60px] mt-1" indicatorClassName={cn(getProgressColorClass(indicator.value))} />
+                                    <AnimatedNumber to={indicator.value} className="text-3xl font-mono font-bold" delay={200 + index * 100} />
+                                    <AnimatedProgress value={indicator.value} className="h-1.5 w-[60px] mt-1" indicatorClassName={cn(getProgressColorClass(indicator.value))} />
                                 </div>
                             </CardContent>
                         </Card>

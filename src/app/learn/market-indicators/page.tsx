@@ -118,32 +118,40 @@ export default async function MarketIndicatorsPage() {
                     <CardDescription>The actual values being fed into the formulas below.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4 text-sm">
-                        <li className="flex justify-between items-baseline border-b pb-2">
-                            <span className="text-muted-foreground">Total Market Cap</span>
-                            <span className="font-mono font-semibold">{formatCurrency(marketData.totalMarketCap)}</span>
-                        </li>
-                         <li className="flex justify-between items-baseline border-b pb-2">
-                            <span className="text-muted-foreground">24h Volume</span>
-                            <span className="font-mono font-semibold">{formatCurrency(marketData.totalVolume24h)}</span>
-                        </li>
-                        <li className="flex justify-between items-baseline border-b pb-2">
-                            <span className="text-muted-foreground">Fear & Greed Index</span>
-                            <span className="font-mono font-semibold">{marketData.fearAndGreedIndex}</span>
-                        </li>
-                        <li className="flex justify-between items-baseline border-b pb-2">
-                            <span className="text-muted-foreground">BTC Dominance</span>
-                            <span className="font-mono font-semibold">{marketData.btcDominance.toFixed(2)}%</span>
-                        </li>
-                        <li className="flex justify-between items-baseline border-b pb-2">
-                            <span className="text-muted-foreground">Max Historical Cap</span>
-                             <span className="font-mono font-semibold">{formatCurrency(marketData.maxHistoricalMarketCap)}</span>
-                        </li>
-                         <li className="flex justify-between items-baseline border-b pb-2">
-                            <span className="text-muted-foreground">Top Coins Analyzed</span>
-                            <span className="font-mono font-semibold">{marketData.topCoins.length}</span>
-                        </li>
-                    </ul>
+                    <div className="space-y-4">
+                        <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4 text-sm">
+                            <li className="flex justify-between items-baseline border-b pb-2">
+                                <span className="text-muted-foreground">Total Market Cap</span>
+                                <span className="font-mono font-semibold">{formatCurrency(marketData.totalMarketCap)}</span>
+                            </li>
+                             <li className="flex justify-between items-baseline border-b pb-2">
+                                <span className="text-muted-foreground">24h Volume</span>
+                                <span className="font-mono font-semibold">{formatCurrency(marketData.totalVolume24h)}</span>
+                            </li>
+                            <li className="flex justify-between items-baseline border-b pb-2">
+                                <span className="text-muted-foreground">Fear & Greed Index</span>
+                                <span className="font-mono font-semibold">{marketData.fearAndGreedIndex}</span>
+                            </li>
+                            <li className="flex justify-between items-baseline border-b pb-2">
+                                <span className="text-muted-foreground">BTC Dominance</span>
+                                <span className="font-mono font-semibold">{marketData.btcDominance.toFixed(2)}%</span>
+                            </li>
+                            <li className="flex justify-between items-baseline border-b pb-2">
+                                <span className="text-muted-foreground">Max Historical Cap</span>
+                                 <span className="font-mono font-semibold">{formatCurrency(marketData.maxHistoricalMarketCap)}</span>
+                            </li>
+                        </ul>
+                         <div>
+                            <p className="text-sm font-medium text-muted-foreground mb-2">Top Coins Analyzed ({marketData.topCoinsForAnalysis.length})</p>
+                             <div className="flex flex-wrap gap-2">
+                                {marketData.topCoinsForAnalysis.map((coin) => (
+                                    <Badge key={coin.symbol} variant="secondary" className="font-mono">
+                                        {coin.symbol.toUpperCase()}
+                                    </Badge>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
                 </CardContent>
             </Card>
         ) : (

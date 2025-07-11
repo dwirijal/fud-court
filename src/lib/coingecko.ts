@@ -1,7 +1,7 @@
 
 'use server';
 
-import type { CryptoData, FearGreedData, MarketAnalysisInput, MarketStats } from '@/types';
+import type { CryptoData, FearGreedData, MarketAnalysisInput, MarketStats, TopCoinForAnalysis } from '@/types';
 
 const API_BASE_URL = 'https://api.coingecko.com/api/v3';
 
@@ -68,11 +68,17 @@ export async function fetchFearGreedData(): Promise<{ today: FearGreedData | nul
 }
 
 
+// Combine the input for analysis and stats into a single return type for fetchMarketData
+export type CombinedMarketData = MarketAnalysisInput & MarketStats & {
+    topCoinsForAnalysis: TopCoinForAnalysis[];
+};
+
+
 /**
  * Fetches all necessary data for the market analysis and stats cards.
  * @returns A promise that resolves to a combined object of MarketAnalysisInput and MarketStats or null if failed.
  */
-export async function fetchMarketData(): Promise<(MarketAnalysisInput & MarketStats) | null> {
+export async function fetchMarketData(): Promise<CombinedMarketData | null> {
     try {
         const globalDataPromise = fetch(`${API_BASE_URL}/global`, { next: { revalidate: 300 } }).then(res => res.json());
         const fearAndGreedPromise = fetchFearGreedData();
@@ -139,7 +145,13 @@ export async function fetchMarketData(): Promise<(MarketAnalysisInput & MarketSt
             stablecoinDominance: (stablecoinMarketCap / totalMarketCap) * 100,
         };
 
-        return { ...analysisInput, ...marketStats };
+        // Extra data for UI display
+        const topCoinsForAnalysis: TopCoinForAnalysis[] = topCoins.map(c => ({
+            name: c.name,
+            symbol: c.symbol,
+        }));
+
+        return { ...analysisInput, ...marketStats, topCoinsForAnalysis };
 
     } catch (error) {
         console.error("Failed to fetch comprehensive market data:", error);

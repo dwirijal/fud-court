@@ -172,3 +172,9 @@ export interface MarketStats {
     solDominance: number;
     stablecoinDominance: number;
 }
+
+// Type for displaying the list of coins used in analysis
+export interface TopCoinForAnalysis {
+    name: string;
+    symbol: string;
+}

@@ -2,82 +2,76 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from '@/components/ui/skeleton';
-import { analyzeMarketSentiment, type MarketAnalysisOutput } from '@/ai/flows/market-analysis-flow';
 import { fetchMarketData } from '@/lib/coingecko';
-import { ScoreGauge } from '../molecules/score-gauge';
+import type { MarketAnalysisInput } from '@/types';
+import { FearGreedGauge } from '../molecules/fear-greed-gauge';
+import { MarketDominancePieChart } from '../molecules/market-dominance-pie-chart';
 
 export function MarketSummaryCard() {
   const [isLoading, setIsLoading] = useState(true);
-  const [analysisResult, setAnalysisResult] = useState<MarketAnalysisOutput | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [marketData, setMarketData] = useState<MarketAnalysisInput | null>(null);
 
   useEffect(() => {
-    const performAnalysis = async () => {
+    const getMarketData = async () => {
       setIsLoading(true);
-      setError(null);
       try {
-        const marketData = await fetchMarketData();
-        if (!marketData) {
-            throw new Error("Failed to fetch necessary market data.");
-        }
-        
-        const result = await analyzeMarketSentiment(marketData);
-        setAnalysisResult(result);
+        const data = await fetchMarketData();
+        setMarketData(data);
       } catch (e) {
-        console.error("Market analysis failed:", e);
-        const message = e instanceof Error ? e.message : "An unknown error occurred during analysis.";
-        setError(message);
+        console.error("Market data fetch failed:", e);
+        // We set marketData to null but don't set an error state
+        // to allow the component to render with a "no data" message if needed.
+        setMarketData(null);
       } finally {
         setIsLoading(false);
       }
     };
 
-    performAnalysis();
+    getMarketData();
   }, []);
 
   if (isLoading) {
     return (
-        <Card className="flex flex-col items-center justify-center p-6 bg-card/60 backdrop-blur-md min-h-[400px]">
-            <CardHeader className="items-center text-center">
-                <Skeleton className="h-8 w-48 mb-2" />
-                <Skeleton className="h-5 w-64" />
-            </CardHeader>
-            <CardContent className="flex flex-1 items-center justify-center p-0">
-                <Skeleton className="h-64 w-64 rounded-full" />
-            </CardContent>
-        </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+        <Skeleton className="h-[400px] w-full" />
+        <Skeleton className="h-[400px] w-full" />
+      </div>
     );
   }
 
-  if (error) {
+  if (!marketData) {
+    // This renders if the fetch failed, providing a graceful fallback
+    // instead of a jarring error message.
     return (
-        <Card className="flex flex-col items-center justify-center p-6 bg-destructive/10 border-destructive min-h-[400px]">
-            <CardHeader className="items-center text-center">
-                <CardTitle className="text-destructive">Analysis Failed</CardTitle>
-                <CardDescription className="text-destructive/80">{error}</CardDescription>
-            </CardHeader>
-        </Card>
+      <div className="text-center text-muted-foreground py-12">
+        <p>Could not load market data at this time. Please try again later.</p>
+      </div>
     );
   }
-
-  if (!analysisResult) {
-    return (
-        <Card className="flex flex-col items-center justify-center p-6 bg-card/60 backdrop-blur-md min-h-[400px]">
-             <CardHeader className="items-center text-center">
-                <CardTitle>No Data</CardTitle>
-                <CardDescription>Could not generate market analysis at this time.</CardDescription>
-            </CardHeader>
-        </Card>
-    );
-  }
+  
+  const totalMarketCapFormatted = `$${(marketData.totalMarketCap / 1_000_000_000_000).toFixed(2)}T`;
+  const ethDominance = (marketData.altcoinMarketCap - (marketData.totalMarketCap - marketData.btcMarketCap - marketData.altcoinMarketCap)) / marketData.totalMarketCap * 100;
+  
+  const dominanceData = [
+    { name: 'btc' as const, dominance: marketData.btcDominance, value: totalMarketCapFormatted },
+    { name: 'eth' as const, dominance: ethDominance, value: '' },
+    { name: 'others' as const, dominance: 100 - marketData.btcDominance - ethDominance, value: '' }
+  ];
 
   return (
-    <ScoreGauge 
-        score={analysisResult.macroScore}
-        interpretation={analysisResult.interpretation}
-        summary={analysisResult.summary}
-    />
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+      <FearGreedGauge 
+        value={marketData.fearAndGreedIndex} 
+        classification={
+          marketData.fearAndGreedIndex > 65 ? 'Greed' : 
+          marketData.fearAndGreedIndex < 35 ? 'Fear' : 'Neutral'
+        } 
+      />
+      <MarketDominancePieChart 
+        data={dominanceData}
+        totalMarketCap={totalMarketCapFormatted}
+      />
+    </div>
   );
 }

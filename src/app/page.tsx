@@ -1,3 +1,4 @@
+
 import { NewsCard } from "@/components/molecules/news-card";
 import { Button } from "@/components/ui/button";
 import { getPosts } from "@/lib/ghost";
@@ -22,7 +23,7 @@ export default async function Home() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button size="lg" asChild>
-              <Link href="/markets">Explore Markets</Link>
+              <Link href="https://discord.gg" target="_blank" rel="noopener noreferrer">Join Community</Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
                <Link href="/news">Read Latest News</Link>

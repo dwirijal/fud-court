@@ -1,13 +1,34 @@
+'use client';
 
+import React, { useEffect, useRef } from 'react';
+import anime from 'animejs/lib/anime.es.js';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { Logo } from '../atoms/logo';
 
 export function NftCard() {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (cardRef.current) {
+      anime({
+        targets: cardRef.current,
+        opacity: [0, 1],
+        translateY: [50, 0],
+        rotateX: [-30, 0],
+        duration: 1500,
+        easing: 'easeOutExpo',
+        delay: 500, // Delay to start after text animation
+      });
+    }
+  }, []);
+
   return (
-    <div className="group relative w-full max-w-sm cursor-pointer">
+    <div
+      ref={cardRef}
+      className="group relative w-full max-w-sm cursor-pointer opacity-0"
+    >
       <div
         className={cn(
           'absolute -inset-0.5 rounded-xl bg-gradient-to-r from-primary via-accent to-chart-2 opacity-50 blur transition duration-500 group-hover:opacity-75 group-hover:duration-200'

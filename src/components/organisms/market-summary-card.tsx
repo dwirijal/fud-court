@@ -11,7 +11,7 @@ import { saveMarketSnapshot, hasTodaySnapshot } from '@/lib/actions/snapshots';
 import { ScoreGauge } from '../molecules/score-gauge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { AlertTriangle, CheckCircle, Info } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Info, ArrowUpRight } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -118,7 +118,12 @@ export function MarketSummaryCard() {
     <Card className="w-full h-full flex flex-col">
         <CardHeader>
              <CardTitle>Macro Sentiment Score</CardTitle>
-             <CardDescription>A macro sentiment score based on 5 key market indicators.</CardDescription>
+             <div className="flex items-center gap-4">
+                <CardDescription>A macro sentiment score based on 5 key market indicators.</CardDescription>
+                <Link href="/learn/market-indicators" className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1">
+                    Read more <ArrowUpRight className="h-3 w-3" />
+                </Link>
+             </div>
         </CardHeader>
         <CardContent className="flex-grow grid grid-cols-1 md:grid-cols-5 gap-6">
             <div className="md:col-span-2 flex flex-col items-center justify-center space-y-4">
@@ -188,11 +193,6 @@ export function MarketSummaryCard() {
                             </TableBody>
                         </Table>
                     </TooltipProvider>
-                </div>
-                <div className="mt-4">
-                     <Link href="/learn/market-indicators" className="text-sm text-primary hover:underline">
-                        Learn more about these indicators
-                    </Link>
                 </div>
             </div>
         </CardContent>

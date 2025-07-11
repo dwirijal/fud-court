@@ -10,22 +10,16 @@ import { analyzeMarketSentiment } from '@/ai/flows/market-analysis-flow';
 import { saveMarketSnapshot, hasTodaySnapshot } from '@/lib/actions/snapshots';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { AlertTriangle, CheckCircle, Info, ArrowUpRight } from 'lucide-react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 
 const indicatorExplanations: Record<string, string> = {
-    marketCapScore: "Measures the current total market valuation against its historical peak.",
-    volumeScore: "Measures market activity and interest based on daily volume vs. average.",
-    fearGreedScore: "Represents the emotional sentiment of the market, from fear to greed.",
-    athScore: "Measures how far major assets are from their All-Time Highs (ATH).",
-    marketBreadthScore: "Measures if market movement is supported by many assets or just a few."
+    marketCapScore: "Measures current market valuation against its historical peak.",
+    volumeScore: "Measures market activity based on daily vs. average volume.",
+    fearGreedScore: "Represents the emotional sentiment of the market.",
+    athScore: "Measures how far major assets are from their All-Time Highs.",
+    marketBreadthScore: "Measures if movement is supported by many assets or just a few."
 };
 
 const getActiveColorClass = (interpretation: string) => {
@@ -118,65 +112,43 @@ export function MarketSummaryCard() {
 
   return (
     <div className="space-y-4">
-        <Card className="bg-primary/5 border-primary/20">
-            <CardHeader className="flex-row items-center justify-between">
-                 <div>
-                    <CardTitle className="text-xl">Macro Sentiment Score</CardTitle>
-                    <CardDescription>
-                        Overall market health based on key indicators.
-                    </CardDescription>
-                </div>
-                 <div className="text-right">
-                    <p className={cn("text-4xl font-bold", activeColorClass)}>{analysisResult.macroScore}</p>
-                    <p className={cn("font-semibold", activeColorClass)}>{analysisResult.marketCondition}</p>
+        <Card className="bg-primary/5 border-primary/20 overflow-hidden">
+            <CardHeader>
+                <div className="flex justify-between items-center">
+                    <div>
+                        <CardTitle className="text-xl">Macro Sentiment Score</CardTitle>
+                        <CardDescription>
+                            Overall market health based on key indicators.
+                        </CardDescription>
+                    </div>
+                     <div className="text-right flex-shrink-0 ml-4">
+                        <p className={cn("text-4xl font-bold", activeColorClass)}>{analysisResult.macroScore}</p>
+                        <p className={cn("font-semibold", activeColorClass)}>{analysisResult.marketCondition}</p>
+                    </div>
                 </div>
             </CardHeader>
         </Card>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <TooltipProvider>
-                {indicators.map((indicator) => (
-                    <Card key={indicator.name}>
-                        <CardHeader className="pb-2">
-                             <CardDescription className="flex items-center justify-between">
-                                <span className="flex items-center gap-2">
-                                    {indicator.name}
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <button>
-                                                <Info className="h-3.5 w-3.5 text-muted-foreground/70" />
-                                            </button>
-                                        </TooltipTrigger>
-                                        <TooltipContent className="max-w-xs">
-                                            <p>{indicatorExplanations[indicator.key]}</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                </span>
-                            </CardDescription>
-                            <CardTitle className="text-3xl font-mono">{indicator.value}</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                           <Progress value={indicator.value} indicatorClassName={getProgressColorClass(indicator.value)} />
-                        </CardContent>
-                    </Card>
-                ))}
-            </TooltipProvider>
+            {indicators.map((indicator) => (
+                <Card key={indicator.name} className="flex flex-col">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-base font-semibold">{indicator.name}</CardTitle>
+                        <CardDescription className="text-xs">{indicatorExplanations[indicator.key]}</CardDescription>
+                    </CardHeader>
+                    <CardContent className="pt-2 flex-grow flex flex-col justify-end">
+                        <p className="text-3xl font-mono font-bold text-right mb-2">{indicator.value}</p>
+                        <Progress value={indicator.value} indicatorClassName={getProgressColorClass(indicator.value)} />
+                    </CardContent>
+                </Card>
+            ))}
 
             <Card className="flex flex-col justify-center">
                 <CardContent className="pt-6 text-center">
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Badge variant="secondary" className="cursor-help mb-2">
-                                    <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
-                                    Confidence: {analysisResult.confidenceScore}%
-                                </Badge>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>Confidence in this analysis based on data quality.</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
+                    <Badge variant="secondary" className="cursor-help mb-2">
+                        <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
+                        Confidence: {analysisResult.confidenceScore}%
+                    </Badge>
                     <Link href="/learn/market-indicators" className="text-sm text-muted-foreground hover:text-primary flex items-center justify-center gap-1">
                         Learn more about indicators <ArrowUpRight className="h-3 w-3" />
                     </Link>

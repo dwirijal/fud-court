@@ -1,115 +1,94 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ChartContainer, ChartConfig } from "@/components/ui/chart";
-import { Pie, PieChart, Cell } from "recharts";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Badge } from "@/components/ui/badge";
-import { CheckCircle } from "lucide-react";
+import * as React from 'react';
+import { Pie, PieChart, Cell } from 'recharts';
+import {
+  ChartContainer,
+  ChartConfig,
+} from '@/components/ui/chart';
 
 const chartConfig = {
   value: {
-    label: "Value",
+    label: 'Value',
   },
   bearish: {
-    label: "Bearish",
-    color: "hsl(var(--destructive))",
+    label: 'Bearish',
+    color: 'hsl(var(--destructive))',
   },
   neutral: {
-    label: "Neutral",
-    color: "hsl(var(--muted-foreground))",
+    label: 'Neutral',
+    color: 'hsl(var(--muted-foreground))',
   },
   bullish: {
-    label: "Bullish",
-    color: "hsl(var(--chart-2))",
+    label: 'Bullish',
+    color: 'hsl(var(--chart-2))',
   },
 } satisfies ChartConfig;
 
+// Helper to calculate pointer angle
+const getAngle = (score: number) => {
+    // Gauge is a semi-circle (180 degrees), from score 0 to 100
+    // Angle starts at 180 (left) and ends at 0 (right)
+    return 180 - (score / 100) * 180;
+};
 
-export function ScoreGauge({ score, interpretation, summary, confidenceScore }: { score: number, interpretation: string, summary: string, confidenceScore: number }) {
+// The hand (pointer) of the gauge
+const Hand = ({ score }: { score: number }) => {
+    const angle = getAngle(score);
+    return (
+        <g>
+            <circle cx="50%" cy="50%" r="6" fill="hsl(var(--card-foreground))" />
+            <line
+                x1="50%"
+                y1="50%"
+                x2="50%"
+                y2="15%"
+                stroke="hsl(var(--card-foreground))"
+                strokeWidth="2"
+                strokeLinecap="round"
+                transform={`rotate(${angle} 125 125)`}
+            />
+        </g>
+    );
+};
+
+
+export function ScoreGauge({
+  score,
+}: {
+  score: number;
+}) {
   const chartData = [
-    { name: "value", value: score, fill: "transparent" },
-    { name: "background", value: 100 - score, fill: "hsl(var(--muted))" },
+    { name: 'bearish', value: 40, fill: chartConfig.bearish.color },
+    { name: 'neutral', value: 20, fill: chartConfig.neutral.color },
+    { name: 'bullish', value: 40, fill: chartConfig.bullish.color },
   ];
 
-  const getActiveColor = () => {
-    const lowerCaseInterpretation = interpretation.toLowerCase();
-    if (lowerCaseInterpretation.includes("bearish") || lowerCaseInterpretation.includes("capitulation")) {
-        return chartConfig.bearish.color;
-    }
-    if (lowerCaseInterpretation.includes("bullish")) {
-        return chartConfig.bullish.color;
-    }
-    return chartConfig.neutral.color;
-  };
-
-  const activeColor = getActiveColor();
-
   return (
-      <Card className="flex flex-col items-center justify-center p-6 bg-card/60 backdrop-blur-md h-full">
-          <CardHeader className="items-center pb-2 text-center">
-              <CardTitle>Macro Sentiment Score</CardTitle>
-              <CardDescription className="max-w-xs">{summary}</CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-1 items-center justify-center p-0">
-              <ChartContainer
-                  config={chartConfig}
-                  className="mx-auto aspect-square w-full max-w-[250px]"
-              >
-                  <PieChart>
-                      <defs>
-                          <linearGradient id="scoreGradient" x1="0" y1="0" x2="1" y2="0">
-                              <stop offset="0%" stopColor={chartConfig.bearish.color} />
-                              <stop offset="50%" stopColor={chartConfig.neutral.color} />
-                              <stop offset="100%" stopColor={chartConfig.bullish.color} />
-                          </linearGradient>
-                      </defs>
-                      <Pie
-                          data={chartData}
-                          dataKey="value"
-                          nameKey="name"
-                          innerRadius={80}
-                          outerRadius={100}
-                          startAngle={180}
-                          endAngle={0}
-                          cx="50%"
-                          cy="50%"
-                          cornerRadius={5}
-                      >
-                          <Cell key="value-cell" fill="url(#scoreGradient)" />
-                          <Cell key="background-cell" fill="hsl(var(--border) / 0.5)" />
-                      </Pie>
-                  </PieChart>
-              </ChartContainer>
-          </CardContent>
-          <div className="flex flex-col items-center gap-1 text-center -mt-16">
-              <span
-                  className="text-5xl font-bold tracking-tighter"
-                  style={{ color: activeColor }}
-              >
-                  {score}
-              </span>
-              <span
-                  className="text-lg font-medium text-center"
-                  style={{ color: activeColor }}
-              >
-                  {interpretation}
-              </span>
-              <TooltipProvider>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Badge variant="secondary" className="mt-2 cursor-help">
-                            <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
-                            Confidence: {confidenceScore}%
-                        </Badge>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p>Confidence in this analysis based on data quality.</p>
-                    </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-          </div>
-      </Card>
+    <ChartContainer
+      config={chartConfig}
+      className="mx-auto aspect-square w-full max-w-[250px]"
+    >
+      <PieChart>
+        <Pie
+          data={chartData}
+          dataKey="value"
+          nameKey="name"
+          innerRadius={80}
+          outerRadius={100}
+          startAngle={180}
+          endAngle={0}
+          cx="50%"
+          cy="50%"
+          cornerRadius={5}
+        >
+          {chartData.map((entry) => (
+            <Cell key={`cell-${entry.name}`} fill={entry.fill} />
+          ))}
+        </Pie>
+        <Hand score={score} />
+      </PieChart>
+    </ChartContainer>
   );
 }

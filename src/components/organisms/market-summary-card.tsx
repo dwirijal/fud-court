@@ -18,6 +18,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
 import { TrendIcon } from '@/components/ui/TrendIcon';
 import { TrendChange } from '@/components/ui/TrendChange';
 
@@ -29,6 +30,17 @@ const indicatorExplanations: Record<string, string> = {
     athScore: "Mengukur seberapa jauh harga aset-aset utama dari All-Time High (ATH) mereka.",
     marketBreadthScore: "Mengukur apakah pergerakan pasar didukung oleh banyak aset (luas) atau hanya segelintir."
 };
+
+const getActiveColorClass = (interpretation: string) => {
+    const lowerCaseInterpretation = interpretation.toLowerCase();
+    if (lowerCaseInterpretation.includes("bearish") || lowerCaseInterpretation.includes("capitulation")) {
+        return 'text-destructive';
+    }
+    if (lowerCaseInterpretation.includes("bullish")) {
+        return 'text-chart-2';
+    }
+    return 'text-muted-foreground';
+  };
 
 export function MarketSummaryCard() {
   const [isLoading, setIsLoading] = useState(true);
@@ -99,17 +111,39 @@ export function MarketSummaryCard() {
       { name: "ATH Score", key: 'athScore', value: analysisResult.components.athScore, trend: null },
       { name: "Market Breadth Score", key: 'marketBreadthScore', value: analysisResult.components.marketBreadthScore, trend: null },
   ];
+  
+  const activeColorClass = getActiveColorClass(analysisResult.marketCondition);
 
   return (
     <Card className="w-full h-full flex flex-col">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 p-6 flex-grow">
-            <div className="md:col-span-2">
-                <ScoreGauge 
-                    score={analysisResult.macroScore} 
-                    interpretation={analysisResult.marketCondition}
-                    summary="A macro sentiment score based on 5 key market indicators."
-                    confidenceScore={analysisResult.confidenceScore}
-                />
+        <CardHeader>
+             <CardTitle>Macro Sentiment Score</CardTitle>
+             <CardDescription className="max-w-xs">A macro sentiment score based on 5 key market indicators.</CardDescription>
+        </CardHeader>
+        <CardContent className="flex-grow grid grid-cols-1 md:grid-cols-5 gap-6">
+            <div className="md:col-span-2 flex flex-col items-center justify-center">
+                 <ScoreGauge score={analysisResult.macroScore} />
+                 <div className="flex flex-col items-center gap-1 text-center -mt-8">
+                    <span className={`text-5xl font-bold tracking-tighter ${activeColorClass}`}>
+                        {analysisResult.macroScore}
+                    </span>
+                    <span className={`text-lg font-medium text-center ${activeColorClass}`}>
+                        {analysisResult.marketCondition}
+                    </span>
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Badge variant="secondary" className="mt-2 cursor-help">
+                                    <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
+                                    Confidence: {analysisResult.confidenceScore}%
+                                </Badge>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Confidence in this analysis based on data quality.</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                </div>
             </div>
             <div className="md:col-span-3 flex flex-col">
                  <div className="flex-grow">
@@ -161,7 +195,7 @@ export function MarketSummaryCard() {
                     </Link>
                 </div>
             </div>
-        </div>
+        </CardContent>
     </Card>
   );
 }

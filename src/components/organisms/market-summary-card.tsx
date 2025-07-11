@@ -10,7 +10,7 @@ import type { MarketAnalysisOutput } from '@/types';
 import { ScoreGauge } from '../molecules/score-gauge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { AlertTriangle, CheckCircle, Info } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Info, Minus } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -19,11 +19,11 @@ import {
 } from "@/components/ui/tooltip"
 
 const indicatorExplanations: Record<keyof MarketAnalysisOutput['components'], string> = {
-    marketCapScore: "Measures the current total market value against its historical peak. A high score suggests the market is closer to a new high.",
-    volumeScore: "Measures the current 24-hour trading volume against the 30-day average. A high score indicates high market activity.",
-    fearGreedScore: "Reflects the current market psychology, from extreme fear to extreme greed.",
-    athScore: "Measures how far the top coins are from their all-time highs. A high score means prices are closer to their peaks.",
-    marketBreadthScore: "Measures the percentage of top coins that have had a positive price change in the last 24 hours. A high score indicates a broad market rally."
+    marketCapScore: "Mengukur valuasi total pasar saat ini terhadap puncak historisnya.",
+    volumeScore: "Mengukur aktivitas dan minat pasar berdasarkan volume transaksi harian vs rata-rata.",
+    fearGreedScore: "Menggambarkan sentimen emosional pasar, dari rasa takut hingga keserakahan.",
+    athScore: "Mengukur seberapa jauh harga aset-aset utama dari All-Time High (ATH) mereka.",
+    marketBreadthScore: "Mengukur apakah pergerakan pasar didukung oleh banyak aset (luas) atau hanya segelintir."
 };
 
 function IndicatorStatusIcon() {
@@ -110,25 +110,35 @@ export function MarketSummaryCard() {
                     <TableHeader>
                     <TableRow>
                         <TableHead>Indicator</TableHead>
+                        <TableHead className="text-center">Trend (7d)</TableHead>
+                        <TableHead className="text-center">Change (7d)</TableHead>
                         <TableHead className="text-right">Score</TableHead>
                     </TableRow>
                     </TableHeader>
                     <TableBody>
                     {indicators.map((indicator) => (
                         <TableRow key={indicator.name}>
-                        <TableCell className="font-medium flex items-center gap-2">
-                            <IndicatorStatusIcon />
-                            <span>{indicator.name}</span>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <button>
-                                        <Info className="h-3.5 w-3.5 text-muted-foreground/70" />
-                                    </button>
-                                </TooltipTrigger>
-                                <TooltipContent className="max-w-xs">
-                                    <p>{indicatorExplanations[indicator.key as keyof MarketAnalysisOutput['components']]}</p>
-                                </TooltipContent>
-                            </Tooltip>
+                        <TableCell className="font-medium">
+                            <div className="flex items-center gap-2">
+                                <IndicatorStatusIcon />
+                                <span>{indicator.name}</span>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <button>
+                                            <Info className="h-3.5 w-3.5 text-muted-foreground/70" />
+                                        </button>
+                                    </TooltipTrigger>
+                                    <TooltipContent className="max-w-xs">
+                                        <p>{indicatorExplanations[indicator.key as keyof MarketAnalysisOutput['components']]}</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </div>
+                        </TableCell>
+                        <TableCell className="text-center">
+                            <Minus className="h-4 w-4 mx-auto text-muted-foreground/50" />
+                        </TableCell>
+                        <TableCell className="text-center">
+                           <Minus className="h-4 w-4 mx-auto text-muted-foreground/50" />
                         </TableCell>
                         <TableCell className="text-right font-mono">{indicator.value}</TableCell>
                         </TableRow>

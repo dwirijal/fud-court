@@ -79,7 +79,6 @@ const formatCurrency = (value: number, compact: boolean = true) => {
     };
     if (compact) {
         options.notation = 'compact';
-        options.compactDisplay = 'short';
         options.maximumFractionDigits = 2;
     } else {
         options.minimumFractionDigits = 2;
@@ -92,6 +91,7 @@ export default async function MarketIndicatorsPage() {
   const marketData = await fetchMarketData();
 
   let indicatorScores: Record<string, { raw: Record<string, any>; score: number }> | null = null;
+  let finalScore: number | null = null;
   if (marketData) {
       const { totalMarketCap, maxHistoricalMarketCap, totalVolume24h, avg30DayVolume, fearAndGreedIndex, topCoins } = marketData;
       
@@ -115,28 +115,38 @@ export default async function MarketIndicatorsPage() {
       const n_breadth = topCoins.length;
       const s5_marketBreadth = n_breadth > 0 ? (risingTokens / n_breadth) * 100 : 0;
       
+      const scores = {
+          s1: Math.round(s1_marketCap),
+          s2: Math.round(s2_volume),
+          s3: Math.round(s3_fearAndGreed),
+          s4: Math.round(s4_ath),
+          s5: Math.round(s5_marketBreadth)
+      }
+
       indicatorScores = {
         marketCapScore: {
           raw: { "Current Market Cap": formatCurrency(totalMarketCap), "Peak Market Cap": formatCurrency(maxHistoricalMarketCap) },
-          score: Math.round(s1_marketCap)
+          score: scores.s1
         },
         volumeScore: {
           raw: { "Current Volume": formatCurrency(totalVolume24h), "30d Avg Volume": formatCurrency(avg30DayVolume) },
-          score: Math.round(s2_volume)
+          score: scores.s2
         },
         fearGreedScore: {
           raw: { "Index Value": fearAndGreedIndex },
-          score: Math.round(s3_fearAndGreed)
+          score: scores.s3
         },
         athScore: {
           raw: { "Avg. % Distance from ATH": `${avgDistanceFromAth.toFixed(2)}%` },
-          score: Math.round(s4_ath)
+          score: scores.s4
         },
         marketBreadthScore: {
           raw: { "Rising Tokens": risingTokens, "Total Top Coins": n_breadth },
-          score: Math.round(s5_marketBreadth)
+          score: scores.s5
         },
       }
+
+      finalScore = Math.round((scores.s1 * 0.25) + (scores.s2 * 0.20) + (scores.s3 * 0.20) + (scores.s4 * 0.25) + (scores.s5 * 0.10));
   }
 
   return (
@@ -331,6 +341,25 @@ export default async function MarketIndicatorsPage() {
                             <h4 className="font-semibold text-sm mb-1 text-muted-foreground uppercase tracking-wider">Formula</h4>
                             <p className="font-mono text-xs bg-background p-3 rounded-md">M = (S₁ × 0.25) + (S₂ × 0.20) + (S₃ × 0.20) + (S₄ × 0.25) + (S₅ × 0.10)</p>
                         </div>
+                        {indicatorScores && finalScore !== null && (
+                            <div>
+                                <h4 className="font-semibold text-sm mb-2 text-muted-foreground uppercase tracking-wider">Results</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 text-sm font-mono p-3 bg-background rounded-md">
+                                    <div className="flex justify-between"><span>(S₁: {indicatorScores.marketCapScore.score} × 0.25)</span><span>= {(indicatorScores.marketCapScore.score * 0.25).toFixed(2)}</span></div>
+                                    <div className="flex justify-between"><span>(S₂: {indicatorScores.volumeScore.score} × 0.20)</span><span>= {(indicatorScores.volumeScore.score * 0.20).toFixed(2)}</span></div>
+                                    <div className="flex justify-between"><span>(S₃: {indicatorScores.fearGreedScore.score} × 0.20)</span><span>= {(indicatorScores.fearGreedScore.score * 0.20).toFixed(2)}</span></div>
+                                    <div className="flex justify-between"><span>(S₄: {indicatorScores.athScore.score} × 0.25)</span><span>= {(indicatorScores.athScore.score * 0.25).toFixed(2)}</span></div>
+                                    <div className="flex justify-between"><span>(S₅: {indicatorScores.marketBreadthScore.score} × 0.10)</span><span>= {(indicatorScores.marketBreadthScore.score * 0.10).toFixed(2)}</span></div>
+                                </div>
+                                <div className="flex items-center justify-between bg-primary/10 p-3 rounded-md mt-2">
+                                     <h4 className="font-semibold text-sm text-primary uppercase tracking-wider">Final Score</h4>
+                                     <div className="flex items-center gap-2">
+                                        <span className="font-mono font-bold text-xl text-primary">{finalScore}</span>
+                                        <span className="text-sm text-primary/80">/ 100</span>
+                                     </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </CardContent>
             </Card>

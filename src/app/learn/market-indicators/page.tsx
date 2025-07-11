@@ -66,7 +66,7 @@ const indicators = [
         name: "Market Breadth Score (S₅)",
         weight: "10%",
         purpose: "Measures the percentage of top coins that have seen positive price movement in the last 24 hours. It helps validate whether a market rally is broad-based or driven by only a few large assets.",
-        formula: "S₅ = (% of Top Coins with 24h Price Increase / Total Top Coins) * 100",
+        formula: "S₅ = (Rising Tokens / Total Top Coins) * 100",
         interpretation: "A high score (>50%) shows that a majority of the market is participating in the upward trend (healthy rally). A low score indicates that only a few coins are driving gains, which could be a sign of weakness."
     }
 ];

@@ -39,9 +39,100 @@ const AnimatedText = ({ text, className }: { text: string; className?: string })
   );
 };
 
+const LineAnimation = () => {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        let w = canvas.width = window.innerWidth;
+        let h = canvas.height = window.innerHeight;
+
+        const handleResize = () => {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+        };
+
+        window.addEventListener('resize', handleResize);
+
+        const particles: {x: number, y: number, tx: number, ty: number, color: string, speed: number, direction: number, size: number}[] = [];
+        const particleCount = 30;
+        const colors = ['hsl(var(--primary)/0.5)', 'hsl(var(--accent)/0.5)', 'hsl(var(--foreground)/0.2)'];
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push({
+                x: Math.random() * w,
+                y: Math.random() * h,
+                tx: Math.random() * w,
+                ty: Math.random() * h,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                speed: Math.random() * 0.5 + 0.1,
+                direction: Math.random() * Math.PI * 2,
+                size: Math.random() * 2 + 1,
+            });
+        }
+
+        const updateParticle = (p: typeof particles[0]) => {
+            p.x += Math.cos(p.direction) * p.speed;
+            p.y += Math.sin(p.direction) * p.speed;
+
+            if (p.x < 0 || p.x > w) p.direction = Math.PI - p.direction;
+            if (p.y < 0 || p.y > h) p.direction = -p.direction;
+            
+            return p;
+        }
+
+        const draw = () => {
+            ctx.clearRect(0, 0, w, h);
+            
+            particles.forEach((p1, i) => {
+                particles.slice(i + 1).forEach(p2 => {
+                    const dist = Math.hypot(p1.x - p2.x, p1.y - p2.y);
+                    if (dist < 200) {
+                        ctx.beginPath();
+                        ctx.moveTo(p1.x, p1.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.strokeStyle = p1.color;
+                        ctx.globalAlpha = 1 - (dist / 200);
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                });
+            });
+
+            ctx.globalAlpha = 1.0;
+            particles.forEach(p => {
+                updateParticle(p);
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = p.color;
+                ctx.fill();
+            });
+        };
+
+        const animation = anime({
+            duration: Infinity,
+            update: draw,
+        });
+
+        return () => {
+            animation.pause();
+            window.removeEventListener('resize', handleResize);
+        }
+    }, []);
+
+    return <canvas ref={canvasRef} className="absolute inset-0 -z-10 w-full h-full" />;
+}
+
+
 export function HeroSection() {
   return (
     <section className="relative flex items-center justify-center py-24 md:py-32 overflow-hidden">
+      <LineAnimation />
       <div className="container relative z-10 mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="flex justify-center items-center">

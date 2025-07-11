@@ -5,36 +5,36 @@
 @layer base {
 :root {
   --radius: 0.8rem;
-  /* CryptoPulse Theme - Light */
-  --background: oklch(0.963 0 0); /* #F5F5F5 - Light Gray */
-  --foreground: oklch(0.2 0.02 260); /* Darker text for contrast */
+  /* Sakura Theme - Light */
+  --background: oklch(0.99 0.005 340); /* Very light pink */
+  --foreground: oklch(0.2 0.03 340); /* Dark, desaturated pink */
 
   --card: oklch(1 0 0); /* White cards */
-  --card-foreground: oklch(0.2 0.02 260);
+  --card-foreground: oklch(0.2 0.03 340);
 
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.2 0.02 260);
+  --popover-foreground: oklch(0.2 0.03 340);
 
-  --primary: oklch(0.3072 0.103 262.3); /* #1A237E - Deep Blue */
-  --primary-foreground: oklch(0.98 0 0); /* White text on primary */
+  --primary: oklch(0.6 0.2 330); /* Strong Pink */
+  --primary-foreground: oklch(0.99 0.005 340); /* Light pink text on primary */
 
-  --secondary: oklch(0.9 0.01 260); /* Lighter gray */
-  --secondary-foreground: oklch(0.2 0.02 260);
+  --secondary: oklch(0.95 0.01 340); /* Lighter pink-gray */
+  --secondary-foreground: oklch(0.2 0.03 340);
 
-  --muted: oklch(0.92 0.01 260);
-  --muted-foreground: oklch(0.45 0.02 260);
+  --muted: oklch(0.97 0.008 340);
+  --muted-foreground: oklch(0.5 0.02 340);
 
-  --accent: oklch(0.551 0.089 198.05); /* #008080 - Teal */
-  --accent-foreground: oklch(0.98 0 0); /* White text on accent */
+  --accent: oklch(0.7 0.1 200); /* Soft Teal */
+  --accent-foreground: oklch(0.1 0.01 200); /* Dark text on accent */
 
   --destructive: oklch(0.6 0.22 20);
-  --border: oklch(0.1 0.02 260 / 20%);
-  --input: oklch(0.1 0.02 260 / 10%);
-  --ring: oklch(0.3072 0.103 262.3); /* Ring should match primary */
+  --border: oklch(0.1 0.02 340 / 20%);
+  --input: oklch(0.1 0.02 340 / 10%);
+  --ring: oklch(0.6 0.2 330); /* Ring should match primary */
 
   --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.551 0.089 198.05); /* Use accent for one chart color */
-  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-2: oklch(0.7 0.1 200); /* Use accent for one chart color */
+  --chart-3: oklch(0.6 0.2 330);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
 
@@ -49,36 +49,36 @@
 }
 
 .dark {
-  /* CryptoPulse Theme - Dark */
-  --background: oklch(0.1 0.02 260); /* Very dark blue-gray */
-  --foreground: oklch(0.98 0 0);
+  /* Sakura Theme - Dark */
+  --background: oklch(0.12 0.025 330); /* Dark desaturated magenta */
+  --foreground: oklch(0.98 0.005 330); /* Light pinkish white */
 
-  --card: oklch(0.15 0.02 260);
-  --card-foreground: oklch(0.98 0 0);
+  --card: oklch(0.15 0.03 330);
+  --card-foreground: oklch(0.98 0.005 330);
 
-  --popover: oklch(0.12 0.02 260);
-  --popover-foreground: oklch(0.98 0 0);
+  --popover: oklch(0.13 0.03 330);
+  --popover-foreground: oklch(0.98 0.005 330);
 
-  --primary: oklch(0.65 0.2 255); /* Brighter blue for dark mode */
-  --primary-foreground: oklch(0.1 0.01 260);
+  --primary: oklch(0.8 0.18 340); /* Bright Pink */
+  --primary-foreground: oklch(0.12 0.025 330);
 
-  --secondary: oklch(0.2 0.02 260);
-  --secondary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.2 0.04 330);
+  --secondary-foreground: oklch(0.98 0.005 330);
 
-  --muted: oklch(0.2 0.02 260);
-  --muted-foreground: oklch(0.7 0.01 280);
+  --muted: oklch(0.2 0.04 330);
+  --muted-foreground: oklch(0.7 0.02 330);
 
-  --accent: oklch(0.65 0.12 198); /* Lighter teal for dark mode */
-  --accent-foreground: oklch(0.1 0.01 260);
+  --accent: oklch(0.8 0.1 190); /* Bright Cyan */
+  --accent-foreground: oklch(0.1 0.01 190);
 
-  --destructive: oklch(0.65 0.22 25);
+  --destructive: oklch(0.7 0.22 25);
   --border: oklch(1 0 0 / 15%);
   --input: oklch(1 0 0 / 10%);
-  --ring: oklch(0.65 0.2 255); /* Ring should match dark primary */
+  --ring: oklch(0.8 0.18 340); /* Ring should match dark primary */
 
   --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.65 0.12 198); /* Use accent for one chart color */
-  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-2: oklch(0.8 0.1 190); /* Use accent for one chart color */
+  --chart-3: oklch(0.8 0.18 340);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
   
@@ -99,11 +99,9 @@
   }
   body {
     @apply bg-background text-foreground;
-    /* Updated gradient to match new background */
-    background-image: linear-gradient(to bottom, oklch(0.98 0 0), oklch(0.963 0 0));
+    background-image: linear-gradient(to bottom, oklch(0.99 0.005 340), oklch(0.98 0.015 350));
   }
   .dark body {
-    /* Updated gradient to match new dark background */
-    background-image: linear-gradient(to bottom, oklch(0.12 0.02 260), oklch(0.1 0.02 260));
+    background-image: linear-gradient(to bottom, oklch(0.13 0.028 330), oklch(0.12 0.025 330));
   }
 }

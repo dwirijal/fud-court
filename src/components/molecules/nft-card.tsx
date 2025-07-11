@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useRef } from 'react';
@@ -9,18 +10,36 @@ import { Logo } from '../atoms/logo';
 
 export function NftCard() {
   const cardRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLDivElement>(null);
+  const textContainerRef = useRef<HTMLDivElement>(null);
+  const logoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (cardRef.current) {
-      anime({
-        targets: cardRef.current,
-        opacity: [0, 1],
-        translateY: [50, 0],
-        rotateX: [-30, 0],
-        duration: 1500,
+    if (cardRef.current && imageRef.current && textContainerRef.current && logoRef.current) {
+      const timeline = anime.timeline({
         easing: 'easeOutExpo',
-        delay: 500, // Delay to start after text animation
+        duration: 1200,
       });
+
+      timeline
+        .add({
+          targets: cardRef.current,
+          opacity: [0, 1],
+          translateY: [50, 0],
+          rotateX: [-20, 0],
+          duration: 1000,
+        }, '+=800') // Delay to start after text animation
+        .add({
+          targets: imageRef.current,
+          opacity: [0, 1],
+          scale: [0.9, 1],
+        }, '-=800')
+        .add({
+          targets: [textContainerRef.current, logoRef.current],
+          opacity: [0, 1],
+          translateY: [20, 0],
+          delay: anime.stagger(100),
+        }, '-=800');
     }
   }, []);
 
@@ -36,7 +55,7 @@ export function NftCard() {
       />
       <Card className="relative overflow-hidden rounded-xl bg-background/80 backdrop-blur-sm transition-transform duration-300 ease-in-out group-hover:scale-105">
         <CardContent className="p-4">
-          <div className="aspect-square relative w-full overflow-hidden rounded-lg">
+          <div ref={imageRef} className="aspect-square relative w-full overflow-hidden rounded-lg opacity-0">
             <Image
               src="https://placehold.co/600x600.png"
               alt="CryptoPulse Genesis NFT"
@@ -46,7 +65,7 @@ export function NftCard() {
             />
           </div>
           <div className="mt-4 flex items-start justify-between">
-            <div>
+            <div ref={textContainerRef} className="opacity-0">
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 CryptoPulse
               </p>
@@ -54,7 +73,9 @@ export function NftCard() {
                 Genesis #001
               </h3>
             </div>
-            <Logo className="h-10 w-10 shrink-0" />
+            <div ref={logoRef} className="opacity-0">
+              <Logo className="h-10 w-10 shrink-0" />
+            </div>
           </div>
         </CardContent>
       </Card>

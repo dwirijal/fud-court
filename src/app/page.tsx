@@ -4,7 +4,7 @@ import { getPosts } from "@/lib/ghost";
 import { getTopCoins } from "@/lib/coingecko";
 import { MarketCarousel } from "@/components/molecules/market-carousel";
 import { HeroSection } from "@/components/organisms/hero-section";
-import { MarketIndicators } from "@/components/organisms/market-indicators";
+import { MarketSummaryCard } from "@/components/organisms/market-summary-card";
 
 export default async function Home() {
   const posts = await getPosts();
@@ -26,7 +26,7 @@ export default async function Home() {
           </div>
           
           <div className="mb-12 md:mb-24">
-            <MarketIndicators />
+             <MarketSummaryCard />
           </div>
 
           <div>

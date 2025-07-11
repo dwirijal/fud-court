@@ -1,3 +1,5 @@
+
+import type { MarketAnalysisInput } from '@/ai/flows/market-analysis-flow';
 import type { CryptoData } from '@/types';
 
 const API_BASE_URL = 'https://api.coingecko.com/api/v3';
@@ -9,18 +11,15 @@ const API_BASE_URL = 'https://api.coingecko.com/api/v3';
  * @returns A promise that resolves to an array of CryptoData objects.
  */
 export async function getTopCoins(limit: number = 100, currency: string = 'usd'): Promise<CryptoData[]> {
-  const url = `${API_BASE_URL}/coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=${limit}&page=1&sparkline=false&price_change_percentage=1h,24h,7d`;
+  const url = `${API_BASE_URL}/coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=${limit}&page=1&sparkline=true&price_change_percentage=1h,24h,7d`;
   
   try {
-    // Using Next.js extended fetch for caching and revalidation
     const response = await fetch(url, {
-      next: { revalidate: 300 } // Revalidate data every 5 minutes
+      next: { revalidate: 300 }
     });
 
     if (!response.ok) {
-      // Log the error for debugging purposes on the server
       console.error(`CoinGecko API request failed with status: ${response.status}`);
-      // Return empty array to prevent crashing the page
       return [];
     }
     
@@ -28,41 +27,61 @@ export async function getTopCoins(limit: number = 100, currency: string = 'usd')
     return data;
   } catch (error) {
     console.error("An error occurred while fetching from CoinGecko API:", error);
-    return []; // Return empty array on fetch error
+    return [];
   }
 }
 
 /**
- * Fetches specific cryptocurrencies by their CoinGecko IDs and preserves the order.
- * @param ids An array of CoinGecko coin IDs.
- * @returns A promise that resolves to an array of CryptoData objects in the same order as the input IDs.
+ * Fetches all necessary data for the market analysis flow.
+ * @returns A promise that resolves to a MarketAnalysisInput object or null if failed.
  */
-export async function getCoinsByIds(ids: string[]): Promise<CryptoData[]> {
-  if (ids.length === 0) {
-    return [];
-  }
-  const url = `${API_BASE_URL}/coins/markets?vs_currency=usd&ids=${ids.join(',')}&sparkline=true&price_change_percentage=1h,24h,7d`;
-  
-  try {
-    const response = await fetch(url, {
-      next: { revalidate: 300 } // Revalidate data every 5 minutes
-    });
+export async function fetchMarketData(): Promise<MarketAnalysisInput | null> {
+    try {
+        const globalDataPromise = fetch(`${API_BASE_URL}/global`, { next: { revalidate: 300 } }).then(res => res.json());
+        const fearAndGreedPromise = fetch('https://api.alternative.me/fng/?limit=1', { next: { revalidate: 3600 } }).then(res => res.json());
+        const topCoinsPromise = getTopCoins(20, 'usd'); 
+        const marketChartPromise = fetch(`${API_BASE_URL}/coins/market_cap/chart?vs_currency=usd&days=max`, { next: { revalidate: 86400 } }).then(res => res.json());
 
-    if (!response.ok) {
-      console.error(`CoinGecko API request failed with status: ${response.status}, URL: ${url}`);
-      return [];
+        const [globalData, fearAndGreedData, topCoins, marketChartData] = await Promise.all([
+            globalDataPromise,
+            fearAndGreedPromise,
+            topCoinsPromise,
+            marketChartPromise,
+        ]);
+
+        if (!globalData?.data || !fearAndGreedData?.data?.[0] || topCoins.length === 0 || !marketChartData?.market_caps) {
+            throw new Error("One or more essential API calls failed or returned empty data.");
+        }
+        
+        const marketCaps = marketChartData.market_caps.map((d: any[]) => d[1]);
+        const volumes = marketChartData.total_volumes.map((d: any[]) => d[1]);
+
+        const maxHistoricalMarketCap = Math.max(...marketCaps);
+        const avg30DayVolume = volumes.slice(-30).reduce((a: number, b: number) => a + b, 0) / 30;
+
+        const totalMarketCap = globalData.data.total_market_cap.usd;
+        const btcMarketCap = topCoins.find(c => c.id === 'bitcoin')?.market_cap ?? 0;
+        
+        const analysisInput: MarketAnalysisInput = {
+            totalMarketCap,
+            maxHistoricalMarketCap,
+            totalVolume24h: globalData.data.total_volume.usd,
+            avg30DayVolume,
+            btcMarketCap,
+            altcoinMarketCap: totalMarketCap - btcMarketCap,
+            btcDominance: globalData.data.market_cap_percentage.btc,
+            fearAndGreedIndex: parseInt(fearAndGreedData.data[0].value, 10),
+            topCoins: topCoins.map(c => ({
+                price_change_percentage_24h: c.price_change_percentage_24h_in_currency,
+                ath: c.ath,
+                current_price: c.current_price,
+            })),
+        };
+
+        return analysisInput;
+
+    } catch (error) {
+        console.error("Failed to fetch comprehensive market data:", error);
+        return null;
     }
-    
-    const data: CryptoData[] = await response.json();
-    
-    // The API does not guarantee order, so we sort it based on the input 'ids' array.
-    const sortedData = ids
-      .map(id => data.find(coin => coin.id === id))
-      .filter((coin): coin is CryptoData => !!coin);
-
-    return sortedData;
-  } catch (error) {
-    console.error("An error occurred while fetching from CoinGecko API:", error);
-    return [];
-  }
 }

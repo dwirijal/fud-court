@@ -9,10 +9,17 @@ import type { MarketAnalysisOutput } from '@/types';
 import { analyzeMarketSentiment } from '@/ai/flows/market-analysis-flow';
 import { saveMarketSnapshot, hasTodaySnapshot } from '@/lib/actions/snapshots';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { AlertTriangle, CheckCircle, Info, ArrowUpRight } from 'lucide-react';
+import { AlertTriangle, CheckCircle, ArrowUpRight, Info } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 
 const indicatorExplanations: Record<string, string> = {
     marketCapScore: "Measures current market valuation against its historical peak.",
@@ -80,11 +87,19 @@ export function MarketSummaryCard() {
 
   if (isLoading) {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-             {Array.from({ length: 6 }).map((_, i) => (
-                <Skeleton key={i} className="h-28 w-full" />
-            ))}
-        </div>
+        <Card>
+            <CardHeader>
+                <Skeleton className="h-8 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+            </CardHeader>
+            <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                        <Skeleton key={i} className="h-24 w-full" />
+                    ))}
+                </div>
+            </CardContent>
+        </Card>
     );
   }
 
@@ -99,62 +114,71 @@ export function MarketSummaryCard() {
       </Card>
     );
   }
-
+  
   const indicators = [
-      { name: "Market Cap Score", key: 'marketCapScore', value: analysisResult.components.marketCapScore },
-      { name: "Volume Score", key: 'volumeScore', value: analysisResult.components.volumeScore },
-      { name: "Fear & Greed Score", key: 'fearGreedScore', value: analysisResult.components.fearGreedScore },
-      { name: "ATH Score", key: 'athScore', value: analysisResult.components.athScore },
-      { name: "Market Breadth Score", key: 'marketBreadthScore', value: analysisResult.components.marketBreadthScore },
+      { name: "Market Cap Score", key: 'marketCapScore', value: analysisResult.components.marketCapScore, description: indicatorExplanations.marketCapScore },
+      { name: "Volume Score", key: 'volumeScore', value: analysisResult.components.volumeScore, description: indicatorExplanations.volumeScore },
+      { name: "Fear & Greed Score", key: 'fearGreedScore', value: analysisResult.components.fearGreedScore, description: indicatorExplanations.fearGreedScore },
+      { name: "ATH Score", key: 'athScore', value: analysisResult.components.athScore, description: indicatorExplanations.athScore },
+      { name: "Market Breadth Score", key: 'marketBreadthScore', value: analysisResult.components.marketBreadthScore, description: indicatorExplanations.marketBreadthScore },
   ];
   
   const activeColorClass = getActiveColorClass(analysisResult.marketCondition);
 
   return (
-    <div className="space-y-4">
-        <Card className="bg-primary/5 border-primary/20 overflow-hidden">
+    <TooltipProvider>
+        <Card>
             <CardHeader>
-                <div className="flex justify-between items-center">
+                 <div className="flex justify-between items-start">
                     <div>
-                        <CardTitle className="text-xl">Macro Sentiment Score</CardTitle>
-                        <CardDescription>
+                        <CardTitle>Macro Sentiment Score</CardTitle>
+                        <CardDescription className="flex items-center gap-1.5">
                             Overall market health based on key indicators.
+                             <Link href="/learn/market-indicators" className="text-xs text-primary/80 hover:text-primary flex items-center gap-1">
+                                Learn more <ArrowUpRight className="h-3 w-3" />
+                            </Link>
                         </CardDescription>
                     </div>
-                     <div className="text-right flex-shrink-0 ml-4">
-                        <p className={cn("text-4xl font-bold", activeColorClass)}>{analysisResult.macroScore}</p>
-                        <p className={cn("font-semibold", activeColorClass)}>{analysisResult.marketCondition}</p>
-                    </div>
-                </div>
-            </CardHeader>
-        </Card>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {indicators.map((indicator) => (
-                <Card key={indicator.name} className="flex flex-col">
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-base font-semibold">{indicator.name}</CardTitle>
-                        <CardDescription className="text-xs">{indicatorExplanations[indicator.key]}</CardDescription>
-                    </CardHeader>
-                    <CardContent className="pt-2 flex-grow flex flex-col justify-end">
-                        <p className="text-3xl font-mono font-bold text-right mb-2">{indicator.value}</p>
-                        <Progress value={indicator.value} indicatorClassName={getProgressColorClass(indicator.value)} />
-                    </CardContent>
-                </Card>
-            ))}
-
-            <Card className="flex flex-col justify-center">
-                <CardContent className="pt-6 text-center">
-                    <Badge variant="secondary" className="cursor-help mb-2">
+                     <Badge variant="secondary" className="cursor-help flex-shrink-0">
                         <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
                         Confidence: {analysisResult.confidenceScore}%
                     </Badge>
-                    <Link href="/learn/market-indicators" className="text-sm text-muted-foreground hover:text-primary flex items-center justify-center gap-1">
-                        Learn more about indicators <ArrowUpRight className="h-3 w-3" />
-                    </Link>
-                </CardContent>
-            </Card>
-        </div>
-    </div>
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                 <Card className="bg-primary/5 border-primary/20 overflow-hidden p-6 text-center">
+                    <p className={cn("text-5xl font-bold tracking-tighter", activeColorClass)}>{analysisResult.macroScore}</p>
+                    <p className={cn("font-semibold text-lg", activeColorClass)}>{analysisResult.marketCondition}</p>
+                </Card>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {indicators.map((indicator) => (
+                         <Card key={indicator.name} className="p-4 flex flex-col">
+                            <div className="flex items-center justify-between gap-4 h-full">
+                                <div className="flex-grow space-y-1">
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <div className="flex items-center gap-1.5 cursor-help">
+                                                <CardTitle className="text-sm font-semibold">{indicator.name}</CardTitle>
+                                                <Info className="h-3 w-3 text-muted-foreground" />
+                                            </div>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p className="max-w-xs">{indicator.description}</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                    <CardDescription className="text-xs">{indicator.description}</CardDescription>
+                                </div>
+                                <div className="text-right flex-shrink-0 w-1/4">
+                                    <p className="text-2xl font-mono font-bold">{indicator.value}</p>
+                                     <Progress value={indicator.value} indicatorClassName={cn("mt-1", getProgressColorClass(indicator.value))} />
+                                </div>
+                            </div>
+                        </Card>
+                    ))}
+                </div>
+            </CardContent>
+        </Card>
+    </TooltipProvider>
   );
 }

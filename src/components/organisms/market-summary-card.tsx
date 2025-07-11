@@ -27,32 +27,28 @@ const indicatorExplanations: Record<string, string> = {
     marketBreadthScore: "Mengukur apakah pergerakan pasar didukung oleh banyak aset (luas) atau hanya segelintir."
 };
 
-function IndicatorStatusIcon() {
-    return <CheckCircle className="h-4 w-4 text-chart-2" />;
+function TrendIcon({ change }: { change: number | null }) {
+     if (change === null || change === 0) {
+        return <Minus className="h-4 w-4 mx-auto text-muted-foreground/50" />;
+    }
+    const isPositive = change > 0;
+     return isPositive ? <TrendingUp className="h-4 w-4 mx-auto text-chart-2" /> : <TrendingDown className="h-4 w-4 mx-auto text-destructive" />;
 }
 
 function TrendChange({ change }: { change: number | null }) {
-    if (change === null) {
-        return <Minus className="h-4 w-4 mx-auto text-muted-foreground/50" />;
+    if (change === null || change === 0) {
+        return <span className="font-mono text-xs text-muted-foreground/50">-</span>;
     }
-    const isPositive = change >= 0;
+    const isPositive = change > 0;
     return (
         <div className={cn(
             "flex items-center justify-center gap-1 font-mono text-xs",
             isPositive ? "text-chart-2" : "text-destructive"
         )}>
-            {isPositive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+            {isPositive ? '▲' : '▼'}
             <span>{Math.abs(change)} pts</span>
         </div>
     );
-}
-
-function TrendIcon({ change }: { change: number | null }) {
-     if (change === null) {
-        return <Minus className="h-4 w-4 mx-auto text-muted-foreground/50" />;
-    }
-    const isPositive = change >= 0;
-     return isPositive ? <TrendingUp className="h-4 w-4 mx-auto text-chart-2" /> : <TrendingDown className="h-4 w-4 mx-auto text-destructive" />;
 }
 
 export function MarketSummaryCard() {
@@ -154,7 +150,7 @@ export function MarketSummaryCard() {
                         <TableRow key={indicator.name}>
                         <TableCell className="font-medium">
                             <div className="flex items-center gap-2">
-                                <IndicatorStatusIcon />
+                                <CheckCircle className="h-4 w-4 text-chart-2" />
                                 <span>{indicator.name}</span>
                                 <Tooltip>
                                     <TooltipTrigger asChild>

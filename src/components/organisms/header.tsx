@@ -65,6 +65,11 @@ const readingComponents: { title: string; href: string; description: string }[] 
       href: "/learn",
       description: "Educational resources to help you understand the world of crypto.",
     },
+     {
+      title: "Market Indicators",
+      href: "/learn/market-indicators",
+      description: "A detailed breakdown of our macro sentiment score.",
+    },
 ];
 
 // For mobile, we flatten the structure into a single list and ensure "Home" is present.

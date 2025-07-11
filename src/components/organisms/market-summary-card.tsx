@@ -9,7 +9,7 @@ import type { MarketAnalysisOutput } from '@/types';
 import { analyzeMarketSentiment } from '@/ai/flows/market-analysis-flow';
 import { saveMarketSnapshot, hasTodaySnapshot } from '@/lib/actions/snapshots';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { AlertTriangle, CheckCircle, Info, ArrowUpRight } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Info, ArrowUpRight, BookOpen } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
@@ -28,6 +28,12 @@ const indicatorExplanations: Record<string, string> = {
     marketBreadthScore: "Measures if movement is supported by many assets or just a few."
 };
 
+const getProgressColorClass = (score: number) => {
+    if (score < 40) return 'bg-destructive';
+    if (score > 60) return 'bg-chart-2';
+    return 'bg-muted-foreground';
+}
+
 const getActiveColorClass = (interpretation: string) => {
     const lowerCaseInterpretation = interpretation.toLowerCase();
     if (lowerCaseInterpretation.includes("bearish") || lowerCaseInterpretation.includes("capitulation")) {
@@ -38,12 +44,6 @@ const getActiveColorClass = (interpretation: string) => {
     }
     return 'text-muted-foreground';
 };
-
-const getProgressColorClass = (score: number) => {
-    if (score < 40) return 'bg-destructive';
-    if (score > 60) return 'bg-chart-2';
-    return 'bg-muted-foreground';
-}
 
 export function MarketSummaryCard() {
   const [isLoading, setIsLoading] = useState(true);
@@ -87,9 +87,9 @@ export function MarketSummaryCard() {
     return (
         <Card>
             <CardContent className="p-6">
-                <Skeleton className="h-28 w-full mb-4" />
+                <Skeleton className="h-[120px] w-full mb-4" />
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {Array.from({ length: 5 }).map((_, i) => (
+                    {Array.from({ length: 6 }).map((_, i) => (
                         <Skeleton key={i} className="h-24 w-full" />
                     ))}
                 </div>
@@ -124,19 +124,19 @@ export function MarketSummaryCard() {
     <TooltipProvider>
         <Card>
             <CardContent className="space-y-4 p-6">
-                 <Card className="bg-primary/5 border-primary/20 overflow-hidden">
-                    <div className="p-6 flex justify-between items-center">
+                <Card className="bg-primary/5 border-primary/20 overflow-hidden">
+                   <div className="flex justify-between items-center p-6">
                         <div className="space-y-2">
-                            <CardTitle>Macro Sentiment Score</CardTitle>
+                           <CardTitle>Macro Sentiment Score</CardTitle>
                             <CardDescription>
                                 Overall market health based on key indicators.
                             </CardDescription>
-                            <Badge variant="secondary" className="cursor-help flex-shrink-0">
+                             <Badge variant="secondary" className="cursor-help flex-shrink-0">
                                 <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
                                 Confidence: {analysisResult.confidenceScore}%
                             </Badge>
                         </div>
-                        <div className="text-right">
+                        <div className="text-right flex-shrink-0 pl-4">
                             <p className={cn("text-6xl font-bold tracking-tighter", activeColorClass)}>{analysisResult.macroScore}</p>
                             <p className={cn("font-semibold text-xl", activeColorClass)}>{analysisResult.marketCondition}</p>
                         </div>
@@ -146,8 +146,8 @@ export function MarketSummaryCard() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {indicators.map((indicator) => (
                         <Card key={indicator.name} className="flex flex-col">
-                            <CardContent className="p-4 flex-grow flex items-center justify-between gap-4">
-                                <div className="space-y-1">
+                           <CardContent className="p-4 flex flex-1 items-center justify-between gap-4">
+                                <div className="space-y-1 flex-grow">
                                     <Tooltip>
                                         <TooltipTrigger asChild>
                                             <div className="flex items-center gap-1.5 cursor-help">
@@ -159,21 +159,21 @@ export function MarketSummaryCard() {
                                             <p className="max-w-xs">{indicator.description}</p>
                                         </TooltipContent>
                                     </Tooltip>
-                                    <p className="text-xs text-muted-foreground">{indicator.description}</p>
+                                    <p className="text-xs text-muted-foreground line-clamp-2">{indicator.description}</p>
                                 </div>
                                 <div className="text-right flex-shrink-0 pl-2">
                                     <p className="text-3xl font-mono font-bold">{indicator.value}</p>
+                                    <Progress value={indicator.value} className="h-1.5 w-[60px] mt-1" indicatorClassName={cn(getProgressColorClass(indicator.value))} />
                                 </div>
                             </CardContent>
-                            <CardFooter className="p-4 pt-0">
-                                <Progress value={indicator.value} className="h-1.5 w-full" indicatorClassName={cn(getProgressColorClass(indicator.value))} />
-                            </CardFooter>
                         </Card>
                     ))}
-                </div>
-                 <div className="text-center pt-2">
-                     <Link href="/learn/market-indicators" className="text-sm text-primary/80 hover:text-primary flex items-center justify-center gap-1">
-                        Learn more about indicators <ArrowUpRight className="h-3 w-3" />
+                    <Link href="/learn/market-indicators" className="group block">
+                       <Card className="h-full flex flex-col items-center justify-center text-center p-4 bg-muted/50 hover:bg-muted transition-colors">
+                           <BookOpen className="h-8 w-8 text-muted-foreground group-hover:text-primary transition-colors" />
+                           <p className="text-sm font-semibold mt-2 text-muted-foreground group-hover:text-primary transition-colors">Learn More</p>
+                           <p className="text-xs text-muted-foreground">About these indicators</p>
+                       </Card>
                     </Link>
                 </div>
             </CardContent>

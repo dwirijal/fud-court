@@ -1,4 +1,6 @@
 
+'use server';
+
 import type { CryptoData, FearGreedData, MarketAnalysisInput, MarketStats } from '@/types';
 
 const API_BASE_URL = 'https://api.coingecko.com/api/v3';
@@ -74,9 +76,10 @@ export async function fetchMarketData(): Promise<(MarketAnalysisInput & MarketSt
     try {
         const globalDataPromise = fetch(`${API_BASE_URL}/global`, { next: { revalidate: 300 } }).then(res => res.json());
         const fearAndGreedPromise = fetchFearGreedData();
-        // Fetch top 20 for analysis, plus stablecoins and specific tokens like SOL
-        const specificCoinIds = 'bitcoin,ethereum,solana,tether,usd-coin';
         const topCoinsPromise = getTopCoins(20, 'usd'); 
+
+        // Expand the list to include more stablecoins
+        const specificCoinIds = 'bitcoin,ethereum,solana,tether,usd-coin,dai,frax,ethena-usde';
         const specificCoinsPromise = fetch(`${API_BASE_URL}/coins/markets?vs_currency=usd&ids=${specificCoinIds}`, { next: { revalidate: 300 } }).then(res => res.json());
 
         const [globalData, fearAndGreed, topCoins, specificCoins] = await Promise.all([
@@ -91,13 +94,19 @@ export async function fetchMarketData(): Promise<(MarketAnalysisInput & MarketSt
         }
 
         const totalMarketCap = globalData.data.total_market_cap.usd;
-        const btcData = specificCoins.find((c: any) => c.id === 'bitcoin');
-        const ethData = specificCoins.find((c: any) => c.id === 'ethereum');
-        const solData = specificCoins.find((c: any) => c.id === 'solana');
-        const usdtData = specificCoins.find((c: any) => c.id === 'tether');
-        const usdcData = specificCoins.find((c: any) => c.id === 'usd-coin');
         
-        const stablecoinMarketCap = (usdtData?.market_cap || 0) + (usdcData?.market_cap || 0);
+        const getCoinData = (id: string) => specificCoins.find((c: any) => c.id === id);
+
+        const btcData = getCoinData('bitcoin');
+        const ethData = getCoinData('ethereum');
+        const solData = getCoinData('solana');
+        
+        // Sum market caps of all fetched stablecoins
+        const stablecoinIds = ['tether', 'usd-coin', 'dai', 'frax', 'ethena-usde'];
+        const stablecoinMarketCap = stablecoinIds.reduce((sum, id) => {
+            const coin = getCoinData(id);
+            return sum + (coin?.market_cap || 0);
+        }, 0);
 
         // Data for Analysis Flow
         const maxHistoricalMarketCap = topCoins.reduce((max, coin) => Math.max(max, coin.ath_market_cap ?? 0), 0);

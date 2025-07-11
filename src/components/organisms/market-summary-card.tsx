@@ -5,19 +5,21 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { fetchMarketData, fetchFearGreedData } from '@/lib/coingecko';
+import type { MarketAnalysisOutput } from '@/types';
 import { analyzeMarketSentiment } from '@/ai/flows/market-analysis-flow';
-import type { MarketAnalysisOutput, FearGreedData } from '@/types';
 import { ScoreGauge } from '../molecules/score-gauge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { AlertTriangle, CheckCircle, Info, Minus, TrendingDown, TrendingUp } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Info, Minus } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
-import { cn } from '@/lib/utils';
+} from "@/components/ui/tooltip";
+import { TrendIcon } from '@/components/ui/TrendIcon';
+import { TrendChange } from '@/components/ui/TrendChange';
+
 
 const indicatorExplanations: Record<string, string> = {
     marketCapScore: "Mengukur valuasi total pasar saat ini terhadap puncak historisnya.",
@@ -27,34 +29,10 @@ const indicatorExplanations: Record<string, string> = {
     marketBreadthScore: "Mengukur apakah pergerakan pasar didukung oleh banyak aset (luas) atau hanya segelintir."
 };
 
-function TrendIcon({ change }: { change: number | null }) {
-     if (change === null || change === 0) {
-        return <Minus className="h-4 w-4 mx-auto text-muted-foreground/50" />;
-    }
-    const isPositive = change > 0;
-     return isPositive ? <TrendingUp className="h-4 w-4 mx-auto text-chart-2" /> : <TrendingDown className="h-4 w-4 mx-auto text-destructive" />;
-}
-
-function TrendChange({ change }: { change: number | null }) {
-    if (change === null || change === 0) {
-        return <span className="font-mono text-xs text-muted-foreground/50">-</span>;
-    }
-    const isPositive = change > 0;
-    return (
-        <div className={cn(
-            "flex items-center justify-center gap-1 font-mono text-xs",
-            isPositive ? "text-chart-2" : "text-destructive"
-        )}>
-            {isPositive ? '▲' : '▼'}
-            <span>{Math.abs(change)} pts</span>
-        </div>
-    );
-}
-
 export function MarketSummaryCard() {
   const [isLoading, setIsLoading] = useState(true);
   const [analysisResult, setAnalysisResult] = useState<MarketAnalysisOutput | null>(null);
-  const [fearGreedTrend, setFearGreedTrend] = useState<number | null>(null);
+  const [fearGreedDelta, setFearGreedDelta] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -71,7 +49,7 @@ export function MarketSummaryCard() {
           throw new Error("Failed to fetch market data from CoinGecko.");
         }
         if (fearGreedData.today && fearGreedData.weekAgo) {
-            setFearGreedTrend(fearGreedData.today.value - fearGreedData.weekAgo.value);
+            setFearGreedDelta(fearGreedData.today.value - fearGreedData.weekAgo.value);
         }
 
         const result = await analyzeMarketSentiment(marketData);
@@ -113,7 +91,7 @@ export function MarketSummaryCard() {
   const indicators = [
       { name: "Market Cap Score", key: 'marketCapScore', value: analysisResult.components.marketCapScore, trend: null },
       { name: "Volume Score", key: 'volumeScore', value: analysisResult.components.volumeScore, trend: null },
-      { name: "Fear & Greed Score", key: 'fearGreedScore', value: analysisResult.components.fearGreedScore, trend: fearGreedTrend },
+      { name: "Fear & Greed Score", key: 'fearGreedScore', value: analysisResult.components.fearGreedScore, trend: fearGreedDelta },
       { name: "ATH Score", key: 'athScore', value: analysisResult.components.athScore, trend: null },
       { name: "Market Breadth Score", key: 'marketBreadthScore', value: analysisResult.components.marketBreadthScore, trend: null },
   ];
@@ -140,8 +118,7 @@ export function MarketSummaryCard() {
                     <TableHeader>
                     <TableRow>
                         <TableHead>Indicator</TableHead>
-                        <TableHead className="text-center">Trend (7d)</TableHead>
-                        <TableHead className="text-center">Change (7d)</TableHead>
+                        <TableHead className="text-right">Perubahan (7d)</TableHead>
                         <TableHead className="text-right">Score</TableHead>
                     </TableRow>
                     </TableHeader>
@@ -164,11 +141,11 @@ export function MarketSummaryCard() {
                                 </Tooltip>
                             </div>
                         </TableCell>
-                        <TableCell className="text-center">
-                            <TrendIcon change={indicator.trend} />
-                        </TableCell>
-                        <TableCell className="text-center">
-                           <TrendChange change={indicator.trend} />
+                         <TableCell>
+                            <div className="flex items-center justify-end gap-2">
+                                <TrendIcon change={indicator.trend} />
+                                <TrendChange change={indicator.trend} />
+                            </div>
                         </TableCell>
                         <TableCell className="text-right font-mono">{indicator.value}</TableCell>
                         </TableRow>

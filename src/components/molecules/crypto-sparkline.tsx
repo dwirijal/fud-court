@@ -1,9 +1,10 @@
+
 "use client";
 
 import * as React from "react";
 import {
-  Line,
-  LineChart,
+  Area,
+  AreaChart,
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
@@ -26,12 +27,13 @@ export function CryptoSparkline({ data, isPositive }: CryptoSparklineProps) {
     value: value,
   }));
 
-  const strokeColor = isPositive ? "hsl(var(--chart-2))" : "hsl(var(--primary))";
+  const strokeColor = isPositive ? "hsl(var(--chart-2))" : "hsl(var(--destructive))";
+  const gradientId = `sparkline-gradient-${isPositive ? 'positive' : 'negative'}`;
 
   return (
     <ChartContainer config={chartConfig} className="h-full w-full aspect-auto">
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart
+        <AreaChart
           data={formattedData}
           margin={{
             top: 5,
@@ -40,18 +42,26 @@ export function CryptoSparkline({ data, isPositive }: CryptoSparklineProps) {
             bottom: 5,
           }}
         >
+          <defs>
+            <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor={strokeColor} stopOpacity={0.4}/>
+              <stop offset="95%" stopColor={strokeColor} stopOpacity={0}/>
+            </linearGradient>
+          </defs>
           <Tooltip
             cursor={false}
-            content={<ChartTooltipContent hideLabel hideIndicator />}
+            content={<ChartTooltipContent hideLabel hideIndicator formatter={(value) => `$${Number(value).toLocaleString()}`} />}
           />
-          <Line
+          <Area
             dataKey="value"
             type="natural"
             stroke={strokeColor}
             strokeWidth={2}
+            fillOpacity={1}
+            fill={`url(#${gradientId})`}
             dot={false}
           />
-        </LineChart>
+        </AreaChart>
       </ResponsiveContainer>
     </ChartContainer>
   );

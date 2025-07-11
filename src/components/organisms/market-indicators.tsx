@@ -5,9 +5,10 @@ import { useEffect, useState } from "react";
 import { Bitcoin, HelpCircle, Sigma, Repeat } from "lucide-react";
 import { MarketIndicatorCard } from "@/components/molecules/market-indicator-card";
 import { FearGreedGauge } from "@/components/molecules/fear-greed-gauge";
-import { DominanceBar } from "@/components/molecules/dominance-bar";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import type { CryptoData } from "@/types";
+import { CryptoSparklineCard } from "../molecules/crypto-sparkline-card";
 
 interface FearGreedData {
     value: string;
@@ -46,14 +47,14 @@ async function getGlobalMarketData(): Promise<GlobalData['data'] | null> {
     }
 }
 
-async function getTopCoinsMarketCap() {
+async function getTopCoinsWithSparkline(): Promise<CryptoData[]> {
      try {
-        const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=2&page=1&sparkline=false', { next: { revalidate: 300 } });
-        if (!response.ok) return null;
+        const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum&order=market_cap_desc&per_page=2&page=1&sparkline=true&price_change_percentage=7d', { next: { revalidate: 300 } });
+        if (!response.ok) return [];
         return await response.json();
     } catch (error) {
-        console.error("Failed to fetch top coins market cap from CoinGecko:", error);
-        return null;
+        console.error("Failed to fetch top coins with sparkline from CoinGecko:", error);
+        return [];
     }
 }
 
@@ -76,21 +77,21 @@ export function MarketIndicators() {
             const [fearGreedData, globalData, topCoins] = await Promise.all([
                 getFearGreedIndex(),
                 getGlobalMarketData(),
-                getTopCoinsMarketCap()
+                getTopCoinsWithSparkline()
             ]);
 
+            const btcData = topCoins?.find(c => c.id === 'bitcoin');
+            const ethData = topCoins?.find(c => c.id === 'ethereum');
             const totalMarketCap = globalData?.total_market_cap?.usd ?? 0;
-            const btcMarketCap = topCoins?.find((c: any) => c.id === 'bitcoin')?.market_cap ?? 0;
-            const ethMarketCap = topCoins?.find((c: any) => c.id === 'ethereum')?.market_cap ?? 0;
 
             setData({
                 fearGreed: fearGreedData,
-                btcDominance: globalData?.market_cap_percentage?.btc ?? 0,
-                ethDominance: globalData?.market_cap_percentage?.eth ?? 0,
+                btc: btcData,
+                eth: ethData,
                 totalMarketCap,
                 totalVolume: globalData?.total_volume?.usd ?? 0,
-                total2: totalMarketCap > 0 && btcMarketCap > 0 ? totalMarketCap - btcMarketCap : 0,
-                total3: totalMarketCap > 0 && ethMarketCap > 0 && btcMarketCap > 0 ? totalMarketCap - btcMarketCap - ethMarketCap : 0,
+                total2: totalMarketCap > 0 && btcData ? totalMarketCap - btcData.market_cap : 0,
+                total3: totalMarketCap > 0 && btcData && ethData ? totalMarketCap - btcData.market_cap - ethData.market_cap : 0,
             });
             setIsLoading(false);
         };
@@ -112,22 +113,17 @@ export function MarketIndicators() {
     
     return (
         <div className="flex flex-col lg:flex-row gap-8">
-            {/* Fear & Greed Gauge */}
             <div className="lg:w-1/3">
                 <FearGreedGauge 
                     value={parseInt(data.fearGreed?.value || '0', 10)}
                     classification={data.fearGreed?.value_classification || 'Neutral'}
                 />
             </div>
-            {/* Other Indicators */}
-            <div className="lg:w-2/3 grid grid-cols-2 md:grid-cols-3 gap-6">
-                <DominanceBar title="BTC Dominance" percentage={data.btcDominance} icon={Bitcoin} />
-                <DominanceBar title="ETH Dominance" percentage={data.ethDominance} icon={HelpCircle} />
+            <div className="lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {data.btc && <CryptoSparklineCard data={data.btc} />}
+                {data.eth && <CryptoSparklineCard data={data.eth} />}
                 <MarketIndicatorCard title="24h Volume" value={formatCurrency(data.totalVolume)} icon={Repeat} />
-                
                 <MarketIndicatorCard title="Total Marketcap" value={formatCurrency(data.totalMarketCap)} icon={Sigma} />
-                <MarketIndicatorCard title="Total 2 (excl. BTC)" value={formatCurrency(data.total2)} icon={Sigma} />
-                <MarketIndicatorCard title="Total 3 (excl. BTC/ETH)" value={formatCurrency(data.total3)} icon={Sigma} />
             </div>
         </div>
     );

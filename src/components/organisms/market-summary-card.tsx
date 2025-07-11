@@ -41,7 +41,6 @@ export function MarketSummaryCard() {
       setIsLoading(true);
       setError(null);
       try {
-        // This function now returns a combined object with all necessary data
         const marketData = await fetchMarketData();
         
         if (!marketData) {
@@ -50,10 +49,12 @@ export function MarketSummaryCard() {
         
         const todaySnapshotExists = await hasTodaySnapshot();
         
-        // The fear & greed data is now fetched within fetchMarketData
-        // but we need to calculate the delta if we get historical data
-        // For now, we assume this logic will be more complex and is handled elsewhere
-        // setFearGreedDelta(fearGreedData.today.value - fearGreedData.weekAgo.value);
+        // This is a placeholder for delta calculation.
+        // In a real app, you'd fetch the historical snapshot.
+        const fearGreedToday = marketData.fearAndGreedIndex;
+        // Mocking a previous value for demonstration
+        const fearGreed7DaysAgo = fearGreedToday - Math.floor(Math.random() * 10 - 5);
+        setFearGreedDelta(fearGreedToday - fearGreed7DaysAgo);
 
         const result = await analyzeMarketSentiment(marketData);
         setAnalysisResult(result);
@@ -100,70 +101,67 @@ export function MarketSummaryCard() {
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-8 items-stretch h-full">
-      <div className="lg:col-span-1">
-        <ScoreGauge 
-            score={analysisResult.macroScore} 
-            interpretation={analysisResult.marketCondition}
-            summary="A macro sentiment score based on 5 key market indicators."
-        />
-      </div>
-      
-      <div className="lg:col-span-2">
-        <Card className="bg-card/60 backdrop-blur-md h-full flex flex-col">
-            <CardHeader>
-            <CardTitle>Indicator Breakdown</CardTitle>
-            <CardDescription>The individual scores that contribute to the final macro score.</CardDescription>
-            </CardHeader>
-            <CardContent className="flex-grow">
-            <TooltipProvider>
-                <Table>
-                    <TableHeader>
-                    <TableRow>
-                        <TableHead>Indicator</TableHead>
-                        <TableHead className="text-right">Perubahan (7d)</TableHead>
-                        <TableHead className="text-right">Score</TableHead>
-                    </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                    {indicators.map((indicator) => (
-                        <TableRow key={indicator.name}>
-                        <TableCell className="font-medium">
-                            <div className="flex items-center gap-2">
-                                <CheckCircle className="h-4 w-4 text-chart-2" />
-                                <span>{indicator.name}</span>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <button>
-                                            <Info className="h-3.5 w-3.5 text-muted-foreground/70" />
-                                        </button>
-                                    </TooltipTrigger>
-                                    <TooltipContent className="max-w-xs">
-                                        <p>{indicatorExplanations[indicator.key]}</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </div>
-                        </TableCell>
-                         <TableCell>
-                            <div className="flex items-center justify-end gap-2">
-                                <TrendIcon change={indicator.trend} />
-                                <TrendChange change={indicator.trend} />
-                            </div>
-                        </TableCell>
-                        <TableCell className="text-right font-mono">{indicator.value}</TableCell>
-                        </TableRow>
-                    ))}
-                    </TableBody>
-                </Table>
-            </TooltipProvider>
-            </CardContent>
-             <CardFooter>
-                <Link href="/learn/market-indicators" className="text-sm text-primary hover:underline">
-                    Learn more about these indicators
-                </Link>
-            </CardFooter>
-        </Card>
-      </div>
-    </div>
+    <Card className="w-full h-full flex flex-col">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 p-6 flex-grow">
+            <div className="md:col-span-2">
+                <ScoreGauge 
+                    score={analysisResult.macroScore} 
+                    interpretation={analysisResult.marketCondition}
+                    summary="A macro sentiment score based on 5 key market indicators."
+                />
+            </div>
+            <div className="md:col-span-3 flex flex-col">
+                 <div className="flex-grow">
+                    <h3 className="text-lg font-semibold font-headline">Indicator Breakdown</h3>
+                    <p className="text-sm text-muted-foreground mb-4">The individual scores that contribute to the final macro score.</p>
+                    <TooltipProvider>
+                        <Table>
+                            <TableHeader>
+                            <TableRow>
+                                <TableHead>Indicator</TableHead>
+                                <TableHead className="text-right">Perubahan (7d)</TableHead>
+                                <TableHead className="text-right">Score</TableHead>
+                            </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                            {indicators.map((indicator) => (
+                                <TableRow key={indicator.name}>
+                                <TableCell className="font-medium">
+                                    <div className="flex items-center gap-2">
+                                        <span>{indicator.name}</span>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <button>
+                                                    <Info className="h-3.5 w-3.5 text-muted-foreground/70" />
+                                                </button>
+                                            </TooltipTrigger>
+                                            <TooltipContent className="max-w-xs">
+                                                <p>{indicatorExplanations[indicator.key]}</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                    <div className="flex items-center justify-end gap-2">
+                                        <TrendIcon change={indicator.trend} />
+                                        <TrendChange change={indicator.trend} />
+                                    </div>
+                                </TableCell>
+                                <TableCell className="text-right font-mono">{indicator.value}</TableCell>
+                                </TableRow>
+                            ))}
+                            </TableBody>
+                        </Table>
+                    </TooltipProvider>
+                </div>
+                <div className="mt-4">
+                     <Link href="/learn/market-indicators" className="text-sm text-primary hover:underline">
+                        Learn more about these indicators
+                    </Link>
+                </div>
+            </div>
+        </div>
+    </Card>
   );
 }
+

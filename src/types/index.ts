@@ -177,4 +177,7 @@ export interface MarketStats {
 export interface TopCoinForAnalysis {
     name: string;
     symbol: string;
+    current_price: number;
+    ath: number;
+    price_change_percentage_24h: number | null;
 }

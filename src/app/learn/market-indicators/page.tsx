@@ -7,6 +7,14 @@ import {
     CardDescription,
 } from "@/components/ui/card";
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
@@ -16,8 +24,9 @@ import {
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, Database, AlertTriangle } from "lucide-react";
+import { BookOpen, Database, AlertTriangle, TrendingDown, TrendingUp } from "lucide-react";
 import { fetchMarketData } from "@/lib/coingecko";
+import { cn } from "@/lib/utils";
 
 const indicators = [
     {
@@ -57,16 +66,39 @@ const indicators = [
     }
 ];
 
-const formatCurrency = (value: number) => {
+const formatCurrency = (value: number, compact: boolean = true) => {
     return new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
-        notation: 'compact',
-        compactDisplay: 'short',
+        notation: compact ? 'compact' : 'standard',
+        compactDisplay: compact ? 'short' : 'standard',
         minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
+        maximumFractionDigits: value < 1 ? 6 : 2,
     }).format(value);
 };
+
+const PriceChangeCell = ({ value }: { value: number | null | undefined }) => {
+    const change = value;
+  
+    if (change === null || change === undefined || isNaN(change)) {
+      return <div className="font-mono text-right text-muted-foreground">-</div>;
+    }
+  
+    const isPositive = change >= 0;
+  
+    return (
+      <div
+        className={cn(
+          'flex items-center justify-end gap-1 font-mono text-sm',
+          isPositive ? 'text-chart-2' : 'text-destructive'
+        )}
+      >
+        {isPositive ? <TrendingUp className="h-4 w-4 shrink-0" /> : <TrendingDown className="h-4 w-4 shrink-0" />}
+        <span>{change.toFixed(2)}%</span>
+      </div>
+    );
+};
+
 
 export default async function MarketIndicatorsPage() {
   const marketData = await fetchMarketData();
@@ -117,39 +149,56 @@ export default async function MarketIndicatorsPage() {
                     </div>
                     <CardDescription>The actual values being fed into the formulas below.</CardDescription>
                 </CardHeader>
-                <CardContent>
-                    <div className="space-y-4">
-                        <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4 text-sm">
-                            <li className="flex justify-between items-baseline border-b pb-2">
-                                <span className="text-muted-foreground">Total Market Cap</span>
-                                <span className="font-mono font-semibold">{formatCurrency(marketData.totalMarketCap)}</span>
-                            </li>
-                             <li className="flex justify-between items-baseline border-b pb-2">
-                                <span className="text-muted-foreground">24h Volume</span>
-                                <span className="font-mono font-semibold">{formatCurrency(marketData.totalVolume24h)}</span>
-                            </li>
-                            <li className="flex justify-between items-baseline border-b pb-2">
-                                <span className="text-muted-foreground">Fear & Greed Index</span>
-                                <span className="font-mono font-semibold">{marketData.fearAndGreedIndex}</span>
-                            </li>
-                            <li className="flex justify-between items-baseline border-b pb-2">
-                                <span className="text-muted-foreground">BTC Dominance</span>
-                                <span className="font-mono font-semibold">{marketData.btcDominance.toFixed(2)}%</span>
-                            </li>
-                            <li className="flex justify-between items-baseline border-b pb-2">
-                                <span className="text-muted-foreground">Max Historical Cap</span>
-                                 <span className="font-mono font-semibold">{formatCurrency(marketData.maxHistoricalMarketCap)}</span>
-                            </li>
-                        </ul>
-                         <div>
-                            <p className="text-sm font-medium text-muted-foreground mb-2">Top Coins Analyzed ({marketData.topCoinsForAnalysis.length})</p>
-                             <div className="flex flex-wrap gap-2">
+                <CardContent className="space-y-6">
+                    <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4 text-sm">
+                        <li className="flex justify-between items-baseline border-b pb-2">
+                            <span className="text-muted-foreground">Total Market Cap</span>
+                            <span className="font-mono font-semibold">{formatCurrency(marketData.totalMarketCap)}</span>
+                        </li>
+                         <li className="flex justify-between items-baseline border-b pb-2">
+                            <span className="text-muted-foreground">24h Volume</span>
+                            <span className="font-mono font-semibold">{formatCurrency(marketData.totalVolume24h)}</span>
+                        </li>
+                        <li className="flex justify-between items-baseline border-b pb-2">
+                            <span className="text-muted-foreground">Fear & Greed Index</span>
+                            <span className="font-mono font-semibold">{marketData.fearAndGreedIndex}</span>
+                        </li>
+                        <li className="flex justify-between items-baseline border-b pb-2">
+                            <span className="text-muted-foreground">BTC Dominance</span>
+                            <span className="font-mono font-semibold">{marketData.btcDominance.toFixed(2)}%</span>
+                        </li>
+                        <li className="flex justify-between items-baseline border-b pb-2">
+                            <span className="text-muted-foreground">Max Historical Cap</span>
+                             <span className="font-mono font-semibold">{formatCurrency(marketData.maxHistoricalMarketCap)}</span>
+                        </li>
+                    </ul>
+                     <div>
+                        <h4 className="text-base font-semibold text-foreground mb-2">Top Coins Analysis Breakdown ({marketData.topCoinsForAnalysis.length})</h4>
+                        <div className="overflow-x-auto rounded-lg border">
+                           <Table>
+                            <TableHeader>
+                                <TableRow>
+                                <TableHead>Coin</TableHead>
+                                <TableHead className="text-right">Current Price</TableHead>
+                                <TableHead className="text-right">ATH</TableHead>
+                                <TableHead className="text-right">% From ATH</TableHead>
+                                <TableHead className="text-right">24h Change</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
                                 {marketData.topCoinsForAnalysis.map((coin) => (
-                                    <Badge key={coin.symbol} variant="secondary" className="font-mono">
-                                        {coin.symbol.toUpperCase()}
-                                    </Badge>
+                                <TableRow key={coin.symbol}>
+                                    <TableCell className="font-medium">{coin.name} <span className="text-muted-foreground text-xs">{coin.symbol.toUpperCase()}</span></TableCell>
+                                    <TableCell className="text-right font-mono text-sm">{formatCurrency(coin.current_price, false)}</TableCell>
+                                    <TableCell className="text-right font-mono text-sm">{formatCurrency(coin.ath, false)}</TableCell>
+                                    <TableCell className="text-right font-mono text-sm text-destructive">-{((1 - coin.current_price / coin.ath) * 100).toFixed(2)}%</TableCell>
+                                    <TableCell className="text-right">
+                                        <PriceChangeCell value={coin.price_change_percentage_24h} />
+                                    </TableCell>
+                                </TableRow>
                                 ))}
-                            </div>
+                            </TableBody>
+                            </Table>
                         </div>
                     </div>
                 </CardContent>

@@ -149,6 +149,9 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
         const topCoinsForAnalysis: TopCoinForAnalysis[] = topCoins.map(c => ({
             name: c.name,
             symbol: c.symbol,
+            current_price: c.current_price,
+            ath: c.ath,
+            price_change_percentage_24h: c.price_change_percentage_24h_in_currency ?? null,
         }));
 
         return { ...analysisInput, ...marketStats, topCoinsForAnalysis };

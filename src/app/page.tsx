@@ -14,19 +14,24 @@ export default async function Home() {
     <>
       <HeroSection />
 
-      <MarketIndicators />
-
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-4">
-          <div className="text-center max-w-3xl mx-auto">
+          <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
             <h2 className="text-4xl font-extrabold tracking-tight font-headline mb-4">
               Market Overview
             </h2>
-            <p className="text-muted-foreground mb-12">
-              Get a quick glance at the latest movements in the crypto market.
+            <p className="text-muted-foreground">
+              A comprehensive look at key market indicators and top-performing assets.
             </p>
           </div>
-          <MarketCarousel data={cryptoData} />
+          
+          <div className="mb-12 md:mb-24">
+            <MarketIndicators />
+          </div>
+
+          <div>
+            <MarketCarousel data={cryptoData} />
+          </div>
         </div>
       </section>
 

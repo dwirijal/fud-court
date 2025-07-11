@@ -60,11 +60,9 @@ export function NftCard() {
     <div
       ref={cardRef}
       className={cn(
-          "group relative w-full max-w-sm cursor-pointer transition-transform duration-300 ease-out",
+          "group relative w-full max-w-xs cursor-pointer transition-transform duration-300 ease-out",
           isMounted ? 'opacity-100' : 'opacity-0'
       )}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
       style={{ transformStyle: 'preserve-3d', willChange: 'transform' }}
     >
       <Card className="relative overflow-hidden rounded-xl bg-background/80 backdrop-blur-sm transition-shadow duration-300 group-hover:shadow-2xl">

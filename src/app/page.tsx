@@ -51,8 +51,8 @@ export default async function Home() {
               Stay informed with the latest updates and analysis from the crypto world.
             </p>
           </div>
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {posts.slice(0, 3).map((post) => (
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {posts.slice(0, 12).map((post) => (
               <NewsCard key={post.id} post={post} />
             ))}
           </div>

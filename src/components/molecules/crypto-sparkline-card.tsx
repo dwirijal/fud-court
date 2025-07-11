@@ -24,10 +24,11 @@ const formatPrice = (price: number) => {
 };
 
 export function CryptoSparklineCard({ data }: { data: CryptoData }) {
-    const isPositive = data.price_change_percentage_7d_in_currency >= 0;
+    const priceChange = data.price_change_percentage_7d_in_currency ?? 0;
+    const isPositive = priceChange >= 0;
     const sparklineData = data.sparkline_in_7d?.price || [];
-    const weekHigh = Math.max(...sparklineData);
-    const weekLow = Math.min(...sparklineData);
+    const weekHigh = sparklineData.length > 0 ? Math.max(...sparklineData) : 0;
+    const weekLow = sparklineData.length > 0 ? Math.min(...sparklineData) : 0;
 
     return (
         <Card className="bg-card/60 backdrop-blur-md">
@@ -51,7 +52,7 @@ export function CryptoSparklineCard({ data }: { data: CryptoData }) {
                         ) : (
                             <TrendingDown className="h-4 w-4" />
                         )}
-                        <span>{data.price_change_percentage_7d_in_currency.toFixed(2)}%</span>
+                        <span>{priceChange.toFixed(2)}%</span>
                     </div>
                 </div>
             </CardHeader>

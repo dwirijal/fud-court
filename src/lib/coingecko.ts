@@ -9,7 +9,7 @@ const API_BASE_URL = 'https://api.coingecko.com/api/v3';
  * @returns A promise that resolves to an array of CryptoData objects.
  */
 export async function getTopCoins(limit: number = 100, currency: string = 'usd'): Promise<CryptoData[]> {
-  const url = `${API_BASE_URL}/coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=${limit}&page=1&sparkline=true&price_change_percentage=1h,24h,7d`;
+  const url = `${API_BASE_URL}/coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=${limit}&page=1&sparkline=false&price_change_percentage=1h,24h,7d`;
   
   try {
     // Using Next.js extended fetch for caching and revalidation

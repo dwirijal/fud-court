@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { fetchMarketData, fetchFearGreedData } from '@/lib/coingecko';
 import type { MarketAnalysisOutput } from '@/types';
 import { analyzeMarketSentiment } from '@/ai/flows/market-analysis-flow';
+import { saveMarketSnapshot, hasTodaySnapshot } from '@/lib/actions/snapshots';
 import { ScoreGauge } from '../molecules/score-gauge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -40,9 +41,10 @@ export function MarketSummaryCard() {
       setIsLoading(true);
       setError(null);
       try {
-        const [marketData, fearGreedData] = await Promise.all([
+        const [marketData, fearGreedData, todaySnapshotExists] = await Promise.all([
             fetchMarketData(),
-            fetchFearGreedData()
+            fetchFearGreedData(),
+            hasTodaySnapshot()
         ]);
 
         if (!marketData) {
@@ -54,6 +56,12 @@ export function MarketSummaryCard() {
 
         const result = await analyzeMarketSentiment(marketData);
         setAnalysisResult(result);
+
+        // Only save a snapshot if one doesn't already exist for today
+        if (result && !todaySnapshotExists) {
+            await saveMarketSnapshot(result);
+        }
+
       } catch (e) {
         console.error("Market analysis failed:", e);
         const message = e instanceof Error ? e.message : "An unknown error occurred.";

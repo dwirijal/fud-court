@@ -2,12 +2,11 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import { Bitcoin, HelpCircle, Sigma, Repeat } from "lucide-react";
+import { Bitcoin, HelpCircle, Sigma } from "lucide-react";
 import { MarketIndicatorCard } from "@/components/molecules/market-indicator-card";
 import { FearGreedGauge } from "@/components/molecules/fear-greed-gauge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { CryptoData } from "@/types";
 import { DominanceBar } from "../molecules/dominance-bar";
 
 interface FearGreedData {
@@ -81,8 +80,8 @@ export function MarketIndicators() {
         return (
              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <Skeleton className="h-64 lg:col-span-1" />
-                <div className="lg:col-span-2 grid grid-cols-2 sm:grid-cols-3 gap-6">
-                    {Array.from({ length: 6 }).map((_, i) => (
+                <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    {Array.from({ length: 4 }).map((_, i) => (
                         <Skeleton key={i} className="h-28" />
                     ))}
                 </div>
@@ -93,13 +92,11 @@ export function MarketIndicators() {
     const btcDom = data.global?.market_cap_percentage?.btc ?? 0;
     const ethDom = data.global?.market_cap_percentage?.eth ?? 0;
     const totalMarketCap = data.global?.total_market_cap?.usd ?? 0;
-    const totalVolume = data.global?.total_volume?.usd ?? 0;
     
-    // Calculate Total 2 and Total 3
+    // Calculate Total 3
     const btcMarketCap = (totalMarketCap * btcDom) / 100;
     const ethMarketCap = (totalMarketCap * ethDom) / 100;
-    const total2 = totalMarketCap - btcMarketCap;
-    const total3 = total2 - ethMarketCap;
+    const total3 = totalMarketCap - btcMarketCap - ethMarketCap;
 
     return (
         <div className="flex flex-col lg:flex-row gap-8">
@@ -109,12 +106,10 @@ export function MarketIndicators() {
                     classification={data.fearGreed?.value_classification || 'Neutral'}
                 />
             </div>
-            <div className="lg:w-2/3 grid grid-cols-2 sm:grid-cols-3 gap-6">
+            <div className="lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <MarketIndicatorCard title="Total Marketcap" value={formatCurrency(totalMarketCap)} icon={Sigma} />
                 <DominanceBar title="BTC Dominance" percentage={btcDom} icon={Bitcoin} />
                 <DominanceBar title="ETH Dominance" percentage={ethDom} icon={HelpCircle} />
-                <MarketIndicatorCard title="24h Volume" value={formatCurrency(totalVolume)} icon={Repeat} />
-                <MarketIndicatorCard title="Total Marketcap" value={formatCurrency(totalMarketCap)} icon={Sigma} />
-                <MarketIndicatorCard title="Total 2 (excl. BTC)" value={formatCurrency(total2)} icon={Sigma} />
                 <MarketIndicatorCard title="Total 3 (excl. BTC/ETH)" value={formatCurrency(total3)} icon={Sigma} />
             </div>
         </div>

@@ -11,14 +11,13 @@
 import { ai } from '@/ai/genkit';
 import { MarketAnalysisInputSchema, MarketAnalysisOutputSchema, type MarketAnalysisInput, type MarketAnalysisOutput } from '@/types';
 
+// Updated weights based on the new 5-component model
 const weights = {
-  marketCap: 0.2,
-  volume: 0.1,
-  btcDominance: 0.15,
-  fearAndGreed: 0.2,
-  altseason: 0.1,
-  marketBreadth: 0.15,
-  ath: 0.1,
+  marketCap: 0.25, // S1
+  volume: 0.20,      // S2
+  fearAndGreed: 0.20,// S3
+  ath: 0.25,         // S4
+  marketBreadth: 0.10// S5
 };
 
 const marketAnalysisFlow = ai.defineFlow(
@@ -28,70 +27,72 @@ const marketAnalysisFlow = ai.defineFlow(
     outputSchema: MarketAnalysisOutputSchema,
   },
   async (input) => {
-    // 1. Market Cap Normalization
-    const mcap_norm = (input.totalMarketCap / input.maxHistoricalMarketCap) * 100;
+    // 1. Market Cap Score (S1)
+    const s1_marketCap = (input.totalMarketCap / input.maxHistoricalMarketCap) * 100;
 
-    // 2. Volume Normalization
-    const volume_norm = (input.totalVolume24h / input.avg30DayVolume) * 100;
+    // 2. Volume Score (S2)
+    const raw_volume_score = (input.totalVolume24h / input.avg30DayVolume) * 100;
+    const capped_volume_score = Math.min(raw_volume_score, 200);
+    const s2_volume = capped_volume_score / 2;
 
-    // 3. BTC Dominance Score
-    const btc_dominance_score = 100 - input.btcDominance;
+    // 3. Fear and Greed Score (S3)
+    const s3_fearAndGreed = input.fearAndGreedIndex;
 
-    // 4. Altseason Score
-    const alt_season_score = (input.altcoinMarketCap / input.btcMarketCap) * 100;
-    
-    // 5. Market Breadth (Token performance)
-    const risingTokens = input.topCoins.filter(c => (c.price_change_percentage_24h || 0) > 0).length;
-    const market_breadth = (risingTokens / input.topCoins.length) * 100;
-
-    // 6. ATH Score
-    const n = input.topCoins.length;
+    // 4. ATH Score (S4)
+    const n_ath = input.topCoins.length;
     const distanceFromAthSum = input.topCoins.reduce((sum, coin) => {
-        const distance = 1 - (coin.current_price / coin.ath);
+        // Rumus: (ATH - Price) / ATH * 100
+        const distance = ((coin.ath - coin.current_price) / coin.ath) * 100;
         return sum + (distance > 0 ? distance : 0); // only count if below ATH
     }, 0);
-    const avgDistanceFromAth = (distanceFromAthSum / n) * 100;
-    const ath_score = 100 - avgDistanceFromAth;
+    const avgDistanceFromAth = n_ath > 0 ? (distanceFromAthSum / n_ath) : 0;
+    const s4_ath = 100 - avgDistanceFromAth;
 
+    // 5. Market Breadth Score (S5)
+    const risingTokens = input.topCoins.filter(c => (c.price_change_percentage_24h || 0) > 0).length;
+    const n_breadth = input.topCoins.length;
+    const s5_marketBreadth = n_breadth > 0 ? (risingTokens / n_breadth) * 100 : 0;
 
     // Normalize all scores to be within 0-100 and handle potential outliers
     const normalize = (value: number) => Math.max(0, Math.min(100, value));
 
     const finalScores = {
-        marketCap: normalize(mcap_norm),
-        volume: normalize(volume_norm),
-        btcDominance: normalize(btc_dominance_score),
-        fearAndGreed: input.fearAndGreedIndex, // Already 0-100
-        altseason: normalize(alt_season_score),
-        marketBreadth: normalize(market_breadth),
-        ath: normalize(ath_score),
+        marketCap: normalize(s1_marketCap),
+        volume: normalize(s2_volume),
+        fearAndGreed: normalize(s3_fearAndGreed),
+        ath: normalize(s4_ath),
+        marketBreadth: normalize(s5_marketBreadth),
     };
 
-    // Calculate final macro score
+    // Calculate final macro score (M)
     const macroScore = 
         finalScores.marketCap * weights.marketCap +
         finalScores.volume * weights.volume +
-        finalScores.btcDominance * weights.btcDominance +
         finalScores.fearAndGreed * weights.fearAndGreed +
-        finalScores.altseason * weights.altseason +
-        finalScores.marketBreadth * weights.marketBreadth +
-        finalScores.ath * weights.ath;
+        finalScores.ath * weights.ath +
+        finalScores.marketBreadth * weights.marketBreadth;
     
     const finalScore = Math.round(macroScore);
 
-    // Interpretation
-    let interpretation: 'Bullish' | 'Neutral' | 'Bearish';
+    // Interpretation based on the new 5-tier system
+    let interpretation: MarketAnalysisOutput['interpretation'];
     let summary: string;
 
-    if (finalScore >= 70) {
-        interpretation = 'Bullish';
-        summary = 'The market is showing strong bullish signals, indicating high confidence and positive momentum.';
+    if (finalScore >= 80) {
+        interpretation = 'Strong Bullish';
+        summary = 'Market is showing strong bullish signals, indicating potential euphoria. Exercise caution.';
+    } else if (finalScore >= 60) {
+        interpretation = 'Healthy Bullish';
+        summary = 'Market sentiment is positive, suggesting a healthy accumulation or early trend phase.';
     } else if (finalScore >= 40) {
         interpretation = 'Neutral';
-        summary = 'The market is in a neutral zone, showing a mix of signals without a clear directional trend.';
-    } else {
+        summary = 'The market is in a neutral zone, indicating a "wait and see" approach or sideways movement.';
+    } else if (finalScore >= 20) {
         interpretation = 'Bearish';
-        summary = 'The market is showing bearish signals, suggesting caution and potential for downward price movement.';
+        summary = 'Market sentiment is bearish, suggesting a distribution phase with high risk.';
+    } else {
+        interpretation = 'Capitulation Zone';
+        summary = 'Extreme fear in the market. Potential for high-risk, high-reward opportunities.';
     }
 
     return {

@@ -1,6 +1,13 @@
 
+'use client';
+
+import { useEffect, useState } from "react";
+import { Bitcoin, HelpCircle } from "lucide-react";
 import { MarketIndicatorCard } from "@/components/molecules/market-indicator-card";
-import { Bitcoin, Flame, HelpCircle } from "lucide-react";
+import { FearGreedGauge } from "@/components/molecules/fear-greed-gauge";
+import { DominanceBar } from "@/components/molecules/dominance-bar";
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface FearGreedData {
     value: string;
@@ -49,49 +56,80 @@ async function getTopCoinsMarketCap() {
     }
 }
 
-export async function MarketIndicators() {
-    const [fearGreedData, globalData, topCoins] = await Promise.all([
-        getFearGreedIndex(),
-        getGlobalMarketData(),
-        getTopCoinsMarketCap()
-    ]);
+const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        notation: 'compact',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    }).format(value);
+};
 
-    const formatCurrency = (value: number) => {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            notation: 'compact',
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        }).format(value);
+export function MarketIndicators() {
+    const [isLoading, setIsLoading] = useState(true);
+    const [data, setData] = useState<any>(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const [fearGreedData, globalData, topCoins] = await Promise.all([
+                getFearGreedIndex(),
+                getGlobalMarketData(),
+                getTopCoinsMarketCap()
+            ]);
+
+            const totalMarketCap = globalData?.total_market_cap?.usd ?? 0;
+            const btcMarketCap = topCoins?.find((c: any) => c.id === 'bitcoin')?.market_cap ?? 0;
+            const ethMarketCap = topCoins?.find((c: any) => c.id === 'ethereum')?.market_cap ?? 0;
+
+            setData({
+                fearGreed: fearGreedData,
+                btcDominance: globalData?.market_cap_percentage?.btc ?? 0,
+                usdtDominance: globalData?.market_cap_percentage?.usdt ?? 0,
+                totalMarketCap,
+                total2: totalMarketCap > 0 && btcMarketCap > 0 ? totalMarketCap - btcMarketCap : 0,
+                total3: totalMarketCap > 0 && ethMarketCap > 0 && btcMarketCap > 0 ? totalMarketCap - btcMarketCap - ethMarketCap : 0,
+            });
+            setIsLoading(false);
+        };
+        fetchData();
+    }, []);
+
+    if (isLoading) {
+        return (
+             <section className="py-16 md:py-24 bg-card/10">
+                <div className="container mx-auto px-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <Skeleton className="h-64 md:col-span-1" />
+                        <Skeleton className="h-64 md:col-span-2" />
+                    </div>
+                </div>
+            </section>
+        );
     }
     
-    const totalMarketCap = globalData?.total_market_cap?.usd ?? 0;
-    const btcDominance = globalData?.market_cap_percentage?.btc ?? 0;
-    const usdtDominance = globalData?.market_cap_percentage?.usdt ?? 0;
-
-    const btcMarketCap = topCoins?.find((c: any) => c.id === 'bitcoin')?.market_cap ?? 0;
-    const ethMarketCap = topCoins?.find((c: any) => c.id === 'ethereum')?.market_cap ?? 0;
-
-    const total2 = totalMarketCap > 0 && btcMarketCap > 0 ? totalMarketCap - btcMarketCap : 0;
-    const total3 = total2 > 0 && ethMarketCap > 0 ? total2 - ethMarketCap : 0;
-
-    const indicators = [
-        { title: "Fear & Greed Index", value: fearGreedData ? `${fearGreedData.value} (${fearGreedData.value_classification})` : "N/A", icon: Flame },
-        { title: "BTC Dominance", value: `${btcDominance.toFixed(2)}%`, icon: Bitcoin },
-        { title: "USDT Dominance", value: `${usdtDominance.toFixed(2)}%`, icon: HelpCircle },
-        { title: "Total Marketcap", value: formatCurrency(totalMarketCap), icon: HelpCircle },
-        { title: "Total 2 (excl. BTC)", value: formatCurrency(total2), icon: HelpCircle },
-        { title: "Total 3 (excl. BTC & ETH)", value: formatCurrency(total3), icon: HelpCircle },
-    ];
-
     return (
         <section className="py-16 md:py-24 bg-card/10">
             <div className="container mx-auto px-4">
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
-                    {indicators.map((indicator, index) => (
-                         <MarketIndicatorCard key={index} title={indicator.title} value={indicator.value} icon={indicator.icon} />
-                    ))}
+                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {/* Fear & Greed Gauge */}
+                    <FearGreedGauge 
+                        value={parseInt(data.fearGreed?.value || '0', 10)}
+                        classification={data.fearGreed?.value_classification || 'Neutral'}
+                    />
+
+                    {/* Other Indicators */}
+                    <div className="md:col-span-2 grid grid-cols-2 md:grid-cols-3 gap-6">
+                        <DominanceBar title="BTC Dominance" percentage={data.btcDominance} icon={Bitcoin} />
+                        <DominanceBar title="USDT Dominance" percentage={data.usdtDominance} icon={HelpCircle} />
+                       
+                        <MarketIndicatorCard title="Total Marketcap" value={formatCurrency(data.totalMarketCap)} icon={HelpCircle} />
+                        <MarketIndicatorCard title="Total 2 (excl. BTC)" value={formatCurrency(data.total2)} icon={HelpCircle} />
+                        <MarketIndicatorCard title="Total 3 (excl. BTC/ETH)" value={formatCurrency(data.total3)} icon={HelpCircle} />
+                        <Card className="bg-card/60 backdrop-blur-md flex items-center justify-center p-4">
+                            <p className="text-center text-sm text-muted-foreground">More indicators coming soon</p>
+                        </Card>
+                    </div>
                 </div>
             </div>
         </section>

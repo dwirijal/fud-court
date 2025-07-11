@@ -19,9 +19,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
-import { TrendIcon } from '@/components/ui/TrendIcon';
-import { TrendChange } from '@/components/ui/TrendChange';
-
 
 const indicatorExplanations: Record<string, string> = {
     marketCapScore: "Mengukur valuasi total pasar saat ini terhadap puncak historisnya.",
@@ -45,7 +42,6 @@ const getActiveColorClass = (interpretation: string) => {
 export function MarketSummaryCard() {
   const [isLoading, setIsLoading] = useState(true);
   const [analysisResult, setAnalysisResult] = useState<MarketAnalysisOutput | null>(null);
-  const [fearGreedDelta, setFearGreedDelta] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -61,13 +57,6 @@ export function MarketSummaryCard() {
         
         const todaySnapshotExists = await hasTodaySnapshot();
         
-        // This is a placeholder for delta calculation.
-        // In a real app, you'd fetch the historical snapshot.
-        const fearGreedToday = marketData.fearAndGreedIndex;
-        // Mocking a previous value for demonstration
-        const fearGreed7DaysAgo = fearGreedToday - Math.floor(Math.random() * 10 - 5);
-        setFearGreedDelta(fearGreedToday - fearGreed7DaysAgo);
-
         const result = await analyzeMarketSentiment(marketData);
         setAnalysisResult(result);
 
@@ -105,11 +94,11 @@ export function MarketSummaryCard() {
   }
 
   const indicators = [
-      { name: "Market Cap Score", key: 'marketCapScore', value: analysisResult.components.marketCapScore, trend: null },
-      { name: "Volume Score", key: 'volumeScore', value: analysisResult.components.volumeScore, trend: null },
-      { name: "Fear & Greed Score", key: 'fearGreedScore', value: analysisResult.components.fearGreedScore, trend: fearGreedDelta },
-      { name: "ATH Score", key: 'athScore', value: analysisResult.components.athScore, trend: null },
-      { name: "Market Breadth Score", key: 'marketBreadthScore', value: analysisResult.components.marketBreadthScore, trend: null },
+      { name: "Market Cap Score", key: 'marketCapScore', value: analysisResult.components.marketCapScore },
+      { name: "Volume Score", key: 'volumeScore', value: analysisResult.components.volumeScore },
+      { name: "Fear & Greed Score", key: 'fearGreedScore', value: analysisResult.components.fearGreedScore },
+      { name: "ATH Score", key: 'athScore', value: analysisResult.components.athScore },
+      { name: "Market Breadth Score", key: 'marketBreadthScore', value: analysisResult.components.marketBreadthScore },
   ];
   
   const activeColorClass = getActiveColorClass(analysisResult.marketCondition);
@@ -120,8 +109,8 @@ export function MarketSummaryCard() {
              <CardTitle>Macro Sentiment Score</CardTitle>
              <div className="flex items-center gap-4">
                 <CardDescription>A macro sentiment score based on 5 key market indicators.</CardDescription>
-                <Link href="/learn/market-indicators" className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1">
-                    Read more <ArrowUpRight className="h-3 w-3" />
+                <Link href="/learn/market-indicators" className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1 whitespace-nowrap">
+                    Learn more <ArrowUpRight className="h-3 w-3" />
                 </Link>
              </div>
         </CardHeader>
@@ -159,7 +148,6 @@ export function MarketSummaryCard() {
                             <TableHeader>
                             <TableRow>
                                 <TableHead>Indicator</TableHead>
-                                <TableHead className="text-right">Perubahan (7d)</TableHead>
                                 <TableHead className="text-right">Score</TableHead>
                             </TableRow>
                             </TableHeader>
@@ -179,12 +167,6 @@ export function MarketSummaryCard() {
                                                 <p>{indicatorExplanations[indicator.key]}</p>
                                             </TooltipContent>
                                         </Tooltip>
-                                    </div>
-                                </TableCell>
-                                <TableCell>
-                                    <div className="flex items-center justify-end gap-2">
-                                        <TrendIcon change={indicator.trend} />
-                                        <TrendChange change={indicator.trend} />
                                     </div>
                                 </TableCell>
                                 <TableCell className="text-right font-mono">{indicator.value}</TableCell>

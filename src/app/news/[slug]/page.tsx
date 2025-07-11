@@ -14,6 +14,50 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import type { Metadata, ResolvingMetadata } from 'next';
+
+type Props = {
+  params: { slug: string };
+};
+
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const post = await getPostBySlug(params.slug);
+
+  if (!post) {
+    return {
+      title: 'Not Found',
+      description: 'The page you are looking for does not exist.',
+    };
+  }
+
+  const previousImages = (await parent).openGraph?.images || [];
+
+  return {
+    title: post.title,
+    description: post.excerpt,
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      type: 'article',
+      publishedTime: post.published_at,
+      url: `/news/${post.slug}`,
+      images: post.feature_image ? [post.feature_image, ...previousImages] : previousImages,
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: post.title,
+        description: post.excerpt,
+        images: post.feature_image ? [post.feature_image] : [],
+    },
+    alternates: {
+      canonical: `/news/${post.slug}`,
+    },
+  };
+}
+
 
 export async function generateStaticParams() {
     const posts = await getPosts();

@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { cn } from '@/lib/utils';
+import { Separator } from '../ui/separator';
 
 const indicatorExplanations: Record<string, string> = {
     marketCapScore: "Measures the current total market valuation against its historical peak.",
@@ -79,7 +80,7 @@ export function MarketSummaryCard() {
   }, []);
 
   if (isLoading) {
-    return <Skeleton className="h-[450px] w-full" />;
+    return <Skeleton className="h-[400px] w-full" />;
   }
 
   if (error || !analysisResult) {
@@ -106,43 +107,48 @@ export function MarketSummaryCard() {
 
   return (
     <Card className="w-full h-full flex flex-col">
-        <CardHeader className="flex-row justify-between items-start">
-            <div>
-                <CardTitle>Macro Sentiment Score</CardTitle>
-                 <CardDescription className="flex items-center gap-2">
-                    A macro sentiment score based on 5 key market indicators.
-                    <Link href="/learn/market-indicators" className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1">
-                        Learn more <ArrowUpRight className="h-3 w-3" />
-                    </Link>
-                </CardDescription>
+        <CardHeader>
+            <div className="flex justify-between items-start">
+                <div>
+                    <CardTitle>Macro Sentiment Score</CardTitle>
+                    <CardDescription className="flex items-center gap-2">
+                        A score based on 5 key market indicators.
+                        <Link href="/learn/market-indicators" className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1">
+                            Learn more <ArrowUpRight className="h-3 w-3" />
+                        </Link>
+                    </CardDescription>
+                </div>
+                 <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Badge variant="secondary" className="cursor-help">
+                                <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
+                                Confidence: {analysisResult.confidenceScore}%
+                            </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Confidence in this analysis based on data quality.</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
             </div>
-             <TooltipProvider>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Badge variant="secondary" className="cursor-help">
-                            <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
-                            Confidence: {analysisResult.confidenceScore}%
-                        </Badge>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p>Confidence in this analysis based on data quality.</p>
-                    </TooltipContent>
-                </Tooltip>
-            </TooltipProvider>
         </CardHeader>
-        <CardContent className="flex-grow flex flex-col items-center justify-center text-center p-6">
-            <div className="relative w-full max-w-sm mx-auto">
+        <CardContent className="flex-grow flex flex-col md:flex-row items-center justify-center gap-8 p-6">
+            <div className="relative w-full max-w-[250px] flex flex-col items-center justify-center">
                 <ScoreGauge score={analysisResult.macroScore} />
-                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                <div className="absolute flex flex-col items-center justify-center pointer-events-none text-center">
                     <span className={cn("text-6xl font-bold tracking-tighter", activeColorClass)}>
                         {analysisResult.macroScore}
                     </span>
-                    <span className={cn("text-lg font-medium text-center", activeColorClass)}>
+                    <span className={cn("text-lg font-medium", activeColorClass)}>
                         {analysisResult.marketCondition}
                     </span>
                 </div>
             </div>
-            <div className="w-full max-w-lg mt-6">
+
+            <Separator orientation="vertical" className="h-auto align-stretch hidden md:block" />
+            
+            <div className="w-full md:w-auto flex-grow">
                 <TooltipProvider>
                     <Table>
                         <TableHeader>

@@ -86,14 +86,13 @@ export function MarketSummaryCard() {
   if (isLoading) {
     return (
         <Card>
-            <CardHeader>
-                <Skeleton className="h-8 w-3/4" />
-                <Skeleton className="h-4 w-1/2" />
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {Array.from({ length: 6 }).map((_, i) => (
-                    <Skeleton key={i} className="h-24 w-full" />
-                ))}
+            <CardContent className="p-6">
+                <Skeleton className="h-28 w-full mb-4" />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                        <Skeleton key={i} className="h-24 w-full" />
+                    ))}
+                </div>
             </CardContent>
         </Card>
     );
@@ -125,30 +124,30 @@ export function MarketSummaryCard() {
     <TooltipProvider>
         <Card>
             <CardContent className="space-y-4 p-6">
-                <Card className="bg-primary/5 border-primary/20 overflow-hidden text-center">
-                    <CardHeader>
-                        <CardTitle>Macro Sentiment Score</CardTitle>
-                        <CardDescription>
-                            Overall market health based on key indicators.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <p className={cn("text-6xl font-bold tracking-tighter", activeColorClass)}>{analysisResult.macroScore}</p>
-                        <p className={cn("font-semibold text-xl", activeColorClass)}>{analysisResult.marketCondition}</p>
-                    </CardContent>
-                    <CardFooter className="justify-center">
-                         <Badge variant="secondary" className="cursor-help flex-shrink-0">
-                            <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
-                            Confidence: {analysisResult.confidenceScore}%
-                        </Badge>
-                    </CardFooter>
+                 <Card className="bg-primary/5 border-primary/20 overflow-hidden">
+                    <div className="p-6 flex justify-between items-center">
+                        <div className="space-y-2">
+                            <CardTitle>Macro Sentiment Score</CardTitle>
+                            <CardDescription>
+                                Overall market health based on key indicators.
+                            </CardDescription>
+                            <Badge variant="secondary" className="cursor-help flex-shrink-0">
+                                <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
+                                Confidence: {analysisResult.confidenceScore}%
+                            </Badge>
+                        </div>
+                        <div className="text-right">
+                            <p className={cn("text-6xl font-bold tracking-tighter", activeColorClass)}>{analysisResult.macroScore}</p>
+                            <p className={cn("font-semibold text-xl", activeColorClass)}>{analysisResult.marketCondition}</p>
+                        </div>
+                    </div>
                 </Card>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {indicators.map((indicator) => (
-                         <Card key={indicator.name} className="p-4 flex flex-col justify-between">
-                            <div className="flex items-center justify-between gap-4">
-                                <div className="flex-grow space-y-1">
+                        <Card key={indicator.name} className="flex flex-col">
+                            <CardContent className="p-4 flex-grow flex items-center justify-between gap-4">
+                                <div className="space-y-1">
                                     <Tooltip>
                                         <TooltipTrigger asChild>
                                             <div className="flex items-center gap-1.5 cursor-help">
@@ -160,17 +159,19 @@ export function MarketSummaryCard() {
                                             <p className="max-w-xs">{indicator.description}</p>
                                         </TooltipContent>
                                     </Tooltip>
-                                    <CardDescription className="text-xs">{indicator.description}</CardDescription>
+                                    <p className="text-xs text-muted-foreground">{indicator.description}</p>
                                 </div>
-                                <div className="text-right flex-shrink-0">
-                                    <p className="text-2xl font-mono font-bold">{indicator.value}</p>
+                                <div className="text-right flex-shrink-0 pl-2">
+                                    <p className="text-3xl font-mono font-bold">{indicator.value}</p>
                                 </div>
-                            </div>
-                            <Progress value={indicator.value} className="mt-2" indicatorClassName={cn(getProgressColorClass(indicator.value))} />
+                            </CardContent>
+                            <CardFooter className="p-4 pt-0">
+                                <Progress value={indicator.value} className="h-1.5 w-full" indicatorClassName={cn(getProgressColorClass(indicator.value))} />
+                            </CardFooter>
                         </Card>
                     ))}
                 </div>
-                 <div className="text-center mt-4">
+                 <div className="text-center pt-2">
                      <Link href="/learn/market-indicators" className="text-sm text-primary/80 hover:text-primary flex items-center justify-center gap-1">
                         Learn more about indicators <ArrowUpRight className="h-3 w-3" />
                     </Link>

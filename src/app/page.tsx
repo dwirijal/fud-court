@@ -1,11 +1,9 @@
 
 import { NewsCard } from "@/components/molecules/news-card";
-import { Button } from "@/components/ui/button";
 import { getPosts } from "@/lib/ghost";
 import { getTopCoins } from "@/lib/coingecko";
-import Link from "next/link";
-import Image from "next/image";
 import { MarketCarousel } from "@/components/molecules/market-carousel";
+import { HeroSection } from "@/components/organisms/hero-section";
 
 export default async function Home() {
   const posts = await getPosts();
@@ -13,24 +11,7 @@ export default async function Home() {
 
   return (
     <>
-      <section className="relative flex items-center justify-center py-24 text-center md:py-48">
-        <div className="container relative z-10 mx-auto px-4">
-          <h1 className="text-5xl md:text-7xl font-extrabold font-headline tracking-tighter mb-6">
-            Clarity in Chaos.
-          </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10">
-            Fud Court cuts through the market noise with data-driven analysis and unbiased news, empowering you to make smarter crypto investment decisions.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button size="lg" asChild>
-              <Link href="https://discord.gg" target="_blank" rel="noopener noreferrer">Join Community</Link>
-            </Button>
-            <Button size="lg" variant="outline" asChild>
-               <Link href="/news">Read Latest News</Link>
-            </Button>
-          </div>
-        </div>
-      </section>
+      <HeroSection />
 
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-4">

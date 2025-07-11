@@ -24,9 +24,9 @@ import {
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, Database, AlertTriangle, TrendingDown, TrendingUp } from "lucide-react";
+import { BookOpen, Database, AlertTriangle } from "lucide-react";
 import { fetchMarketData } from "@/lib/coingecko";
-import { cn } from "@/lib/utils";
+import { TrendChange } from "@/components/ui/TrendChange";
 
 const indicators = [
     {
@@ -67,38 +67,21 @@ const indicators = [
 ];
 
 const formatCurrency = (value: number, compact: boolean = true) => {
-    return new Intl.NumberFormat('en-US', {
+    const options: Intl.NumberFormatOptions = {
         style: 'currency',
         currency: 'USD',
         notation: compact ? 'compact' : 'standard',
-        compactDisplay: compact ? 'short' : 'standard',
         minimumFractionDigits: 2,
         maximumFractionDigits: value < 1 ? 6 : 2,
-    }).format(value);
-};
-
-const PriceChangeCell = ({ value }: { value: number | null | undefined }) => {
-    const change = value;
-  
-    if (change === null || change === undefined || isNaN(change)) {
-      return <div className="font-mono text-right text-muted-foreground">-</div>;
+    };
+    if (compact) {
+        options.compactDisplay = 'short';
+    } else {
+        // 'standard' is the default and does not need compactDisplay
+        delete (options as any).compactDisplay;
     }
-  
-    const isPositive = change >= 0;
-  
-    return (
-      <div
-        className={cn(
-          'flex items-center justify-end gap-1 font-mono text-sm',
-          isPositive ? 'text-chart-2' : 'text-destructive'
-        )}
-      >
-        {isPositive ? <TrendingUp className="h-4 w-4 shrink-0" /> : <TrendingDown className="h-4 w-4 shrink-0" />}
-        <span>{change.toFixed(2)}%</span>
-      </div>
-    );
+    return new Intl.NumberFormat('en-US', options).format(value);
 };
-
 
 export default async function MarketIndicatorsPage() {
   const marketData = await fetchMarketData();
@@ -193,7 +176,7 @@ export default async function MarketIndicatorsPage() {
                                     <TableCell className="text-right font-mono text-sm">{formatCurrency(coin.ath, false)}</TableCell>
                                     <TableCell className="text-right font-mono text-sm text-destructive">-{((1 - coin.current_price / coin.ath) * 100).toFixed(2)}%</TableCell>
                                     <TableCell className="text-right">
-                                        <PriceChangeCell value={coin.price_change_percentage_24h} />
+                                        <TrendChange value={coin.price_change_percentage_24h} isPercentage={true} />
                                     </TableCell>
                                 </TableRow>
                                 ))}

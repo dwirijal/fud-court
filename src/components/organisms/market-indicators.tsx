@@ -87,7 +87,6 @@ export function MarketIndicators() {
                 fearGreed: fearGreedData,
                 btcDominance: globalData?.market_cap_percentage?.btc ?? 0,
                 ethDominance: globalData?.market_cap_percentage?.eth ?? 0,
-                usdtDominance: globalData?.market_cap_percentage?.usdt ?? 0,
                 totalMarketCap,
                 totalVolume: globalData?.total_volume?.usd ?? 0,
                 total2: totalMarketCap > 0 && btcMarketCap > 0 ? totalMarketCap - btcMarketCap : 0,
@@ -102,8 +101,8 @@ export function MarketIndicators() {
         return (
              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <Skeleton className="h-64 md:col-span-1" />
-                <div className="md:col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-6">
-                    {Array.from({ length: 8 }).map((_, i) => (
+                <div className="md:col-span-2 grid grid-cols-2 sm:grid-cols-3 gap-6">
+                    {Array.from({ length: 6 }).map((_, i) => (
                         <Skeleton key={i} className="h-28" />
                     ))}
                 </div>
@@ -112,7 +111,7 @@ export function MarketIndicators() {
     }
     
     return (
-        <div className="flex flex-col lg:flex-row gap-6">
+        <div className="flex flex-col lg:flex-row gap-8">
             {/* Fear & Greed Gauge */}
             <div className="lg:w-1/3">
                 <FearGreedGauge 
@@ -121,20 +120,14 @@ export function MarketIndicators() {
                 />
             </div>
             {/* Other Indicators */}
-            <div className="lg:w-2/3 grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="lg:w-2/3 grid grid-cols-2 md:grid-cols-3 gap-6">
                 <DominanceBar title="BTC Dominance" percentage={data.btcDominance} icon={Bitcoin} />
                 <DominanceBar title="ETH Dominance" percentage={data.ethDominance} icon={HelpCircle} />
-                <DominanceBar title="USDT Dominance" percentage={data.usdtDominance} icon={HelpCircle} />
-               
                 <MarketIndicatorCard title="24h Volume" value={formatCurrency(data.totalVolume)} icon={Repeat} />
                 
                 <MarketIndicatorCard title="Total Marketcap" value={formatCurrency(data.totalMarketCap)} icon={Sigma} />
                 <MarketIndicatorCard title="Total 2 (excl. BTC)" value={formatCurrency(data.total2)} icon={Sigma} />
                 <MarketIndicatorCard title="Total 3 (excl. BTC/ETH)" value={formatCurrency(data.total3)} icon={Sigma} />
-                
-                <Card className="bg-card/60 backdrop-blur-md flex items-center justify-center p-4">
-                    <p className="text-center text-sm text-muted-foreground">More indicators coming soon</p>
-                </Card>
             </div>
         </div>
     );

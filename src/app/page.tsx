@@ -14,7 +14,7 @@ export default async function Home() {
     <>
       <HeroSection />
 
-      <section className="py-16 md:py-24">
+      <section className="py-16 md:py-24 bg-card/20 border-t border-b border-border">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
             <h2 className="text-4xl font-extrabold tracking-tight font-headline mb-4">
@@ -35,7 +35,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="py-16 md:py-24 bg-card/20 border-t border-b border-border">
+      <section className="py-16 md:py-24">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto">
             <h2 className="text-4xl font-extrabold tracking-tight font-headline mb-4">

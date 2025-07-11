@@ -8,9 +8,7 @@ import { fetchMarketData } from '@/lib/coingecko';
 import type { MarketAnalysisOutput } from '@/types';
 import { analyzeMarketSentiment } from '@/ai/flows/market-analysis-flow';
 import { saveMarketSnapshot, hasTodaySnapshot } from '@/lib/actions/snapshots';
-import { ScoreGauge } from '../molecules/score-gauge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { AlertTriangle, CheckCircle, Info, ArrowUpRight } from 'lucide-react';
 import {
   Tooltip,
@@ -20,7 +18,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { cn } from '@/lib/utils';
-import { Separator } from '../ui/separator';
+import { Progress } from '@/components/ui/progress';
 
 const indicatorExplanations: Record<string, string> = {
     marketCapScore: "Measures the current total market valuation against its historical peak.",
@@ -40,6 +38,13 @@ const getActiveColorClass = (interpretation: string) => {
     }
     return 'text-muted-foreground';
   };
+
+const getProgressColorClass = (score: number) => {
+    if (score < 40) return 'bg-destructive';
+    if (score > 60) return 'bg-chart-2';
+    return 'bg-muted-foreground';
+}
+
 
 export function MarketSummaryCard() {
   const [isLoading, setIsLoading] = useState(true);
@@ -80,12 +85,18 @@ export function MarketSummaryCard() {
   }, []);
 
   if (isLoading) {
-    return <Skeleton className="h-[400px] w-full" />;
+    return (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+             {Array.from({ length: 6 }).map((_, i) => (
+                <Skeleton key={i} className="h-28 w-full" />
+            ))}
+        </div>
+    );
   }
 
   if (error || !analysisResult) {
     return (
-      <Card className="flex flex-col items-center justify-center p-6 bg-destructive/10 border-destructive min-h-[400px]">
+      <Card className="flex flex-col items-center justify-center p-6 bg-destructive/10 border-destructive">
           <AlertTriangle className="h-12 w-12 text-destructive mb-4" />
           <CardTitle className="text-2xl font-headline text-destructive">Analysis Failed</CardTitle>
           <CardDescription className="text-destructive/80 mt-2 text-center max-w-md">
@@ -106,63 +117,30 @@ export function MarketSummaryCard() {
   const activeColorClass = getActiveColorClass(analysisResult.marketCondition);
 
   return (
-    <Card className="w-full h-full flex flex-col">
-        <CardHeader>
-            <div className="flex justify-between items-start">
-                <div>
-                    <CardTitle>Macro Sentiment Score</CardTitle>
-                    <CardDescription className="flex items-center gap-2">
-                        A score based on 5 key market indicators.
-                        <Link href="/learn/market-indicators" className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1">
-                            Learn more <ArrowUpRight className="h-3 w-3" />
-                        </Link>
+    <div className="space-y-4">
+        <Card className="bg-primary/5 border-primary/20">
+            <CardHeader className="flex-row items-center justify-between">
+                 <div>
+                    <CardTitle className="text-xl">Macro Sentiment Score</CardTitle>
+                    <CardDescription>
+                        Overall market health based on key indicators.
                     </CardDescription>
                 </div>
-                 <TooltipProvider>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Badge variant="secondary" className="cursor-help">
-                                <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
-                                Confidence: {analysisResult.confidenceScore}%
-                            </Badge>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>Confidence in this analysis based on data quality.</p>
-                        </TooltipContent>
-                    </Tooltip>
-                </TooltipProvider>
-            </div>
-        </CardHeader>
-        <CardContent className="flex-grow flex flex-col md:flex-row items-center justify-center gap-8 p-6">
-            <div className="relative w-full max-w-[250px] flex flex-col items-center justify-center">
-                <ScoreGauge score={analysisResult.macroScore} />
-                <div className="absolute flex flex-col items-center justify-center pointer-events-none text-center">
-                    <span className={cn("text-6xl font-bold tracking-tighter", activeColorClass)}>
-                        {analysisResult.macroScore}
-                    </span>
-                    <span className={cn("text-lg font-medium", activeColorClass)}>
-                        {analysisResult.marketCondition}
-                    </span>
+                 <div className="text-right">
+                    <p className={cn("text-4xl font-bold", activeColorClass)}>{analysisResult.macroScore}</p>
+                    <p className={cn("font-semibold", activeColorClass)}>{analysisResult.marketCondition}</p>
                 </div>
-            </div>
+            </CardHeader>
+        </Card>
 
-            <Separator orientation="vertical" className="h-auto align-stretch hidden md:block" />
-            
-            <div className="w-full md:w-auto flex-grow">
-                <TooltipProvider>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Indicator</TableHead>
-                                <TableHead className="text-right">Score</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                        {indicators.map((indicator) => (
-                            <TableRow key={indicator.name}>
-                            <TableCell className="font-medium">
-                                <div className="flex items-center gap-2">
-                                    <span>{indicator.name}</span>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <TooltipProvider>
+                {indicators.map((indicator) => (
+                    <Card key={indicator.name}>
+                        <CardHeader className="pb-2">
+                             <CardDescription className="flex items-center justify-between">
+                                <span className="flex items-center gap-2">
+                                    {indicator.name}
                                     <Tooltip>
                                         <TooltipTrigger asChild>
                                             <button>
@@ -173,16 +151,38 @@ export function MarketSummaryCard() {
                                             <p>{indicatorExplanations[indicator.key]}</p>
                                         </TooltipContent>
                                     </Tooltip>
-                                </div>
-                            </TableCell>
-                            <TableCell className="text-right font-mono">{indicator.value}</TableCell>
-                            </TableRow>
-                        ))}
-                        </TableBody>
-                    </Table>
-                </TooltipProvider>
-            </div>
-        </CardContent>
-    </Card>
+                                </span>
+                            </CardDescription>
+                            <CardTitle className="text-3xl font-mono">{indicator.value}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                           <Progress value={indicator.value} indicatorClassName={getProgressColorClass(indicator.value)} />
+                        </CardContent>
+                    </Card>
+                ))}
+            </TooltipProvider>
+
+            <Card className="flex flex-col justify-center">
+                <CardContent className="pt-6 text-center">
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Badge variant="secondary" className="cursor-help mb-2">
+                                    <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
+                                    Confidence: {analysisResult.confidenceScore}%
+                                </Badge>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Confidence in this analysis based on data quality.</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                    <Link href="/learn/market-indicators" className="text-sm text-muted-foreground hover:text-primary flex items-center justify-center gap-1">
+                        Learn more about indicators <ArrowUpRight className="h-3 w-3" />
+                    </Link>
+                </CardContent>
+            </Card>
+        </div>
+    </div>
   );
 }

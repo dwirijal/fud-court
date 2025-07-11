@@ -128,27 +128,26 @@ export function MarketSummaryCard() {
   return (
     <TooltipProvider>
         <Card>
-            <CardHeader>
-                 <div className="flex justify-between items-start">
-                    <div>
-                        <CardTitle>Macro Sentiment Score</CardTitle>
-                        <CardDescription className="flex items-center gap-1.5">
-                            Overall market health based on key indicators.
-                             <Link href="/learn/market-indicators" className="text-xs text-primary/80 hover:text-primary flex items-center gap-1">
-                                Learn more <ArrowUpRight className="h-3 w-3" />
-                            </Link>
-                        </CardDescription>
-                    </div>
-                     <Badge variant="secondary" className="cursor-help flex-shrink-0">
-                        <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
-                        Confidence: {analysisResult.confidenceScore}%
-                    </Badge>
-                </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                 <Card className="bg-primary/5 border-primary/20 overflow-hidden p-6 text-center">
-                    <p className={cn("text-5xl font-bold tracking-tighter", activeColorClass)}>{analysisResult.macroScore}</p>
-                    <p className={cn("font-semibold text-lg", activeColorClass)}>{analysisResult.marketCondition}</p>
+            <CardContent className="space-y-4 p-6">
+                 <Card className="bg-primary/5 border-primary/20 overflow-hidden text-center">
+                    <CardHeader>
+                         <div className="flex justify-between items-start">
+                            <div className="text-left">
+                                <CardTitle>Macro Sentiment Score</CardTitle>
+                                <CardDescription className="flex items-center gap-1.5 mt-1">
+                                    Overall market health based on key indicators.
+                                </CardDescription>
+                            </div>
+                            <Badge variant="secondary" className="cursor-help flex-shrink-0">
+                                <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
+                                Confidence: {analysisResult.confidenceScore}%
+                            </Badge>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <p className={cn("text-5xl font-bold tracking-tighter", activeColorClass)}>{analysisResult.macroScore}</p>
+                        <p className={cn("font-semibold text-lg", activeColorClass)}>{analysisResult.marketCondition}</p>
+                    </CardContent>
                 </Card>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -176,6 +175,11 @@ export function MarketSummaryCard() {
                             </div>
                         </Card>
                     ))}
+                </div>
+                 <div className="text-center mt-4">
+                     <Link href="/learn/market-indicators" className="text-sm text-primary/80 hover:text-primary flex items-center justify-center gap-1">
+                        Learn more about indicators <ArrowUpRight className="h-3 w-3" />
+                    </Link>
                 </div>
             </CardContent>
         </Card>

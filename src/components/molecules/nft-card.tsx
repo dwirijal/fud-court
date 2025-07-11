@@ -50,12 +50,12 @@ export function NftCard() {
     >
       <div
         className={cn(
-          'absolute -inset-0.5 rounded-xl bg-gradient-to-r from-primary via-accent to-chart-2 opacity-50 blur transition duration-500 group-hover:opacity-75 group-hover:duration-200'
+          'absolute -inset-0.5 rounded-xl bg-gradient-to-r from-primary via-accent to-chart-2 opacity-50 blur transition duration-500 group-hover:opacity-75 group-hover:duration-200 animate-pulse-gradient bg-[length:200%_200%]'
         )}
       />
       <Card className="relative overflow-hidden rounded-xl bg-background/80 backdrop-blur-sm transition-transform duration-300 ease-in-out group-hover:scale-105">
         <CardContent className="p-4">
-          <div ref={imageRef} className="aspect-square relative w-full overflow-hidden rounded-lg opacity-0">
+          <div ref={imageRef} className="aspect-[4/5] relative w-full overflow-hidden rounded-lg opacity-0">
             <Image
               src="https://placehold.co/600x600.png"
               alt="CryptoPulse Genesis NFT"

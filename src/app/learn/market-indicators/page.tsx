@@ -5,6 +5,7 @@ import {
     CardHeader,
     CardTitle,
     CardDescription,
+    CardFooter,
 } from "@/components/ui/card";
 import {
   Table,
@@ -24,7 +25,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, Database, AlertTriangle, ArrowRight } from "lucide-react";
+import { BookOpen, Database, AlertTriangle, ArrowRight, TrendingUp, TrendingDown, Weight, Calculator } from "lucide-react";
 import { fetchMarketData } from "@/lib/coingecko";
 import { TrendChange } from "@/components/ui/TrendChange";
 
@@ -75,13 +76,13 @@ const formatCurrency = (value: number, compact: boolean = true) => {
     const options: Intl.NumberFormatOptions = {
         style: 'currency',
         currency: 'USD',
-        minimumFractionDigits: 2,
     };
     if (compact) {
         options.notation = 'compact';
         options.compactDisplay = 'short';
         options.maximumFractionDigits = 2;
     } else {
+        options.minimumFractionDigits = 2;
         options.maximumFractionDigits = value < 1 ? 6 : 2;
     }
     return new Intl.NumberFormat('en-US', options).format(value);
@@ -279,7 +280,7 @@ export default async function MarketIndicatorsPage() {
                         <CardDescription>{indicator.purpose}</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        {indicatorScores && indicatorScores[indicator.id] && (
+                        {indicatorScores && indicatorScores[indicator.id] ? (
                             <div className="bg-muted/50 p-4 rounded-lg space-y-4">
                                 <div>
                                     <h4 className="font-semibold text-sm mb-2 text-muted-foreground uppercase tracking-wider">Data Input</h4>
@@ -306,6 +307,8 @@ export default async function MarketIndicatorsPage() {
                                      </div>
                                 </div>
                             </div>
+                        ) : (
+                             <div className="bg-muted/50 p-4 rounded-lg text-sm text-muted-foreground">Live calculation data unavailable.</div>
                         )}
                         <div>
                             <h4 className="font-semibold text-sm mb-1 text-muted-foreground uppercase tracking-wider">Interpretation</h4>
@@ -314,6 +317,23 @@ export default async function MarketIndicatorsPage() {
                     </CardContent>
                 </Card>
             ))}
+
+            <Card>
+                <CardHeader>
+                    <div className="flex justify-between items-start">
+                        <CardTitle className="text-2xl font-headline">Final Score Calculation (M)</CardTitle>
+                    </div>
+                    <CardDescription>The final macro score is a weighted average of the five indicator scores, reflecting their relative importance in the overall market analysis.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                     <div className="bg-muted/50 p-4 rounded-lg space-y-4">
+                        <div>
+                            <h4 className="font-semibold text-sm mb-1 text-muted-foreground uppercase tracking-wider">Formula</h4>
+                            <p className="font-mono text-xs bg-background p-3 rounded-md">M = (S₁ × 0.25) + (S₂ × 0.20) + (S₃ × 0.20) + (S₄ × 0.25) + (S₅ × 0.10)</p>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
         </div>
       </div>
     </div>

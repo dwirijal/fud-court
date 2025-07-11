@@ -2,6 +2,7 @@
 
 
 
+
 export interface Post {
   id: string;
   slug: string;
@@ -33,6 +34,8 @@ export interface CryptoData {
   sparkline_in_7d?: {
     price: number[];
   };
+  ath: number;
+  ath_market_cap: number | null;
 }
 
 // DexScreener Types

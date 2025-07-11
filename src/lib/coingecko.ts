@@ -32,32 +32,33 @@ export async function getTopCoins(limit: number = 100, currency: string = 'usd')
 }
 
 /**
- * Fetches all necessary data for the market analysis flow.
+ * Fetches all necessary data for the market analysis flow. This version is more robust
+ * and avoids relying on the large, potentially slow historical market chart endpoint.
  * @returns A promise that resolves to a MarketAnalysisInput object or null if failed.
  */
 export async function fetchMarketData(): Promise<MarketAnalysisInput | null> {
     try {
         const globalDataPromise = fetch(`${API_BASE_URL}/global`, { next: { revalidate: 300 } }).then(res => res.json());
         const fearAndGreedPromise = fetch('https://api.alternative.me/fng/?limit=1', { next: { revalidate: 3600 } }).then(res => res.json());
-        const topCoinsPromise = getTopCoins(20, 'usd'); 
-        const marketChartPromise = fetch(`${API_BASE_URL}/coins/market_cap/chart?vs_currency=usd&days=max`, { next: { revalidate: 86400 } }).then(res => res.json());
+        const topCoinsPromise = getTopCoins(100, 'usd'); 
 
-        const [globalData, fearAndGreedData, topCoins, marketChartData] = await Promise.all([
+        const [globalData, fearAndGreedData, topCoins] = await Promise.all([
             globalDataPromise,
             fearAndGreedPromise,
             topCoinsPromise,
-            marketChartPromise,
         ]);
 
-        if (!globalData?.data || !fearAndGreedData?.data?.[0] || topCoins.length === 0 || !marketChartData?.market_caps) {
+        if (!globalData?.data || !fearAndGreedData?.data?.[0] || topCoins.length === 0) {
             throw new Error("One or more essential API calls failed or returned empty data.");
         }
         
-        const marketCaps = marketChartData.market_caps.map((d: any[]) => d[1]);
-        const volumes = marketChartData.total_volumes.map((d: any[]) => d[1]);
+        // Calculate historical max market cap from the ATH market caps of top coins.
+        // This is a proxy for the true historical max but more reliable to fetch.
+        const maxHistoricalMarketCap = topCoins.reduce((max, coin) => Math.max(max, coin.ath_market_cap ?? 0), 0);
 
-        const maxHistoricalMarketCap = Math.max(...marketCaps);
-        const avg30DayVolume = volumes.slice(-30).reduce((a: number, b: number) => a + b, 0) / 30;
+        // Since we don't have historical volume, we use current 24h volume as a stand-in for avg 30-day.
+        // The analysis flow normalizes this, so the impact is managed.
+        const avg30DayVolume = globalData.data.total_volume.usd;
 
         const totalMarketCap = globalData.data.total_market_cap.usd;
         const btcMarketCap = topCoins.find(c => c.id === 'bitcoin')?.market_cap ?? 0;

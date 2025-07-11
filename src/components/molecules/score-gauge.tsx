@@ -26,28 +26,22 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-// Helper to calculate pointer angle
-const getAngle = (score: number) => {
-    // Gauge is a semi-circle (180 degrees), from score 0 to 100
-    // Angle starts at 180 (left) and ends at 0 (right)
-    return 180 - (score / 100) * 180;
-};
+const getAngle = (score: number) => 180 - (score / 100) * 180;
 
-// The hand (pointer) of the gauge
-const Hand = ({ score }: { score: number }) => {
+const Hand = ({ cx, cy, score }: { cx: number, cy: number, score: number }) => {
     const angle = getAngle(score);
     return (
         <g>
-            <circle cx="50%" cy="50%" r="6" fill="hsl(var(--card-foreground))" />
+            <circle cx={cx} cy={cy} r="6" fill="hsl(var(--card-foreground))" />
             <line
-                x1="50%"
-                y1="50%"
-                x2="50%"
-                y2="15%"
+                x1={cx}
+                y1={cy}
+                x2={cx}
+                y2={cy-55}
                 stroke="hsl(var(--card-foreground))"
                 strokeWidth="2"
                 strokeLinecap="round"
-                transform={`rotate(${angle} 125 125)`}
+                transform={`rotate(${angle} ${cx} ${cy})`}
             />
         </g>
     );
@@ -86,8 +80,13 @@ export function ScoreGauge({
           {chartData.map((entry) => (
             <Cell key={`cell-${entry.name}`} fill={entry.fill} />
           ))}
+          {({ cx, cy }) => {
+            if (cx && cy) {
+                return <Hand cx={cx} cy={cy} score={score} />;
+            }
+            return null;
+          }}
         </Pie>
-        <Hand score={score} />
       </PieChart>
     </ChartContainer>
   );

@@ -16,7 +16,8 @@ import {
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen } from "lucide-react";
+import { BookOpen, Database, AlertTriangle } from "lucide-react";
+import { fetchMarketData } from "@/lib/coingecko";
 
 const indicators = [
     {
@@ -56,7 +57,20 @@ const indicators = [
     }
 ];
 
-export default function MarketIndicatorsPage() {
+const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        notation: 'compact',
+        compactDisplay: 'short',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    }).format(value);
+};
+
+export default async function MarketIndicatorsPage() {
+  const marketData = await fetchMarketData();
+
   return (
     <div className="container mx-auto px-4 py-12 md:py-24">
        <Breadcrumb className="mb-8">
@@ -93,28 +107,82 @@ export default function MarketIndicatorsPage() {
         </p>
       </header>
       
-      <div className="space-y-6">
-        {indicators.map((indicator, index) => (
-            <Card key={index}>
+      <div className="space-y-12">
+        {marketData ? (
+             <Card>
                 <CardHeader>
-                    <div className="flex justify-between items-start">
-                        <CardTitle className="text-2xl font-headline">{indicator.name}</CardTitle>
-                        <Badge variant="secondary">Weight: {indicator.weight}</Badge>
+                    <div className="flex items-center gap-3">
+                        <Database className="h-5 w-5 text-muted-foreground" />
+                        <CardTitle>Raw Data (Live Input)</CardTitle>
                     </div>
-                    <CardDescription>{indicator.purpose}</CardDescription>
+                    <CardDescription>The actual values being fed into the formulas below.</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                    <div>
-                        <h4 className="font-semibold text-sm mb-1">Formula</h4>
-                        <p className="font-mono text-xs bg-muted p-3 rounded-md">{indicator.formula}</p>
-                    </div>
-                    <div>
-                        <h4 className="font-semibold text-sm mb-1">Interpretation</h4>
-                        <p className="text-muted-foreground text-sm">{indicator.interpretation}</p>
-                    </div>
+                <CardContent>
+                    <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4 text-sm">
+                        <li className="flex justify-between items-baseline border-b pb-2">
+                            <span className="text-muted-foreground">Total Market Cap</span>
+                            <span className="font-mono font-semibold">{formatCurrency(marketData.totalMarketCap)}</span>
+                        </li>
+                         <li className="flex justify-between items-baseline border-b pb-2">
+                            <span className="text-muted-foreground">24h Volume</span>
+                            <span className="font-mono font-semibold">{formatCurrency(marketData.totalVolume24h)}</span>
+                        </li>
+                        <li className="flex justify-between items-baseline border-b pb-2">
+                            <span className="text-muted-foreground">Fear & Greed Index</span>
+                            <span className="font-mono font-semibold">{marketData.fearAndGreedIndex}</span>
+                        </li>
+                        <li className="flex justify-between items-baseline border-b pb-2">
+                            <span className="text-muted-foreground">BTC Dominance</span>
+                            <span className="font-mono font-semibold">{marketData.btcDominance.toFixed(2)}%</span>
+                        </li>
+                        <li className="flex justify-between items-baseline border-b pb-2">
+                            <span className="text-muted-foreground">Max Historical Cap</span>
+                             <span className="font-mono font-semibold">{formatCurrency(marketData.maxHistoricalMarketCap)}</span>
+                        </li>
+                         <li className="flex justify-between items-baseline border-b pb-2">
+                            <span className="text-muted-foreground">Top Coins Analyzed</span>
+                            <span className="font-mono font-semibold">{marketData.topCoins.length}</span>
+                        </li>
+                    </ul>
                 </CardContent>
             </Card>
-        ))}
+        ) : (
+            <Card className="bg-destructive/10 border-destructive">
+                <CardHeader className="flex-row gap-3 items-center">
+                    <AlertTriangle className="h-5 w-5 text-destructive" />
+                    <CardTitle className="text-destructive">Could Not Fetch Live Data</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-destructive/80">The raw data inputs could not be loaded. The examples below will use placeholder values.</p>
+                </CardContent>
+            </Card>
+        )}
+
+
+        <div className="space-y-6">
+            <h2 className="text-3xl font-headline font-semibold">Indicator Breakdown</h2>
+            {indicators.map((indicator, index) => (
+                <Card key={index}>
+                    <CardHeader>
+                        <div className="flex justify-between items-start">
+                            <CardTitle className="text-2xl font-headline">{indicator.name}</CardTitle>
+                            <Badge variant="secondary">Weight: {indicator.weight}</Badge>
+                        </div>
+                        <CardDescription>{indicator.purpose}</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div>
+                            <h4 className="font-semibold text-sm mb-1">Formula</h4>
+                            <p className="font-mono text-xs bg-muted p-3 rounded-md">{indicator.formula}</p>
+                        </div>
+                        <div>
+                            <h4 className="font-semibold text-sm mb-1">Interpretation</h4>
+                            <p className="text-muted-foreground text-sm">{indicator.interpretation}</p>
+                        </div>
+                    </CardContent>
+                </Card>
+            ))}
+        </div>
       </div>
     </div>
   );

@@ -11,7 +11,6 @@ import { saveMarketSnapshot, hasTodaySnapshot } from '@/lib/actions/snapshots';
 import { ScoreGauge } from '../molecules/score-gauge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { AlertTriangle, CheckCircle, Info, ArrowUpRight } from 'lucide-react';
 import {
   Tooltip,
@@ -20,13 +19,14 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
+import { cn } from '@/lib/utils';
 
 const indicatorExplanations: Record<string, string> = {
-    marketCapScore: "Mengukur valuasi total pasar saat ini terhadap puncak historisnya.",
-    volumeScore: "Mengukur aktivitas dan minat pasar berdasarkan volume transaksi harian vs rata-rata.",
-    fearGreedScore: "Menggambarkan sentimen emosional pasar, dari rasa takut hingga keserakahan.",
-    athScore: "Mengukur seberapa jauh harga aset-aset utama dari All-Time High (ATH) mereka.",
-    marketBreadthScore: "Mengukur apakah pergerakan pasar didukung oleh banyak aset (luas) atau hanya segelintir."
+    marketCapScore: "Measures the current total market valuation against its historical peak.",
+    volumeScore: "Measures market activity and interest based on daily volume vs. average.",
+    fearGreedScore: "Represents the emotional sentiment of the market, from fear to greed.",
+    athScore: "Measures how far major assets are from their All-Time Highs (ATH).",
+    marketBreadthScore: "Measures if market movement is supported by many assets or just a few."
 };
 
 const getActiveColorClass = (interpretation: string) => {
@@ -106,79 +106,77 @@ export function MarketSummaryCard() {
 
   return (
     <Card className="w-full h-full flex flex-col">
-        <CardHeader>
-            <CardTitle>Macro Sentiment Score</CardTitle>
-            <CardDescription>A macro sentiment score based on 5 key market indicators.</CardDescription>
+        <CardHeader className="flex-row justify-between items-start">
+            <div>
+                <CardTitle>Macro Sentiment Score</CardTitle>
+                 <CardDescription className="flex items-center gap-2">
+                    A macro sentiment score based on 5 key market indicators.
+                    <Link href="/learn/market-indicators" className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1">
+                        Learn more <ArrowUpRight className="h-3 w-3" />
+                    </Link>
+                </CardDescription>
+            </div>
+             <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Badge variant="secondary" className="cursor-help">
+                            <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
+                            Confidence: {analysisResult.confidenceScore}%
+                        </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>Confidence in this analysis based on data quality.</p>
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
         </CardHeader>
-        <CardContent className="flex-grow flex flex-col items-center justify-center text-center p-6 pt-0">
-            <ScoreGauge score={analysisResult.macroScore} />
-            <div className="flex flex-col items-center gap-1 text-center mt-4">
-                <span className={`text-5xl font-bold tracking-tighter ${activeColorClass}`}>
-                    {analysisResult.macroScore}
-                </span>
-                <span className={`text-lg font-medium text-center ${activeColorClass}`}>
-                    {analysisResult.marketCondition}
-                </span>
+        <CardContent className="flex-grow flex flex-col items-center justify-center text-center p-6">
+            <div className="relative w-full max-w-sm mx-auto">
+                <ScoreGauge score={analysisResult.macroScore} />
+                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                    <span className={cn("text-6xl font-bold tracking-tighter", activeColorClass)}>
+                        {analysisResult.macroScore}
+                    </span>
+                    <span className={cn("text-lg font-medium text-center", activeColorClass)}>
+                        {analysisResult.marketCondition}
+                    </span>
+                </div>
+            </div>
+            <div className="w-full max-w-lg mt-6">
                 <TooltipProvider>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Badge variant="secondary" className="mt-2 cursor-help">
-                                <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
-                                Confidence: {analysisResult.confidenceScore}%
-                            </Badge>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>Confidence in this analysis based on data quality.</p>
-                        </TooltipContent>
-                    </Tooltip>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Indicator</TableHead>
+                                <TableHead className="text-right">Score</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                        {indicators.map((indicator) => (
+                            <TableRow key={indicator.name}>
+                            <TableCell className="font-medium">
+                                <div className="flex items-center gap-2">
+                                    <span>{indicator.name}</span>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <button>
+                                                <Info className="h-3.5 w-3.5 text-muted-foreground/70" />
+                                            </button>
+                                        </TooltipTrigger>
+                                        <TooltipContent className="max-w-xs">
+                                            <p>{indicatorExplanations[indicator.key]}</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </div>
+                            </TableCell>
+                            <TableCell className="text-right font-mono">{indicator.value}</TableCell>
+                            </TableRow>
+                        ))}
+                        </TableBody>
+                    </Table>
                 </TooltipProvider>
             </div>
         </CardContent>
-        
-        <Accordion type="single" collapsible className="w-full px-2 pb-2">
-            <AccordionItem value="item-1" className="border-t">
-                <AccordionTrigger className="px-4 text-sm font-semibold text-muted-foreground hover:no-underline">Indicator Breakdown</AccordionTrigger>
-                <AccordionContent>
-                    <TooltipProvider>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Indicator</TableHead>
-                                    <TableHead className="text-right">Score</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                            {indicators.map((indicator) => (
-                                <TableRow key={indicator.name}>
-                                <TableCell className="font-medium">
-                                    <div className="flex items-center gap-2">
-                                        <span>{indicator.name}</span>
-                                        <Tooltip>
-                                            <TooltipTrigger asChild>
-                                                <button>
-                                                    <Info className="h-3.5 w-3.5 text-muted-foreground/70" />
-                                                </button>
-                                            </TooltipTrigger>
-                                            <TooltipContent className="max-w-xs">
-                                                <p>{indicatorExplanations[indicator.key]}</p>
-                                            </TooltipContent>
-                                        </Tooltip>
-                                    </div>
-                                </TableCell>
-                                <TableCell className="text-right font-mono">{indicator.value}</TableCell>
-                                </TableRow>
-                            ))}
-                            </TableBody>
-                        </Table>
-                    </TooltipProvider>
-                    <div className="px-4 pt-4">
-                        <Link href="/learn/market-indicators" className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1">
-                            Learn more about these indicators <ArrowUpRight className="h-3 w-3" />
-                        </Link>
-                    </div>
-                </AccordionContent>
-            </AccordionItem>
-        </Accordion>
     </Card>
   );
 }

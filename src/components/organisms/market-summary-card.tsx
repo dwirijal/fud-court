@@ -8,8 +8,8 @@ import { fetchMarketData } from '@/lib/coingecko';
 import type { MarketAnalysisOutput } from '@/types';
 import { analyzeMarketSentiment } from '@/ai/flows/market-analysis-flow';
 import { saveMarketSnapshot, hasTodaySnapshot } from '@/lib/actions/snapshots';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { AlertTriangle, CheckCircle, ArrowUpRight, Info } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { AlertTriangle, CheckCircle, Info, ArrowUpRight } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
@@ -19,7 +19,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-
 
 const indicatorExplanations: Record<string, string> = {
     marketCapScore: "Measures current market valuation against its historical peak.",
@@ -38,14 +37,13 @@ const getActiveColorClass = (interpretation: string) => {
         return 'text-chart-2';
     }
     return 'text-muted-foreground';
-  };
+};
 
 const getProgressColorClass = (score: number) => {
     if (score < 40) return 'bg-destructive';
     if (score > 60) return 'bg-chart-2';
     return 'bg-muted-foreground';
 }
-
 
 export function MarketSummaryCard() {
   const [isLoading, setIsLoading] = useState(true);
@@ -92,12 +90,10 @@ export function MarketSummaryCard() {
                 <Skeleton className="h-8 w-3/4" />
                 <Skeleton className="h-4 w-1/2" />
             </CardHeader>
-            <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {Array.from({ length: 6 }).map((_, i) => (
-                        <Skeleton key={i} className="h-24 w-full" />
-                    ))}
-                </div>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {Array.from({ length: 6 }).map((_, i) => (
+                    <Skeleton key={i} className="h-24 w-full" />
+                ))}
             </CardContent>
         </Card>
     );
@@ -116,11 +112,11 @@ export function MarketSummaryCard() {
   }
   
   const indicators = [
-      { name: "Market Cap Score", key: 'marketCapScore', value: analysisResult.components.marketCapScore, description: indicatorExplanations.marketCapScore },
-      { name: "Volume Score", key: 'volumeScore', value: analysisResult.components.volumeScore, description: indicatorExplanations.volumeScore },
-      { name: "Fear & Greed Score", key: 'fearGreedScore', value: analysisResult.components.fearGreedScore, description: indicatorExplanations.fearGreedScore },
-      { name: "ATH Score", key: 'athScore', value: analysisResult.components.athScore, description: indicatorExplanations.athScore },
-      { name: "Market Breadth Score", key: 'marketBreadthScore', value: analysisResult.components.marketBreadthScore, description: indicatorExplanations.marketBreadthScore },
+      { name: "Market Cap Score", value: analysisResult.components.marketCapScore, description: indicatorExplanations.marketCapScore },
+      { name: "Volume Score", value: analysisResult.components.volumeScore, description: indicatorExplanations.volumeScore },
+      { name: "Fear & Greed Score", value: analysisResult.components.fearGreedScore, description: indicatorExplanations.fearGreedScore },
+      { name: "ATH Score", value: analysisResult.components.athScore, description: indicatorExplanations.athScore },
+      { name: "Market Breadth Score", value: analysisResult.components.marketBreadthScore, description: indicatorExplanations.marketBreadthScore },
   ];
   
   const activeColorClass = getActiveColorClass(analysisResult.marketCondition);
@@ -129,36 +125,34 @@ export function MarketSummaryCard() {
     <TooltipProvider>
         <Card>
             <CardContent className="space-y-4 p-6">
-                 <Card className="bg-primary/5 border-primary/20 overflow-hidden text-center">
+                <Card className="bg-primary/5 border-primary/20 overflow-hidden text-center">
                     <CardHeader>
-                         <div className="flex justify-between items-start">
-                            <div className="text-left">
-                                <CardTitle>Macro Sentiment Score</CardTitle>
-                                <CardDescription className="flex items-center gap-1.5 mt-1">
-                                    Overall market health based on key indicators.
-                                </CardDescription>
-                            </div>
-                            <Badge variant="secondary" className="cursor-help flex-shrink-0">
-                                <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
-                                Confidence: {analysisResult.confidenceScore}%
-                            </Badge>
-                        </div>
+                        <CardTitle>Macro Sentiment Score</CardTitle>
+                        <CardDescription>
+                            Overall market health based on key indicators.
+                        </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <p className={cn("text-5xl font-bold tracking-tighter", activeColorClass)}>{analysisResult.macroScore}</p>
-                        <p className={cn("font-semibold text-lg", activeColorClass)}>{analysisResult.marketCondition}</p>
+                        <p className={cn("text-6xl font-bold tracking-tighter", activeColorClass)}>{analysisResult.macroScore}</p>
+                        <p className={cn("font-semibold text-xl", activeColorClass)}>{analysisResult.marketCondition}</p>
                     </CardContent>
+                    <CardFooter className="justify-center">
+                         <Badge variant="secondary" className="cursor-help flex-shrink-0">
+                            <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
+                            Confidence: {analysisResult.confidenceScore}%
+                        </Badge>
+                    </CardFooter>
                 </Card>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {indicators.map((indicator) => (
-                         <Card key={indicator.name} className="p-4 flex flex-col">
-                            <div className="flex items-center justify-between gap-4 h-full">
+                         <Card key={indicator.name} className="p-4 flex flex-col justify-between">
+                            <div className="flex items-center justify-between gap-4">
                                 <div className="flex-grow space-y-1">
                                     <Tooltip>
                                         <TooltipTrigger asChild>
                                             <div className="flex items-center gap-1.5 cursor-help">
-                                                <CardTitle className="text-sm font-semibold">{indicator.name}</CardTitle>
+                                                <p className="text-sm font-semibold">{indicator.name}</p>
                                                 <Info className="h-3 w-3 text-muted-foreground" />
                                             </div>
                                         </TooltipTrigger>
@@ -168,11 +162,11 @@ export function MarketSummaryCard() {
                                     </Tooltip>
                                     <CardDescription className="text-xs">{indicator.description}</CardDescription>
                                 </div>
-                                <div className="text-right flex-shrink-0 w-1/4">
+                                <div className="text-right flex-shrink-0">
                                     <p className="text-2xl font-mono font-bold">{indicator.value}</p>
-                                     <Progress value={indicator.value} indicatorClassName={cn("mt-1", getProgressColorClass(indicator.value))} />
                                 </div>
                             </div>
+                            <Progress value={indicator.value} className="mt-2" indicatorClassName={cn(getProgressColorClass(indicator.value))} />
                         </Card>
                     ))}
                 </div>

@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
-import anime from 'animejs';
+import anime from 'animejs/lib/anime.es.js';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';

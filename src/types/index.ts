@@ -171,6 +171,7 @@ export interface MarketStats {
     ethDominance: number;
     solDominance: number;
     stablecoinDominance: number;
+    maxHistoricalMarketCap: number;
 }
 
 // Type for displaying the list of coins used in analysis

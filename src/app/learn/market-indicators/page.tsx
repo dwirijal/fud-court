@@ -72,12 +72,10 @@ const formatCurrency = (value: number, compact: boolean = true) => {
         currency: 'USD',
         notation: compact ? 'compact' : 'standard',
         minimumFractionDigits: 2,
-        maximumFractionDigits: value < 1 ? 6 : 2,
+        maximumFractionDigits: compact ? 2 : (value < 1 ? 6 : 2),
     };
     if (compact) {
         options.compactDisplay = 'short';
-    } else {
-        delete (options as any).compactDisplay;
     }
     return new Intl.NumberFormat('en-US', options).format(value);
 };
@@ -166,7 +164,7 @@ export default async function MarketIndicatorsPage() {
                             <span className="font-mono font-semibold">{marketData.btcDominance.toFixed(2)}%</span>
                         </li>
                         <li className="flex justify-between items-baseline border-b pb-2">
-                            <span className="text-muted-foreground">Max Historical Cap</span>
+                            <span className="text-muted-foreground">Max Historical Cap ({marketData.maxHistoricalMarketCapDate})</span>
                              <span className="font-mono font-semibold">{formatCurrency(marketData.maxHistoricalMarketCap)}</span>
                         </li>
                     </ul>

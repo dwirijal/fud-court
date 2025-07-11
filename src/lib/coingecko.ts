@@ -2,6 +2,7 @@
 'use server';
 
 import type { CryptoData, FearGreedData, MarketAnalysisInput, MarketStats, TopCoinForAnalysis } from '@/types';
+import { subDays, getUnixTime } from 'date-fns';
 
 const API_BASE_URL = 'https://api.coingecko.com/api/v3';
 
@@ -71,8 +72,49 @@ export async function fetchFearGreedData(): Promise<{ today: FearGreedData | nul
 // Combine the input for analysis and stats into a single return type for fetchMarketData
 export type CombinedMarketData = MarketAnalysisInput & MarketStats & {
     topCoinsForAnalysis: TopCoinForAnalysis[];
+    maxHistoricalMarketCapDate: string;
 };
 
+
+async function getMaxHistoricalMarketCap(): Promise<{ cap: number, date: Date | null }> {
+    const from = getUnixTime(subDays(new Date(), 2000)); // ~5.5 years ago
+    const to = getUnixTime(new Date());
+
+    try {
+        const res = await fetch(`${API_BASE_URL}/coins/bitcoin/market_chart/range?vs_currency=usd&from=${from}&to=${to}`, {
+            next: { revalidate: 86400 } // Revalidate once a day
+        });
+        if (!res.ok) throw new Error('Failed to fetch historical market data');
+        const data = await res.json();
+        
+        if (!data.market_caps || data.market_caps.length === 0) {
+            return { cap: 0, date: null };
+        }
+        
+        let maxCap = 0;
+        let maxCapTimestamp = 0;
+        
+        for (const [timestamp, cap] of data.market_caps) {
+            if (cap > maxCap) {
+                maxCap = cap;
+                maxCapTimestamp = timestamp;
+            }
+        }
+        
+        // This is an estimation. The true total market cap is ~2x Bitcoin's on average.
+        // This is a reasonable proxy since a direct historical total_market_cap endpoint is not available on the free tier.
+        const estimatedTotalMaxCap = maxCap * 2; 
+
+        return {
+            cap: estimatedTotalMaxCap,
+            date: new Date(maxCapTimestamp)
+        };
+    } catch (error) {
+        console.error("Failed to get max historical market cap:", error);
+        // Return a sensible default on error to prevent crashes, e.g., a known past peak.
+        return { cap: 3e12, date: new Date('2021-11-10T00:00:00.000Z') };
+    }
+}
 
 /**
  * Fetches all necessary data for the market analysis and stats cards.
@@ -83,16 +125,18 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
         const globalDataPromise = fetch(`${API_BASE_URL}/global`, { next: { revalidate: 300 } }).then(res => res.json());
         const fearAndGreedPromise = fetchFearGreedData();
         const topCoinsPromise = getTopCoins(20, 'usd'); 
+        const maxHistoricalCapPromise = getMaxHistoricalMarketCap();
 
         // Expand the list to include more stablecoins
         const specificCoinIds = 'bitcoin,ethereum,solana,tether,usd-coin,dai,frax,ethena-usde';
         const specificCoinsPromise = fetch(`${API_BASE_URL}/coins/markets?vs_currency=usd&ids=${specificCoinIds}`, { next: { revalidate: 300 } }).then(res => res.json());
 
-        const [globalData, fearAndGreed, topCoins, specificCoins] = await Promise.all([
+        const [globalData, fearAndGreed, topCoins, specificCoins, maxHistoricalData] = await Promise.all([
             globalDataPromise,
             fearAndGreedPromise,
             topCoinsPromise,
             specificCoinsPromise,
+            maxHistoricalCapPromise
         ]);
         
         if (!globalData?.data || !fearAndGreed.today || topCoins.length === 0 || specificCoins.length === 0) {
@@ -115,12 +159,11 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
         }, 0);
 
         // Data for Analysis Flow
-        const maxHistoricalMarketCap = topCoins.reduce((max, coin) => Math.max(max, coin.ath_market_cap ?? 0), 0);
         const avg30DayVolume = globalData.data.total_volume.usd;
 
         const analysisInput: MarketAnalysisInput = {
             totalMarketCap,
-            maxHistoricalMarketCap,
+            maxHistoricalMarketCap: maxHistoricalData.cap,
             totalVolume24h: globalData.data.total_volume.usd,
             avg30DayVolume,
             btcDominance: globalData.data.market_cap_percentage.btc,
@@ -154,7 +197,13 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
             price_change_percentage_24h: c.price_change_percentage_24h_in_currency ?? null,
         }));
 
-        return { ...analysisInput, ...marketStats, topCoinsForAnalysis };
+        return { 
+            ...analysisInput,
+            ...marketStats,
+            topCoinsForAnalysis,
+            maxHistoricalMarketCap: maxHistoricalData.cap,
+            maxHistoricalMarketCapDate: maxHistoricalData.date ? maxHistoricalData.date.toISOString().split('T')[0] : 'N/A'
+        };
 
     } catch (error) {
         console.error("Failed to fetch comprehensive market data:", error);

@@ -9,9 +9,9 @@ import type { MarketAnalysisOutput } from '@/types';
 import { analyzeMarketSentiment } from '@/ai/flows/market-analysis-flow';
 import { saveMarketSnapshot, hasTodaySnapshot } from '@/lib/actions/snapshots';
 import { ScoreGauge } from '../molecules/score-gauge';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { AlertTriangle, CheckCircle, Info, Minus } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Info } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -118,12 +118,12 @@ export function MarketSummaryCard() {
     <Card className="w-full h-full flex flex-col">
         <CardHeader>
              <CardTitle>Macro Sentiment Score</CardTitle>
-             <CardDescription className="max-w-xs">A macro sentiment score based on 5 key market indicators.</CardDescription>
+             <CardDescription>A macro sentiment score based on 5 key market indicators.</CardDescription>
         </CardHeader>
         <CardContent className="flex-grow grid grid-cols-1 md:grid-cols-5 gap-6">
-            <div className="md:col-span-2 flex flex-col items-center justify-center">
+            <div className="md:col-span-2 flex flex-col items-center justify-center space-y-4">
                  <ScoreGauge score={analysisResult.macroScore} />
-                 <div className="flex flex-col items-center gap-1 text-center -mt-8">
+                 <div className="flex flex-col items-center gap-1 text-center">
                     <span className={`text-5xl font-bold tracking-tighter ${activeColorClass}`}>
                         {analysisResult.macroScore}
                     </span>
@@ -147,7 +147,7 @@ export function MarketSummaryCard() {
             </div>
             <div className="md:col-span-3 flex flex-col">
                  <div className="flex-grow">
-                    <h3 className="text-lg font-semibold font-headline">Indicator Breakdown</h3>
+                    <h3 className="text-lg font-semibold font-headline mb-1">Indicator Breakdown</h3>
                     <p className="text-sm text-muted-foreground mb-4">The individual scores that contribute to the final macro score.</p>
                     <TooltipProvider>
                         <Table>

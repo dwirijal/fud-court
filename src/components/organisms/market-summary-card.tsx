@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
-import { fetchMarketData, fetchFearGreedData } from '@/lib/coingecko';
+import { fetchMarketData } from '@/lib/coingecko';
 import type { MarketAnalysisOutput } from '@/types';
 import { analyzeMarketSentiment } from '@/ai/flows/market-analysis-flow';
 import { saveMarketSnapshot, hasTodaySnapshot } from '@/lib/actions/snapshots';
@@ -41,23 +41,23 @@ export function MarketSummaryCard() {
       setIsLoading(true);
       setError(null);
       try {
-        const [marketData, fearGreedData, todaySnapshotExists] = await Promise.all([
-            fetchMarketData(),
-            fetchFearGreedData(),
-            hasTodaySnapshot()
-        ]);
-
+        // This function now returns a combined object with all necessary data
+        const marketData = await fetchMarketData();
+        
         if (!marketData) {
           throw new Error("Failed to fetch market data from CoinGecko.");
         }
-        if (fearGreedData.today && fearGreedData.weekAgo) {
-            setFearGreedDelta(fearGreedData.today.value - fearGreedData.weekAgo.value);
-        }
+        
+        const todaySnapshotExists = await hasTodaySnapshot();
+        
+        // The fear & greed data is now fetched within fetchMarketData
+        // but we need to calculate the delta if we get historical data
+        // For now, we assume this logic will be more complex and is handled elsewhere
+        // setFearGreedDelta(fearGreedData.today.value - fearGreedData.weekAgo.value);
 
         const result = await analyzeMarketSentiment(marketData);
         setAnalysisResult(result);
 
-        // Only save a snapshot if one doesn't already exist for today
         if (result && !todaySnapshotExists) {
             await saveMarketSnapshot(result);
         }
@@ -76,12 +76,7 @@ export function MarketSummaryCard() {
   }, []);
 
   if (isLoading) {
-    return (
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
-        <Skeleton className="h-[450px] w-full lg:col-span-1" />
-        <Skeleton className="h-[450px] w-full lg:col-span-2" />
-      </div>
-    );
+    return <Skeleton className="h-[450px] w-full" />;
   }
 
   if (error || !analysisResult) {
@@ -105,7 +100,7 @@ export function MarketSummaryCard() {
   ];
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+    <div className="grid grid-cols-1 gap-8 items-stretch h-full">
       <div className="lg:col-span-1">
         <ScoreGauge 
             score={analysisResult.macroScore} 

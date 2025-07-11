@@ -1,14 +1,19 @@
 
 import { NewsCard } from "@/components/molecules/news-card";
 import { getPosts } from "@/lib/ghost";
-import { getTopCoins } from "@/lib/coingecko";
+import { fetchMarketData, getTopCoins } from "@/lib/coingecko";
 import { MarketCarousel } from "@/components/molecules/market-carousel";
 import { HeroSection } from "@/components/organisms/hero-section";
 import { MarketSummaryCard } from "@/components/organisms/market-summary-card";
+import { MarketStatsCard } from "@/components/organisms/market-stats-card";
 
 export default async function Home() {
-  const posts = await getPosts();
-  const cryptoData = await getTopCoins(10);
+  // Fetch all data concurrently for better performance
+  const [posts, cryptoData, marketStats] = await Promise.all([
+    getPosts(),
+    getTopCoins(10),
+    fetchMarketData(),
+  ]);
 
   return (
     <>
@@ -25,11 +30,16 @@ export default async function Home() {
             </p>
           </div>
           
-          <div className="mb-12 md:mb-24">
-             <MarketSummaryCard />
+          <div className="grid grid-cols-1 xl:grid-cols-5 gap-8 items-start">
+            <div className="xl:col-span-3">
+              <MarketSummaryCard />
+            </div>
+            <div className="xl:col-span-2">
+              <MarketStatsCard marketStats={marketStats} />
+            </div>
           </div>
 
-          <div>
+          <div className="mt-16">
             <MarketCarousel data={cryptoData} />
           </div>
         </div>

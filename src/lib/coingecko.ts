@@ -1,5 +1,5 @@
 
-import type { CryptoData, FearGreedData, MarketAnalysisInput } from '@/types';
+import type { CryptoData, FearGreedData, MarketAnalysisInput, MarketStats } from '@/types';
 
 const API_BASE_URL = 'https://api.coingecko.com/api/v3';
 
@@ -67,37 +67,42 @@ export async function fetchFearGreedData(): Promise<{ today: FearGreedData | nul
 
 
 /**
- * Fetches all necessary data for the market analysis flow. This version is more robust
- * and avoids relying on the large, potentially slow historical market chart endpoint.
- * @returns A promise that resolves to a MarketAnalysisInput object or null if failed.
+ * Fetches all necessary data for the market analysis and stats cards.
+ * @returns A promise that resolves to a combined object of MarketAnalysisInput and MarketStats or null if failed.
  */
-export async function fetchMarketData(): Promise<MarketAnalysisInput | null> {
+export async function fetchMarketData(): Promise<(MarketAnalysisInput & MarketStats) | null> {
     try {
         const globalDataPromise = fetch(`${API_BASE_URL}/global`, { next: { revalidate: 300 } }).then(res => res.json());
         const fearAndGreedPromise = fetchFearGreedData();
+        // Fetch top 20 for analysis, plus stablecoins and specific tokens like SOL
+        const specificCoinIds = 'bitcoin,ethereum,solana,tether,usd-coin';
         const topCoinsPromise = getTopCoins(20, 'usd'); 
+        const specificCoinsPromise = fetch(`${API_BASE_URL}/coins/markets?vs_currency=usd&ids=${specificCoinIds}`, { next: { revalidate: 300 } }).then(res => res.json());
 
-        const [globalData, fearAndGreed, topCoins] = await Promise.all([
+        const [globalData, fearAndGreed, topCoins, specificCoins] = await Promise.all([
             globalDataPromise,
             fearAndGreedPromise,
             topCoinsPromise,
+            specificCoinsPromise,
         ]);
-
-        if (!globalData?.data || !fearAndGreed.today || topCoins.length === 0) {
+        
+        if (!globalData?.data || !fearAndGreed.today || topCoins.length === 0 || specificCoins.length === 0) {
             throw new Error("Failed to fetch necessary market data.");
         }
-        
-        // Calculate historical max market cap from the ATH market caps of top coins.
-        // This is a proxy for the true historical max but more reliable to fetch.
-        const maxHistoricalMarketCap = topCoins.reduce((max, coin) => Math.max(max, coin.ath_market_cap ?? 0), 0);
-
-        // Since we don't have historical volume, we use current 24h volume as a stand-in for avg 30-day.
-        // The analysis flow normalizes this, so the impact is managed.
-        const avg30DayVolume = globalData.data.total_volume.usd;
 
         const totalMarketCap = globalData.data.total_market_cap.usd;
-        const btcMarketCap = topCoins.find(c => c.id === 'bitcoin')?.market_cap ?? 0;
+        const btcData = specificCoins.find((c: any) => c.id === 'bitcoin');
+        const ethData = specificCoins.find((c: any) => c.id === 'ethereum');
+        const solData = specificCoins.find((c: any) => c.id === 'solana');
+        const usdtData = specificCoins.find((c: any) => c.id === 'tether');
+        const usdcData = specificCoins.find((c: any) => c.id === 'usd-coin');
         
+        const stablecoinMarketCap = (usdtData?.market_cap || 0) + (usdcData?.market_cap || 0);
+
+        // Data for Analysis Flow
+        const maxHistoricalMarketCap = topCoins.reduce((max, coin) => Math.max(max, coin.ath_market_cap ?? 0), 0);
+        const avg30DayVolume = globalData.data.total_volume.usd;
+
         const analysisInput: MarketAnalysisInput = {
             totalMarketCap,
             maxHistoricalMarketCap,
@@ -111,8 +116,21 @@ export async function fetchMarketData(): Promise<MarketAnalysisInput | null> {
                 current_price: c.current_price,
             })),
         };
+        
+        // Data for Stats Card
+        const marketStats: MarketStats = {
+            totalMarketCap,
+            btcMarketCap: btcData?.market_cap || 0,
+            ethMarketCap: ethData?.market_cap || 0,
+            solMarketCap: solData?.market_cap || 0,
+            stablecoinMarketCap,
+            btcDominance: globalData.data.market_cap_percentage.btc,
+            ethDominance: globalData.data.market_cap_percentage.eth,
+            solDominance: solData ? (solData.market_cap / totalMarketCap) * 100 : 0,
+            stablecoinDominance: (stablecoinMarketCap / totalMarketCap) * 100,
+        };
 
-        return analysisInput;
+        return { ...analysisInput, ...marketStats };
 
     } catch (error) {
         console.error("Failed to fetch comprehensive market data:", error);

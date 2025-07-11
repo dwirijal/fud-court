@@ -1,3 +1,4 @@
+
 import { z } from 'zod';
 
 export interface Post {
@@ -156,4 +157,17 @@ export type MarketAnalysisOutput = z.infer<typeof MarketAnalysisOutputSchema>;
 export interface FearGreedData {
     value: number;
     value_classification: 'Extreme Fear' | 'Fear' | 'Neutral' | 'Greed' | 'Extreme Greed';
+}
+
+// Market Stats for Dominance Card
+export interface MarketStats {
+    totalMarketCap: number;
+    btcMarketCap: number;
+    ethMarketCap: number;
+    solMarketCap: number;
+    stablecoinMarketCap: number;
+    btcDominance: number;
+    ethDominance: number;
+    solDominance: number;
+    stablecoinDominance: number;
 }

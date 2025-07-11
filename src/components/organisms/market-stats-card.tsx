@@ -2,9 +2,9 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { MarketStats } from "@/types";
+import { cn } from "@/lib/utils";
 
 interface MarketStatsCardProps {
     marketStats: MarketStats | null;
@@ -21,24 +21,24 @@ const formatCurrency = (value: number) => {
     }).format(value);
 };
 
-function StatRow({ label, marketCap, dominance, progress, colorClass }: { label: string, marketCap: string, dominance: string, progress: number, colorClass: string }) {
+function StatCard({ label, value, marketCap, colorClass }: { label: string, value: string, marketCap: string, colorClass: string }) {
     return (
-        <div className="space-y-2">
-            <div className="flex justify-between items-baseline">
-                <div className="flex flex-col">
-                     <span className="font-medium">{label}</span>
-                     <span className="text-xs text-muted-foreground font-mono">{marketCap}</span>
-                </div>
-                <span className="font-mono text-sm text-foreground">{dominance}</span>
+        <div className="rounded-lg border bg-card text-card-foreground p-4 flex flex-col justify-between h-full shadow-inner">
+            <div className="flex items-center gap-2">
+                 <span className={cn("h-2.5 w-2.5 rounded-full", colorClass)} />
+                 <p className="text-sm font-medium text-muted-foreground">{label}</p>
             </div>
-            <Progress value={progress} indicatorClassName={colorClass} />
+            <div>
+                 <p className="text-2xl font-bold">{value}</p>
+                 <p className="text-xs text-muted-foreground font-mono">{marketCap}</p>
+            </div>
         </div>
     );
 }
 
 export function MarketStatsCard({ marketStats }: MarketStatsCardProps) {
     if (!marketStats) {
-        return <Skeleton className="h-[400px] w-full" />;
+        return <Skeleton className="h-[220px] lg:h-[120px] w-full" />;
     }
     
     const { 
@@ -53,41 +53,25 @@ export function MarketStatsCard({ marketStats }: MarketStatsCardProps) {
         stablecoinMarketCap,
     } = marketStats;
 
+    const stats = [
+        { label: "Bitcoin Dominance", value: `${btcDominance.toFixed(2)}%`, marketCap: formatCurrency(btcMarketCap), colorClass: "bg-chart-1" },
+        { label: "Ethereum Dominance", value: `${ethDominance.toFixed(2)}%`, marketCap: formatCurrency(ethMarketCap), colorClass: "bg-chart-2" },
+        { label: "Solana Dominance", value: `${solDominance.toFixed(2)}%`, marketCap: formatCurrency(solMarketCap), colorClass: "bg-chart-3" },
+        { label: "Stablecoin Dominance", value: `${stablecoinDominance.toFixed(2)}%`, marketCap: formatCurrency(stablecoinMarketCap), colorClass: "bg-chart-4" },
+    ];
+
     return (
         <Card className="h-full">
             <CardHeader>
                 <CardTitle>Market Dominance</CardTitle>
                 <CardDescription>Total Market Cap: <span className="font-bold font-mono">{formatCurrency(totalMarketCap)}</span></CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-                <StatRow 
-                    label="Bitcoin (BTC)"
-                    marketCap={formatCurrency(btcMarketCap)}
-                    dominance={`${btcDominance.toFixed(2)}%`}
-                    progress={btcDominance}
-                    colorClass="bg-chart-1"
-                />
-                <StatRow 
-                    label="Ethereum (ETH)"
-                    marketCap={formatCurrency(ethMarketCap)}
-                    dominance={`${ethDominance.toFixed(2)}%`}
-                    progress={ethDominance}
-                    colorClass="bg-chart-2"
-                />
-                 <StatRow 
-                    label="Solana (SOL)"
-                    marketCap={formatCurrency(solMarketCap)}
-                    dominance={`${solDominance.toFixed(2)}%`}
-                    progress={solDominance}
-                    colorClass="bg-chart-3"
-                />
-                 <StatRow 
-                    label="Stablecoins"
-                    marketCap={formatCurrency(stablecoinMarketCap)}
-                    dominance={`${stablecoinDominance.toFixed(2)}%`}
-                    progress={stablecoinDominance}
-                    colorClass="bg-chart-4"
-                />
+            <CardContent>
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    {stats.map(stat => (
+                        <StatCard key={stat.label} {...stat} />
+                    ))}
+                </div>
             </CardContent>
         </Card>
     );

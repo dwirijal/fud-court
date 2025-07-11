@@ -84,11 +84,18 @@ async function getMaxHistoricalMarketCap(): Promise<{ cap: number, date: Date | 
         const res = await fetch(`${API_BASE_URL}/coins/bitcoin/market_chart/range?vs_currency=usd&from=${from}&to=${to}`, {
             next: { revalidate: 86400 } // Revalidate once a day
         });
-        if (!res.ok) throw new Error('Failed to fetch historical market data');
+
+        // Return a default on failure instead of throwing an error
+        if (!res.ok) {
+            console.warn(`Failed to fetch historical market data. Status: ${res.status}. Falling back to default.`);
+            return { cap: 3e12, date: new Date('2021-11-10T00:00:00.000Z') };
+        }
+        
         const data = await res.json();
         
         if (!data.market_caps || data.market_caps.length === 0) {
-            return { cap: 0, date: null };
+            console.warn("No historical market cap data found. Falling back to default.");
+            return { cap: 3e12, date: new Date('2021-11-10T00:00:00.000Z') };
         }
         
         let maxCap = 0;
@@ -110,8 +117,8 @@ async function getMaxHistoricalMarketCap(): Promise<{ cap: number, date: Date | 
             date: new Date(maxCapTimestamp)
         };
     } catch (error) {
-        console.error("Failed to get max historical market cap:", error);
-        // Return a sensible default on error to prevent crashes, e.g., a known past peak.
+        console.error("An error occurred while fetching max historical market cap:", error);
+        // Return a sensible default on error to prevent crashes.
         return { cap: 3e12, date: new Date('2021-11-10T00:00:00.000Z') };
     }
 }
@@ -186,6 +193,7 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
             ethDominance: globalData.data.market_cap_percentage.eth,
             solDominance: solData ? (solData.market_cap / totalMarketCap) * 100 : 0,
             stablecoinDominance: (stablecoinMarketCap / totalMarketCap) * 100,
+            maxHistoricalMarketCap: maxHistoricalData.cap
         };
 
         // Extra data for UI display

@@ -53,16 +53,18 @@ const AnimatedNumber = ({ to, className, delay = 0 }: { to: number, className?: 
     useEffect(() => {
         if (hasAnimated.current) return;
         hasAnimated.current = true;
+        
+        const target = { value: 0 };
 
         anime({
-            targets: { value: 0 },
+            targets: target,
             value: to,
             round: 1,
             duration: 1200,
             delay: delay,
             easing: 'easeOutCubic',
-            update: (anim) => {
-                setValue((anim.targets[0] as any).value);
+            update: () => {
+                setValue(target.value);
             }
         });
     }, [to, delay]);
@@ -77,15 +79,17 @@ const AnimatedProgress = ({ value, className, indicatorClassName }: { value: num
     useEffect(() => {
         if (hasAnimated.current) return;
         hasAnimated.current = true;
+        
+        const target = { value: 0 };
 
         anime({
-            targets: { value: 0 },
+            targets: target,
             value: value,
             duration: 1200,
             delay: 400,
             easing: 'easeOutCubic',
-            update: (anim) => {
-                setProgressValue((anim.targets[0] as any).value);
+            update: () => {
+                setProgressValue(target.value);
             }
         });
     }, [value]);

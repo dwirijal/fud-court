@@ -99,6 +99,13 @@ const marketAnalysisFlow = ai.defineFlow(
       macroScore: finalScore,
       interpretation,
       summary,
+      componentScores: {
+        marketCap: Math.round(finalScores.marketCap),
+        volume: Math.round(finalScores.volume),
+        fearAndGreed: Math.round(finalScores.fearAndGreed),
+        ath: Math.round(finalScores.ath),
+        marketBreadth: Math.round(finalScores.marketBreadth),
+      }
     };
   }
 );

@@ -5,29 +5,15 @@ import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { fetchMarketData } from '@/lib/coingecko';
 import { analyzeMarketSentiment } from '@/ai/flows/market-analysis-flow';
-import type { MarketAnalysisInput, MarketAnalysisOutput } from '@/types';
+import type { MarketAnalysisOutput } from '@/types';
 import { ScoreGauge } from '../molecules/score-gauge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { AlertTriangle, CheckCircle, Hourglass } from 'lucide-react';
+import { AlertTriangle, CheckCircle } from 'lucide-react';
 
-const indicatorPlaceholders = [
-    { name: "Market Cap Score", value: "⏳", status: "pending" },
-    { name: "Volume Score", value: "⏳", status: "pending" },
-    { name: "BTC Dominance Score", value: "⏳", status: "pending" },
-    { name: "Fear and Greed Score", value: "✅", status: "done" },
-    { name: "Altseason Score", value: "⏳", status: "pending" },
-    { name: "Market Breadth Score", value: "⏳", status: "pending" },
-    { name: "ATH Score", value: "⏳", status: "pending" },
-];
-
-function IndicatorStatusIcon({ status }: { status: 'done' | 'pending' }) {
-    if (status === 'done') {
-        return <CheckCircle className="h-4 w-4 text-chart-2" />;
-    }
-    return <Hourglass className="h-4 w-4 text-muted-foreground" />;
+function IndicatorStatusIcon() {
+    return <CheckCircle className="h-4 w-4 text-chart-2" />;
 }
-
 
 export function MarketSummaryCard() {
   const [isLoading, setIsLoading] = useState(true);
@@ -79,6 +65,14 @@ export function MarketSummaryCard() {
     );
   }
 
+  const indicators = [
+      { name: "Market Cap Score", value: analysisResult.componentScores.marketCap },
+      { name: "Volume Score", value: analysisResult.componentScores.volume },
+      { name: "Fear and Greed Score", value: analysisResult.componentScores.fearAndGreed },
+      { name: "ATH Score", value: analysisResult.componentScores.ath },
+      { name: "Market Breadth Score", value: analysisResult.componentScores.marketBreadth },
+  ];
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
       <ScoreGauge 
@@ -101,10 +95,10 @@ export function MarketSummaryCard() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {indicatorPlaceholders.map((indicator) => (
+              {indicators.map((indicator) => (
                 <TableRow key={indicator.name}>
                   <TableCell className="font-medium flex items-center gap-2">
-                    <IndicatorStatusIcon status={indicator.status as 'done' | 'pending'} />
+                    <IndicatorStatusIcon />
                     {indicator.name}
                   </TableCell>
                   <TableCell className="text-right font-mono">{indicator.value}</TableCell>

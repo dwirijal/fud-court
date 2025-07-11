@@ -1,7 +1,4 @@
-
-
-
-
+import { z } from 'zod';
 
 export interface Post {
   id: string;
@@ -115,3 +112,31 @@ export interface DiscordGuildData {
     onlineMembers: number;
     totalChannels: number;
 }
+
+
+// Market Analysis Flow Types
+const TopCoinSchema = z.object({
+  price_change_percentage_24h: z.number().nullable(),
+  ath: z.number(),
+  current_price: z.number(),
+});
+
+export const MarketAnalysisInputSchema = z.object({
+  totalMarketCap: z.number().describe('Current total market capitalization in USD.'),
+  maxHistoricalMarketCap: z.number().describe('The maximum historical total market capitalization in USD.'),
+  totalVolume24h: z.number().describe('Current total 24h trading volume in USD.'),
+  avg30DayVolume: z.number().describe('The average 30-day trading volume in USD.'),
+  btcMarketCap: z.number().describe('Current Bitcoin market capitalization in USD.'),
+  altcoinMarketCap: z.number().describe('Current market capitalization of all altcoins (total minus BTC).'),
+  btcDominance: z.number().describe('Bitcoin dominance percentage.'),
+  fearAndGreedIndex: z.number().min(0).max(100).describe('The Fear and Greed Index value.'),
+  topCoins: z.array(TopCoinSchema).describe('A list of top coins with their price and ATH data.'),
+});
+export type MarketAnalysisInput = z.infer<typeof MarketAnalysisInputSchema>;
+
+export const MarketAnalysisOutputSchema = z.object({
+  macroScore: z.number().min(0).max(100).describe('The final calculated macro score for the market.'),
+  interpretation: z.enum(['Bullish', 'Neutral', 'Bearish']).describe('The interpretation of the macro score.'),
+  summary: z.string().describe('A short, one-sentence summary of the current market sentiment based on the score.'),
+});
+export type MarketAnalysisOutput = z.infer<typeof MarketAnalysisOutputSchema>;

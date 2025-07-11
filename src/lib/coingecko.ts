@@ -1,6 +1,5 @@
 
-import type { MarketAnalysisInput } from '@/ai/flows/market-analysis-flow';
-import type { CryptoData } from '@/types';
+import type { CryptoData, MarketAnalysisInput } from '@/types';
 
 const API_BASE_URL = 'https://api.coingecko.com/api/v3';
 
@@ -40,7 +39,7 @@ export async function fetchMarketData(): Promise<MarketAnalysisInput | null> {
     try {
         const globalDataPromise = fetch(`${API_BASE_URL}/global`, { next: { revalidate: 300 } }).then(res => res.json());
         const fearAndGreedPromise = fetch('https://api.alternative.me/fng/?limit=1', { next: { revalidate: 3600 } }).then(res => res.json());
-        const topCoinsPromise = getTopCoins(100, 'usd'); 
+        const topCoinsPromise = getTopCoins(20, 'usd'); 
 
         const [globalData, fearAndGreedData, topCoins] = await Promise.all([
             globalDataPromise,
@@ -49,7 +48,7 @@ export async function fetchMarketData(): Promise<MarketAnalysisInput | null> {
         ]);
 
         if (!globalData?.data || !fearAndGreedData?.data?.[0] || topCoins.length === 0) {
-            throw new Error("One or more essential API calls failed or returned empty data.");
+            throw new Error("Failed to fetch necessary market data.");
         }
         
         // Calculate historical max market cap from the ATH market caps of top coins.

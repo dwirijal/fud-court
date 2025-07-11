@@ -87,7 +87,11 @@ const LineAnimation = () => {
         }
 
         const draw = () => {
-            ctx.clearRect(0, 0, w, h);
+            // Instead of clearing, draw a semi-transparent rectangle to create a fading trail effect.
+            // This is more elegant and prevents flickering.
+            const isDark = document.documentElement.classList.contains('dark');
+            ctx.fillStyle = isDark ? 'rgba(19, 15, 18, 0.1)' : 'rgba(255, 252, 253, 0.1)';
+            ctx.fillRect(0, 0, w, h);
             
             particles.forEach((p1, i) => {
                 particles.slice(i + 1).forEach(p2 => {

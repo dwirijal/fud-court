@@ -134,14 +134,19 @@ export type MarketAnalysisInput = z.infer<typeof MarketAnalysisInputSchema>;
 
 export const MarketAnalysisOutputSchema = z.object({
   macroScore: z.number().min(0).max(100).describe('The final calculated macro score for the market.'),
-  interpretation: z.enum(['Strong Bullish', 'Healthy Bullish', 'Neutral', 'Bearish', 'Capitulation Zone']).describe('The interpretation of the macro score.'),
-  summary: z.string().describe('A short, one-sentence summary of the current market sentiment based on the score.'),
-  componentScores: z.object({
-    marketCap: z.number(),
-    volume: z.number(),
-    fearAndGreed: z.number(),
-    ath: z.number(),
-    marketBreadth: z.number(),
+  marketCondition: z.enum([
+      'Bullish ekstrem / Euforia',
+      'Bullish sehat',
+      'Netral / Sideways',
+      'Bearish / Distribusi',
+      'Capitulation / Fear ekstrem',
+  ]).describe('The interpretation of the macro score.'),
+  components: z.object({
+    marketCapScore: z.number(),
+    volumeScore: z.number(),
+    fearGreedScore: z.number(),
+    athScore: z.number(),
+    marketBreadthScore: z.number(),
   }).describe('The individual scores for each component of the analysis.')
 });
 export type MarketAnalysisOutput = z.infer<typeof MarketAnalysisOutputSchema>;

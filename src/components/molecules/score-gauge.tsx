@@ -31,8 +31,13 @@ export function ScoreGauge({ score, interpretation, summary }: { score: number, 
   ];
 
   const getActiveColor = () => {
-    if (interpretation === "Bearish") return chartConfig.bearish.color;
-    if (interpretation === "Bullish") return chartConfig.bullish.color;
+    const lowerCaseInterpretation = interpretation.toLowerCase();
+    if (lowerCaseInterpretation.includes("bearish") || lowerCaseInterpretation.includes("capitulation")) {
+        return chartConfig.bearish.color;
+    }
+    if (lowerCaseInterpretation.includes("bullish")) {
+        return chartConfig.bullish.color;
+    }
     return chartConfig.neutral.color;
   };
 
@@ -83,7 +88,7 @@ export function ScoreGauge({ score, interpretation, summary }: { score: number, 
                   {score}
               </span>
               <span
-                  className="text-lg font-medium"
+                  className="text-lg font-medium text-center"
                   style={{ color: activeColor }}
               >
                   {interpretation}

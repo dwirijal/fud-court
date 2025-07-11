@@ -66,19 +66,19 @@ export function MarketSummaryCard() {
   }
 
   const indicators = [
-      { name: "Market Cap Score", value: analysisResult.componentScores.marketCap },
-      { name: "Volume Score", value: analysisResult.componentScores.volume },
-      { name: "Fear and Greed Score", value: analysisResult.componentScores.fearAndGreed },
-      { name: "ATH Score", value: analysisResult.componentScores.ath },
-      { name: "Market Breadth Score", value: analysisResult.componentScores.marketBreadth },
+      { name: "Market Cap Score", value: analysisResult.components.marketCapScore },
+      { name: "Volume Score", value: analysisResult.components.volumeScore },
+      { name: "Fear and Greed Score", value: analysisResult.components.fearGreedScore },
+      { name: "ATH Score", value: analysisResult.components.athScore },
+      { name: "Market Breadth Score", value: analysisResult.components.marketBreadthScore },
   ];
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
       <ScoreGauge 
         score={analysisResult.macroScore} 
-        interpretation={analysisResult.interpretation}
-        summary={analysisResult.summary}
+        interpretation={analysisResult.marketCondition}
+        summary="Kondisi pasar berdasarkan 5 indikator makro."
       />
       
       <Card className="bg-card/60 backdrop-blur-md">

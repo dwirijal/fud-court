@@ -31,10 +31,10 @@ export default async function Home() {
           </div>
           
           <div className="grid grid-cols-1 xl:grid-cols-5 gap-8 items-start">
-            <div className="xl:col-span-3">
+            <div className="xl:col-span-2">
               <MarketSummaryCard />
             </div>
-            <div className="xl:col-span-2">
+            <div className="xl:col-span-3">
               <MarketStatsCard marketStats={marketStats} />
             </div>
           </div>

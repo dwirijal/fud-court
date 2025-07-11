@@ -89,7 +89,9 @@ const LineAnimation = () => {
 
         const draw = () => {
             const isDark = document.documentElement.classList.contains('dark');
-            ctx.fillStyle = isDark ? 'rgba(19, 15, 18, 0.1)' : 'rgba(255, 252, 253, 0.1)';
+            const clearStyle = isDark ? 'rgba(19, 15, 18, 0.1)' : 'rgba(255, 252, 253, 0.1)';
+            
+            ctx.fillStyle = clearStyle;
             ctx.fillRect(0, 0, w, h);
             
             ctx.strokeStyle = singleColor;
@@ -140,19 +142,19 @@ export function HeroSection() {
     <section className="relative flex items-center justify-center min-h-screen overflow-hidden">
       <LineAnimation />
       <div className="container relative z-10 mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          <div className="flex justify-center items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-center">
+          <div className="lg:col-span-2 flex justify-center items-center">
             <NftCard />
           </div>
-          <div className="text-center md:text-left">
+          <div className="lg:col-span-3 text-center lg:text-left">
             <AnimatedText
               text="Clarity in Chaos."
-              className="text-5xl md:text-7xl font-extrabold font-headline tracking-tighter mb-6 [&_.letter]:inline-block"
+              className="text-4xl md:text-6xl font-extrabold font-headline tracking-tighter mb-6 [&_.letter]:inline-block"
             />
-            <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto md:mx-0 mb-10">
+            <p className="text-lg text-muted-foreground max-w-xl mx-auto lg:mx-0 mb-10">
               Fud Court cuts through the market noise with data-driven analysis and unbiased news, empowering you to make smarter crypto investment decisions.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
               <Button size="lg" asChild>
                 <Link href="https://discord.gg" target="_blank" rel="noopener noreferrer">Join Community</Link>
               </Button>

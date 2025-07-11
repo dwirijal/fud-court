@@ -16,15 +16,20 @@ const formatCurrency = (value: number) => {
         currency: 'USD',
         notation: 'compact',
         compactDisplay: 'short',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
     }).format(value);
 };
 
-function StatRow({ label, value, progress, colorClass }: { label: string, value: string, progress: number, colorClass: string }) {
+function StatRow({ label, marketCap, dominance, progress, colorClass }: { label: string, marketCap: string, dominance: string, progress: number, colorClass: string }) {
     return (
         <div className="space-y-2">
             <div className="flex justify-between items-baseline">
-                <span className="font-medium">{label}</span>
-                <span className="font-mono text-sm text-muted-foreground">{value}</span>
+                <div className="flex flex-col">
+                     <span className="font-medium">{label}</span>
+                     <span className="text-xs text-muted-foreground font-mono">{marketCap}</span>
+                </div>
+                <span className="font-mono text-sm text-foreground">{dominance}</span>
             </div>
             <Progress value={progress} indicatorClassName={colorClass} />
         </div>
@@ -42,6 +47,10 @@ export function MarketStatsCard({ marketStats }: MarketStatsCardProps) {
         ethDominance,
         solDominance,
         stablecoinDominance,
+        btcMarketCap,
+        ethMarketCap,
+        solMarketCap,
+        stablecoinMarketCap,
     } = marketStats;
 
     return (
@@ -53,25 +62,29 @@ export function MarketStatsCard({ marketStats }: MarketStatsCardProps) {
             <CardContent className="space-y-6">
                 <StatRow 
                     label="Bitcoin (BTC)"
-                    value={`${btcDominance.toFixed(2)}%`}
+                    marketCap={formatCurrency(btcMarketCap)}
+                    dominance={`${btcDominance.toFixed(2)}%`}
                     progress={btcDominance}
                     colorClass="bg-chart-1"
                 />
                 <StatRow 
                     label="Ethereum (ETH)"
-                    value={`${ethDominance.toFixed(2)}%`}
+                    marketCap={formatCurrency(ethMarketCap)}
+                    dominance={`${ethDominance.toFixed(2)}%`}
                     progress={ethDominance}
                     colorClass="bg-chart-2"
                 />
                  <StatRow 
                     label="Solana (SOL)"
-                    value={`${solDominance.toFixed(2)}%`}
+                    marketCap={formatCurrency(solMarketCap)}
+                    dominance={`${solDominance.toFixed(2)}%`}
                     progress={solDominance}
                     colorClass="bg-chart-3"
                 />
                  <StatRow 
                     label="Stablecoins"
-                    value={`${stablecoinDominance.toFixed(2)}%`}
+                    marketCap={formatCurrency(stablecoinMarketCap)}
+                    dominance={`${stablecoinDominance.toFixed(2)}%`}
                     progress={stablecoinDominance}
                     colorClass="bg-chart-4"
                 />

@@ -150,3 +150,10 @@ export const MarketAnalysisOutputSchema = z.object({
   }).describe('The individual scores for each component of the analysis.')
 });
 export type MarketAnalysisOutput = z.infer<typeof MarketAnalysisOutputSchema>;
+
+
+// Fear & Greed Data
+export interface FearGreedData {
+    value: number;
+    value_classification: 'Extreme Fear' | 'Fear' | 'Neutral' | 'Greed' | 'Extreme Greed';
+}

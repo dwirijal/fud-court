@@ -4,21 +4,22 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
-import { fetchMarketData } from '@/lib/coingecko';
+import { fetchMarketData, fetchFearGreedData } from '@/lib/coingecko';
 import { analyzeMarketSentiment } from '@/ai/flows/market-analysis-flow';
-import type { MarketAnalysisOutput } from '@/types';
+import type { MarketAnalysisOutput, FearGreedData } from '@/types';
 import { ScoreGauge } from '../molecules/score-gauge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { AlertTriangle, CheckCircle, Info, Minus } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Info, Minus, TrendingDown, TrendingUp } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { cn } from '@/lib/utils';
 
-const indicatorExplanations: Record<keyof MarketAnalysisOutput['components'], string> = {
+const indicatorExplanations: Record<string, string> = {
     marketCapScore: "Mengukur valuasi total pasar saat ini terhadap puncak historisnya.",
     volumeScore: "Mengukur aktivitas dan minat pasar berdasarkan volume transaksi harian vs rata-rata.",
     fearGreedScore: "Menggambarkan sentimen emosional pasar, dari rasa takut hingga keserakahan.",
@@ -30,9 +31,34 @@ function IndicatorStatusIcon() {
     return <CheckCircle className="h-4 w-4 text-chart-2" />;
 }
 
+function TrendChange({ change }: { change: number | null }) {
+    if (change === null) {
+        return <Minus className="h-4 w-4 mx-auto text-muted-foreground/50" />;
+    }
+    const isPositive = change >= 0;
+    return (
+        <div className={cn(
+            "flex items-center justify-center gap-1 font-mono text-xs",
+            isPositive ? "text-chart-2" : "text-destructive"
+        )}>
+            {isPositive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+            <span>{Math.abs(change)} pts</span>
+        </div>
+    );
+}
+
+function TrendIcon({ change }: { change: number | null }) {
+     if (change === null) {
+        return <Minus className="h-4 w-4 mx-auto text-muted-foreground/50" />;
+    }
+    const isPositive = change >= 0;
+     return isPositive ? <TrendingUp className="h-4 w-4 mx-auto text-chart-2" /> : <TrendingDown className="h-4 w-4 mx-auto text-destructive" />;
+}
+
 export function MarketSummaryCard() {
   const [isLoading, setIsLoading] = useState(true);
   const [analysisResult, setAnalysisResult] = useState<MarketAnalysisOutput | null>(null);
+  const [fearGreedTrend, setFearGreedTrend] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -40,10 +66,18 @@ export function MarketSummaryCard() {
       setIsLoading(true);
       setError(null);
       try {
-        const marketData = await fetchMarketData();
+        const [marketData, fearGreedData] = await Promise.all([
+            fetchMarketData(),
+            fetchFearGreedData()
+        ]);
+
         if (!marketData) {
           throw new Error("Failed to fetch market data from CoinGecko.");
         }
+        if (fearGreedData.today && fearGreedData.weekAgo) {
+            setFearGreedTrend(fearGreedData.today.value - fearGreedData.weekAgo.value);
+        }
+
         const result = await analyzeMarketSentiment(marketData);
         setAnalysisResult(result);
       } catch (e) {
@@ -81,11 +115,11 @@ export function MarketSummaryCard() {
   }
 
   const indicators = [
-      { name: "Market Cap Score", key: 'marketCapScore', value: analysisResult.components.marketCapScore },
-      { name: "Volume Score", key: 'volumeScore', value: analysisResult.components.volumeScore },
-      { name: "Fear and Greed Score", key: 'fearGreedScore', value: analysisResult.components.fearGreedScore },
-      { name: "ATH Score", key: 'athScore', value: analysisResult.components.athScore },
-      { name: "Market Breadth Score", key: 'marketBreadthScore', value: analysisResult.components.marketBreadthScore },
+      { name: "Market Cap Score", key: 'marketCapScore', value: analysisResult.components.marketCapScore, trend: null },
+      { name: "Volume Score", key: 'volumeScore', value: analysisResult.components.volumeScore, trend: null },
+      { name: "Fear & Greed Score", key: 'fearGreedScore', value: analysisResult.components.fearGreedScore, trend: fearGreedTrend },
+      { name: "ATH Score", key: 'athScore', value: analysisResult.components.athScore, trend: null },
+      { name: "Market Breadth Score", key: 'marketBreadthScore', value: analysisResult.components.marketBreadthScore, trend: null },
   ];
 
   return (
@@ -129,16 +163,16 @@ export function MarketSummaryCard() {
                                         </button>
                                     </TooltipTrigger>
                                     <TooltipContent className="max-w-xs">
-                                        <p>{indicatorExplanations[indicator.key as keyof MarketAnalysisOutput['components']]}</p>
+                                        <p>{indicatorExplanations[indicator.key]}</p>
                                     </TooltipContent>
                                 </Tooltip>
                             </div>
                         </TableCell>
                         <TableCell className="text-center">
-                            <Minus className="h-4 w-4 mx-auto text-muted-foreground/50" />
+                            <TrendIcon change={indicator.trend} />
                         </TableCell>
                         <TableCell className="text-center">
-                           <Minus className="h-4 w-4 mx-auto text-muted-foreground/50" />
+                           <TrendChange change={indicator.trend} />
                         </TableCell>
                         <TableCell className="text-right font-mono">{indicator.value}</TableCell>
                         </TableRow>

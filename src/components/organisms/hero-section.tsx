@@ -60,9 +60,10 @@ const LineAnimation = () => {
 
         window.addEventListener('resize', handleResize);
 
-        const particles: {x: number, y: number, tx: number, ty: number, color: string, speed: number, direction: number, size: number}[] = [];
+        const particles: {x: number, y: number, tx: number, ty: number, speed: number, direction: number, size: number}[] = [];
         const particleCount = 30;
-        const colors = ['hsl(var(--primary)/0.5)', 'hsl(var(--accent)/0.5)', 'hsl(var(--foreground)/0.2)'];
+        
+        const singleColor = 'hsl(var(--foreground)/0.2)';
 
         for (let i = 0; i < particleCount; i++) {
             particles.push({
@@ -70,7 +71,6 @@ const LineAnimation = () => {
                 y: Math.random() * h,
                 tx: Math.random() * w,
                 ty: Math.random() * h,
-                color: colors[Math.floor(Math.random() * colors.length)],
                 speed: Math.random() * 0.5 + 0.1,
                 direction: Math.random() * Math.PI * 2,
                 size: Math.random() * 2 + 1,
@@ -92,6 +92,9 @@ const LineAnimation = () => {
             ctx.fillStyle = isDark ? 'rgba(19, 15, 18, 0.1)' : 'rgba(255, 252, 253, 0.1)';
             ctx.fillRect(0, 0, w, h);
             
+            ctx.strokeStyle = singleColor;
+            ctx.fillStyle = singleColor;
+            
             particles.forEach((p1, i) => {
                 particles.slice(i + 1).forEach(p2 => {
                     const dist = Math.hypot(p1.x - p2.x, p1.y - p2.y);
@@ -99,20 +102,16 @@ const LineAnimation = () => {
                         ctx.beginPath();
                         ctx.moveTo(p1.x, p1.y);
                         ctx.lineTo(p2.x, p2.y);
-                        ctx.strokeStyle = p1.color;
-                        ctx.globalAlpha = 1 - (dist / 200);
                         ctx.lineWidth = 0.5;
                         ctx.stroke();
                     }
                 });
             });
 
-            ctx.globalAlpha = 1.0;
             particles.forEach(p => {
                 updateParticle(p);
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                ctx.fillStyle = p.color;
                 ctx.fill();
             });
         };

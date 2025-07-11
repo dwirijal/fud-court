@@ -59,6 +59,8 @@ export function NftCard() {
   return (
     <div
       ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       className={cn(
           "group relative w-full max-w-xs cursor-pointer transition-transform duration-300 ease-out",
           isMounted ? 'opacity-100' : 'opacity-0'
@@ -81,7 +83,7 @@ export function NftCard() {
           <div className="mt-4 flex items-start justify-between" style={{ transform: 'translateZ(50px)' }}>
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                CryptoPulse
+                Fud Court
               </p>
               <h3 className="text-lg font-bold font-headline text-foreground">
                 Genesis #001

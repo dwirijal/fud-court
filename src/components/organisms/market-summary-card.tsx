@@ -78,7 +78,7 @@ export function MarketSummaryCard() {
       <ScoreGauge 
         score={analysisResult.macroScore} 
         interpretation={analysisResult.marketCondition}
-        summary="Kondisi pasar berdasarkan 5 indikator makro."
+        summary="A macro sentiment score based on 5 key market indicators."
       />
       
       <Card className="bg-card/60 backdrop-blur-md">
@@ -111,3 +111,4 @@ export function MarketSummaryCard() {
     </div>
   );
 }
+

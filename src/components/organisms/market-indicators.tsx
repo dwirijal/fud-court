@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import { Bitcoin, HelpCircle } from "lucide-react";
+import { Bitcoin, HelpCircle, Sigma, Repeat } from "lucide-react";
 import { MarketIndicatorCard } from "@/components/molecules/market-indicator-card";
 import { FearGreedGauge } from "@/components/molecules/fear-greed-gauge";
 import { DominanceBar } from "@/components/molecules/dominance-bar";
@@ -17,6 +17,7 @@ interface FearGreedData {
 interface GlobalData {
     data: {
         total_market_cap: { [currency: string]: number };
+        total_volume: { [currency: string]: number };
         market_cap_percentage: { [currency: string]: number };
     }
 }
@@ -85,8 +86,10 @@ export function MarketIndicators() {
             setData({
                 fearGreed: fearGreedData,
                 btcDominance: globalData?.market_cap_percentage?.btc ?? 0,
+                ethDominance: globalData?.market_cap_percentage?.eth ?? 0,
                 usdtDominance: globalData?.market_cap_percentage?.usdt ?? 0,
                 totalMarketCap,
+                totalVolume: globalData?.total_volume?.usd ?? 0,
                 total2: totalMarketCap > 0 && btcMarketCap > 0 ? totalMarketCap - btcMarketCap : 0,
                 total3: totalMarketCap > 0 && ethMarketCap > 0 && btcMarketCap > 0 ? totalMarketCap - btcMarketCap - ethMarketCap : 0,
             });
@@ -111,21 +114,26 @@ export function MarketIndicators() {
     return (
         <section className="py-16 md:py-24 bg-card/10">
             <div className="container mx-auto px-4">
-                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                 <div className="flex flex-col lg:flex-row gap-6">
                     {/* Fear & Greed Gauge */}
-                    <FearGreedGauge 
-                        value={parseInt(data.fearGreed?.value || '0', 10)}
-                        classification={data.fearGreed?.value_classification || 'Neutral'}
-                    />
-
+                    <div className="lg:w-1/3">
+                        <FearGreedGauge 
+                            value={parseInt(data.fearGreed?.value || '0', 10)}
+                            classification={data.fearGreed?.value_classification || 'Neutral'}
+                        />
+                    </div>
                     {/* Other Indicators */}
-                    <div className="md:col-span-2 grid grid-cols-2 md:grid-cols-3 gap-6">
+                    <div className="lg:w-2/3 grid grid-cols-2 md:grid-cols-4 gap-6">
                         <DominanceBar title="BTC Dominance" percentage={data.btcDominance} icon={Bitcoin} />
+                        <DominanceBar title="ETH Dominance" percentage={data.ethDominance} icon={HelpCircle} />
                         <DominanceBar title="USDT Dominance" percentage={data.usdtDominance} icon={HelpCircle} />
                        
-                        <MarketIndicatorCard title="Total Marketcap" value={formatCurrency(data.totalMarketCap)} icon={HelpCircle} />
-                        <MarketIndicatorCard title="Total 2 (excl. BTC)" value={formatCurrency(data.total2)} icon={HelpCircle} />
-                        <MarketIndicatorCard title="Total 3 (excl. BTC/ETH)" value={formatCurrency(data.total3)} icon={HelpCircle} />
+                        <MarketIndicatorCard title="24h Volume" value={formatCurrency(data.totalVolume)} icon={Repeat} />
+                        
+                        <MarketIndicatorCard title="Total Marketcap" value={formatCurrency(data.totalMarketCap)} icon={Sigma} />
+                        <MarketIndicatorCard title="Total 2 (excl. BTC)" value={formatCurrency(data.total2)} icon={Sigma} />
+                        <MarketIndicatorCard title="Total 3 (excl. BTC/ETH)" value={formatCurrency(data.total3)} icon={Sigma} />
+                        
                         <Card className="bg-card/60 backdrop-blur-md flex items-center justify-center p-4">
                             <p className="text-center text-sm text-muted-foreground">More indicators coming soon</p>
                         </Card>
@@ -135,3 +143,4 @@ export function MarketIndicators() {
         </section>
     );
 }
+

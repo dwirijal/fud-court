@@ -2,35 +2,14 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import { Bitcoin, HelpCircle, Sigma } from "lucide-react";
-import { MarketIndicatorCard } from "@/components/molecules/market-indicator-card";
-import { FearGreedGauge } from "@/components/molecules/fear-greed-gauge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { DominanceBar } from "../molecules/dominance-bar";
-
-interface FearGreedData {
-    value: string;
-    value_classification: string;
-}
+import { MarketDominancePieChart } from "../molecules/market-dominance-pie-chart";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 interface GlobalData {
     data: {
         total_market_cap: { [currency: string]: number };
-        total_volume: { [currency: string]: number };
         market_cap_percentage: { [currency: string]: number };
-    }
-}
-
-async function getFearGreedIndex(): Promise<FearGreedData | null> {
-    try {
-        const response = await fetch('https://api.alternative.me/fng/?limit=1', { next: { revalidate: 3600 } });
-        if (!response.ok) return null;
-        const data = await response.json();
-        return data.data[0];
-    } catch (error) {
-        console.error("Failed to fetch Fear & Greed Index:", error);
-        return null;
     }
 }
 
@@ -58,19 +37,25 @@ const formatCurrency = (value: number) => {
 
 export function MarketIndicators() {
     const [isLoading, setIsLoading] = useState(true);
-    const [data, setData] = useState<any>(null);
+    const [chartData, setChartData] = useState<any[]>([]);
+    const [totalMarketCap, setTotalMarketCap] = useState('$0.00T');
 
     useEffect(() => {
         const fetchData = async () => {
-            const [fearGreedData, globalData] = await Promise.all([
-                getFearGreedIndex(),
-                getGlobalMarketData(),
-            ]);
+            const globalData = await getGlobalMarketData();
+            if (globalData) {
+                const btcDom = globalData.market_cap_percentage?.btc ?? 0;
+                const ethDom = globalData.market_cap_percentage?.eth ?? 0;
+                const othersDom = 100 - btcDom - ethDom;
 
-            setData({
-                fearGreed: fearGreedData,
-                global: globalData,
-            });
+                setChartData([
+                    { name: 'Bitcoin', value: btcDom, fill: 'hsl(var(--chart-1))' },
+                    { name: 'Ethereum', value: ethDom, fill: 'hsl(var(--chart-2))' },
+                    { name: 'Others', value: othersDom, fill: 'hsl(var(--chart-3))' },
+                ]);
+
+                setTotalMarketCap(formatCurrency(globalData.total_market_cap?.usd ?? 0));
+            }
             setIsLoading(false);
         };
         fetchData();
@@ -78,40 +63,22 @@ export function MarketIndicators() {
 
     if (isLoading) {
         return (
-             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <Skeleton className="h-64 lg:col-span-1" />
-                <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    {Array.from({ length: 4 }).map((_, i) => (
-                        <Skeleton key={i} className="h-28" />
-                    ))}
-                </div>
-            </div>
+             <div className="flex flex-col items-center">
+                <Skeleton className="h-8 w-48 mb-4" />
+                <Skeleton className="h-64 w-64 rounded-full" />
+             </div>
         );
     }
     
-    const btcDom = data.global?.market_cap_percentage?.btc ?? 0;
-    const ethDom = data.global?.market_cap_percentage?.eth ?? 0;
-    const totalMarketCap = data.global?.total_market_cap?.usd ?? 0;
-    
-    // Calculate Total 3
-    const btcMarketCap = (totalMarketCap * btcDom) / 100;
-    const ethMarketCap = (totalMarketCap * ethDom) / 100;
-    const total3 = totalMarketCap - btcMarketCap - ethMarketCap;
-
     return (
-        <div className="flex flex-col lg:flex-row gap-8">
-            <div className="lg:w-1/3">
-                <FearGreedGauge 
-                    value={parseInt(data.fearGreed?.value || '0', 10)}
-                    classification={data.fearGreed?.value_classification || 'Neutral'}
-                />
-            </div>
-            <div className="lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <MarketIndicatorCard title="Total Marketcap" value={formatCurrency(totalMarketCap)} icon={Sigma} />
-                <DominanceBar title="BTC Dominance" percentage={btcDom} icon={Bitcoin} />
-                <DominanceBar title="ETH Dominance" percentage={ethDom} icon={HelpCircle} />
-                <MarketIndicatorCard title="Total 3 (excl. BTC/ETH)" value={formatCurrency(total3)} icon={Sigma} />
-            </div>
-        </div>
+        <Card className="bg-transparent border-none shadow-none">
+            <CardHeader className="items-center text-center p-0 mb-4">
+                <CardDescription>Total Market Cap</CardDescription>
+                <CardTitle className="text-4xl font-bold font-mono">{totalMarketCap}</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+                <MarketDominancePieChart data={chartData} />
+            </CardContent>
+        </Card>
     );
 }

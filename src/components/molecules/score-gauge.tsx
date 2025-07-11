@@ -5,33 +5,14 @@ import * as React from 'react';
 import { Pie, PieChart, Cell } from 'recharts';
 import {
   ChartContainer,
-  ChartConfig,
 } from '@/components/ui/chart';
-
-const chartConfig = {
-  score: {
-    label: 'Score',
-  },
-  bearish: {
-    label: 'Bearish',
-    color: 'hsl(var(--destructive))',
-  },
-  neutral: {
-    label: 'Neutral',
-    color: 'hsl(var(--muted-foreground))',
-  },
-  bullish: {
-    label: 'Bullish',
-    color: 'hsl(var(--chart-2))',
-  },
-} satisfies ChartConfig;
 
 const getAngle = (score: number) => 180 - (score / 100) * 180;
 
 const Hand = ({ cx, cy, score }: { cx: number, cy: number, score: number }) => {
     const angle = getAngle(score);
     return (
-        <g>
+        <g transform={`rotate(${angle} ${cx} ${cy})`}>
             <circle cx={cx} cy={cy} r="6" fill="hsl(var(--card-foreground))" />
             <line
                 x1={cx}
@@ -41,7 +22,6 @@ const Hand = ({ cx, cy, score }: { cx: number, cy: number, score: number }) => {
                 stroke="hsl(var(--card-foreground))"
                 strokeWidth="2"
                 strokeLinecap="round"
-                transform={`rotate(${angle} ${cx} ${cy})`}
             />
         </g>
     );
@@ -54,14 +34,14 @@ export function ScoreGauge({
   score: number;
 }) {
   const chartData = [
-    { sentiment: 'bearish', value: 40 },
-    { sentiment: 'neutral', value: 20 },
-    { sentiment: 'bullish', value: 40 },
+    { sentiment: 'bearish', value: 40, color: 'hsl(var(--destructive))' },
+    { sentiment: 'neutral', value: 20, color: 'hsl(var(--muted-foreground))' },
+    { sentiment: 'bullish', value: 40, color: 'hsl(var(--chart-2))' },
   ];
 
   return (
     <ChartContainer
-      config={chartConfig}
+      config={{}}
       className="mx-auto aspect-square w-full max-w-[250px]"
     >
       <PieChart>
@@ -78,7 +58,7 @@ export function ScoreGauge({
           cornerRadius={5}
         >
           {chartData.map((entry) => (
-            <Cell key={`cell-${entry.sentiment}`} fill={`var(--color-${entry.sentiment})`} />
+            <Cell key={`cell-${entry.sentiment}`} fill={entry.color} />
           ))}
           {({ cx, cy }) => {
             if (cx && cy) {

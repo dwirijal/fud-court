@@ -24,12 +24,13 @@ import {
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, Database, AlertTriangle } from "lucide-react";
+import { BookOpen, Database, AlertTriangle, ArrowRight } from "lucide-react";
 import { fetchMarketData } from "@/lib/coingecko";
 import { TrendChange } from "@/components/ui/TrendChange";
 
 const indicators = [
     {
+        id: "marketCapScore",
         name: "Market Cap Score (S₁)",
         weight: "25%",
         purpose: "Measures the current total market capitalization against its all-time high. It provides a macro view of the market's current valuation relative to its historical peak.",
@@ -37,6 +38,7 @@ const indicators = [
         interpretation: "A high score (near 100) indicates the market is near its historical peak, suggesting potential overheating. A low score suggests the market is significantly undervalued compared to its past performance."
     },
     {
+        id: "volumeScore",
         name: "Volume Score (S₂)",
         weight: "20%",
         purpose: "Measures the current 24-hour trading volume against the 30-day average. This indicates the level of current market activity and interest.",
@@ -44,6 +46,7 @@ const indicators = [
         interpretation: "The score is capped at 200% of the average volume to prevent extreme outliers, then normalized to 100. A high score signifies high participation and conviction, while a low score indicates disinterest or a quiet market."
     },
     {
+        id: "fearGreedScore",
         name: "Fear & Greed Score (S₃)",
         weight: "20%",
         purpose: "Directly uses the Fear & Greed Index to measure the prevailing emotional sentiment in the market. It's a classic indicator of market psychology.",
@@ -51,6 +54,7 @@ const indicators = [
         interpretation: "A low score indicates 'Extreme Fear' (potential buying opportunity), while a high score indicates 'Extreme Greed' (market may be due for a correction)."
     },
     {
+        id: "athScore",
         name: "ATH Score (S₄)",
         weight: "25%",
         purpose: "Measures how far, on average, the top cryptocurrencies are from their all-time highs (ATH). This acts as a proxy for market health and potential for growth.",
@@ -58,10 +62,11 @@ const indicators = [
         interpretation: "A high score means that top assets are close to their previous peaks, indicating strong market-wide momentum. A low score suggests that most assets are far from their ATHs, indicating a potential bear market or a bottoming phase."
     },
     {
+        id: "marketBreadthScore",
         name: "Market Breadth Score (S₅)",
         weight: "10%",
         purpose: "Measures the percentage of top coins that have seen positive price movement in the last 24 hours. It helps validate whether a market rally is broad-based or driven by only a few large assets.",
-        formula: "S₅ = (% of Top Coins with 24h Price Increase) * 100",
+        formula: "S₅ = (% of Top Coins with 24h Price Increase / Total Top Coins) * 100",
         interpretation: "A high score (>50%) shows that a majority of the market is participating in the upward trend (healthy rally). A low score indicates that only a few coins are driving gains, which could be a sign of weakness."
     }
 ];
@@ -70,18 +75,68 @@ const formatCurrency = (value: number, compact: boolean = true) => {
     const options: Intl.NumberFormatOptions = {
         style: 'currency',
         currency: 'USD',
-        notation: compact ? 'compact' : 'standard',
         minimumFractionDigits: 2,
-        maximumFractionDigits: compact ? 2 : (value < 1 ? 6 : 2),
     };
     if (compact) {
+        options.notation = 'compact';
         options.compactDisplay = 'short';
+        options.maximumFractionDigits = 2;
+    } else {
+        options.maximumFractionDigits = value < 1 ? 6 : 2;
     }
     return new Intl.NumberFormat('en-US', options).format(value);
 };
 
 export default async function MarketIndicatorsPage() {
   const marketData = await fetchMarketData();
+
+  let indicatorScores: Record<string, { raw: Record<string, any>; score: number }> | null = null;
+  if (marketData) {
+      const { totalMarketCap, maxHistoricalMarketCap, totalVolume24h, avg30DayVolume, fearAndGreedIndex, topCoins } = marketData;
+      
+      const s1_marketCap = (totalMarketCap / maxHistoricalMarketCap) * 100;
+
+      const raw_volume_score = (totalVolume24h / avg30DayVolume) * 100;
+      const capped_volume_score = Math.min(raw_volume_score, 200);
+      const s2_volume = capped_volume_score / 2;
+      
+      const s3_fearAndGreed = fearAndGreedIndex;
+
+      const n_ath = topCoins.length;
+      const distanceFromAthSum = topCoins.reduce((sum, coin) => {
+        const distance = ((coin.ath - coin.current_price) / coin.ath) * 100;
+        return sum + (distance > 0 ? distance : 0);
+      }, 0);
+      const avgDistanceFromAth = n_ath > 0 ? (distanceFromAthSum / n_ath) : 0;
+      const s4_ath = 100 - avgDistanceFromAth;
+
+      const risingTokens = topCoins.filter(c => (c.price_change_percentage_24h || 0) > 0).length;
+      const n_breadth = topCoins.length;
+      const s5_marketBreadth = n_breadth > 0 ? (risingTokens / n_breadth) * 100 : 0;
+      
+      indicatorScores = {
+        marketCapScore: {
+          raw: { "Current Market Cap": formatCurrency(totalMarketCap), "Peak Market Cap": formatCurrency(maxHistoricalMarketCap) },
+          score: Math.round(s1_marketCap)
+        },
+        volumeScore: {
+          raw: { "Current Volume": formatCurrency(totalVolume24h), "30d Avg Volume": formatCurrency(avg30DayVolume) },
+          score: Math.round(s2_volume)
+        },
+        fearGreedScore: {
+          raw: { "Index Value": fearAndGreedIndex },
+          score: Math.round(s3_fearAndGreed)
+        },
+        athScore: {
+          raw: { "Avg. % Distance from ATH": `${avgDistanceFromAth.toFixed(2)}%` },
+          score: Math.round(s4_ath)
+        },
+        marketBreadthScore: {
+          raw: { "Rising Tokens": risingTokens, "Total Top Coins": n_breadth },
+          score: Math.round(s5_marketBreadth)
+        },
+      }
+  }
 
   return (
     <div className="container mx-auto px-4 py-12 md:py-24">
@@ -224,12 +279,36 @@ export default async function MarketIndicatorsPage() {
                         <CardDescription>{indicator.purpose}</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
+                        {indicatorScores && indicatorScores[indicator.id] && (
+                            <div className="bg-muted/50 p-4 rounded-lg space-y-4">
+                                <div>
+                                    <h4 className="font-semibold text-sm mb-2 text-muted-foreground uppercase tracking-wider">Data Input</h4>
+                                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                                        {Object.entries(indicatorScores[indicator.id].raw).map(([key, value]) => (
+                                            <div key={key} className="flex justify-between items-baseline border-b border-muted">
+                                                <span>{key}</span>
+                                                <span className="font-mono font-medium">{value}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <h4 className="font-semibold text-sm mb-1 text-muted-foreground uppercase tracking-wider">Formula</h4>
+                                    <p className="font-mono text-xs bg-background p-3 rounded-md">{indicator.formula}</p>
+                                </div>
+
+                                <div className="flex items-center justify-between bg-background p-3 rounded-md">
+                                     <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Result</h4>
+                                     <div className="flex items-center gap-2">
+                                        <span className="font-mono font-bold text-xl text-primary">{indicatorScores[indicator.id].score}</span>
+                                        <span className="text-sm text-muted-foreground">/ 100</span>
+                                     </div>
+                                </div>
+                            </div>
+                        )}
                         <div>
-                            <h4 className="font-semibold text-sm mb-1">Formula</h4>
-                            <p className="font-mono text-xs bg-muted p-3 rounded-md">{indicator.formula}</p>
-                        </div>
-                        <div>
-                            <h4 className="font-semibold text-sm mb-1">Interpretation</h4>
+                            <h4 className="font-semibold text-sm mb-1 text-muted-foreground uppercase tracking-wider">Interpretation</h4>
                             <p className="text-muted-foreground text-sm">{indicator.interpretation}</p>
                         </div>
                     </CardContent>

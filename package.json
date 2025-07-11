@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "dotprompt": "1.1.0",
     "@genkit-ai/googleai": "1.1.0",
     "@genkit-ai/next": "1.1.0",
     "@hookform/resolvers": "^4.1.3",

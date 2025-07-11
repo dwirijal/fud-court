@@ -77,7 +77,6 @@ const formatCurrency = (value: number, compact: boolean = true) => {
     if (compact) {
         options.compactDisplay = 'short';
     } else {
-        // 'standard' is the default and does not need compactDisplay
         delete (options as any).compactDisplay;
     }
     return new Intl.NumberFormat('en-US', options).format(value);
@@ -139,6 +138,22 @@ export default async function MarketIndicatorsPage() {
                             <span className="font-mono font-semibold">{formatCurrency(marketData.totalMarketCap)}</span>
                         </li>
                          <li className="flex justify-between items-baseline border-b pb-2">
+                            <span className="text-muted-foreground pl-4">↳ BTC Market Cap</span>
+                            <span className="font-mono font-semibold">{formatCurrency(marketData.btcMarketCap)}</span>
+                        </li>
+                         <li className="flex justify-between items-baseline border-b pb-2">
+                            <span className="text-muted-foreground pl-4">↳ ETH Market Cap</span>
+                            <span className="font-mono font-semibold">{formatCurrency(marketData.ethMarketCap)}</span>
+                        </li>
+                         <li className="flex justify-between items-baseline border-b pb-2">
+                            <span className="text-muted-foreground pl-4">↳ SOL Market Cap</span>
+                            <span className="font-mono font-semibold">{formatCurrency(marketData.solMarketCap)}</span>
+                        </li>
+                        <li className="flex justify-between items-baseline border-b pb-2">
+                            <span className="text-muted-foreground pl-4">↳ Stablecoin Market Cap</span>
+                            <span className="font-mono font-semibold">{formatCurrency(marketData.stablecoinMarketCap)}</span>
+                        </li>
+                         <li className="flex justify-between items-baseline border-b pb-2">
                             <span className="text-muted-foreground">24h Volume</span>
                             <span className="font-mono font-semibold">{formatCurrency(marketData.totalVolume24h)}</span>
                         </li>
@@ -176,7 +191,7 @@ export default async function MarketIndicatorsPage() {
                                     <TableCell className="text-right font-mono text-sm">{formatCurrency(coin.ath, false)}</TableCell>
                                     <TableCell className="text-right font-mono text-sm text-destructive">-{((1 - coin.current_price / coin.ath) * 100).toFixed(2)}%</TableCell>
                                     <TableCell className="text-right">
-                                        <TrendChange value={coin.price_change_percentage_24h} isPercentage={true} />
+                                        <TrendChange change={coin.price_change_percentage_24h} isPercentage={true} />
                                     </TableCell>
                                 </TableRow>
                                 ))}

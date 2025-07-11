@@ -87,8 +87,6 @@ const LineAnimation = () => {
         }
 
         const draw = () => {
-            // Instead of clearing, draw a semi-transparent rectangle to create a fading trail effect.
-            // This is more elegant and prevents flickering.
             const isDark = document.documentElement.classList.contains('dark');
             ctx.fillStyle = isDark ? 'rgba(19, 15, 18, 0.1)' : 'rgba(255, 252, 253, 0.1)';
             ctx.fillRect(0, 0, w, h);
@@ -135,7 +133,7 @@ const LineAnimation = () => {
 
 export function HeroSection() {
   return (
-    <section className="relative flex items-center justify-center py-24 md:py-32 overflow-hidden">
+    <section className="relative flex items-center justify-center min-h-screen overflow-hidden">
       <LineAnimation />
       <div className="container relative z-10 mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">

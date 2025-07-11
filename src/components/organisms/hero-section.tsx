@@ -41,6 +41,7 @@ const AnimatedText = ({ text, className }: { text: string; className?: string })
 
 const LineAnimation = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const animationFrameId = useRef<number | null>(null);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -116,13 +117,17 @@ const LineAnimation = () => {
             });
         };
 
-        const animation = anime({
-            duration: Infinity,
-            update: draw,
-        });
+        const animate = () => {
+            draw();
+            animationFrameId.current = requestAnimationFrame(animate);
+        };
+
+        animate();
 
         return () => {
-            animation.pause();
+            if (animationFrameId.current) {
+                cancelAnimationFrame(animationFrameId.current);
+            }
             window.removeEventListener('resize', handleResize);
         }
     }, []);

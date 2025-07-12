@@ -8,8 +8,7 @@
  * - MarketAnalysisOutput - The return type for the analysis function.
  */
 
-import { ai } from '@/ai/genkit';
-import { MarketAnalysisInputSchema, MarketAnalysisOutputSchema, type MarketAnalysisInput, type MarketAnalysisOutput } from '@/types';
+import type { MarketAnalysisInput, MarketAnalysisOutput } from '@/types';
 
 // Updated weights based on the new 5-component model
 const weights = {
@@ -44,13 +43,7 @@ function calculateConfidenceScore(input: MarketAnalysisInput): number {
     return Math.max(0, Math.round(confidence));
 }
 
-const marketAnalysisFlow = ai.defineFlow(
-  {
-    name: 'marketAnalysisFlow',
-    inputSchema: MarketAnalysisInputSchema,
-    outputSchema: MarketAnalysisOutputSchema,
-  },
-  async (input) => {
+export async function analyzeMarketSentiment(input: MarketAnalysisInput): Promise<MarketAnalysisOutput> {
     // 1. Market Cap Score (S1)
     const s1_marketCap = (input.totalMarketCap / input.maxHistoricalMarketCap) * 100;
 
@@ -127,10 +120,4 @@ const marketAnalysisFlow = ai.defineFlow(
       },
       confidenceScore,
     };
-  }
-);
-
-
-export async function analyzeMarketSentiment(input: MarketAnalysisInput): Promise<MarketAnalysisOutput> {
-  return marketAnalysisFlow(input);
 }

@@ -7,12 +7,6 @@ import { CurrencySwitcher } from "@/components/molecules/currency-switcher";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
-interface MarketsPageProps {
-  searchParams?: {
-    currency?: string;
-  };
-}
-
 async function MarketDataTable({ currency }: { currency: string }) {
   const data = await getTopCoins(100, currency);
   const columns = getColumns(currency);
@@ -29,8 +23,13 @@ function TableSkeleton() {
     );
 }
 
-
-export default async function MarketsPage({ searchParams }: MarketsPageProps) {
+export default async function MarketsPage({
+  searchParams,
+}: {
+  searchParams?: {
+    currency?: string;
+  };
+}) {
   const currency = searchParams?.currency?.toLowerCase() || 'usd';
 
   return (

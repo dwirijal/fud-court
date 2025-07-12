@@ -13,12 +13,6 @@ import { AlertTriangle, CheckCircle, Info, ArrowUpRight, BookOpen } from 'lucide
 import { Badge } from "@/components/ui/badge";
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import anime from 'animejs';
 
 const indicatorExplanations: Record<string, string> = {
@@ -49,13 +43,15 @@ const getActiveColorClass = (interpretation: string) => {
 const AnimatedNumber = ({ to, className, delay = 0 }: { to: number, className?: string, delay?: number }) => {
     const [value, setValue] = useState(0);
     const hasAnimated = useRef(false);
+    const target = useRef({ value: 0 }).current;
 
     useEffect(() => {
-        if (hasAnimated.current) return;
+        if (hasAnimated.current) {
+            setValue(to);
+            return;
+        }
         hasAnimated.current = true;
         
-        const target = { value: 0 };
-
         anime({
             targets: target,
             value: to,
@@ -67,7 +63,7 @@ const AnimatedNumber = ({ to, className, delay = 0 }: { to: number, className?: 
                 setValue(target.value);
             }
         });
-    }, [to, delay]);
+    }, [to, delay, target]);
 
     return <p className={className}>{value}</p>;
 }
@@ -75,13 +71,15 @@ const AnimatedNumber = ({ to, className, delay = 0 }: { to: number, className?: 
 const AnimatedProgress = ({ value, className, indicatorClassName }: { value: number, className?: string, indicatorClassName?: string }) => {
     const [progressValue, setProgressValue] = useState(0);
     const hasAnimated = useRef(false);
+    const target = useRef({ value: 0 }).current;
 
     useEffect(() => {
-        if (hasAnimated.current) return;
+        if (hasAnimated.current) {
+            setProgressValue(value);
+            return;
+        }
         hasAnimated.current = true;
         
-        const target = { value: 0 };
-
         anime({
             targets: target,
             value: value,
@@ -92,9 +90,9 @@ const AnimatedProgress = ({ value, className, indicatorClassName }: { value: num
                 setProgressValue(target.value);
             }
         });
-    }, [value]);
+    }, [value, target]);
     
-    return <Progress value={progressValue} className={className} indicatorClassName={indicatorClassName} />
+    return <Progress value={progressValue} className={className} indicatorClassName={cn(indicatorClassName)} />
 }
 
 
@@ -174,63 +172,51 @@ export function MarketSummaryCard() {
   const activeColorClass = getActiveColorClass(analysisResult.marketCondition);
 
   return (
-    <TooltipProvider>
-        <Card>
-            <CardContent className="space-y-4 p-6">
-                <Card className="bg-primary/5 border-primary/20 overflow-hidden">
-                   <div className="flex justify-between items-center p-6">
-                        <div className="space-y-2">
-                           <CardTitle>Macro Sentiment Score</CardTitle>
-                            <CardDescription>
-                                Overall market health based on key indicators.
-                            </CardDescription>
-                             <Badge variant="secondary" className="cursor-help flex-shrink-0">
-                                <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
-                                Confidence: {analysisResult.confidenceScore}%
-                            </Badge>
-                        </div>
-                        <div className="text-right flex-shrink-0 pl-4">
-                            <AnimatedNumber to={analysisResult.macroScore} className={cn("text-6xl font-bold tracking-tighter", activeColorClass)} />
-                            <p className={cn("font-semibold text-xl", activeColorClass)}>{analysisResult.marketCondition}</p>
-                        </div>
+    <Card>
+        <CardContent className="space-y-4 p-6">
+            <Card className="bg-primary/5 border-primary/20 overflow-hidden">
+               <div className="flex justify-between items-center p-6">
+                    <div className="space-y-2">
+                       <CardTitle>Macro Sentiment Score</CardTitle>
+                        <CardDescription>
+                            Overall market health based on key indicators.
+                        </CardDescription>
+                         <Badge variant="secondary" className="cursor-help flex-shrink-0">
+                            <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
+                            Confidence: {analysisResult.confidenceScore}%
+                        </Badge>
                     </div>
-                </Card>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {indicators.map((indicator, index) => (
-                        <Card key={indicator.name} className="flex flex-col">
-                           <CardContent className="p-4 flex flex-1 items-center justify-between gap-4">
-                                <div className="space-y-1 flex-grow">
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <div className="flex items-center gap-1.5 cursor-help">
-                                                <p className="text-sm font-semibold">{indicator.name}</p>
-                                                <Info className="h-3 w-3 text-muted-foreground" />
-                                            </div>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <p className="max-w-xs">{indicator.description}</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                    <p className="text-xs text-muted-foreground line-clamp-2">{indicator.description}</p>
-                                </div>
-                                <div className="text-right flex-shrink-0 pl-2">
-                                    <AnimatedNumber to={indicator.value} className="text-3xl font-mono font-bold" delay={200 + index * 100} />
-                                    <AnimatedProgress value={indicator.value} className="h-1.5 w-[60px] mt-1" indicatorClassName={cn(getProgressColorClass(indicator.value))} />
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                    <Link href="/learn/market-indicators" className="group block">
-                       <Card className="h-full flex flex-col items-center justify-center text-center p-4 bg-muted/50 hover:bg-muted transition-colors">
-                           <BookOpen className="h-8 w-8 text-muted-foreground group-hover:text-primary transition-colors" />
-                           <p className="text-sm font-semibold mt-2 text-muted-foreground group-hover:text-primary transition-colors">Learn More</p>
-                           <p className="text-xs text-muted-foreground">About these indicators</p>
-                       </Card>
-                    </Link>
+                    <div className="text-right flex-shrink-0 pl-4">
+                        <AnimatedNumber to={analysisResult.macroScore} className={cn("text-6xl font-bold tracking-tighter", activeColorClass)} />
+                        <p className={cn("font-semibold text-xl", activeColorClass)}>{analysisResult.marketCondition}</p>
+                    </div>
                 </div>
-            </CardContent>
-        </Card>
-    </TooltipProvider>
+            </Card>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {indicators.map((indicator, index) => (
+                    <Card key={indicator.name} className="flex flex-col">
+                       <CardContent className="p-4 flex flex-1 items-center justify-between gap-4">
+                            <div className="space-y-1 flex-grow">
+                                <p className="text-sm font-semibold">{indicator.name}</p>
+                                <p className="text-xs text-muted-foreground line-clamp-2">{indicator.description}</p>
+                            </div>
+                            <div className="text-right flex-shrink-0 pl-2">
+                                <AnimatedNumber to={indicator.value} className="text-3xl font-mono font-bold" delay={200 + index * 100} />
+                                <AnimatedProgress value={indicator.value} className="h-1.5 w-[60px] mt-1" indicatorClassName={cn(getProgressColorClass(indicator.value))} />
+                            </div>
+                        </CardContent>
+                    </Card>
+                ))}
+                <Link href="/learn/market-indicators" className="group block">
+                   <Card className="h-full flex flex-col items-center justify-center text-center p-4 bg-muted/50 hover:bg-muted transition-colors">
+                       <BookOpen className="h-8 w-8 text-muted-foreground group-hover:text-primary transition-colors" />
+                       <p className="text-sm font-semibold mt-2 text-muted-foreground group-hover:text-primary transition-colors">Learn More</p>
+                       <p className="text-xs text-muted-foreground">About these indicators</p>
+                   </Card>
+                </Link>
+            </div>
+        </CardContent>
+    </Card>
   );
 }

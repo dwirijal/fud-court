@@ -8,9 +8,9 @@ import {
     CardTitle,
     CardDescription
 } from "@/components/ui/card";
-import { DashboardContent } from "../dashboard-content";
+import { DashboardContent } from "../../../src/app/admin/dashboard-content";
 import { collection, getDocs, query } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { db } from "../../../src/lib/firebase";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";

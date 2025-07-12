@@ -1,75 +1,65 @@
 
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
-import anime from 'animejs/lib/anime.es.js';
+import React, { useRef, useState } from 'react';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { Logo } from '../atoms/logo';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 
 export function NftCard() {
   const cardRef = useRef<HTMLDivElement>(null);
-  const glowRef = useRef<HTMLDivElement>(null);
-  const [isMounted, setIsMounted] = useState(false);
+  
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
 
-  useEffect(() => {
-    setIsMounted(true);
-    if (cardRef.current) {
-      anime({
-        targets: cardRef.current,
-        opacity: [0, 1],
-        translateY: [50, 0],
-        rotateX: [-15, 0],
-        duration: 1200,
-        easing: 'easeOutExpo',
-        delay: 600,
-      });
-    }
-  }, []);
+  const mouseXSpring = useSpring(x, { stiffness: 300, damping: 20, mass: 0.5 });
+  const mouseYSpring = useSpring(y, { stiffness: 300, damping: 20, mass: 0.5 });
+
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ['12deg', '-12deg']);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ['-12deg', '12deg']);
+  
+  const glowX = useTransform(mouseXSpring, [-0.5, 0.5], ['0%', '100%']);
+  const glowY = useTransform(mouseYSpring, [-0.5, 0.5], ['0%', '100%']);
+  const glowOpacity = useTransform(mouseYSpring, [-0.5, 0.5], [0.3, 0]);
+
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current || !glowRef.current) return;
-
+    if (!cardRef.current) return;
     const { left, top, width, height } = cardRef.current.getBoundingClientRect();
-    const x = e.clientX - left;
-    const y = e.clientY - top;
-    
-    // For the parallax tilt effect
-    const rotateX = (y / height - 0.5) * -20; // Max rotation 10 degrees
-    const rotateY = (x / width - 0.5) * 20;  // Max rotation 10 degrees
-
-    // For the moving glow effect
-    const glowX = (x / width) * 100;
-    const glowY = (y / height) * 100;
-
-    cardRef.current.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`;
-    glowRef.current.style.background = `radial-gradient(circle at ${glowX}% ${glowY}%, oklch(var(--primary-values) / 0.15), transparent 40%)`;
+    const mouseX = e.clientX - left;
+    const mouseY = e.clientY - top;
+    x.set(mouseX / width - 0.5);
+    y.set(mouseY / height - 0.5);
   };
 
   const handleMouseLeave = () => {
-    if (cardRef.current) {
-      cardRef.current.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
-    }
-    if (glowRef.current) {
-        glowRef.current.style.background = `radial-gradient(circle at 50% 50%, oklch(var(--primary-values) / 0), transparent 40%)`;
-    }
+    x.set(0);
+    y.set(0);
   };
 
   return (
-    <div
+    <motion.div
       ref={cardRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className={cn(
-          "group relative w-full max-w-xs cursor-pointer transition-transform duration-300 ease-out",
-          isMounted ? 'opacity-100' : 'opacity-0'
-      )}
-      style={{ transformStyle: 'preserve-3d', willChange: 'transform' }}
+      style={{
+        transformStyle: 'preserve-3d',
+        rotateX,
+        rotateY,
+      }}
+      initial={{ opacity: 0, y: 50, rotateX: -15 }}
+      animate={{ opacity: 1, y: 0, rotateX: 0 }}
+      transition={{ duration: 1, ease: 'easeOut' }}
+      className="group relative w-full max-w-xs cursor-pointer"
     >
       <Card className="relative overflow-hidden rounded-xl bg-background/80 backdrop-blur-sm transition-shadow duration-300 group-hover:shadow-2xl">
         <CardContent className="p-4">
-          <div className="aspect-[4/5] relative w-full overflow-hidden rounded-lg" style={{ transform: 'translateZ(20px)' }}>
+          <motion.div
+            style={{ transform: 'translateZ(20px)' }}
+            className="aspect-[4/5] relative w-full overflow-hidden rounded-lg"
+          >
             <Image
               src="https://placehold.co/600x600.png"
               alt="CryptoPulse Genesis NFT"
@@ -78,9 +68,17 @@ export function NftCard() {
               data-ai-hint="futuristic cyberpunk animal"
               priority
             />
-             <div ref={glowRef} className="pointer-events-none absolute inset-0 transition-all duration-300 ease-out" />
-          </div>
-          <div className="mt-4 flex items-start justify-between" style={{ transform: 'translateZ(50px)' }}>
+            <motion.div 
+              style={{
+                background: `radial-gradient(circle at ${glowX.get()} ${glowY.get()}, oklch(var(--primary-values) / ${glowOpacity.get()}), transparent 50%)`,
+              }}
+              className="pointer-events-none absolute inset-0 transition-opacity duration-500" 
+            />
+          </motion.div>
+          <motion.div 
+            style={{ transform: 'translateZ(50px)' }} 
+            className="mt-4 flex items-start justify-between"
+          >
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Fud Court
@@ -92,9 +90,9 @@ export function NftCard() {
             <div className="shrink-0">
               <Logo className="h-10 w-10" />
             </div>
-          </div>
+          </motion.div>
         </CardContent>
       </Card>
-    </div>
+    </motion.div>
   );
 }

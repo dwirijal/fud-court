@@ -35,7 +35,7 @@ export default function DegenPage() {
     const intervalId = setInterval(fetchData, 360000); 
 
     return () => clearInterval(intervalId); // Cleanup on component unmount
-  }, []); // Empty dependency array ensures this runs once and sets up the interval.
+  }, [isLoading, error]); // Add dependencies to re-run effect if needed, though interval handles polling.
 
   const validTokens = tokens.filter(token => token && token.address);
 

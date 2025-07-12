@@ -4,7 +4,6 @@ import {
     CardContent,
     CardHeader,
     CardTitle,
-    CardDescription
 } from "@/components/ui/card";
 import { AreaChart } from "lucide-react";
 

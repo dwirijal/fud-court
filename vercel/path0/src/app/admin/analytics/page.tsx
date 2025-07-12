@@ -72,7 +72,7 @@ export default async function AnalyticsPage() {
                     </CardHeader>
                     <CardContent>
                         <p className="text-sm text-muted-foreground">
-                            Please ensure `ANALYTIC_URL` is correctly set in your environment variables and restart the server.
+                            Please ensure `DATABASE_URL` is correctly set in your environment variables and restart the server.
                         </p>
                     </CardContent>
                 </Card>

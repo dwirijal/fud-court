@@ -10,16 +10,16 @@ const getDbInstance = () => {
         return dbInstance;
     }
 
-    const analyticUrl = process.env.ANALYTIC_URL;
+    const databaseUrl = process.env.DATABASE_URL;
 
-    if (!analyticUrl) {
-        console.warn('ANALYTIC_URL is not set. DB-dependent features will be disabled.');
+    if (!databaseUrl) {
+        console.warn('DATABASE_URL is not set. DB-dependent features will be disabled.');
         return null;
     }
 
     try {
         // Use the serverless-optimized neon driver.
-        const sql = neon(analyticUrl);
+        const sql = neon(databaseUrl);
         dbInstance = drizzle(sql, { schema });
         return dbInstance;
     } catch (error) {

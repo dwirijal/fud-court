@@ -70,7 +70,7 @@ Follow these steps to get a local copy up and running.
 
     # Neon Database (for page analytics)
     # Get this from your Neon project dashboard. Use the "Pooled" connection string.
-    ANALYTIC_URL="postgres://user:password@host/dbname?sslmode=require"
+    DATABASE_URL="postgres://user:password@host/dbname?sslmode=require"
 
     # Discord (for Community Hub)
     DISCORD_BOT_TOKEN=your_discord_bot_token
@@ -82,8 +82,8 @@ Follow these steps to get a local copy up and running.
     1. Go to your project on Vercel.
     2. Click the **Settings** tab.
     3. Go to **Environment Variables**.
-    4. Add each key-value pair from your `.env.local` file.
-    5. **Redeploy** your project for the changes to take effect.
+    4. Add each key-value pair from your `.env.local` file. **Pay special attention to `DATABASE_URL`**.
+    5. **Redeploy** your project from the Vercel dashboard for the changes to take effect.
 
 4.  **Run the development server:**
     ```bash

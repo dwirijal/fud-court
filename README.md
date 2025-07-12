@@ -29,7 +29,7 @@ Built with Next.js and leveraging a modern tech stack, Fud Court serves as an al
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 - **UI Components**: [ShadCN UI](https://ui.shadcn.com/)
 - **AI/Generative**: [Firebase Genkit](https://firebase.google.com/docs/genkit) (with Gemini)
-- **Database/ORM**: [Firebase Firestore](https://firebase.google.com/docs/firestore)
+- **Database**: [Firebase Firestore](https://firebase.google.com/docs/firestore)
 - **CMS**: [Ghost](https://ghost.org/) (Headless)
 - **Deployment**: [Vercel](https://vercel.com/)
 

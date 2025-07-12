@@ -9,12 +9,13 @@ import {
     CardDescription
 } from "@/components/ui/card";
 import { DashboardContent } from "../dashboard-content";
-import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
+import { unstable_noStore as noStore } from 'next/cache';
 
 interface AnalyticsData {
     path: string;
@@ -22,6 +23,7 @@ interface AnalyticsData {
 }
 
 async function getPageAnalytics(): Promise<AnalyticsData[]> {
+    noStore();
     if (!db) {
         throw new Error("Firebase is not configured.");
     }
@@ -96,6 +98,7 @@ export default function AnalyticsPage() {
                     <AlertTitle>Error</AlertTitle>
                     <AlertDescription>
                         {error}
+                        <p className="mt-2 text-xs">Please ensure your Firebase project credentials are correctly set in your environment variables.</p>
                     </AlertDescription>
                 </Alert>
             );

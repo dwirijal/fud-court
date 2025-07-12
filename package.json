@@ -47,6 +47,7 @@
     "@tiptap/extension-underline": "^2.6.0",
     "@tiptap/pm": "^2.6.0",
     "@tiptap/react": "^2.6.0",
+    "react": "^19.0.0-rc.0",
     "@tiptap/starter-kit": "^2.6.0",
     "@tryghost/admin-api": "^1.13.10",
     "@tryghost/content-api": "^1.11.20",
@@ -72,8 +73,7 @@
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",
     "turndown": "^7.2.0",
-    "zod": "^3.24.2",
-    "react": "^19.0.0-rc.0"
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.13",

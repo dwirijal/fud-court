@@ -1,8 +1,8 @@
 
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/db';
-import { pageViews } from '@/lib/db/schema';
 import { z } from 'zod';
+import { db } from '@/lib/firebase';
+import { collection, addDoc, serverTimestamp } from "firebase/firestore"; 
 
 const bodySchema = z.object({
   path: z.string().min(1),
@@ -10,7 +10,7 @@ const bodySchema = z.object({
 
 export async function POST(request: Request) {
   if (!db) {
-    return NextResponse.json({ message: 'Database not configured' }, { status: 500 });
+    return NextResponse.json({ message: 'Firebase not configured' }, { status: 500 });
   }
 
   try {
@@ -21,7 +21,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'Invalid request body' }, { status: 400 });
     }
 
-    await db.insert(pageViews).values({ path: parsed.data.path });
+    await addDoc(collection(db, "pageViews"), {
+      path: parsed.data.path,
+      timestamp: serverTimestamp()
+    });
 
     return NextResponse.json({ message: 'OK' }, { status: 200 });
   } catch (error) {

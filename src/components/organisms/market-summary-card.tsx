@@ -7,9 +7,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { fetchMarketData } from '@/lib/coingecko';
 import type { MarketAnalysisOutput } from '@/types';
 import { analyzeMarketSentiment } from '@/ai/flows/market-analysis-flow';
-import { saveMarketSnapshot, hasTodaySnapshot } from '@/lib/actions/snapshots';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { AlertTriangle, CheckCircle, Info, ArrowUpRight, BookOpen } from 'lucide-react';
+import { AlertTriangle, CheckCircle, ArrowUpRight, BookOpen } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
@@ -112,14 +111,8 @@ export function MarketSummaryCard() {
           throw new Error("Gagal mengambil data pasar dari CoinGecko.");
         }
         
-        const todaySnapshotExists = await hasTodaySnapshot();
-        
         const result = await analyzeMarketSentiment(marketData);
         setAnalysisResult(result);
-
-        if (result && !todaySnapshotExists) {
-            await saveMarketSnapshot(result);
-        }
 
       } catch (e) {
         console.error("Analisis pasar gagal:", e);

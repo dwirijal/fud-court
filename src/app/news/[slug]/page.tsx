@@ -144,6 +144,7 @@ export default async function PostPage({ params }: PostPageProps) {
             fill
             className="object-cover"
             data-ai-hint="crypto abstract"
+            sizes="100vw"
           />
         </div>
       )}

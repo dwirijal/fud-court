@@ -4,35 +4,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useState, useEffect } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuPortal,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/atoms/logo";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { useTheme } from "next-themes";
-import {
-  Menu,
-  PenSquare,
-  PlusCircle,
-  Sun,
-  Moon,
-  Laptop,
-  Globe,
-  BarChart,
-  User,
-} from "lucide-react";
+import { Menu } from "lucide-react";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -75,23 +51,11 @@ const mobileNavLinks = [
     ...readingComponents.map(item => ({ href: item.href, label: item.title }))
 ];
 
-// This is a placeholder for a real authentication check.
-const useIsAdmin = () => {
-    const [isAdmin, setIsAdmin] = useState(false);
-    useEffect(() => {
-        // In a real app, you would fetch user session and check roles.
-        // For now, we default to false.
-        setIsAdmin(false);
-    }, []);
-    return isAdmin;
-};
-
 
 export function Header() {
   const pathname = usePathname();
   const [isHovered, setIsHovered] = useState(false);
   const [activeMenu, setActiveMenu] = useState("");
-  const isAdmin = useIsAdmin();
 
   const isIslandExpanded = isHovered || activeMenu !== "";
 
@@ -113,7 +77,7 @@ export function Header() {
             </Button>
           </SheetTrigger>
           <SheetContent side="right" className="p-0">
-            <SheetHeader className="p-6 pb-0">
+             <SheetHeader className="p-6 pb-0">
                <SheetTitle className="sr-only">Menu Navigasi</SheetTitle>
             </SheetHeader>
             <div className="flex h-full flex-col p-6">
@@ -138,25 +102,6 @@ export function Header() {
                     {item.label}
                   </Link>
                 ))}
-                 <Link
-                    href="/login"
-                    className="text-muted-foreground transition-colors hover:text-primary"
-                  >
-                    Masuk / Daftar
-                  </Link>
-                   {isAdmin && (
-                    <>
-                        <Link href="/admin" className="text-muted-foreground transition-colors hover:text-primary">
-                            Dasbor
-                        </Link>
-                        <Link href="/admin/ghost" target="_blank" className="text-muted-foreground transition-colors hover:text-primary">
-                            Dasbor Ghost
-                        </Link>
-                        <Link href="/admin/posts/new" className="text-muted-foreground transition-colors hover:text-primary">
-                            Buat Pos
-                        </Link>
-                    </>
-                )}
               </nav>
             </div>
           </SheetContent>
@@ -228,104 +173,12 @@ export function Header() {
                 </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
-
-            <div className="flex items-center gap-2 ml-2">
-              <ProfileMenu showAdminLinks={isAdmin} />
-            </div>
           </div>
         </div>
       </div>
     </>
   );
 }
-
-function ProfileMenu({ showAdminLinks }: { showAdminLinks?: boolean }) {
-    const { setTheme } = useTheme()
-
-    return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
-                    <Avatar className="h-8 w-8">
-                        <AvatarImage
-                            src="https://placehold.co/100x100.png"
-                            alt="Profil Pengguna"
-                            data-ai-hint="user avatar"
-                        />
-                        <AvatarFallback><User /></AvatarFallback>
-                    </Avatar>
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem asChild>
-                    <Link href="/login">Masuk / Daftar</Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuSub>
-                    <DropdownMenuSubTrigger>
-                        <Sun className="h-4 w-4" />
-                        <span>Tema</span>
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuPortal>
-                        <DropdownMenuSubContent>
-                            <DropdownMenuItem onClick={() => setTheme("light")}>
-                                <Sun className="mr-2 h-4 w-4" />
-                                <span>Terang</span>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => setTheme("dark")}>
-                                <Moon className="mr-2 h-4 w-4" />
-                                <span>Gelap</span>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => setTheme("system")}>
-                                <Laptop className="mr-2 h-4 w-4" />
-                                <span>Sistem</span>
-                            </DropdownMenuItem>
-                        </DropdownMenuSubContent>
-                    </DropdownMenuPortal>
-                </DropdownMenuSub>
-                <DropdownMenuSub>
-                    <DropdownMenuSubTrigger>
-                        <Globe className="h-4 w-4" />
-                        <span>Bahasa</span>
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuPortal>
-                        <DropdownMenuSubContent>
-                            <DropdownMenuItem>English</DropdownMenuItem>
-                            <DropdownMenuItem>Bahasa Indonesia</DropdownMenuItem>
-                            <DropdownMenuItem>Español</DropdownMenuItem>
-                        </DropdownMenuSubContent>
-                    </DropdownMenuPortal>
-                </DropdownMenuSub>
-
-                {showAdminLinks && (
-                    <>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuLabel>Admin</DropdownMenuLabel>
-                         <DropdownMenuItem asChild>
-                            <Link href="/admin">
-                                <BarChart className="h-4 w-4" />
-                                <span>Dasbor</span>
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link href="/admin/ghost" target="_blank">
-                                <PenSquare className="h-4 w-4" />
-                                <span>Dasbor Ghost</span>
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link href="/admin/posts/new">
-                                <PlusCircle className="h-4 w-4" />
-                                <span>Buat Pos</span>
-                            </Link>
-                        </DropdownMenuItem>
-                    </>
-                )}
-            </DropdownMenuContent>
-        </DropdownMenu>
-    )
-}
-
 
 const ListItem = React.forwardRef<
   React.ElementRef<typeof Link>,

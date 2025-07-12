@@ -26,7 +26,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Logic is now client-side to check for admin role.
+  // Admin links are explicitly disabled for now.
   const showAdminLinks = false;
 
   return (

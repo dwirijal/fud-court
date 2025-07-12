@@ -70,7 +70,7 @@ Follow these steps to get a local copy up and running.
 
     # Neon Database (for page analytics)
     # Get this from your Neon project dashboard. Use the "Pooled" connection string.
-    DATABASE_URL="postgres://user:password@host/dbname?sslmode=require"
+    ANALYTIC_URL="postgres://user:password@host/dbname?sslmode=require"
 
     # Discord (for Community Hub)
     DISCORD_BOT_TOKEN=your_discord_bot_token

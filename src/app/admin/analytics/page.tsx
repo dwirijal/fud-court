@@ -11,6 +11,8 @@ import { db } from "@/lib/db";
 import { pageViews } from "@/lib/db/schema";
 import { count, desc } from "drizzle-orm";
 import { unstable_noStore as noStore } from 'next/cache';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Terminal } from "lucide-react";
 
 async function getPageAnalytics() {
     noStore();
@@ -63,29 +65,30 @@ export default async function AnalyticsPage() {
             </header>
 
             {!isDbConfigured ? (
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Database Not Configured</CardTitle>
-                        <CardDescription>
-                            Page analytics cannot be displayed because the database is not connected.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-sm text-muted-foreground">
-                            Please ensure `DATABASE_URL` is correctly set in your environment variables and restart the server.
-                        </p>
-                    </CardContent>
-                </Card>
+                 <Alert variant="destructive">
+                    <Terminal className="h-4 w-4" />
+                    <AlertTitle>Database Not Configured</AlertTitle>
+                    <AlertDescription>
+                        Page analytics cannot be displayed. Please ensure `DATABASE_URL` is correctly set in your environment variables (both locally in `.env.local` and in your Vercel project settings) and redeploy.
+                    </AlertDescription>
+                </Alert>
             ) : dbError ? (
                 <Card>
                     <CardHeader>
                         <CardTitle>Database Connection Failed</CardTitle>
                         <CardDescription>
-                           Could not connect to the database. This is often caused by an incorrect hostname or credentials.
+                           Could not connect to the database. This often means the `DATABASE_URL` is missing or incorrect in your Vercel project settings.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                         <p className="text-sm text-destructive font-mono bg-destructive/10 p-4 rounded-md">
+                        <p className="text-sm font-semibold mb-2">Troubleshooting Steps:</p>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                            <li>Go to your Vercel project dashboard.</li>
+                            <li>Navigate to **Settings** &rarr; **Environment Variables**.</li>
+                            <li>Ensure there is a variable named `DATABASE_URL` with the correct pooled connection string from Neon.</li>
+                            <li>Redeploy your project after adding/updating the variable.</li>
+                        </ul>
+                         <p className="mt-4 text-sm text-destructive font-mono bg-destructive/10 p-4 rounded-md">
                             {dbError}
                         </p>
                     </CardContent>

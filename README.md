@@ -19,7 +19,7 @@ Built with Next.js and leveraging a modern tech stack, Fud Court serves as an al
 - **📝 Headless CMS Integration**: Seamlessly create, edit, and manage content with a full-featured post editor connected to a Ghost CMS backend.
 - **💬 Discord Community Hub**: A dedicated admin section to view server stats, manage channels (create, edit, delete), and create threads directly from the dashboard.
 - **⚡ Dynamic & Modern UI**: Built with Next.js App Router, Radix, and styled with Tailwind CSS & ShadCN UI for a responsive, performant, and aesthetically pleasing user experience.
-- **🔍 Page Analytics**: Track page views across the application with data stored in a Supabase Postgres database via Drizzle ORM.
+- **🔍 Page Analytics**: Track page views across the application with data stored in a Neon Postgres database via Drizzle ORM.
 - **Aesthetic Themes**: Includes beautifully crafted light and dark mode themes.
 
 ## Tech Stack
@@ -29,7 +29,7 @@ Built with Next.js and leveraging a modern tech stack, Fud Court serves as an al
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 - **UI Components**: [ShadCN UI](https://ui.shadcn.com/)
 - **AI/Generative**: [Firebase Genkit](https://firebase.google.com/docs/genkit) (with Gemini)
-- **Database/ORM**: [Supabase](https://supabase.com/) (Postgres) & [Drizzle ORM](https://orm.drizzle.team/)
+- **Database/ORM**: [Neon](https://neon.tech/) (Postgres) & [Drizzle ORM](https://orm.drizzle.team/)
 - **CMS**: [Ghost](https://ghost.org/) (Headless)
 - **Deployment**: [Vercel](https://vercel.com/)
 
@@ -56,7 +56,9 @@ Follow these steps to get a local copy up and running.
     ```
 
 3.  **Set up environment variables:**
-    Create a `.env.local` file in the root of your project and add the necessary API keys and URLs. See the `.env.example` file for the required variables.
+
+    **For Local Development:**
+    Create a `.env.local` file in the root of your project.
 
     ```bash
     # .env.local
@@ -66,14 +68,22 @@ Follow these steps to get a local copy up and running.
     GHOST_CONTENT_API_KEY=your_content_api_key
     GHOST_ADMIN_API_KEY=your_admin_api_key
 
-    # Supabase (for page analytics)
-    NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-    SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+    # Neon Database (for page analytics)
+    # Get this from your Neon project dashboard. Use the "Pooled" connection string.
+    DATABASE_URL="postgres://user:password@host/dbname?sslmode=require"
 
     # Discord (for Community Hub)
     DISCORD_BOT_TOKEN=your_discord_bot_token
     DISCORD_GUILD_ID=your_discord_server_id
     ```
+
+    **For Vercel Deployment (Important):**
+    You must also set these variables in your Vercel project settings for the deployed application to work.
+    1. Go to your project on Vercel.
+    2. Click the **Settings** tab.
+    3. Go to **Environment Variables**.
+    4. Add each key-value pair from your `.env.local` file. **Pay special attention to `DATABASE_URL`**.
+    5. **Redeploy** your project from the Vercel dashboard for the changes to take effect.
 
 4.  **Run the development server:**
     ```bash

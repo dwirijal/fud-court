@@ -20,7 +20,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/atoms/logo";
 import { cn } from "@/lib/utils";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useTheme } from "next-themes";
 import {
   Menu,
@@ -112,7 +112,10 @@ export function Header() {
               <span className="sr-only">Buka Menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="right">
+          <SheetContent side="right" className="p-0">
+            <SheetHeader className="p-6 pb-0">
+               <SheetTitle className="sr-only">Menu Navigasi</SheetTitle>
+            </SheetHeader>
             <div className="flex h-full flex-col p-6">
               <Link href="/" className="flex items-center gap-3 mb-6">
                 <Logo />

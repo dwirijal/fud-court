@@ -36,7 +36,7 @@ export default async function Home() {
           </div>
 
           <div className="mt-16">
-            <MarketCarousel data={cryptoData} />
+            <MarketCarousel data={cryptoData || []} />
           </div>
         </div>
       </section>

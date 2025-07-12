@@ -97,6 +97,10 @@ function StatCard({ label, value, marketCap, colorClass, index }: { label: strin
     );
 }
 
+interface MarketStatsCardProps {
+    marketStats: MarketStats | null;
+}
+
 export function MarketStatsCard({ marketStats }: MarketStatsCardProps) {
     if (!marketStats) {
         return <Skeleton className="h-[220px] lg:h-[120px] w-full" />;

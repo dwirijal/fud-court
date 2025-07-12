@@ -1,32 +1,38 @@
 
-'use client';
-
 import { getTopCoins } from "@/lib/coingecko";
 import { Card } from "@/components/ui/card";
 import { getColumns } from "./columns";
 import { DataTable } from "@/components/ui/data-table";
 import type { CryptoData } from "@/types";
-import { useState, useEffect } from "react";
 import { CurrencySwitcher } from "@/components/molecules/currency-switcher";
+import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import Link from "next/link";
 
-export default function MarketsPage() {
-  const [data, setData] = useState<CryptoData[]>([]);
-  const [currency, setCurrency] = useState('usd');
-  const [isLoading, setIsLoading] = useState(true);
+interface MarketsPageProps {
+  searchParams?: {
+    currency?: string;
+  };
+}
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      const cryptoData = await getTopCoins(100, currency);
-      setData(cryptoData);
-      setIsLoading(false);
-    };
-    fetchData();
-  }, [currency]);
-
+async function MarketDataTable({ currency }: { currency: string }) {
+  const data = await getTopCoins(100, currency);
   const columns = getColumns(currency);
+  return <DataTable columns={columns} data={data} />;
+}
+
+function TableSkeleton() {
+    return (
+        <div className="p-4 space-y-2">
+            {Array.from({ length: 15 }).map((_, i) => (
+                <Skeleton key={i} className="h-12 w-full" />
+            ))}
+        </div>
+    );
+}
+
+
+export default async function MarketsPage({ searchParams }: MarketsPageProps) {
+  const currency = searchParams?.currency?.toLowerCase() || 'usd';
 
   return (
     <div className="container mx-auto px-4 py-12 md:py-24">
@@ -40,21 +46,15 @@ export default function MarketsPage() {
               Jelajahi harga mata uang kripto, kapitalisasi pasar, dan volume perdagangan secara real-time.
             </p>
           </div>
-          <CurrencySwitcher value={currency} onValueChange={setCurrency} />
+          <CurrencySwitcher defaultValue={currency} />
         </div>
       </header>
 
       <div className="w-full overflow-x-auto">
         <Card className="bg-card/60 backdrop-blur-md">
-          {isLoading ? (
-              <div className="p-4 space-y-2">
-                  {Array.from({ length: 10 }).map((_, i) => (
-                      <Skeleton key={i} className="h-12 w-full" />
-                  ))}
-              </div>
-          ) : (
-              <DataTable columns={columns} data={data} />
-          )}
+            <Suspense key={currency} fallback={<TableSkeleton />}>
+              <MarketDataTable currency={currency} />
+            </Suspense>
         </Card>
       </div>
     </div>

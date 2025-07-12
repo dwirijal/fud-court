@@ -154,13 +154,13 @@ export default async function MarketIndicatorsPage() {
        <Breadcrumb className="mb-8">
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink asChild>
+            <BreadcrumbLink href="/" asChild>
               <Link href="/">Beranda</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink asChild>
+            <BreadcrumbLink href="/learn" asChild>
               <Link href="/learn">Belajar</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>

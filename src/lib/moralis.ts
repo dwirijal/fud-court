@@ -10,7 +10,11 @@ const API_BASE_URL = 'https://deep-index.moralis.io/api/v2.2';
  * @throws Will throw an error if the API request fails.
  */
 export async function getTrendingTokens(chain: string = 'solana'): Promise<MoralisTrendingToken[]> {
-  const apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6ImZmOWRiODg4LTg4ZjYtNDZkOS05MjEzLWY4YWFjODJiOGFjMyIsIm9yZ0lkIjoiNDU4MTU1IiwidXNlcklkIjoiNDcxMzYyIiwidHlwZUlkIjoiMTFjZWExNzMtZDkzYS00OGE1LWExYWYtMzk1OWRmYjQyNzBmIiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE3NTE5NTI1MTgsImV4cCI6NDkwNzcxMjUxOH0.scYNT8_E_1ZihNgda8CEH8VQH5zJPVQpMIq4loKeYro';
+  const apiKey = process.env.MORALIS_API_KEY;
+
+  if (!apiKey) {
+    throw new Error("Moralis API Key is not configured. Please set MORALIS_API_KEY in your environment variables.");
+  }
 
   const url = `${API_BASE_URL}/tokens/trending?chain=${chain}`;
   

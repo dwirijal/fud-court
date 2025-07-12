@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -28,8 +29,14 @@ const cardVariants = {
 };
 
 export function NewsCard({ post }: { post: Post }) {
+  const [publicationDate, setPublicationDate] = useState('');
+
+  useEffect(() => {
+    // Format the date only on the client side to avoid hydration mismatch
+    setPublicationDate(format(new Date(post.published_at), 'd MMMM yyyy, HH:mm'));
+  }, [post.published_at]);
+  
   const showImage = post.primary_tag?.name?.toLowerCase() !== 'news';
-  const publicationDate = format(new Date(post.published_at), 'd MMMM yyyy, HH:mm');
 
   return (
     <motion.div
@@ -69,7 +76,7 @@ export function NewsCard({ post }: { post: Post }) {
           </CardContent>
           <CardFooter className="p-6 pt-0">
             <time dateTime={post.published_at} className="text-xs text-muted-foreground">
-              {publicationDate}
+              {publicationDate || '...'}
             </time>
           </CardFooter>
         </Card>

@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/atoms/logo";
 import { cn } from "@/lib/utils";
@@ -58,7 +58,6 @@ export function Header() {
   const [activeMenu, setActiveMenu] = useState("");
 
   const isIslandExpanded = isHovered || activeMenu !== "";
-  const isReadingPage = readingComponents.some(c => pathname.startsWith(c.href));
 
   return (
     <>
@@ -155,12 +154,7 @@ export function Header() {
                 ))}
 
                 <NavigationMenuItem value="reading">
-                    <NavigationMenuTrigger 
-                      className={cn(
-                        "bg-transparent hover:bg-accent text-sm font-medium data-[state=open]:bg-accent/50",
-                        isReadingPage ? "text-primary" : "text-foreground/70"
-                      )}
-                    >
+                    <NavigationMenuTrigger className="bg-transparent hover:bg-accent text-sm font-medium data-[state=open]:bg-accent/50 text-foreground/70">
                         Bacaan
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>

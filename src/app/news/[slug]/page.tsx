@@ -20,6 +20,12 @@ type Props = {
   params: { slug: string };
 };
 
+interface PostPageProps {
+    params: {
+        slug: string;
+    };
+}
+
 export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
@@ -66,7 +72,7 @@ export async function generateStaticParams() {
     }));
 }
 
-export default async function PostPage({ params }: { params: { slug: string } }) {
+export default async function PostPage({ params }: PostPageProps) {
   const post = await getPostBySlug(params.slug);
 
   if (!post) {

@@ -6,17 +6,13 @@ import { Header } from '@/components/organisms/header';
 import { Footer } from '@/components/organisms/footer';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
-import { AppShell } from './app-shell';
-import { SidebarProvider } from '@/components/ui/sidebar';
 
 interface AppLayoutProps {
   children: React.ReactNode;
-  showAdminLinks?: boolean;
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
   const pathname = usePathname();
-  const isAdminPage = pathname.startsWith('/admin');
   const isLoginPage = pathname === '/login';
 
   return (
@@ -26,11 +22,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       enableSystem
       disableTransitionOnChange
     >
-      {isAdminPage ? (
-        <SidebarProvider>
-            <AppShell>{children}</AppShell>
-        </SidebarProvider>
-      ) : isLoginPage ? (
+      {isLoginPage ? (
         <>{children}</>
       ) : (
         <div className="flex min-h-screen flex-col">

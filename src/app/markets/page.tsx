@@ -3,11 +3,9 @@ import { getTopCoins } from "@/lib/coingecko";
 import { Card } from "@/components/ui/card";
 import { getColumns } from "./columns";
 import { DataTable } from "@/components/ui/data-table";
-import type { CryptoData } from "@/types";
 import { CurrencySwitcher } from "@/components/molecules/currency-switcher";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { PageProps } from 'next';
 
 interface MarketsPageProps {
   searchParams?: {

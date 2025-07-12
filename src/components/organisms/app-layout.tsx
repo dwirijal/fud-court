@@ -14,7 +14,7 @@ interface AppLayoutProps {
   showAdminLinks?: boolean;
 }
 
-export function AppLayout({ children, showAdminLinks }: AppLayoutProps) {
+export function AppLayout({ children }: AppLayoutProps) {
   const pathname = usePathname();
   const isAdminPage = pathname.startsWith('/admin');
   const isLoginPage = pathname === '/login';
@@ -28,13 +28,13 @@ export function AppLayout({ children, showAdminLinks }: AppLayoutProps) {
     >
       {isAdminPage ? (
         <SidebarProvider>
-            <AppShell showAdminLinks={showAdminLinks}>{children}</AppShell>
+            <AppShell>{children}</AppShell>
         </SidebarProvider>
       ) : isLoginPage ? (
         <>{children}</>
       ) : (
         <div className="flex min-h-screen flex-col">
-          <Header showAdminLinks={showAdminLinks} />
+          <Header />
           <main className="flex-1">{children}</main>
           <Footer />
         </div>

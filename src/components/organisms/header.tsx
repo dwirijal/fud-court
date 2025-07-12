@@ -3,14 +3,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
@@ -31,6 +30,7 @@ import {
   Laptop,
   Globe,
   BarChart,
+  User,
 } from "lucide-react";
 import {
   NavigationMenu,
@@ -79,10 +79,23 @@ const mobileNavLinks = [
     ...readingComponents.map(item => ({ href: item.href, label: item.title }))
 ];
 
-export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
+// This is a placeholder for a real authentication check.
+const useIsAdmin = () => {
+    const [isAdmin, setIsAdmin] = useState(false);
+    useEffect(() => {
+        // In a real app, you would fetch user session and check roles.
+        // For now, we default to false.
+        setIsAdmin(false);
+    }, []);
+    return isAdmin;
+};
+
+
+export function Header() {
   const pathname = usePathname();
   const [isHovered, setIsHovered] = useState(false);
   const [activeMenu, setActiveMenu] = useState("");
+  const isAdmin = useIsAdmin();
 
   const isIslandExpanded = isHovered || activeMenu !== "";
 
@@ -132,7 +145,7 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
                   >
                     Log In / Sign Up
                   </Link>
-                   {showAdminLinks && (
+                   {isAdmin && (
                     <>
                         <Link href="/admin" className="text-muted-foreground transition-colors hover:text-primary">
                             Dashboard
@@ -218,7 +231,7 @@ export function Header({ showAdminLinks }: { showAdminLinks?: boolean }) {
             </NavigationMenu>
 
             <div className="flex items-center gap-2 ml-2">
-              <ProfileMenu showAdminLinks={showAdminLinks} />
+              <ProfileMenu showAdminLinks={isAdmin} />
             </div>
           </div>
         </div>
@@ -240,7 +253,7 @@ function ProfileMenu({ showAdminLinks }: { showAdminLinks?: boolean }) {
                             alt="User Profile"
                             data-ai-hint="user avatar"
                         />
-                        <AvatarFallback>U</AvatarFallback>
+                        <AvatarFallback><User /></AvatarFallback>
                     </Avatar>
                 </Button>
             </DropdownMenuTrigger>

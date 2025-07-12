@@ -26,7 +26,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const showAdminLinks = !!process.env.GHOST_API_URL && !!process.env.GHOST_ADMIN_API_KEY;
+  // Logic is now client-side to check for admin role.
+  const showAdminLinks = false;
 
   return (
     <html lang="en" suppressHydrationWarning>

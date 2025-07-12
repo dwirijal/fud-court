@@ -16,10 +16,9 @@ import { ProfileMenu } from '../molecules/profile-menu';
 
 interface AppShellProps {
   children: React.ReactNode;
-  showAdminLinks?: boolean;
 }
 
-export function AppShell({ children, showAdminLinks }: AppShellProps) {
+export function AppShell({ children }: AppShellProps) {
   return (
     <>
       <Sidebar collapsible="icon">
@@ -38,7 +37,7 @@ export function AppShell({ children, showAdminLinks }: AppShellProps) {
           <MainNav />
         </SidebarContent>
         <SidebarFooter className="p-2">
-          <ProfileMenu showAdminLinks={showAdminLinks} />
+          <ProfileMenu />
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>

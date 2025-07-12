@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,8 +29,21 @@ import {
   User,
 } from 'lucide-react';
 
-export function ProfileMenu({ showAdminLinks }: { showAdminLinks?: boolean }) {
+// This is a placeholder for a real authentication check.
+const useIsAdmin = () => {
+    const [isAdmin, setIsAdmin] = useState(false);
+    useEffect(() => {
+        // In a real app, you would fetch user session and check roles.
+        // For now, we default to false.
+        setIsAdmin(false);
+    }, []);
+    return isAdmin;
+};
+
+
+export function ProfileMenu() {
   const { setTheme } = useTheme();
+  const isAdmin = useIsAdmin();
 
   return (
     <DropdownMenu>
@@ -96,7 +109,7 @@ export function ProfileMenu({ showAdminLinks }: { showAdminLinks?: boolean }) {
           </DropdownMenuPortal>
         </DropdownMenuSub>
 
-        {showAdminLinks && (
+        {isAdmin && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuLabel>Admin</DropdownMenuLabel>

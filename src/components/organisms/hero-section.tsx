@@ -156,7 +156,7 @@ export function HeroSection() {
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
               <Button size="lg" asChild>
-                <Link href="https://discord.gg" target="_blank" rel="noopener noreferrer">Gabung Komunitas</Link>
+                <Link href="#" target="_blank" rel="noopener noreferrer">Gabung Komunitas</Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
                  <Link href="/news">Baca Berita Terbaru</Link>

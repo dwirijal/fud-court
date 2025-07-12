@@ -1,11 +1,1 @@
-
-'use server';
-
-import { redirect } from 'next/navigation';
-
-// This page is deprecated and now redirects to the new, more specific
-// /admin/community/channels page to better align with the new IA.
-// This change was made to support a more modular approach to community management.
-export default async function DeprecatedDiscordPage() {
-    redirect('/admin/community/channels');
-}
+// This directory has been removed to simplify the project and fix build errors.

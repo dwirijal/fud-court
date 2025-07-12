@@ -7,17 +7,16 @@
 
 ---
 
-**Fud Court** is a sophisticated, data-driven dashboard designed to bring clarity to the chaotic world of cryptocurrency. It provides powerful tools for market analysis, news aggregation, AI-powered insights, and community management, all within a single, beautifully designed interface.
+**Fud Court** is a sophisticated, data-driven dashboard designed to bring clarity to the chaotic world of cryptocurrency. It provides powerful tools for market analysis, news aggregation, and AI-powered insights, all within a single, beautifully designed interface.
 
-Built with Next.js and leveraging a modern tech stack, Fud Court serves as an all-in-one command center for crypto enthusiasts, traders, and community managers.
+Built with Next.js and leveraging a modern tech stack, Fud Court serves as an all-in-one command center for crypto enthusiasts and traders.
 
 ## Core Features
 
 - **📊 Macro Sentiment Score**: A proprietary 5-component model that calculates an overall market health score based on Market Cap, Volume, Fear & Greed Index, ATH distance, and Market Breadth.
 - **🤖 AI-Powered Trending Topics**: Utilizes Genkit and Google's Gemini models to analyze real-time news feeds and identify emerging market narratives and sentiment.
 - **📈 Live Crypto Markets**: Real-time cryptocurrency data, including prices, market caps, and historical sparklines, powered by the CoinGecko API.
-- **📝 Headless CMS Integration**: Seamlessly create, edit, and manage content with a full-featured post editor connected to a Ghost CMS backend.
-- **💬 Discord Community Hub**: A dedicated admin section to view server stats, manage channels (create, edit, delete), and create threads directly from the dashboard.
+- **📝 Headless CMS Integration**: View content from a Ghost CMS backend.
 - **⚡ Dynamic & Modern UI**: Built with Next.js App Router, Radix, and styled with Tailwind CSS & ShadCN UI for a responsive, performant, and aesthetically pleasing user experience.
 - **Aesthetic Themes**: Includes beautifully crafted light and dark mode themes.
 
@@ -65,9 +64,9 @@ Follow these steps to get a local copy up and running.
     GHOST_CONTENT_API_KEY=your_content_api_key
     GHOST_ADMIN_API_KEY=your_admin_api_key
 
-    # Discord (for Community Hub)
-    DISCORD_BOT_TOKEN=your_discord_bot_token
-    DISCORD_GUILD_ID=your_discord_server_id
+    # Discord (Optional, for future features)
+    # DISCORD_BOT_TOKEN=your_discord_bot_token
+    # DISCORD_GUILD_ID=your_discord_server_id
     ```
 
     **Important for Vercel Deployment:**

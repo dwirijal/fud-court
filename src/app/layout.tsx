@@ -28,13 +28,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Admin links are explicitly disabled for now.
-  const showAdminLinks = false;
-
   return (
     <html lang="id" suppressHydrationWarning>
       <body className={`${inter.variable} ${spaceGrotesk.variable} font-body antialiased`}>
-        <AppLayout showAdminLinks={showAdminLinks}>
+        <AppLayout>
           {children}
         </AppLayout>
         <Analytics />

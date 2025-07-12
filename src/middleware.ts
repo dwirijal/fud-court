@@ -2,9 +2,8 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
-  const response = NextResponse.next();
   // All page tracking logic has been disabled.
-  return response;
+  return NextResponse.next();
 }
 
 export const config = {
@@ -14,7 +13,6 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * Feel free to modify this pattern to fit your needs.
      */
     '/((?!_next/static|_next/image|favicon.ico).*)',
   ],

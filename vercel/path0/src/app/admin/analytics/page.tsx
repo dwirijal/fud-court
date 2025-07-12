@@ -1,4 +1,6 @@
 
+'use client';
+
 import {
     Card,
     CardContent,
@@ -7,49 +9,103 @@ import {
     CardDescription
 } from "@/components/ui/card";
 import { DashboardContent } from "../dashboard-content";
-import { db } from "@/lib/db";
-import { pageViews } from "@/lib/db/schema";
-import { count, desc } from "drizzle-orm";
+import { collection, getDocs, query } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { useEffect, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Terminal } from "lucide-react";
 import { unstable_noStore as noStore } from 'next/cache';
 
-async function getPageAnalytics() {
+interface AnalyticsData {
+    path: string;
+    count: number;
+}
+
+async function getPageAnalytics(): Promise<AnalyticsData[]> {
     noStore();
-    // Check if db is configured before using it
     if (!db) {
-        throw new Error("Database is not configured.");
+        throw new Error("Firebase is not configured.");
     }
-    const data = await db
-        .select({
-            path: pageViews.path,
-            count: count(pageViews.path),
-        })
-        .from(pageViews)
-        .groupBy(pageViews.path)
-        .orderBy(desc(count(pageViews.path)));
+    const pageViewsRef = collection(db, "pageViews");
+    const q = query(pageViewsRef);
+    const querySnapshot = await getDocs(q);
+
+    const counts: { [path: string]: number } = {};
+    querySnapshot.forEach((doc) => {
+        const path = doc.data().path;
+        counts[path] = (counts[path] || 0) + 1;
+    });
+
+    const data = Object.entries(counts)
+        .map(([path, count]) => ({ path, count }))
+        .sort((a, b) => b.count - a.count);
+
     return data;
 }
 
+export default function AnalyticsPage() {
+    const [analytics, setAnalytics] = useState<AnalyticsData[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-export default async function AnalyticsPage() {
-    // Check if db is available from the lib
-    const isDbConfigured = !!db;
-    let analytics = [];
-    let dbError: string | null = null;
+    const isFirebaseConfigured = !!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
 
-    if (isDbConfigured) {
-        try {
-            analytics = await getPageAnalytics();
-        } catch (error) {
-            // We are intentionally not logging the error to the console here.
-            // In a dev environment, this prevents the Next.js error overlay from appearing
-            // for configuration issues (like a wrong DB hostname), which can be confusing.
-            // The UI will render a friendly error message instead.
-            dbError = error instanceof Error ? error.message : "An unknown database error occurred.";
+    useEffect(() => {
+        if (!isFirebaseConfigured) {
+            setError("Firebase not configured. Please check your environment variables.");
+            setIsLoading(false);
+            return;
         }
-    }
+
+        getPageAnalytics()
+            .then(data => {
+                setAnalytics(data);
+            })
+            .catch(err => {
+                setError(err instanceof Error ? err.message : "An unknown error occurred.");
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
+    }, [isFirebaseConfigured]);
 
     const totalViews = analytics.reduce((sum, item) => sum + item.count, 0);
     const uniquePages = analytics.length;
+
+    const renderContent = () => {
+        if (isLoading) {
+            return (
+                 <Card>
+                    <CardHeader>
+                        <Skeleton className="h-6 w-1/2" />
+                        <Skeleton className="h-4 w-3/4" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-4">
+                            <Skeleton className="h-24 w-full" />
+                            <Skeleton className="h-48 w-full" />
+                        </div>
+                    </CardContent>
+                </Card>
+            );
+        }
+
+        if (error) {
+             return (
+                <Alert variant="destructive">
+                    <Terminal className="h-4 w-4" />
+                    <AlertTitle>Error</AlertTitle>
+                    <AlertDescription>
+                        {error}
+                        <p className="mt-2 text-xs">Please ensure your Firebase project credentials are correctly set in your environment variables and that the Firestore database has been created in your project.</p>
+                    </AlertDescription>
+                </Alert>
+            );
+        }
+
+        return <DashboardContent analytics={analytics} totalViews={totalViews} uniquePages={uniquePages} />;
+    };
 
     return (
         <div className="container mx-auto px-4 py-12 md:py-24">
@@ -58,41 +114,11 @@ export default async function AnalyticsPage() {
                     Analytics & Performance
                 </h1>
                 <p className="text-xl text-muted-foreground">
-                    An overview of your website's traffic and engagement statistics.
+                    An overview of your website's traffic, powered by Firebase.
                 </p>
             </header>
 
-            {!isDbConfigured ? (
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Database Not Configured</CardTitle>
-                        <CardDescription>
-                            Page analytics cannot be displayed because the database is not connected.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-sm text-muted-foreground">
-                            Please ensure `DATABASE_URL` is correctly set in your environment variables and restart the server.
-                        </p>
-                    </CardContent>
-                </Card>
-            ) : dbError ? (
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Database Connection Failed</CardTitle>
-                        <CardDescription>
-                           Could not connect to the database. This is often caused by an incorrect hostname or credentials.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                         <p className="text-sm text-destructive font-mono bg-destructive/10 p-4 rounded-md">
-                            {dbError}
-                        </p>
-                    </CardContent>
-                </Card>
-            ) : (
-                <DashboardContent analytics={analytics} totalViews={totalViews} uniquePages={uniquePages} />
-            )}
+            {renderContent()}
         </div>
     );
 }

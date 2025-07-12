@@ -19,7 +19,7 @@ Built with Next.js and leveraging a modern tech stack, Fud Court serves as an al
 - **📝 Headless CMS Integration**: Seamlessly create, edit, and manage content with a full-featured post editor connected to a Ghost CMS backend.
 - **💬 Discord Community Hub**: A dedicated admin section to view server stats, manage channels (create, edit, delete), and create threads directly from the dashboard.
 - **⚡ Dynamic & Modern UI**: Built with Next.js App Router, Radix, and styled with Tailwind CSS & ShadCN UI for a responsive, performant, and aesthetically pleasing user experience.
-- **🔍 Page Analytics**: Track page views across the application with data stored in a Neon Postgres database via Drizzle ORM.
+- **🔍 Page Analytics**: Track page views across the application with data stored in Firebase Firestore.
 - **Aesthetic Themes**: Includes beautifully crafted light and dark mode themes.
 
 ## Tech Stack
@@ -29,7 +29,7 @@ Built with Next.js and leveraging a modern tech stack, Fud Court serves as an al
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 - **UI Components**: [ShadCN UI](https://ui.shadcn.com/)
 - **AI/Generative**: [Firebase Genkit](https://firebase.google.com/docs/genkit) (with Gemini)
-- **Database/ORM**: [Neon](https://neon.tech/) (Postgres) & [Drizzle ORM](https://orm.drizzle.team/)
+- **Database**: [Firebase Firestore](https://firebase.google.com/docs/firestore)
 - **CMS**: [Ghost](https://ghost.org/) (Headless)
 - **Deployment**: [Vercel](https://vercel.com/)
 
@@ -41,6 +41,7 @@ Follow these steps to get a local copy up and running.
 
 - Node.js (v18 or newer)
 - npm or yarn
+- A Firebase project
 
 ### Installation
 
@@ -57,32 +58,36 @@ Follow these steps to get a local copy up and running.
 
 3.  **Set up environment variables:**
 
-    **For Local Development:**
-    Create a `.env.local` file in the root of your project.
+    Create a `.env` file in the root of your project and add the following variables.
 
     ```bash
-    # .env.local
+    # .env
 
     # Ghost CMS
     GHOST_API_URL=https://your-ghost-instance.com
     GHOST_CONTENT_API_KEY=your_content_api_key
     GHOST_ADMIN_API_KEY=your_admin_api_key
 
-    # Neon Database (for page analytics)
-    # Get this from your Neon project dashboard. Use the "Pooled" connection string.
-    DATABASE_URL="postgres://user:password@host/dbname?sslmode=require"
-
     # Discord (for Community Hub)
     DISCORD_BOT_TOKEN=your_discord_bot_token
     DISCORD_GUILD_ID=your_discord_server_id
+    
+    # Firebase (for Page Analytics)
+    # Get these from your Firebase project settings > General tab > Your apps > Web app
+    NEXT_PUBLIC_FIREBASE_API_KEY="YOUR_API_KEY"
+    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="YOUR_AUTH_DOMAIN"
+    NEXT_PUBLIC_FIREBASE_PROJECT_ID="YOUR_PROJECT_ID"
+    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET="YOUR_STORAGE_BUCKET"
+    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID="YOUR_SENDER_ID"
+    NEXT_PUBLIC_FIREBASE_APP_ID="YOUR_APP_ID"
     ```
 
-    **For Vercel Deployment (Important):**
-    You must also set these variables in your Vercel project settings.
+    **Important for Vercel Deployment:**
+    You must also set these variables in your Vercel project settings for the deployed application to work.
     1. Go to your project on Vercel.
     2. Click the **Settings** tab.
     3. Go to **Environment Variables**.
-    4. Add each key-value pair from your `.env.local` file. **Pay special attention to `DATABASE_URL`**.
+    4. Add each key-value pair from your `.env` file.
     5. **Redeploy** your project from the Vercel dashboard for the changes to take effect.
 
 4.  **Run the development server:**

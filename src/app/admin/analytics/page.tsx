@@ -72,7 +72,7 @@ export default async function AnalyticsPage() {
                     </CardHeader>
                     <CardContent>
                         <p className="text-sm text-muted-foreground">
-                            Please ensure `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are correctly set in your environment variables and restart the server.
+                            Please ensure `DATABASE_URL` is correctly set in your environment variables and restart the server.
                         </p>
                     </CardContent>
                 </Card>

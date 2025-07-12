@@ -1,15 +1,10 @@
 
 import { NextResponse, type NextRequest } from 'next/server';
-import { createClient } from '@/utils/supabase/middleware';
 
 export async function middleware(request: NextRequest) {
-  // Use the Supabase helper to handle session management.
-  // This also returns a response object that we should use.
-  const { supabase, response } = createClient(request);
-  await supabase.auth.getSession();
-
+  const response = NextResponse.next();
   const { pathname } = request.nextUrl;
-  const url = request.nextUrl.clone()
+  const url = request.nextUrl.clone();
 
   // List of paths to exclude from page view tracking.
   const excludedPaths = [
@@ -36,7 +31,7 @@ export async function middleware(request: NextRequest) {
     }).catch(console.error);
   }
 
-  // Return the response object from the Supabase helper.
+  // Return the plain response
   return response;
 }
 

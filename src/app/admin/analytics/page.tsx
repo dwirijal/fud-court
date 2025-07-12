@@ -9,7 +9,7 @@ import {
     CardDescription
 } from "@/components/ui/card";
 import { DashboardContent } from "../dashboard-content";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -98,7 +98,7 @@ export default function AnalyticsPage() {
                     <AlertTitle>Error</AlertTitle>
                     <AlertDescription>
                         {error}
-                        <p className="mt-2 text-xs">Please ensure your Firebase project credentials are correctly set in your environment variables.</p>
+                        <p className="mt-2 text-xs">Please ensure your Firebase project credentials are correctly set in your environment variables and that the Firestore database has been created in your project.</p>
                     </AlertDescription>
                 </Alert>
             );

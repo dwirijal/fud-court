@@ -82,13 +82,17 @@ export default async function PostPage({ params }: PostPageProps) {
   const tag = post.primary_tag?.name?.toLowerCase();
   const truncatedTitle = post.title.length > 50 ? `${post.title.substring(0, 50)}...` : post.title;
   let tagLink: React.ReactNode = null;
+  let tagHref = '/news';
 
   if (tag === 'news') {
     tagLink = <Link href="/news">Berita</Link>;
+    tagHref = '/news';
   } else if (tag === 'article') {
     tagLink = <Link href="/articles">Artikel</Link>;
+    tagHref = '/articles';
   } else if (tag === 'learn') {
     tagLink = <Link href="/learn">Belajar</Link>;
+    tagHref = '/learn';
   }
 
 
@@ -97,7 +101,7 @@ export default async function PostPage({ params }: PostPageProps) {
       <Breadcrumb className="mb-8">
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink asChild>
+            <BreadcrumbLink href="/" asChild>
               <Link href="/">Beranda</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -105,7 +109,7 @@ export default async function PostPage({ params }: PostPageProps) {
             <>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink asChild>
+                <BreadcrumbLink href={tagHref} asChild>
                   {tagLink}
                 </BreadcrumbLink>
               </BreadcrumbItem>

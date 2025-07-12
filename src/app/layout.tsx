@@ -3,6 +3,7 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { AppLayout } from '@/components/organisms/app-layout';
 import { Inter, Space_Grotesk } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/react';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -35,6 +36,7 @@ export default function RootLayout({
         <AppLayout showAdminLinks={showAdminLinks}>
           {children}
         </AppLayout>
+        <Analytics />
       </body>
     </html>
   );

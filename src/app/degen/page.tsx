@@ -1,41 +1,20 @@
 
-'use client';
-
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import { getTrendingTokens } from "@/lib/moralis";
 import type { MoralisTrendingToken } from "@/types";
 import { TrendingTokenCard } from "@/components/molecules/trending-token-card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { AlertTriangle } from "lucide-react";
 
-export default function DegenPage() {
-  const [tokens, setTokens] = useState<MoralisTrendingToken[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export default async function DegenPage() {
+  let tokens: MoralisTrendingToken[] = [];
+  let error: string | null = null;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const trendingTokens = await getTrendingTokens('solana');
-        setTokens(trendingTokens);
-        if (error) setError(null); // Clear previous errors on a successful fetch
-      } catch (err) {
-        console.error("Gagal mengambil data Moralis:", err);
-        setError(err instanceof Error ? err.message : "Terjadi kesalahan tak terduga saat mengambil data.");
-      } finally {
-        // Only set loading to false on the initial fetch
-        if (isLoading) {
-            setIsLoading(false);
-        }
-      }
-    };
-
-    fetchData(); // Fetch initial data
-    // 10 requests per hour = 1 request every 6 minutes (360,000 ms)
-    const intervalId = setInterval(fetchData, 360000); 
-
-    return () => clearInterval(intervalId); // Cleanup on component unmount
-  }, [isLoading, error]); // Add dependencies to re-run effect if needed, though interval handles polling.
+  try {
+    tokens = await getTrendingTokens('solana');
+  } catch (err) {
+    console.error("Gagal mengambil data Moralis:", err);
+    error = err instanceof Error ? err.message : "Terjadi kesalahan tak terduga saat mengambil data.";
+  }
 
   const validTokens = tokens.filter(token => token && token.address);
 
@@ -46,17 +25,17 @@ export default function DegenPage() {
             Token Populer di Solana
         </h1>
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Token yang sedang tren dari ekosistem Solana, didukung oleh Moralis. Data diperbarui setiap 6 menit.
+            Token yang sedang tren dari ekosistem Solana, didukung oleh Moralis. Data mungkin sedikit tertunda.
         </p>
       </header>
 
       <div className="max-w-2xl mx-auto">
         <div className="space-y-4">
-          {isLoading ? (
-            Array.from({ length: 10 }).map((_, i) => <Skeleton key={i} className="h-28 w-full" />)
-          ) : error ? (
-            <div className="text-center text-destructive p-4 border border-destructive/50 rounded-lg bg-destructive/10">
-                <p className="font-semibold">{error}</p>
+          {error ? (
+            <div className="text-center text-destructive p-6 border border-destructive/50 rounded-lg bg-destructive/10 flex flex-col items-center">
+                <AlertTriangle className="h-10 w-10 mb-4" />
+                <p className="text-lg font-semibold">Gagal Memuat Token</p>
+                <p className="text-sm text-destructive/80">{error}</p>
             </div>
           ) : (
             validTokens.length > 0 ? validTokens.map((token) => (

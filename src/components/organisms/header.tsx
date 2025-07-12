@@ -198,7 +198,7 @@ export function Header() {
                           href={item.href}
                           className={cn(
                             navigationMenuTriggerStyle(),
-                            "bg-transparent hover:bg-accent/50 text-sm font-medium",
+                            "bg-transparent hover:bg-accent text-sm font-medium",
                             pathname === item.href
                               ? "text-primary"
                               : "text-foreground/70"
@@ -211,7 +211,7 @@ export function Header() {
                 ))}
 
                 <NavigationMenuItem value="reading">
-                    <NavigationMenuTrigger className="bg-transparent hover:bg-accent/50 text-sm font-medium data-[state=open]:bg-accent/50 text-foreground/70">
+                    <NavigationMenuTrigger className="bg-transparent hover:bg-accent text-sm font-medium data-[state=open]:bg-accent/50 text-foreground/70">
                         Reading
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>

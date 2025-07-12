@@ -56,7 +56,9 @@ Follow these steps to get a local copy up and running.
     ```
 
 3.  **Set up environment variables:**
-    Create a `.env.local` file in the root of your project and add the necessary API keys and URLs. See the `.env` file for the required variables.
+
+    **For Local Development:**
+    Create a `.env.local` file in the root of your project.
 
     ```bash
     # .env.local
@@ -67,13 +69,21 @@ Follow these steps to get a local copy up and running.
     GHOST_ADMIN_API_KEY=your_admin_api_key
 
     # Neon Database (for page analytics)
-    # Get this from your Neon project dashboard
+    # Get this from your Neon project dashboard. Use the "Pooled" connection string.
     DATABASE_URL="postgres://user:password@host/dbname?sslmode=require"
 
     # Discord (for Community Hub)
     DISCORD_BOT_TOKEN=your_discord_bot_token
     DISCORD_GUILD_ID=your_discord_server_id
     ```
+
+    **For Vercel Deployment (Important):**
+    You must also set these variables in your Vercel project settings.
+    1. Go to your project on Vercel.
+    2. Click the **Settings** tab.
+    3. Go to **Environment Variables**.
+    4. Add each key-value pair from your `.env.local` file.
+    5. **Redeploy** your project for the changes to take effect.
 
 4.  **Run the development server:**
     ```bash

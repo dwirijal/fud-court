@@ -9,31 +9,43 @@ import {
 
 const getAngle = (score: number) => 180 - (score / 100) * 180;
 
-const Hand = ({ cx, cy, score }: { cx: number, cy: number, score: number }) => {
-    if (cx === undefined || cy === undefined) return null;
+const Hand = ({ score, style }: { score: number, style?: React.CSSProperties }) => {
     const angle = getAngle(score);
     return (
-        <g transform={`rotate(${angle} ${cx} ${cy})`} style={{ transition: 'transform 0.5s ease-out' }}>
-            <circle cx={cx} cy={cy} r={6} fill="hsl(var(--card-foreground))" stroke="hsl(var(--card))" strokeWidth={2} />
-            <line
-                x1={cx}
-                y1={cy}
-                x2={cx}
-                y2={cy-65}
-                stroke="hsl(var(--card-foreground))"
-                strokeWidth="3"
-                strokeLinecap="round"
+        <div 
+            className="absolute top-0 left-0 w-full h-full"
+            style={{
+                transform: `rotate(${angle}deg)`,
+                transformOrigin: 'bottom center',
+                transition: 'transform 0.5s ease-out',
+                ...style
+            }}
+        >
+            <div 
+                className="absolute"
+                style={{
+                    bottom: '50%',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    width: '3px',
+                    height: '35%',
+                    backgroundColor: 'hsl(var(--card-foreground))',
+                    borderRadius: '3px 3px 0 0',
+                    boxShadow: '0 0 2px rgba(0,0,0,0.5)'
+                }}
             />
-             <line
-                x1={cx}
-                y1={cy}
-                x2={cx}
-                y2={cy-63}
-                stroke="hsl(var(--card))"
-                strokeWidth="1"
-                strokeLinecap="round"
+            <div 
+                className="absolute rounded-full"
+                style={{
+                    bottom: 'calc(50% - 6px)',
+                    left: 'calc(50% - 6px)',
+                    width: '12px',
+                    height: '12px',
+                    backgroundColor: 'hsl(var(--card-foreground))',
+                    border: '2px solid hsl(var(--card))'
+                }}
             />
-        </g>
+        </div>
     );
 };
 
@@ -52,7 +64,7 @@ export function ScoreGauge({
   return (
     <ChartContainer
       config={{}}
-      className="mx-auto aspect-[1.5] w-full max-w-[300px]"
+      className="mx-auto aspect-[1.5] w-full max-w-[300px] relative"
     >
       <PieChart margin={{ top: 0, right: 20, bottom: 20, left: 20 }}>
         <Pie
@@ -70,14 +82,9 @@ export function ScoreGauge({
           {chartData.map((entry) => (
             <Cell key={`cell-${entry.sentiment}`} fill={entry.color} />
           ))}
-          {({ cx, cy }) => {
-            if (cx && cy) {
-                return <Hand cx={cx} cy={cy} score={score} />;
-            }
-            return null;
-          }}
         </Pie>
       </PieChart>
+       <Hand score={score} style={{ bottom: '20px' }} />
     </ChartContainer>
   );
 }

@@ -7,6 +7,7 @@ import type { CryptoData } from "@/types";
 import { CurrencySwitcher } from "@/components/molecules/currency-switcher";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import type { PageProps } from 'next';
 
 interface MarketsPageProps {
   searchParams?: {

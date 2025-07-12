@@ -10,9 +10,9 @@ const API_BASE_URL = 'https://api.coingecko.com/api/v3';
  * Fetches a list of top cryptocurrencies from the CoinGecko API.
  * @param limit The number of coins to fetch. Defaults to 100.
  * @param currency The target currency of the prices. Defaults to 'usd'.
- * @returns A promise that resolves to an array of CryptoData objects.
+ * @returns A promise that resolves to an array of CryptoData objects or null on failure.
  */
-export async function getTopCoins(limit: number = 100, currency: string = 'usd'): Promise<CryptoData[]> {
+export async function getTopCoins(limit: number = 100, currency: string = 'usd'): Promise<CryptoData[] | null> {
   const url = `${API_BASE_URL}/coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=${limit}&page=1&sparkline=true&price_change_percentage=1h,24h,7d`;
   
   try {
@@ -22,14 +22,14 @@ export async function getTopCoins(limit: number = 100, currency: string = 'usd')
 
     if (!response.ok) {
       console.error(`CoinGecko API request failed with status: ${response.status}`);
-      return [];
+      return null;
     }
     
     const data: CryptoData[] = await response.json();
     return data;
   } catch (error) {
     console.error("An error occurred while fetching from CoinGecko API:", error);
-    return [];
+    return null;
   }
 }
 
@@ -146,7 +146,7 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
             maxHistoricalCapPromise
         ]);
         
-        if (!globalData?.data || !fearAndGreed.today || topCoins.length === 0 || specificCoins.length === 0) {
+        if (!globalData?.data || !fearAndGreed.today || !topCoins || topCoins.length === 0 || specificCoins.length === 0) {
             throw new Error("Failed to fetch necessary market data.");
         }
 

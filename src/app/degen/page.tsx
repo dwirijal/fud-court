@@ -1,5 +1,4 @@
 
-import Link from "next/link";
 import { getTrendingTokens } from "@/lib/moralis";
 import type { MoralisTrendingToken } from "@/types";
 import { TrendingTokenCard } from "@/components/molecules/trending-token-card";
@@ -7,13 +6,13 @@ import { AlertTriangle } from "lucide-react";
 
 export default async function DegenPage() {
   let tokens: MoralisTrendingToken[] = [];
-  let error: string | null = null;
+  let errorMessage: string | null = null;
 
   try {
     tokens = await getTrendingTokens('solana');
   } catch (err) {
     console.error("Gagal mengambil data Moralis:", err);
-    error = err instanceof Error ? err.message : "Terjadi kesalahan tak terduga saat mengambil data.";
+    errorMessage = err instanceof Error ? err.message : "Terjadi kesalahan tak terduga saat mengambil data.";
   }
 
   const validTokens = tokens.filter(token => token && token.address);
@@ -31,11 +30,11 @@ export default async function DegenPage() {
 
       <div className="max-w-2xl mx-auto">
         <div className="space-y-4">
-          {error ? (
+          {errorMessage ? (
             <div className="text-center text-destructive p-6 border border-destructive/50 rounded-lg bg-destructive/10 flex flex-col items-center">
                 <AlertTriangle className="h-10 w-10 mb-4" />
                 <p className="text-lg font-semibold">Gagal Memuat Token</p>
-                <p className="text-sm text-destructive/80">{error}</p>
+                <p className="text-sm text-destructive/80">{errorMessage}</p>
             </div>
           ) : (
             validTokens.length > 0 ? validTokens.map((token) => (

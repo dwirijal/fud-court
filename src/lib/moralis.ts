@@ -2,6 +2,11 @@
 import type { MoralisTrendingToken } from '@/types';
 
 const API_BASE_URL = 'https://deep-index.moralis.io/api/v2.2';
+const MORALIS_API_KEY = process.env.MORALIS_API_KEY;
+
+if (!MORALIS_API_KEY) {
+  console.warn("Moralis API Key is not configured. The Degen page will be disabled.");
+}
 
 /**
  * Fetches the trending tokens from the Moralis API for a specific chain.
@@ -10,9 +15,7 @@ const API_BASE_URL = 'https://deep-index.moralis.io/api/v2.2';
  * @throws Will throw an error if the API request fails.
  */
 export async function getTrendingTokens(chain: string = 'solana'): Promise<MoralisTrendingToken[]> {
-  const apiKey = process.env.MORALIS_API_KEY;
-
-  if (!apiKey) {
+  if (!MORALIS_API_KEY) {
     throw new Error("Moralis API Key is not configured. Please set MORALIS_API_KEY in your environment variables.");
   }
 
@@ -23,7 +26,7 @@ export async function getTrendingTokens(chain: string = 'solana'): Promise<Moral
       cache: 'no-store', // We are polling, so no cache
       headers: {
         'accept': 'application/json',
-        'X-API-Key': apiKey,
+        'X-API-Key': MORALIS_API_KEY,
       }
     });
 

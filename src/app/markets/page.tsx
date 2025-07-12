@@ -10,7 +10,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 async function MarketDataTable({ currency }: { currency: string }) {
   const data = await getTopCoins(100, currency);
   const columns = getColumns(currency);
-  return <DataTable columns={columns} data={data} />;
+  // Add a fallback for data to prevent crash if API fails
+  return <DataTable columns={columns} data={data || []} />;
 }
 
 function TableSkeleton() {
@@ -26,11 +27,9 @@ function TableSkeleton() {
 export default async function MarketsPage({
   searchParams,
 }: {
-  searchParams?: {
-    currency?: string;
-  };
+  searchParams?: { [key: string]: string | string[] | undefined };
 }) {
-  const currency = searchParams?.currency?.toLowerCase() || 'usd';
+  const currency = typeof searchParams?.currency === 'string' ? searchParams.currency.toLowerCase() : 'usd';
 
   return (
     <div className="container mx-auto px-4 py-12 md:py-24">

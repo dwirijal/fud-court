@@ -6,12 +6,14 @@ import Link from "next/link";
 import {
   Card,
   CardContent,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { Post } from "@/types";
 import { motion } from "framer-motion";
+import { format } from 'date-fns';
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -27,6 +29,7 @@ const cardVariants = {
 
 export function NewsCard({ post }: { post: Post }) {
   const showImage = post.primary_tag?.name?.toLowerCase() !== 'news';
+  const publicationDate = format(new Date(post.published_at), 'd MMMM yyyy, HH:mm');
 
   return (
     <motion.div
@@ -64,6 +67,11 @@ export function NewsCard({ post }: { post: Post }) {
               {post.excerpt}
             </p>
           </CardContent>
+          <CardFooter className="p-6 pt-0">
+            <time dateTime={post.published_at} className="text-xs text-muted-foreground">
+              {publicationDate}
+            </time>
+          </CardFooter>
         </Card>
       </Link>
     </motion.div>

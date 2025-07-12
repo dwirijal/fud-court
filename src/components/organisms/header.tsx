@@ -45,32 +45,32 @@ import {
 
 // Define navigation structure
 const mainNavLinks = [
-  { href: "/markets", label: "Markets" },
+  { href: "/markets", label: "Pasar" },
 ];
 
 const readingComponents: { title: string; href: string; description: string }[] = [
     {
-      title: "News",
+      title: "Berita",
       href: "/news",
       description:
-        "Latest updates and breaking stories from the crypto world.",
+        "Pembaruan terkini dan berita terhangat dari dunia kripto.",
     },
     {
-      title: "Articles",
+      title: "Artikel",
       href: "/articles",
       description:
-        "In-depth analysis and long-form content on the crypto landscape.",
+        "Analisis mendalam dan konten panjang tentang lanskap kripto.",
     },
     {
-      title: "Learn",
+      title: "Belajar",
       href: "/learn",
-      description: "Educational resources to help you understand the world of crypto.",
+      description: "Sumber daya pendidikan untuk membantu Anda memahami dunia kripto.",
     },
 ];
 
 // For mobile, we flatten the structure into a single list and ensure "Home" is present.
 const mobileNavLinks = [
-    { href: "/", label: "Home" },
+    { href: "/", label: "Beranda" },
     ...mainNavLinks, 
     ...readingComponents.map(item => ({ href: item.href, label: item.title }))
 ];
@@ -109,7 +109,7 @@ export function Header() {
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon">
               <Menu className="h-6 w-6" />
-              <span className="sr-only">Toggle Menu</span>
+              <span className="sr-only">Buka Menu</span>
             </Button>
           </SheetTrigger>
           <SheetContent side="right">
@@ -139,18 +139,18 @@ export function Header() {
                     href="/login"
                     className="text-muted-foreground transition-colors hover:text-primary"
                   >
-                    Log In / Sign Up
+                    Masuk / Daftar
                   </Link>
                    {isAdmin && (
                     <>
                         <Link href="/admin" className="text-muted-foreground transition-colors hover:text-primary">
-                            Dashboard
+                            Dasbor
                         </Link>
                         <Link href="/admin/ghost" target="_blank" className="text-muted-foreground transition-colors hover:text-primary">
-                            Ghost Dashboard
+                            Dasbor Ghost
                         </Link>
                         <Link href="/admin/posts/new" className="text-muted-foreground transition-colors hover:text-primary">
-                            Create Post
+                            Buat Pos
                         </Link>
                     </>
                 )}
@@ -207,7 +207,7 @@ export function Header() {
 
                 <NavigationMenuItem value="reading">
                     <NavigationMenuTrigger className="bg-transparent hover:bg-accent text-sm font-medium data-[state=open]:bg-accent/50 text-foreground/70">
-                        Reading
+                        Bacaan
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>
                         <ul className="grid w-[300px] gap-2 p-3">
@@ -246,7 +246,7 @@ function ProfileMenu({ showAdminLinks }: { showAdminLinks?: boolean }) {
                     <Avatar className="h-8 w-8">
                         <AvatarImage
                             src="https://placehold.co/100x100.png"
-                            alt="User Profile"
+                            alt="Profil Pengguna"
                             data-ai-hint="user avatar"
                         />
                         <AvatarFallback><User /></AvatarFallback>
@@ -255,27 +255,27 @@ function ProfileMenu({ showAdminLinks }: { showAdminLinks?: boolean }) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuItem asChild>
-                    <Link href="/login">Log In / Sign Up</Link>
+                    <Link href="/login">Masuk / Daftar</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuSub>
                     <DropdownMenuSubTrigger>
                         <Sun className="h-4 w-4" />
-                        <span>Theme</span>
+                        <span>Tema</span>
                     </DropdownMenuSubTrigger>
                     <DropdownMenuPortal>
                         <DropdownMenuSubContent>
                             <DropdownMenuItem onClick={() => setTheme("light")}>
                                 <Sun className="mr-2 h-4 w-4" />
-                                <span>Light</span>
+                                <span>Terang</span>
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => setTheme("dark")}>
                                 <Moon className="mr-2 h-4 w-4" />
-                                <span>Dark</span>
+                                <span>Gelap</span>
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => setTheme("system")}>
                                 <Laptop className="mr-2 h-4 w-4" />
-                                <span>System</span>
+                                <span>Sistem</span>
                             </DropdownMenuItem>
                         </DropdownMenuSubContent>
                     </DropdownMenuPortal>
@@ -283,7 +283,7 @@ function ProfileMenu({ showAdminLinks }: { showAdminLinks?: boolean }) {
                 <DropdownMenuSub>
                     <DropdownMenuSubTrigger>
                         <Globe className="h-4 w-4" />
-                        <span>Language</span>
+                        <span>Bahasa</span>
                     </DropdownMenuSubTrigger>
                     <DropdownMenuPortal>
                         <DropdownMenuSubContent>
@@ -301,19 +301,19 @@ function ProfileMenu({ showAdminLinks }: { showAdminLinks?: boolean }) {
                          <DropdownMenuItem asChild>
                             <Link href="/admin">
                                 <BarChart className="h-4 w-4" />
-                                <span>Dashboard</span>
+                                <span>Dasbor</span>
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                             <Link href="/admin/ghost" target="_blank">
                                 <PenSquare className="h-4 w-4" />
-                                <span>Ghost Dashboard</span>
+                                <span>Dasbor Ghost</span>
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                             <Link href="/admin/posts/new">
                                 <PlusCircle className="h-4 w-4" />
-                                <span>Create Post</span>
+                                <span>Buat Pos</span>
                             </Link>
                         </DropdownMenuItem>
                     </>

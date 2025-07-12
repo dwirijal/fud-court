@@ -20,8 +20,8 @@ export default function DegenPage() {
         setTokens(trendingTokens);
         if (error) setError(null); // Clear previous errors on a successful fetch
       } catch (err) {
-        console.error("Failed to fetch Moralis data:", err);
-        setError(err instanceof Error ? err.message : "An unexpected error occurred while fetching data.");
+        console.error("Gagal mengambil data Moralis:", err);
+        setError(err instanceof Error ? err.message : "Terjadi kesalahan tak terduga saat mengambil data.");
       } finally {
         // Only set loading to false on the initial fetch
         if (isLoading) {
@@ -43,10 +43,10 @@ export default function DegenPage() {
     <div className="container mx-auto px-4 py-12 md:py-24">
       <header className="mb-12 text-center">
         <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight mb-2">
-            Trending Tokens on Solana
+            Token Populer di Solana
         </h1>
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Trending tokens from the Solana ecosystem, powered by Moralis. Data is updated every 6 minutes.
+            Token yang sedang tren dari ekosistem Solana, didukung oleh Moralis. Data diperbarui setiap 6 menit.
         </p>
       </header>
 
@@ -61,7 +61,7 @@ export default function DegenPage() {
           ) : (
             validTokens.length > 0 ? validTokens.map((token) => (
               <TrendingTokenCard key={`${token.rank}-${token.address}`} token={token} />
-            )) : <p className="text-center text-muted-foreground">No trending tokens found at the moment.</p>
+            )) : <p className="text-center text-muted-foreground">Tidak ada token yang sedang tren saat ini.</p>
           )}
         </div>
       </div>

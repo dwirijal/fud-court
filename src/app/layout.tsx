@@ -18,7 +18,7 @@ const spaceGrotesk = Space_Grotesk({
 
 export const metadata: Metadata = {
   title: 'Fud Court',
-  description: 'Where crypto claims are put on trial.',
+  description: 'Di mana klaim kripto diadili.',
 };
 
 export default function RootLayout({
@@ -30,7 +30,7 @@ export default function RootLayout({
   const showAdminLinks = false;
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="id" suppressHydrationWarning>
       <body className={`${inter.variable} ${spaceGrotesk.variable} font-body antialiased`}>
         <AppLayout showAdminLinks={showAdminLinks}>
           {children}

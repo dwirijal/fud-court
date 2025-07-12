@@ -32,43 +32,43 @@ import { TrendChange } from "@/components/ui/TrendChange";
 const indicators = [
     {
         id: "marketCapScore",
-        name: "Market Cap Score (S₁)",
+        name: "Skor Kapitalisasi Pasar (S₁)",
         weight: "25%",
-        purpose: "Measures the current total market capitalization against its all-time high. It provides a macro view of the market's current valuation relative to its historical peak.",
-        formula: "S₁ = (Current Market Cap / Peak Market Cap) * 100",
-        interpretation: "A high score (near 100) indicates the market is near its historical peak, suggesting potential overheating. A low score suggests the market is significantly undervalued compared to its past performance."
+        purpose: "Mengukur total kapitalisasi pasar saat ini terhadap nilai tertingginya sepanjang masa. Ini memberikan pandangan makro tentang valuasi pasar saat ini relatif terhadap puncaknya di masa lalu.",
+        formula: "S₁ = (Kapitalisasi Pasar Saat Ini / Kapitalisasi Pasar Puncak) * 100",
+        interpretation: "Skor tinggi (mendekati 100) menunjukkan pasar mendekati puncak historisnya, menyiratkan potensi kejenuhan. Skor rendah menunjukkan pasar dinilai jauh lebih rendah dibandingkan kinerjanya di masa lalu."
     },
     {
         id: "volumeScore",
-        name: "Volume Score (S₂)",
+        name: "Skor Volume (S₂)",
         weight: "20%",
-        purpose: "Measures the current 24-hour trading volume against the 30-day average. This indicates the level of current market activity and interest.",
-        formula: "S₂ = min( (Current Volume / 30-Day Avg Volume) * 100, 200 ) / 2",
-        interpretation: "The score is capped at 200% of the average volume to prevent extreme outliers, then normalized to 100. A high score signifies high participation and conviction, while a low score indicates disinterest or a quiet market."
+        purpose: "Mengukur volume perdagangan 24 jam saat ini terhadap rata-rata 30 hari. Ini menunjukkan tingkat aktivitas dan minat pasar saat ini.",
+        formula: "S₂ = min( (Volume Saat Ini / Rata-rata Volume 30 Hari) * 100, 200 ) / 2",
+        interpretation: "Skor dibatasi pada 200% dari volume rata-rata untuk mencegah anomali ekstrem, kemudian dinormalisasi menjadi 100. Skor tinggi menandakan partisipasi dan keyakinan tinggi, sementara skor rendah menunjukkan kurangnya minat atau pasar yang sepi."
     },
     {
         id: "fearGreedScore",
-        name: "Fear & Greed Score (S₃)",
+        name: "Skor Fear & Greed (S₃)",
         weight: "20%",
-        purpose: "Directly uses the Fear & Greed Index to measure the prevailing emotional sentiment in the market. It's a classic indicator of market psychology.",
-        formula: "S₃ = Fear & Greed Index Value",
-        interpretation: "A low score indicates 'Extreme Fear' (potential buying opportunity), while a high score indicates 'Extreme Greed' (market may be due for a correction)."
+        purpose: "Langsung menggunakan Indeks Fear & Greed untuk mengukur sentimen emosional yang berlaku di pasar. Ini adalah indikator klasik psikologi pasar.",
+        formula: "S₃ = Nilai Indeks Fear & Greed",
+        interpretation: "Skor rendah menunjukkan 'Ketakutan Ekstrem' (potensi peluang beli), sementara skor tinggi menunjukkan 'Keserakahan Ekstrem' (pasar mungkin akan mengalami koreksi)."
     },
     {
         id: "athScore",
-        name: "ATH Score (S₄)",
+        name: "Skor ATH (S₄)",
         weight: "25%",
-        purpose: "Measures how far, on average, the top cryptocurrencies are from their all-time highs (ATH). This acts as a proxy for market health and potential for growth.",
-        formula: "S₄ = 100 - (Average % Distance from ATH of Top Coins)",
-        interpretation: "A high score means that top assets are close to their previous peaks, indicating strong market-wide momentum. A low score suggests that most assets are far from their ATHs, indicating a potential bear market or a bottoming phase."
+        purpose: "Mengukur seberapa jauh, rata-rata, mata uang kripto teratas dari harga tertinggi sepanjang masa (ATH). Ini berfungsi sebagai proksi untuk kesehatan pasar dan potensi pertumbuhan.",
+        formula: "S₄ = 100 - (Rata-rata % Jarak dari ATH Koin Teratas)",
+        interpretation: "Skor tinggi berarti aset-aset teratas mendekati puncak sebelumnya, menandakan momentum kuat di seluruh pasar. Skor rendah menunjukkan bahwa sebagian besar aset jauh dari ATH mereka, menandakan potensi pasar bearish atau fase dasar."
     },
     {
         id: "marketBreadthScore",
-        name: "Market Breadth Score (S₅)",
+        name: "Skor Sebaran Pasar (S₅)",
         weight: "10%",
-        purpose: "Measures the percentage of top coins that have seen positive price movement in the last 24 hours. It helps validate whether a market rally is broad-based or driven by only a few large assets.",
-        formula: "S₅ = (Rising Tokens / Total Top Coins) * 100",
-        interpretation: "A high score (>50%) shows that a majority of the market is participating in the upward trend (healthy rally). A low score indicates that only a few coins are driving gains, which could be a sign of weakness."
+        purpose: "Mengukur persentase koin teratas yang mengalami pergerakan harga positif dalam 24 jam terakhir. Ini membantu memvalidasi apakah reli pasar bersifat luas atau hanya didorong oleh beberapa aset besar.",
+        formula: "S₅ = (Token yang Naik / Total Koin Teratas) * 100",
+        interpretation: "Skor tinggi (>50%) menunjukkan bahwa mayoritas pasar berpartisipasi dalam tren kenaikan (reli sehat). Skor rendah menunjukkan bahwa hanya beberapa koin yang mendorong kenaikan, yang bisa menjadi tanda kelemahan."
     }
 ];
 
@@ -125,23 +125,23 @@ export default async function MarketIndicatorsPage() {
 
       indicatorScores = {
         marketCapScore: {
-          raw: { "Current Market Cap": formatCurrency(totalMarketCap), "Peak Market Cap": formatCurrency(maxHistoricalMarketCap) },
+          raw: { "Kapitalisasi Pasar Saat Ini": formatCurrency(totalMarketCap), "Kapitalisasi Puncak": formatCurrency(maxHistoricalMarketCap) },
           score: scores.s1
         },
         volumeScore: {
-          raw: { "Current Volume": formatCurrency(totalVolume24h), "30d Avg Volume": formatCurrency(avg30DayVolume) },
+          raw: { "Volume Saat Ini": formatCurrency(totalVolume24h), "Rata-rata Volume 30h": formatCurrency(avg30DayVolume) },
           score: scores.s2
         },
         fearGreedScore: {
-          raw: { "Index Value": fearAndGreedIndex },
+          raw: { "Nilai Indeks": fearAndGreedIndex },
           score: scores.s3
         },
         athScore: {
-          raw: { "Avg. % Distance from ATH": `${avgDistanceFromAth.toFixed(2)}%` },
+          raw: { "Rata-rata % Jarak dari ATH": `${avgDistanceFromAth.toFixed(2)}%` },
           score: scores.s4
         },
         marketBreadthScore: {
-          raw: { "Rising Tokens": risingTokens, "Total Top Coins": n_breadth },
+          raw: { "Token Naik": risingTokens, "Total Koin Teratas": n_breadth },
           score: scores.s5
         },
       }
@@ -155,18 +155,18 @@ export default async function MarketIndicatorsPage() {
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link href="/">Home</Link>
+              <Link href="/">Beranda</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link href="/learn">Learn</Link>
+              <Link href="/learn">Belajar</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>Market Score Indicators</BreadcrumbPage>
+            <BreadcrumbPage>Indikator Skor Pasar</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
@@ -177,11 +177,11 @@ export default async function MarketIndicatorsPage() {
                 <BookOpen className="h-8 w-8" />
             </div>
             <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight">
-                Market Score Indicators
+                Indikator Skor Pasar
             </h1>
         </div>
         <p className="text-xl text-muted-foreground mt-2">
-            A detailed breakdown of the components used to calculate the Macro Sentiment Score.
+            Rincian mendalam tentang komponen yang digunakan untuk menghitung Skor Sentimen Makro.
         </p>
       </header>
       
@@ -191,60 +191,60 @@ export default async function MarketIndicatorsPage() {
                 <CardHeader>
                     <div className="flex items-center gap-3">
                         <Database className="h-5 w-5 text-muted-foreground" />
-                        <CardTitle>Raw Data (Live Input)</CardTitle>
+                        <CardTitle>Data Mentah (Input Langsung)</CardTitle>
                     </div>
-                    <CardDescription>The actual values being fed into the formulas below.</CardDescription>
+                    <CardDescription>Nilai-nilai aktual yang dimasukkan ke dalam rumus di bawah ini.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                     <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4 text-sm">
                         <li className="flex justify-between items-baseline border-b pb-2">
-                            <span className="text-muted-foreground">Total Market Cap</span>
+                            <span className="text-muted-foreground">Total Kapitalisasi Pasar</span>
                             <span className="font-mono font-semibold">{formatCurrency(marketData.totalMarketCap)}</span>
                         </li>
                          <li className="flex justify-between items-baseline border-b pb-2">
-                            <span className="text-muted-foreground pl-4">↳ BTC Market Cap</span>
+                            <span className="text-muted-foreground pl-4">↳ Kap. Pasar BTC</span>
                             <span className="font-mono font-semibold">{formatCurrency(marketData.btcMarketCap)}</span>
                         </li>
                          <li className="flex justify-between items-baseline border-b pb-2">
-                            <span className="text-muted-foreground pl-4">↳ ETH Market Cap</span>
+                            <span className="text-muted-foreground pl-4">↳ Kap. Pasar ETH</span>
                             <span className="font-mono font-semibold">{formatCurrency(marketData.ethMarketCap)}</span>
                         </li>
                          <li className="flex justify-between items-baseline border-b pb-2">
-                            <span className="text-muted-foreground pl-4">↳ SOL Market Cap</span>
+                            <span className="text-muted-foreground pl-4">↳ Kap. Pasar SOL</span>
                             <span className="font-mono font-semibold">{formatCurrency(marketData.solMarketCap)}</span>
                         </li>
                         <li className="flex justify-between items-baseline border-b pb-2">
-                            <span className="text-muted-foreground pl-4">↳ Stablecoin Market Cap</span>
+                            <span className="text-muted-foreground pl-4">↳ Kap. Pasar Stablecoin</span>
                             <span className="font-mono font-semibold">{formatCurrency(marketData.stablecoinMarketCap)}</span>
                         </li>
                          <li className="flex justify-between items-baseline border-b pb-2">
-                            <span className="text-muted-foreground">24h Volume</span>
+                            <span className="text-muted-foreground">Volume 24j</span>
                             <span className="font-mono font-semibold">{formatCurrency(marketData.totalVolume24h)}</span>
                         </li>
                         <li className="flex justify-between items-baseline border-b pb-2">
-                            <span className="text-muted-foreground">Fear & Greed Index</span>
+                            <span className="text-muted-foreground">Indeks Fear & Greed</span>
                             <span className="font-mono font-semibold">{marketData.fearAndGreedIndex}</span>
                         </li>
                         <li className="flex justify-between items-baseline border-b pb-2">
-                            <span className="text-muted-foreground">BTC Dominance</span>
+                            <span className="text-muted-foreground">Dominasi BTC</span>
                             <span className="font-mono font-semibold">{marketData.btcDominance.toFixed(2)}%</span>
                         </li>
                         <li className="flex justify-between items-baseline border-b pb-2">
-                            <span className="text-muted-foreground">Max Historical Cap ({marketData.maxHistoricalMarketCapDate})</span>
+                            <span className="text-muted-foreground">Kap. Historis Maks ({marketData.maxHistoricalMarketCapDate})</span>
                              <span className="font-mono font-semibold">{formatCurrency(marketData.maxHistoricalMarketCap)}</span>
                         </li>
                     </ul>
                      <div>
-                        <h4 className="text-base font-semibold text-foreground mb-2">Top Coins Analysis Breakdown ({marketData.topCoinsForAnalysis.length})</h4>
+                        <h4 className="text-base font-semibold text-foreground mb-2">Rincian Analisis Koin Teratas ({marketData.topCoinsForAnalysis.length})</h4>
                         <div className="overflow-x-auto rounded-lg border">
                            <Table>
                             <TableHeader>
                                 <TableRow>
-                                <TableHead>Coin</TableHead>
-                                <TableHead className="text-right">Current Price</TableHead>
+                                <TableHead>Koin</TableHead>
+                                <TableHead className="text-right">Harga Saat Ini</TableHead>
                                 <TableHead className="text-right">ATH</TableHead>
-                                <TableHead className="text-right">% From ATH</TableHead>
-                                <TableHead className="text-right">24h Change</TableHead>
+                                <TableHead className="text-right">% Dari ATH</TableHead>
+                                <TableHead className="text-right">Perubahan 24j</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -269,23 +269,23 @@ export default async function MarketIndicatorsPage() {
             <Card className="bg-destructive/10 border-destructive">
                 <CardHeader className="flex-row gap-3 items-center">
                     <AlertTriangle className="h-5 w-5 text-destructive" />
-                    <CardTitle className="text-destructive">Could Not Fetch Live Data</CardTitle>
+                    <CardTitle className="text-destructive">Tidak Dapat Mengambil Data Langsung</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <p className="text-destructive/80">The raw data inputs could not be loaded. The examples below will use placeholder values.</p>
+                    <p className="text-destructive/80">Input data mentah tidak dapat dimuat. Contoh di bawah ini akan menggunakan nilai placeholder.</p>
                 </CardContent>
             </Card>
         )}
 
 
         <div className="space-y-6">
-            <h2 className="text-3xl font-headline font-semibold">Indicator Breakdown</h2>
+            <h2 className="text-3xl font-headline font-semibold">Rincian Indikator</h2>
             {indicators.map((indicator, index) => (
                 <Card key={index}>
                     <CardHeader>
                         <div className="flex justify-between items-start">
                             <CardTitle className="text-2xl font-headline">{indicator.name}</CardTitle>
-                            <Badge variant="secondary">Weight: {indicator.weight}</Badge>
+                            <Badge variant="secondary">Bobot: {indicator.weight}</Badge>
                         </div>
                         <CardDescription>{indicator.purpose}</CardDescription>
                     </CardHeader>
@@ -293,7 +293,7 @@ export default async function MarketIndicatorsPage() {
                         {indicatorScores && indicatorScores[indicator.id] ? (
                             <div className="bg-muted/50 p-4 rounded-lg space-y-4">
                                 <div>
-                                    <h4 className="font-semibold text-sm mb-2 text-muted-foreground uppercase tracking-wider">Data Input</h4>
+                                    <h4 className="font-semibold text-sm mb-2 text-muted-foreground uppercase tracking-wider">Input Data</h4>
                                     <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
                                         {Object.entries(indicatorScores[indicator.id].raw).map(([key, value]) => (
                                             <div key={key} className="flex justify-between items-baseline border-b border-muted">
@@ -305,12 +305,12 @@ export default async function MarketIndicatorsPage() {
                                 </div>
                                 
                                 <div>
-                                    <h4 className="font-semibold text-sm mb-1 text-muted-foreground uppercase tracking-wider">Formula</h4>
+                                    <h4 className="font-semibold text-sm mb-1 text-muted-foreground uppercase tracking-wider">Rumus</h4>
                                     <p className="font-mono text-xs bg-background p-3 rounded-md">{indicator.formula}</p>
                                 </div>
 
                                 <div className="flex items-center justify-between bg-background p-3 rounded-md">
-                                     <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Result</h4>
+                                     <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Hasil</h4>
                                      <div className="flex items-center gap-2">
                                         <span className="font-mono font-bold text-xl text-primary">{indicatorScores[indicator.id].score}</span>
                                         <span className="text-sm text-muted-foreground">/ 100</span>
@@ -318,10 +318,10 @@ export default async function MarketIndicatorsPage() {
                                 </div>
                             </div>
                         ) : (
-                             <div className="bg-muted/50 p-4 rounded-lg text-sm text-muted-foreground">Live calculation data unavailable.</div>
+                             <div className="bg-muted/50 p-4 rounded-lg text-sm text-muted-foreground">Data perhitungan langsung tidak tersedia.</div>
                         )}
                         <div>
-                            <h4 className="font-semibold text-sm mb-1 text-muted-foreground uppercase tracking-wider">Interpretation</h4>
+                            <h4 className="font-semibold text-sm mb-1 text-muted-foreground uppercase tracking-wider">Interpretasi</h4>
                             <p className="text-muted-foreground text-sm">{indicator.interpretation}</p>
                         </div>
                     </CardContent>
@@ -331,19 +331,19 @@ export default async function MarketIndicatorsPage() {
             <Card>
                 <CardHeader>
                     <div className="flex justify-between items-start">
-                        <CardTitle className="text-2xl font-headline">Final Score Calculation (M)</CardTitle>
+                        <CardTitle className="text-2xl font-headline">Perhitungan Skor Akhir (M)</CardTitle>
                     </div>
-                    <CardDescription>The final macro score is a weighted average of the five indicator scores, reflecting their relative importance in the overall market analysis.</CardDescription>
+                    <CardDescription>Skor makro akhir adalah rata-rata tertimbang dari kelima skor indikator, yang mencerminkan kepentingan relatifnya dalam analisis pasar secara keseluruhan.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                      <div className="bg-muted/50 p-4 rounded-lg space-y-4">
                         <div>
-                            <h4 className="font-semibold text-sm mb-1 text-muted-foreground uppercase tracking-wider">Formula</h4>
+                            <h4 className="font-semibold text-sm mb-1 text-muted-foreground uppercase tracking-wider">Rumus</h4>
                             <p className="font-mono text-xs bg-background p-3 rounded-md">M = (S₁ × 0.25) + (S₂ × 0.20) + (S₃ × 0.20) + (S₄ × 0.25) + (S₅ × 0.10)</p>
                         </div>
                         {indicatorScores && finalScore !== null && (
                             <div>
-                                <h4 className="font-semibold text-sm mb-2 text-muted-foreground uppercase tracking-wider">Results</h4>
+                                <h4 className="font-semibold text-sm mb-2 text-muted-foreground uppercase tracking-wider">Hasil</h4>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 text-sm font-mono p-3 bg-background rounded-md">
                                     <div className="flex justify-between"><span>(S₁: {indicatorScores.marketCapScore.score} × 0.25)</span><span>= {(indicatorScores.marketCapScore.score * 0.25).toFixed(2)}</span></div>
                                     <div className="flex justify-between"><span>(S₂: {indicatorScores.volumeScore.score} × 0.20)</span><span>= {(indicatorScores.volumeScore.score * 0.20).toFixed(2)}</span></div>
@@ -352,7 +352,7 @@ export default async function MarketIndicatorsPage() {
                                     <div className="flex justify-between"><span>(S₅: {indicatorScores.marketBreadthScore.score} × 0.10)</span><span>= {(indicatorScores.marketBreadthScore.score * 0.10).toFixed(2)}</span></div>
                                 </div>
                                 <div className="flex items-center justify-between bg-primary/10 p-3 rounded-md mt-2">
-                                     <h4 className="font-semibold text-sm text-primary uppercase tracking-wider">Final Score</h4>
+                                     <h4 className="font-semibold text-sm text-primary uppercase tracking-wider">Skor Akhir</h4>
                                      <div className="flex items-center gap-2">
                                         <span className="font-mono font-bold text-xl text-primary">{finalScore}</span>
                                         <span className="text-sm text-primary/80">/ 100</span>

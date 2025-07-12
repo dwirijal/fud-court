@@ -20,7 +20,7 @@ export function LanguageSwitcher() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full hover:bg-accent">
           <Globe className="h-[1.2rem] w-[1.2rem]" />
-          <span className="sr-only">Toggle language</span>
+          <span className="sr-only">Ganti bahasa</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

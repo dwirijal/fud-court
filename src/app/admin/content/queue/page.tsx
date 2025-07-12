@@ -32,39 +32,39 @@ export default async function PostQueuePage() {
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                          <BreadcrumbLink asChild>
-                            <Link href="/admin/content">News & Content</Link>
+                            <Link href="/admin/content">Berita & Konten</Link>
                         </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbPage>Post & Thread Queue</BreadcrumbPage>
+                        <BreadcrumbPage>Antrean Pos & Thread</BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
             
             <header className="mb-12">
                 <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight mb-2">
-                    Post & Thread Queue
+                    Antrean Pos & Thread
                 </h1>
                 <p className="text-xl text-muted-foreground">
-                    View, manage, and prioritize all scheduled, drafted, and published content.
+                    Lihat, kelola, dan prioritaskan semua konten yang dijadwalkan, dalam draf, dan sudah terbit.
                 </p>
             </header>
 
             <Card>
                 <CardHeader>
-                    <CardTitle>All Content</CardTitle>
+                    <CardTitle>Semua Konten</CardTitle>
                     <CardDescription>
-                        A complete list of all content across all statuses from your Ghost CMS.
+                        Daftar lengkap semua konten dari semua status di CMS Ghost Anda.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     {!isGhostAdminConfigured ? (
                          <Alert variant="destructive">
                             <Terminal className="h-4 w-4" />
-                            <AlertTitle>Configuration Missing</AlertTitle>
+                            <AlertTitle>Konfigurasi Hilang</AlertTitle>
                             <AlertDescription>
-                                Ghost Admin API keys are not configured. Please set `GHOST_API_URL` and `GHOST_ADMIN_API_KEY` in your environment variables to see the post queue.
+                                Kunci API Admin Ghost tidak dikonfigurasi. Harap atur `GHOST_API_URL` dan `GHOST_ADMIN_API_KEY` di variabel lingkungan Anda untuk melihat antrean pos.
                             </AlertDescription>
                         </Alert>
                     ) : (

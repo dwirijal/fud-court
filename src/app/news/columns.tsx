@@ -1,3 +1,4 @@
+
 'use client'
 
 import type { ColumnDef } from '@tanstack/react-table'
@@ -32,7 +33,7 @@ export const columns: ColumnDef<Post>[] = [
     },
     {
         accessorKey: 'title',
-        header: 'Title',
+        header: 'Judul',
         cell: ({ row }) => {
             const post = row.original
             return (
@@ -44,7 +45,7 @@ export const columns: ColumnDef<Post>[] = [
     },
     {
         accessorKey: 'published_at',
-        header: () => <div className="text-right">Published Date</div>,
+        header: () => <div className="text-right">Tanggal Terbit</div>,
         cell: ({ row }) => {
             const dateString = row.getValue('published_at') as string;
             // Formatting only the date is safe from hydration errors.

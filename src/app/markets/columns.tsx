@@ -1,3 +1,4 @@
+
 'use client'
 
 import type { ColumnDef } from '@tanstack/react-table'
@@ -86,7 +87,7 @@ export const getColumns = (currency: string): ColumnDef<CryptoData>[] => [
     },
     {
         accessorKey: 'name',
-        header: 'Name',
+        header: 'Nama',
         cell: ({ row }) => {
             const crypto = row.original
             return (
@@ -110,7 +111,7 @@ export const getColumns = (currency: string): ColumnDef<CryptoData>[] => [
     },
     {
         accessorKey: 'current_price',
-        header: () => <div className="text-right">Price</div>,
+        header: () => <div className="text-right">Harga</div>,
         cell: ({ row }) => {
             const price = parseFloat(row.getValue('current_price'))
             return <div className="font-mono text-right">{formatPrice(price, currency)}</div>
@@ -118,27 +119,27 @@ export const getColumns = (currency: string): ColumnDef<CryptoData>[] => [
     },
     {
         accessorKey: 'price_change_percentage_1h_in_currency',
-        header: () => <div className="text-right">1h %</div>,
+        header: () => <div className="text-right">1j %</div>,
         cell: ({ row }) => <PriceChangeCell value={row.getValue('price_change_percentage_1h_in_currency')} />,
     },
     {
         accessorKey: 'price_change_percentage_24h_in_currency',
-        header: () => <div className="text-right">24h %</div>,
+        header: () => <div className="text-right">24j %</div>,
         cell: ({ row }) => <PriceChangeCell value={row.getValue('price_change_percentage_24h_in_currency')} />,
     },
     {
         accessorKey: 'price_change_percentage_7d_in_currency',
-        header: () => <div className="text-right">7d %</div>,
+        header: () => <div className="text-right">7h %</div>,
         cell: ({ row }) => <PriceChangeCell value={row.getValue('price_change_percentage_7d_in_currency')} />,
     },
     {
         accessorKey: 'market_cap',
-        header: () => <div className="text-right">Market Cap</div>,
+        header: () => <div className="text-right">Kapitalisasi Pasar</div>,
         cell: ({ row }) => <div className="font-mono text-right text-muted-foreground">{formatCurrency(row.getValue('market_cap'), currency)}</div>,
     },
     {
         accessorKey: 'total_volume',
-        header: () => <div className="text-right">Volume (24h)</div>,
+        header: () => <div className="text-right">Volume (24j)</div>,
         cell: ({ row }) => <div className="font-mono text-right text-muted-foreground">{formatCurrency(row.getValue('total_volume'), currency)}</div>,
     },
 ]

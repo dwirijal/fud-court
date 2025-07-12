@@ -148,18 +148,18 @@ export function HeroSection() {
           </div>
           <div className="lg:col-span-3 text-center lg:text-left">
             <AnimatedText
-              text="Clarity in Chaos."
+              text="Kejelasan di Tengah Kekacauan."
               className="text-4xl md:text-6xl font-extrabold font-headline tracking-tighter mb-6 [&_.letter]:inline-block"
             />
             <p className="text-lg text-muted-foreground max-w-xl mx-auto lg:mx-0 mb-10">
-              Fud Court cuts through the market noise with data-driven analysis and unbiased news, empowering you to make smarter crypto investment decisions.
+              Fud Court membelah kebisingan pasar dengan analisis berbasis data dan berita yang tidak bias, memberdayakan Anda untuk membuat keputusan investasi kripto yang lebih cerdas.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
               <Button size="lg" asChild>
-                <Link href="https://discord.gg" target="_blank" rel="noopener noreferrer">Join Community</Link>
+                <Link href="https://discord.gg" target="_blank" rel="noopener noreferrer">Gabung Komunitas</Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
-                 <Link href="/news">Read Latest News</Link>
+                 <Link href="/news">Baca Berita Terbaru</Link>
               </Button>
             </div>
           </div>

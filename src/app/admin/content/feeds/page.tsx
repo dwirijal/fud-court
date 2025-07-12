@@ -56,7 +56,7 @@ async function fetchAllFeeds(): Promise<FeedItem[]> {
                 content: item.content || item['content:encoded'] || item.summary,
             })).slice(0, 20); // Limit to 20 items per feed to keep the page snappy
         } catch (error) {
-            console.warn(`Failed to fetch or parse RSS feed from ${source.name}:`, error);
+            console.warn(`Gagal mengambil atau mem-parsing feed RSS dari ${source.name}:`, error);
             return []; // Return empty array on error for this specific feed
         }
     });
@@ -88,22 +88,22 @@ export default async function NewsFeedsPage() {
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                          <BreadcrumbLink asChild>
-                            <Link href="/admin/content">News & Content</Link>
+                            <Link href="/admin/content">Berita & Konten</Link>
                         </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbPage>Live News Aggregator</BreadcrumbPage>
+                        <BreadcrumbPage>Agregator Berita Langsung</BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
             
             <header className="mb-12">
                 <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight mb-2">
-                    Live News Aggregator
+                    Agregator Berita Langsung
                 </h1>
                 <p className="text-xl text-muted-foreground">
-                    The latest articles from all configured RSS feeds, sorted by publication time.
+                    Artikel terbaru dari semua feed RSS yang dikonfigurasi, diurutkan berdasarkan waktu publikasi.
                 </p>
             </header>
 
@@ -111,10 +111,10 @@ export default async function NewsFeedsPage() {
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <Rss className="h-5 w-5" />
-                        Aggregated Feed
+                        Feed Gabungan
                     </CardTitle>
                     <CardDescription>
-                       A combined list of recent articles from all your news sources. Click the arrow to expand an article.
+                       Daftar gabungan artikel terbaru dari semua sumber berita Anda. Klik panah untuk melihat detail artikel.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -122,7 +122,7 @@ export default async function NewsFeedsPage() {
                         <FeedsTable items={feedItems} />
                     ) : (
                         <div className="flex h-24 items-center justify-center text-center text-muted-foreground">
-                            Could not fetch any articles from the configured feeds. Check server logs for details.
+                            Tidak dapat mengambil artikel apa pun dari feed yang dikonfigurasi. Periksa log server untuk detailnya.
                         </div>
                     )}
                 </CardContent>

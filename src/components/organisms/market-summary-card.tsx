@@ -16,11 +16,11 @@ import { Progress } from '@/components/ui/progress';
 import anime from 'animejs';
 
 const indicatorExplanations: Record<string, string> = {
-    marketCapScore: "Measures current market valuation against its historical peak.",
-    volumeScore: "Measures market activity based on daily vs. average volume.",
-    fearGreedScore: "Represents the emotional sentiment of the market.",
-    athScore: "Measures how far major assets are from their All-Time Highs.",
-    marketBreadthScore: "Measures if movement is supported by many assets or just a few."
+    marketCapScore: "Mengukur valuasi pasar saat ini terhadap puncak historisnya.",
+    volumeScore: "Mengukur aktivitas pasar berdasarkan volume harian vs. rata-rata.",
+    fearGreedScore: "Mewakili sentimen emosional pasar.",
+    athScore: "Mengukur seberapa jauh aset utama dari Harga Tertinggi Sepanjang Masa (ATH).",
+    marketBreadthScore: "Mengukur apakah pergerakan didukung oleh banyak aset atau hanya beberapa."
 };
 
 const getProgressColorClass = (score: number) => {
@@ -109,7 +109,7 @@ export function MarketSummaryCard() {
         const marketData = await fetchMarketData();
         
         if (!marketData) {
-          throw new Error("Failed to fetch market data from CoinGecko.");
+          throw new Error("Gagal mengambil data pasar dari CoinGecko.");
         }
         
         const todaySnapshotExists = await hasTodaySnapshot();
@@ -122,8 +122,8 @@ export function MarketSummaryCard() {
         }
 
       } catch (e) {
-        console.error("Market analysis failed:", e);
-        const message = e instanceof Error ? e.message : "An unknown error occurred.";
+        console.error("Analisis pasar gagal:", e);
+        const message = e instanceof Error ? e.message : "Terjadi kesalahan yang tidak diketahui.";
         setError(message);
         setAnalysisResult(null);
       } finally {
@@ -153,20 +153,20 @@ export function MarketSummaryCard() {
     return (
       <Card className="flex flex-col items-center justify-center p-6 bg-destructive/10 border-destructive">
           <AlertTriangle className="h-12 w-12 text-destructive mb-4" />
-          <CardTitle className="text-2xl font-headline text-destructive">Analysis Failed</CardTitle>
+          <CardTitle className="text-2xl font-headline text-destructive">Analisis Gagal</CardTitle>
           <CardDescription className="text-destructive/80 mt-2 text-center max-w-md">
-            {error || "An unknown error occurred while analyzing market sentiment."}
+            {error || "Terjadi kesalahan yang tidak diketahui saat menganalisis sentimen pasar."}
           </CardDescription>
       </Card>
     );
   }
   
   const indicators = [
-      { name: "Market Cap Score", value: analysisResult.components.marketCapScore, description: indicatorExplanations.marketCapScore },
-      { name: "Volume Score", value: analysisResult.components.volumeScore, description: indicatorExplanations.volumeScore },
-      { name: "Fear & Greed Score", value: analysisResult.components.fearGreedScore, description: indicatorExplanations.fearGreedScore },
-      { name: "ATH Score", value: analysisResult.components.athScore, description: indicatorExplanations.athScore },
-      { name: "Market Breadth Score", value: analysisResult.components.marketBreadthScore, description: indicatorExplanations.marketBreadthScore },
+      { name: "Skor Kapitalisasi Pasar", value: analysisResult.components.marketCapScore, description: indicatorExplanations.marketCapScore },
+      { name: "Skor Volume", value: analysisResult.components.volumeScore, description: indicatorExplanations.volumeScore },
+      { name: "Skor Fear & Greed", value: analysisResult.components.fearGreedScore, description: indicatorExplanations.fearGreedScore },
+      { name: "Skor ATH", value: analysisResult.components.athScore, description: indicatorExplanations.athScore },
+      { name: "Skor Sebaran Pasar", value: analysisResult.components.marketBreadthScore, description: indicatorExplanations.marketBreadthScore },
   ];
   
   const activeColorClass = getActiveColorClass(analysisResult.marketCondition);
@@ -177,13 +177,13 @@ export function MarketSummaryCard() {
             <Card className="bg-primary/5 border-primary/20 overflow-hidden">
                <div className="flex justify-between items-center p-6">
                     <div className="space-y-2">
-                       <CardTitle>Macro Sentiment Score</CardTitle>
+                       <CardTitle>Skor Sentimen Makro</CardTitle>
                         <CardDescription>
-                            Overall market health based on key indicators.
+                            Kesehatan pasar secara keseluruhan berdasarkan indikator kunci.
                         </CardDescription>
                          <Badge variant="secondary" className="cursor-help flex-shrink-0">
                             <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
-                            Confidence: {analysisResult.confidenceScore}%
+                            Kepercayaan: {analysisResult.confidenceScore}%
                         </Badge>
                     </div>
                     <div className="text-right flex-shrink-0 pl-4">
@@ -211,8 +211,8 @@ export function MarketSummaryCard() {
                 <Link href="/learn/market-indicators" className="group block">
                    <Card className="h-full flex flex-col items-center justify-center text-center p-4 bg-muted/50 hover:bg-muted transition-colors">
                        <BookOpen className="h-8 w-8 text-muted-foreground group-hover:text-primary transition-colors" />
-                       <p className="text-sm font-semibold mt-2 text-muted-foreground group-hover:text-primary transition-colors">Learn More</p>
-                       <p className="text-xs text-muted-foreground">About these indicators</p>
+                       <p className="text-sm font-semibold mt-2 text-muted-foreground group-hover:text-primary transition-colors">Pelajari Lebih Lanjut</p>
+                       <p className="text-xs text-muted-foreground">Tentang indikator ini</p>
                    </Card>
                 </Link>
             </div>

@@ -63,34 +63,34 @@ export function ProfileMenu() {
             </AvatarFallback>
           </Avatar>
           <div className="hidden text-left group-data-[state=expanded]:inline">
-            <p className="text-sm font-medium">Guest</p>
-            <p className="text-xs text-muted-foreground">View Profile</p>
+            <p className="text-sm font-medium">Tamu</p>
+            <p className="text-xs text-muted-foreground">Lihat Profil</p>
           </div>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" side="right" className="w-56">
         <DropdownMenuItem asChild>
-          <Link href="/login">Log In / Sign Up</Link>
+          <Link href="/login">Masuk / Daftar</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
             <Sun className="h-4 w-4" />
-            <span>Theme</span>
+            <span>Tema</span>
           </DropdownMenuSubTrigger>
           <DropdownMenuPortal>
             <DropdownMenuSubContent>
               <DropdownMenuItem onClick={() => setTheme('light')}>
                 <Sun className="mr-2 h-4 w-4" />
-                <span>Light</span>
+                <span>Terang</span>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setTheme('dark')}>
                 <Moon className="mr-2 h-4 w-4" />
-                <span>Dark</span>
+                <span>Gelap</span>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setTheme('system')}>
                 <Laptop className="mr-2 h-4 w-4" />
-                <span>System</span>
+                <span>Sistem</span>
               </DropdownMenuItem>
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
@@ -98,7 +98,7 @@ export function ProfileMenu() {
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
             <Globe className="h-4 w-4" />
-            <span>Language</span>
+            <span>Bahasa</span>
           </DropdownMenuSubTrigger>
           <DropdownMenuPortal>
             <DropdownMenuSubContent>
@@ -116,19 +116,19 @@ export function ProfileMenu() {
             <DropdownMenuItem asChild>
               <Link href="/admin">
                 <BarChart className="h-4 w-4" />
-                <span>Dashboard</span>
+                <span>Dasbor</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link href="/admin/ghost" target="_blank">
                 <PenSquare className="h-4 w-4" />
-                <span>Ghost Dashboard</span>
+                <span>Dasbor Ghost</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link href="/admin/posts/new">
                 <PlusCircle className="h-4 w-4" />
-                <span>Create Post</span>
+                <span>Buat Pos</span>
               </Link>
             </DropdownMenuItem>
           </>

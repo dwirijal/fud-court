@@ -39,20 +39,20 @@ export default function NewPostPage() {
             <BreadcrumbSeparator />
             <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                <Link href="/admin/content">News & Content</Link>
+                <Link href="/admin/content">Berita & Konten</Link>
                 </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-                <BreadcrumbPage>New Post</BreadcrumbPage>
+                <BreadcrumbPage>Pos Baru</BreadcrumbPage>
             </BreadcrumbItem>
             </BreadcrumbList>
       </Breadcrumb>
       <Card>
         <CardHeader>
-          <CardTitle className="text-3xl font-headline">Create New Post</CardTitle>
+          <CardTitle className="text-3xl font-headline">Buat Pos Baru</CardTitle>
           <CardDescription>
-            Fill out the details below to create a new post in your Ghost CMS.
+            Isi detail di bawah ini untuk membuat pos baru di CMS Ghost Anda.
           </CardDescription>
         </CardHeader>
         <CardContent>

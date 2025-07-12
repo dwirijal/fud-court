@@ -34,11 +34,10 @@ export default function MarketsPage() {
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="text-center sm:text-left">
             <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight mb-2">
-              Crypto Markets
+              Pasar Kripto
             </h1>
             <p className="text-xl text-muted-foreground max-w-3xl">
-              Explore real-time cryptocurrency prices, market caps, and trading
-              volumes.
+              Jelajahi harga mata uang kripto, kapitalisasi pasar, dan volume perdagangan secara real-time.
             </p>
           </div>
           <CurrencySwitcher value={currency} onValueChange={setCurrency} />

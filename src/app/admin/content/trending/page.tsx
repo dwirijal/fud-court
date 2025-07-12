@@ -1,3 +1,4 @@
+
 import {
     Card,
     CardContent,
@@ -61,7 +62,7 @@ async function fetchAllFeeds(): Promise<FeedItem[]> {
                 content: item.contentSnippet || item.summary,
             })).slice(0, 15); // Limit to 15 items per feed
         } catch (error) {
-            console.warn(`Failed to fetch or parse RSS feed from ${source.name}:`, error);
+            console.warn(`Gagal mengambil atau mem-parsing feed RSS dari ${source.name}:`, error);
             return []; // Return empty array on error
         }
     });
@@ -103,10 +104,10 @@ export default async function TrendingTopicsPage() {
             });
         } catch (e) {
             console.error("Error fetching trending topics from AI:", e);
-            error = e instanceof Error ? e.message : "An unknown error occurred while analyzing topics.";
+            error = e instanceof Error ? e.message : "Terjadi kesalahan yang tidak diketahui saat menganalisis topik.";
         }
     } else {
-        error = "Could not fetch any news articles to analyze for trending topics.";
+        error = "Tidak dapat mengambil artikel berita apa pun untuk dianalisis sebagai topik tren.";
     }
 
     return (
@@ -121,22 +122,22 @@ export default async function TrendingTopicsPage() {
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                          <BreadcrumbLink asChild>
-                            <Link href="/admin/content">News & Content</Link>
+                            <Link href="/admin/content">Berita & Konten</Link>
                         </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbPage>Trending Topics Monitor</BreadcrumbPage>
+                        <BreadcrumbPage>Monitor Topik Tren</BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
             
             <header className="mb-12">
                 <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight mb-2">
-                    Trending Topics Monitor
+                    Monitor Topik Tren
                 </h1>
                 <p className="text-xl text-muted-foreground">
-                    AI-powered analysis of the latest news to identify key market narratives.
+                    Analisis berita terbaru yang didukung AI untuk mengidentifikasi narasi pasar utama.
                 </p>
             </header>
 
@@ -145,10 +146,10 @@ export default async function TrendingTopicsPage() {
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <AlertTriangle className="h-5 w-5 text-destructive" />
-                            Analysis Failed
+                            Analisis Gagal
                         </CardTitle>
                         <CardDescription>
-                          Could not generate trending topics at this time.
+                          Tidak dapat menghasilkan topik tren saat ini.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -160,11 +161,11 @@ export default async function TrendingTopicsPage() {
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <Flame className="h-5 w-5" />
-                           Analyzing Topics...
+                           Menganalisis Topik...
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                       <p className="text-muted-foreground">Please wait a moment. If this message persists, there might be no significant trends in the latest news batch.</p>
+                       <p className="text-muted-foreground">Harap tunggu sebentar. Jika pesan ini terus muncul, mungkin tidak ada tren signifikan dalam kumpulan berita terbaru.</p>
                     </CardContent>
                 </Card>
             ) : (
@@ -178,7 +179,7 @@ export default async function TrendingTopicsPage() {
                                         {topic.sentiment}
                                     </Badge>
                                 </div>
-                                <CardDescription>Relevance: {topic.relevanceScore}/10</CardDescription>
+                                <CardDescription>Relevansi: {topic.relevanceScore}/10</CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <p className="text-sm text-muted-foreground">{topic.summary}</p>

@@ -91,20 +91,20 @@ export default function EditPostPage() {
             <BreadcrumbSeparator />
             <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                <Link href="/admin/content">News & Content</Link>
+                <Link href="/admin/content">Berita & Konten</Link>
                 </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-                <BreadcrumbPage>Edit Post</BreadcrumbPage>
+                <BreadcrumbPage>Edit Pos</BreadcrumbPage>
             </BreadcrumbItem>
             </BreadcrumbList>
       </Breadcrumb>
       <Card>
         <CardHeader>
-          <CardTitle className="text-3xl font-headline">Edit Post</CardTitle>
+          <CardTitle className="text-3xl font-headline">Edit Pos</CardTitle>
           <CardDescription>
-            Make changes to your post and save them to Ghost CMS.
+            Buat perubahan pada pos Anda dan simpan ke Ghost CMS.
           </CardDescription>
         </CardHeader>
         <CardContent>

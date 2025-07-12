@@ -23,10 +23,10 @@ export default async function Home() {
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
             <h2 className="text-4xl font-extrabold tracking-tight font-headline mb-4">
-              Market Overview
+              Gambaran Pasar
             </h2>
             <p className="text-muted-foreground">
-              A comprehensive look at key market indicators and top-performing assets.
+              Tampilan komprehensif dari indikator pasar utama dan aset berkinerja terbaik.
             </p>
           </div>
           
@@ -45,10 +45,10 @@ export default async function Home() {
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto">
             <h2 className="text-4xl font-extrabold tracking-tight font-headline mb-4">
-              Latest News
+              Berita Terbaru
             </h2>
             <p className="text-muted-foreground mb-12">
-              Stay informed with the latest updates and analysis from the crypto world.
+              Tetap terinformasi dengan pembaruan dan analisis terbaru dari dunia kripto.
             </p>
           </div>
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

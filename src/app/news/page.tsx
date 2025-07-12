@@ -10,10 +10,10 @@ export default async function NewsPage() {
     <div className="container mx-auto px-4 py-12 md:py-24">
       <header className="mb-12 text-center">
         <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight mb-2">
-          Fud Court News
+          Berita Fud Court
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Your source for unbiased crypto news and data-driven insights.
+          Sumber Anda untuk berita kripto yang tidak bias dan wawasan berbasis data.
         </p>
       </header>
 

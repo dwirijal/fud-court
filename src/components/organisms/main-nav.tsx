@@ -22,14 +22,14 @@ import {
 } from "@/components/ui/tooltip";
 
 const navItems = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/community", label: "Community", icon: Users },
-  { href: "/admin/content", label: "News & Content", icon: Newspaper },
-  { href: "/admin/markets", label: "Markets & Signals", icon: CandlestickChart },
-  { href: "/admin/analytics", label: "Analytics", icon: AreaChart },
-  { href: "/admin/library", label: "Content Library", icon: Library },
-  { href: "/admin/tools", label: "Tools & Automation", icon: Wand2 },
-  { href: "/admin/settings", label: "Settings", icon: Settings },
+  { href: "/admin", label: "Dasbor", icon: LayoutDashboard },
+  { href: "/admin/community", label: "Komunitas", icon: Users },
+  { href: "/admin/content", label: "Berita & Konten", icon: Newspaper },
+  { href: "/admin/markets", label: "Pasar & Sinyal", icon: CandlestickChart },
+  { href: "/admin/analytics", label: "Analitik", icon: AreaChart },
+  { href: "/admin/library", label: "Pustaka Konten", icon: Library },
+  { href: "/admin/tools", label: "Alat & Otomasi", icon: Wand2 },
+  { href: "/admin/settings", label: "Pengaturan", icon: Settings },
 ];
 
 export function MainNav() {

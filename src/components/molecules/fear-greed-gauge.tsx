@@ -40,8 +40,8 @@ export function FearGreedGauge({ value, classification }: { value: number; class
   return (
     <Card className="flex flex-col items-center justify-center p-6 bg-card/60 backdrop-blur-md">
       <CardHeader className="items-center pb-2 text-center">
-        <CardTitle>Fear & Greed Index</CardTitle>
-        <CardDescription>Real-time market sentiment</CardDescription>
+        <CardTitle>Indeks Fear & Greed</CardTitle>
+        <CardDescription>Sentimen pasar real-time</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-1 items-center justify-center p-0">
         <ChartContainer

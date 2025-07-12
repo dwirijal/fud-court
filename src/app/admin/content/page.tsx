@@ -22,50 +22,50 @@ import {
 
 const contentFeatures = [
     {
-        title: "Post & Thread Queue",
-        description: "View, manage, and prioritize scheduled and drafted content.",
+        title: "Antrean Pos & Thread",
+        description: "Lihat, kelola, dan prioritaskan konten yang dijadwalkan dan dalam draf.",
         icon: ListTodo,
         href: "/admin/content/queue",
     },
     {
-        title: "Content Generator",
-        description: "Use AI or manual tools to create new articles and threads.",
+        title: "Generator Konten",
+        description: "Gunakan AI atau alat manual untuk membuat artikel dan thread baru.",
         icon: BotMessageSquare,
         href: "#",
     },
     {
-        title: "News Sources & Feeds",
-        description: "View the configured RSS feeds that power the content pipeline.",
+        title: "Sumber & Feed Berita",
+        description: "Lihat feed RSS yang dikonfigurasi yang menjadi sumber konten.",
         icon: Rss,
         href: "/admin/content/feeds",
     },
     {
-        title: "Trending Topics Monitor",
-        description: "Use AI to analyze news feeds and identify key market narratives.",
+        title: "Monitor Topik Tren",
+        description: "Gunakan AI untuk menganalisis feed berita dan mengidentifikasi narasi pasar utama.",
         icon: Flame,
         href: "/admin/content/trending",
     },
     {
-        title: "Translation Tools",
-        description: "Translate content between languages, such as EN to ID.",
+        title: "Alat Terjemahan",
+        description: "Terjemahkan konten antar bahasa, seperti EN ke ID.",
         icon: Languages,
         href: "#",
     },
     {
-        title: "SEO & Linking Tools",
-        description: "Optimize content for search engines and manage internal links.",
+        title: "Alat SEO & Tautan",
+        description: "Optimalkan konten untuk mesin pencari dan kelola tautan internal.",
         icon: LinkIcon,
         href: "/admin/seo",
     },
     {
-        title: "Image Generator",
-        description: "Create unique images for your content using AI models.",
+        title: "Generator Gambar",
+        description: "Buat gambar unik untuk konten Anda menggunakan model AI.",
         icon: ImageIcon,
         href: "#",
     },
     {
-        title: "Content Schedule Calendar",
-        description: "Visualize your content pipeline on a weekly or monthly calendar.",
+        title: "Kalender Jadwal Konten",
+        description: "Visualisasikan jadwal konten Anda dalam kalender mingguan atau bulanan.",
         icon: CalendarDays,
         href: "#",
     },
@@ -77,10 +77,10 @@ export default function ContentPage() {
         <div className="container mx-auto px-4 py-12 md:py-24">
             <header className="mb-12">
                 <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight mb-2">
-                    News & Content Management
+                    Manajemen Berita & Konten
                 </h1>
                 <p className="text-xl text-muted-foreground">
-                    A powerful suite of tools for your entire content workflow.
+                    Rangkaian alat yang kuat untuk seluruh alur kerja konten Anda.
                 </p>
             </header>
 

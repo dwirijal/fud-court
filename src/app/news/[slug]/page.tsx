@@ -34,8 +34,8 @@ export async function generateMetadata(
 
   if (!post) {
     return {
-      title: 'Not Found',
-      description: 'The page you are looking for does not exist.',
+      title: 'Tidak Ditemukan',
+      description: 'Halaman yang Anda cari tidak ada.',
     };
   }
 
@@ -84,11 +84,11 @@ export default async function PostPage({ params }: PostPageProps) {
   let tagLink: React.ReactNode = null;
 
   if (tag === 'news') {
-    tagLink = <Link href="/news">News</Link>;
+    tagLink = <Link href="/news">Berita</Link>;
   } else if (tag === 'article') {
-    tagLink = <Link href="/articles">Articles</Link>;
+    tagLink = <Link href="/articles">Artikel</Link>;
   } else if (tag === 'learn') {
-    tagLink = <Link href="/learn">Learn</Link>;
+    tagLink = <Link href="/learn">Belajar</Link>;
   }
 
 
@@ -98,7 +98,7 @@ export default async function PostPage({ params }: PostPageProps) {
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link href="/">Home</Link>
+              <Link href="/">Beranda</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           {tagLink && (
@@ -132,7 +132,7 @@ export default async function PostPage({ params }: PostPageProps) {
           </p>
         )}
         <time dateTime={post.published_at} className="text-sm text-muted-foreground mt-4 block">
-          Published on {format(new Date(post.published_at), "MMMM d, yyyy")}
+          Diterbitkan pada {format(new Date(post.published_at), "d MMMM yyyy")}
         </time>
       </header>
 

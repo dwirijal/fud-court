@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -14,7 +15,7 @@ const currencies = [
   { value: "usd", label: "USD" },
   { value: "idr", label: "IDR" },
   { value: "eur", label: "EUR" },
-  { value: "xau", label: "XAU (Gold)" },
+  { value: "xau", label: "XAU (Emas)" },
 ]
 
 interface CurrencySwitcherProps {
@@ -27,7 +28,7 @@ export function CurrencySwitcher({ value, onValueChange, className }: CurrencySw
   return (
     <Select onValueChange={onValueChange} value={value}>
       <SelectTrigger className={cn("w-[120px]", className)}>
-        <SelectValue placeholder="Select Currency" />
+        <SelectValue placeholder="Pilih Mata Uang" />
       </SelectTrigger>
       <SelectContent>
         {currencies.map((currency) => (

@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import { Logo } from "@/components/atoms/logo";
 import { Twitter, Github, Linkedin } from "lucide-react";
@@ -17,32 +18,31 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-muted-foreground text-sm max-w-xs">
-              Clarity in Chaos. Fud Court cuts through the market noise with
-              data-driven analysis and unbiased news.
+              Kejelasan di Tengah Kekacauan. Fud Court membelah kebisingan pasar dengan analisis berbasis data dan berita yang tidak bias.
             </p>
           </div>
 
           {/* Navigation Links */}
           <div className="md:col-span-2">
-            <h3 className="font-semibold mb-4 text-foreground">Explore</h3>
+            <h3 className="font-semibold mb-4 text-foreground">Jelajahi</h3>
             <nav className="flex flex-col space-y-2">
-              <Link href="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">Home</Link>
-              <Link href="/markets" className="text-sm text-muted-foreground hover:text-primary transition-colors">Markets</Link>
+              <Link href="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">Beranda</Link>
+              <Link href="/markets" className="text-sm text-muted-foreground hover:text-primary transition-colors">Pasar</Link>
             </nav>
           </div>
 
           <div className="md:col-span-2">
-            <h3 className="font-semibold mb-4 text-foreground">Content</h3>
+            <h3 className="font-semibold mb-4 text-foreground">Konten</h3>
             <nav className="flex flex-col space-y-2">
-                <Link href="/news" className="text-sm text-muted-foreground hover:text-primary transition-colors">News</Link>
-                <Link href="/articles" className="text-sm text-muted-foreground hover:text-primary transition-colors">Articles</Link>
-                <Link href="/learn" className="text-sm text-muted-foreground hover:text-primary transition-colors">Learn</Link>
+                <Link href="/news" className="text-sm text-muted-foreground hover:text-primary transition-colors">Berita</Link>
+                <Link href="/articles" className="text-sm text-muted-foreground hover:text-primary transition-colors">Artikel</Link>
+                <Link href="/learn" className="text-sm text-muted-foreground hover:text-primary transition-colors">Belajar</Link>
             </nav>
           </div>
 
           {/* Social Links */}
           <div className="md:col-span-4 text-left md:text-right">
-            <h3 className="font-semibold mb-4 text-foreground">Connect</h3>
+            <h3 className="font-semibold mb-4 text-foreground">Hubungi Kami</h3>
             <div className="flex md:justify-end space-x-2">
               <Button variant="ghost" size="icon" asChild>
                 <a href="#" aria-label="Twitter">
@@ -66,7 +66,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-border/50 text-center">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Fud Court. All Rights Reserved.
+            © {new Date().getFullYear()} Fud Court. Hak Cipta Dilindungi.
           </p>
         </div>
       </div>

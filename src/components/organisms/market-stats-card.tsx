@@ -6,10 +6,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { MarketStats } from "@/types";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-
-interface MarketStatsCardProps {
-    marketStats: MarketStats | null;
-}
+import { useState, useEffect, useRef } from 'react';
+import anime from "animejs";
 
 const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -21,6 +19,10 @@ const formatCurrency = (value: number) => {
         maximumFractionDigits: 2,
     }).format(value);
 };
+
+const formatPercentage = (value: number) => {
+    return `${value.toFixed(2)}%`;
+}
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -34,7 +36,34 @@ const cardVariants = {
   }
 };
 
-function StatCard({ label, value, marketCap, colorClass, index }: { label: string, value: string, marketCap: string, colorClass: string, index: number }) {
+const AnimatedStatNumber = ({ to, formatter, className, delay = 0 }: { to: number, formatter: (val: number) => string, className?: string, delay?: number }) => {
+    const [value, setValue] = useState(0);
+    const hasAnimated = useRef(false);
+    const target = useRef({ value: 0 }).current;
+
+    useEffect(() => {
+        if (hasAnimated.current) {
+            setValue(to);
+            return;
+        }
+        hasAnimated.current = true;
+        
+        anime({
+            targets: target,
+            value: to,
+            duration: 1200,
+            delay: delay,
+            easing: 'easeOutCubic',
+            update: () => {
+                setValue(target.value);
+            }
+        });
+    }, [to, delay, target]);
+
+    return <p className={className}>{formatter(value)}</p>;
+};
+
+function StatCard({ label, value, marketCap, colorClass, index }: { label: string, value: number, marketCap: number, colorClass: string, index: number }) {
     return (
         <motion.div
             className="h-full"
@@ -50,8 +79,18 @@ function StatCard({ label, value, marketCap, colorClass, index }: { label: strin
                     <p className="text-sm font-medium text-muted-foreground">{label}</p>
                 </div>
                 <div>
-                    <p className="text-2xl font-bold">{value}</p>
-                    <p className="text-xs text-muted-foreground font-mono">{marketCap}</p>
+                     <AnimatedStatNumber
+                        to={value}
+                        formatter={formatPercentage}
+                        className="text-2xl font-bold"
+                        delay={index * 100}
+                    />
+                    <AnimatedStatNumber
+                        to={marketCap}
+                        formatter={formatCurrency}
+                        className="text-xs text-muted-foreground font-mono"
+                        delay={index * 100}
+                    />
                 </div>
             </div>
         </motion.div>
@@ -76,10 +115,10 @@ export function MarketStatsCard({ marketStats }: MarketStatsCardProps) {
     } = marketStats;
 
     const stats = [
-        { label: "Bitcoin Dominance", value: `${btcDominance.toFixed(2)}%`, marketCap: formatCurrency(btcMarketCap), colorClass: "bg-chart-1" },
-        { label: "Ethereum Dominance", value: `${ethDominance.toFixed(2)}%`, marketCap: formatCurrency(ethMarketCap), colorClass: "bg-chart-2" },
-        { label: "Solana Dominance", value: `${solDominance.toFixed(2)}%`, marketCap: formatCurrency(solMarketCap), colorClass: "bg-chart-3" },
-        { label: "Stablecoin Dominance", value: `${stablecoinDominance.toFixed(2)}%`, marketCap: formatCurrency(stablecoinMarketCap), colorClass: "bg-chart-4" },
+        { label: "Bitcoin Dominance", value: btcDominance, marketCap: btcMarketCap, colorClass: "bg-chart-1" },
+        { label: "Ethereum Dominance", value: ethDominance, marketCap: ethMarketCap, colorClass: "bg-chart-2" },
+        { label: "Solana Dominance", value: solDominance, marketCap: solMarketCap, colorClass: "bg-chart-3" },
+        { label: "Stablecoin Dominance", value: stablecoinDominance, marketCap: stablecoinMarketCap, colorClass: "bg-chart-4" },
     ];
 
     return (

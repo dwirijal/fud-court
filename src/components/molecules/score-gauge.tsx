@@ -62,29 +62,31 @@ export function ScoreGauge({
   ];
 
   return (
-    <ChartContainer
-      config={{}}
-      className="mx-auto aspect-[1.5] w-full max-w-[300px] relative"
-    >
-      <PieChart margin={{ top: 0, right: 20, bottom: 20, left: 20 }}>
-        <Pie
-          data={chartData}
-          dataKey="value"
-          nameKey="sentiment"
-          innerRadius={70}
-          outerRadius={100}
-          startAngle={180}
-          endAngle={0}
-          cx="50%"
-          cy="100%"
-          cornerRadius={5}
-        >
-          {chartData.map((entry) => (
-            <Cell key={`cell-${entry.sentiment}`} fill={entry.color} />
-          ))}
-        </Pie>
-      </PieChart>
-       <Hand score={score} style={{ bottom: '20px' }} />
-    </ChartContainer>
+    <div className="mx-auto aspect-[1.5] w-full max-w-[300px] relative">
+      <ChartContainer
+        config={{}}
+        className="absolute inset-0"
+      >
+        <PieChart margin={{ top: 0, right: 20, bottom: 20, left: 20 }}>
+          <Pie
+            data={chartData}
+            dataKey="value"
+            nameKey="sentiment"
+            innerRadius={70}
+            outerRadius={100}
+            startAngle={180}
+            endAngle={0}
+            cx="50%"
+            cy="100%"
+            cornerRadius={5}
+          >
+            {chartData.map((entry) => (
+              <Cell key={`cell-${entry.sentiment}`} fill={entry.color} />
+            ))}
+          </Pie>
+        </PieChart>
+      </ChartContainer>
+      <Hand score={score} style={{ bottom: '20px' }} />
+    </div>
   );
 }

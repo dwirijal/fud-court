@@ -3,6 +3,7 @@
 
 import type { CryptoData, FearGreedData, MarketAnalysisInput, MarketStats, TopCoinForAnalysis } from '@/types';
 import { subDays, getUnixTime } from 'date-fns';
+import { supabase } from './supabase';
 
 const API_BASE_URL = 'https://api.coingecko.com/api/v3';
 
@@ -13,24 +14,22 @@ const API_BASE_URL = 'https://api.coingecko.com/api/v3';
  * @returns A promise that resolves to an array of CryptoData objects or null on failure.
  */
 export async function getTopCoins(limit: number = 100, currency: string = 'usd'): Promise<CryptoData[] | null> {
-  const url = `${API_BASE_URL}/coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=${limit}&page=1&sparkline=true&price_change_percentage=1h,24h,7d`;
-  
-  try {
-    const response = await fetch(url, {
-      next: { revalidate: 300 }
-    });
-
-    if (!response.ok) {
-      console.error(`CoinGecko API request failed with status: ${response.status}`);
+  const key = `topCoins_${limit}_${currency}`;
+  return fetchWithCacheSupabase(key, async () => {
+    const url = `${API_BASE_URL}/coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=${limit}&page=1&sparkline=true&price_change_percentage=1h,24h,7d`;
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        console.error(`CoinGecko API request failed with status: ${response.status}`);
+        return null;
+      }
+      const data: CryptoData[] = await response.json();
+      return data;
+    } catch (error) {
+      console.error("An error occurred while fetching from CoinGecko API:", error);
       return null;
     }
-    
-    const data: CryptoData[] = await response.json();
-    return data;
-  } catch (error) {
-    console.error("An error occurred while fetching from CoinGecko API:", error);
-    return null;
-  }
+  });
 }
 
 /**
@@ -217,4 +216,37 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
         console.error("Failed to fetch comprehensive market data:", error);
         return null;
     }
+}
+
+// Fungsi cache universal untuk endpoint CoinGecko (kecuali harga crypto)
+async function fetchWithCacheSupabase(key: string, fetchFn: () => Promise<any>, cacheMinutes = 5) {
+  const { data: cache, error } = await supabase
+    .from('coingecko_cache')
+    .select('data, updated_at')
+    .eq('id', key)
+    .single();
+
+  if (cache && Date.now() - new Date(cache.updated_at).getTime() < cacheMinutes * 60 * 1000) {
+    return cache.data;
+  }
+
+  const freshData = await fetchFn();
+  await supabase
+    .from('coingecko_cache')
+    .upsert({ id: key, data: freshData, updated_at: new Date().toISOString() });
+  return freshData;
+}
+
+// Fungsi fetch harga crypto real-time dari Binance (tanpa cache)
+export async function fetchBinancePrice(symbol: string): Promise<number | null> {
+  try {
+    const url = `https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`;
+    const response = await fetch(url);
+    if (!response.ok) return null;
+    const data = await response.json();
+    return parseFloat(data.price);
+  } catch (error) {
+    console.error('Failed to fetch Binance price:', error);
+    return null;
+  }
 }

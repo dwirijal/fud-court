@@ -48,12 +48,15 @@ function mapGhostPost(post: PostOrPage): Post {
   }
 }
 
-export async function getPosts(options?: { tag?: string }): Promise<Post[]> {
+export async function getPosts(options?: { tag?: string, page?: number, limit?: number }): Promise<Post[]> {
   if (!api) return [];
 
   try {
+    const page = options?.page ?? 1;
+    const limit = options?.limit ?? 20;
     const browseOptions: Parameters<typeof api.posts.browse>[0] = {
-      limit: 'all',
+      limit,
+      page,
       include: ['tags'],
     };
 

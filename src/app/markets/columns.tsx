@@ -92,17 +92,21 @@ export const getColumns = (currency: string): ColumnDef<CryptoData>[] => [
             const crypto = row.original
             return (
                 <div className="flex items-center gap-4">
-                    <Image
-                        src={crypto.image}
-                        alt={`${crypto.name} logo`}
-                        width={32}
-                        height={32}
-                        className="h-8 w-8 rounded-full"
-                    />
+                    {crypto.image ? (
+                        <Image
+                            src={crypto.image}
+                            alt={`${crypto.name || 'Crypto'} logo`}
+                            width={32}
+                            height={32}
+                            className="h-8 w-8 rounded-full"
+                        />
+                    ) : (
+                        <div className="h-8 w-8 rounded-full bg-muted" />
+                    )}
                     <div className="flex flex-col">
-                        <div className="font-semibold text-base">{crypto.name}</div>
+                        <div className="font-semibold text-base">{crypto.name || '-'}</div>
                         <div className="text-sm text-muted-foreground">
-                            {crypto.symbol.toUpperCase()}
+                            {(crypto.symbol || '').toUpperCase() || '-' }
                         </div>
                     </div>
                 </div>

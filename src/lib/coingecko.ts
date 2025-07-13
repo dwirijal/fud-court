@@ -93,8 +93,8 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
             ? fearAndGreedResult.value.today?.value ?? 50 
             : 50; // Default to neutral 50
 
-        // --- Process Top Coins Data (Non-critical) ---
-        const top20Coins = topCoinsResult.status === 'fulfilled' ? topCoinsResult.value ?? [] : [];
+        // --- Process Top Coins Data (Non-critical & SAFE) ---
+        const top20Coins: CryptoData[] = topCoinsResult.status === 'fulfilled' && topCoinsResult.value ? topCoinsResult.value : [];
         
         // Use a stable, hardcoded value for historical max cap to avoid another API call
         const maxHistoricalData = { cap: 2.9e12, date: '2021-11-10' };

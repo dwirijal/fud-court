@@ -94,7 +94,13 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
             : 50; // Default to neutral 50
 
         // --- Process Top Coins Data (Non-critical & SAFE) ---
-        const top20Coins: CryptoData[] = topCoinsResult.status === 'fulfilled' && topCoinsResult.value ? topCoinsResult.value : [];
+        // CRITICAL FIX: Initialize with an empty array.
+        let top20Coins: CryptoData[] = [];
+        if (topCoinsResult.status === 'fulfilled' && topCoinsResult.value) {
+            top20Coins = topCoinsResult.value;
+        } else {
+            console.warn("Could not fetch top coins data. Proceeding with empty array.");
+        }
         
         // Use a stable, hardcoded value for historical max cap to avoid another API call
         const maxHistoricalData = { cap: 2.9e12, date: '2021-11-10' };

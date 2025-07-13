@@ -6,39 +6,52 @@ import { subDays, getUnixTime, isBefore } from 'date-fns';
 import { supabase } from './supabase';
 
 const API_BASE_URL = 'https://api.coingecko.com/api/v3';
-const CACHE_DURATION_SECONDS = 300; // 5 minutes
+const CACHE_DURATION_SECONDS = 300; // 5 minutes default
 
 async function fetchWithCache<T>(url: string, revalidateTime: number = CACHE_DURATION_SECONDS): Promise<T | null> {
     const key = url;
 
-    // 1. Try to fetch from Supabase cache first
-    if (supabase) {
+    // 1. If Supabase is not configured, skip caching and fetch directly from API.
+    if (!supabase) {
         try {
-            const { data: cachedData, error } = await supabase
-                .from('coingecko_cache')
-                .select('data, updated_at')
-                .eq('id', key)
-                .single();
-
-            if (error && error.code !== 'PGRST116') { // Ignore "Row not found" error
-                console.warn(`Supabase cache read error for key "${key}":`, error.message);
+            const response = await fetch(url, { next: { revalidate: revalidateTime } });
+            if (!response.ok) {
+                console.error(`API request failed for URL "${url}" with status: ${response.status}`);
+                return null;
             }
-
-            if (cachedData) {
-                const lastUpdated = new Date(cachedData.updated_at);
-                const cacheExpiryDate = new Date(lastUpdated.getTime() + revalidateTime * 1000);
-                
-                if (isBefore(new Date(), cacheExpiryDate)) {
-                    // Cache is valid, return cached data
-                    return cachedData.data as T;
-                }
-            }
-        } catch (e) {
-             console.error('An unexpected error occurred during Supabase cache read:', e);
+            return await response.json() as T;
+        } catch (error) {
+            console.error(`An error occurred while fetching from API for URL "${url}":`, error);
+            return null;
         }
     }
 
-    // 2. If cache is invalid or Supabase is not available, fetch from API
+    // 2. Try to fetch from Supabase cache first
+    try {
+        const { data: cachedData, error: readError } = await supabase
+            .from('coingecko_cache')
+            .select('data, updated_at')
+            .eq('id', key)
+            .single();
+
+        if (readError && readError.code !== 'PGRST116') { // Ignore "Row not found" error
+            console.warn(`Supabase cache read error for key "${key}":`, readError.message);
+        }
+
+        if (cachedData) {
+            const lastUpdated = new Date(cachedData.updated_at);
+            const cacheExpiryDate = new Date(lastUpdated.getTime() + revalidateTime * 1000);
+            
+            if (isBefore(new Date(), cacheExpiryDate)) {
+                // Cache is valid, return cached data
+                return cachedData.data as T;
+            }
+        }
+    } catch (e) {
+         console.error('An unexpected error occurred during Supabase cache read:', e);
+    }
+
+    // 3. If cache is invalid or doesn't exist, fetch from API
     try {
         const response = await fetch(url, { next: { revalidate: revalidateTime } });
         if (!response.ok) {
@@ -47,24 +60,20 @@ async function fetchWithCache<T>(url: string, revalidateTime: number = CACHE_DUR
         }
         const apiData = await response.json() as T;
 
-        // 3. Update the cache in Supabase
-        if (supabase) {
-            try {
-                const { error: upsertError } = await supabase
-                    .from('coingecko_cache')
-                    .upsert({
-                        id: key,
-                        data: apiData,
-                        updated_at: new Date().toISOString(),
-                    });
-
+        // 4. Update the cache in Supabase asynchronously (don't block the response)
+        supabase
+            .from('coingecko_cache')
+            .upsert({
+                id: key,
+                data: apiData,
+                updated_at: new Date().toISOString(),
+            })
+            .then(({ error: upsertError }) => {
                 if (upsertError) {
                     console.warn(`Supabase cache write error for key "${key}":`, upsertError.message);
                 }
-            } catch (e) {
-                console.error('An unexpected error occurred during Supabase cache write:', e);
-            }
-        }
+            });
+            
         return apiData;
     } catch (error) {
         console.error(`An error occurred while fetching from API for URL "${url}":`, error);

@@ -2,7 +2,7 @@
 'use server';
 
 import type { CryptoData, FearGreedData, MarketAnalysisInput, MarketStats, TopCoinForAnalysis } from '@/types';
-import { isBefore } from 'date-fns';
+import { isBefore, sub } from 'date-fns';
 import { supabase } from './supabase';
 
 const API_BASE_URL = 'https://api.coingecko.com/api/v3';
@@ -14,14 +14,14 @@ async function fetchWithCache<T>(key: string, fetcher: () => Promise<T | null>, 
         try {
             return await fetcher();
         } catch (error) {
-            console.error(`An error occurred while fetching from API for key "${key}":`, error);
+            console.error(`An error occurred while fetching from API (no cache) for key "${key}":`, error);
             return null;
         }
     }
 
     // 2. Try to fetch from Supabase cache first
     try {
-        const { data: cachedData, error: readError } = await supabase
+        const { data: cachedResult, error: readError } = await supabase
             .from('coingecko_cache')
             .select('data, updated_at')
             .eq('id', key)
@@ -31,45 +31,46 @@ async function fetchWithCache<T>(key: string, fetcher: () => Promise<T | null>, 
             console.warn(`Supabase cache read error for key "${key}":`, readError.message);
         }
 
-        if (cachedData?.data && cachedData?.updated_at) {
-            const lastUpdated = new Date(cachedData.updated_at);
-            const cacheExpiryDate = new Date(lastUpdated.getTime() + revalidateTime * 1000);
+        if (cachedResult?.data && cachedResult?.updated_at) {
+            const lastUpdated = new Date(cachedResult.updated_at);
+            const cacheExpiryDate = sub(new Date(), { seconds: revalidateTime });
             
-            if (isBefore(new Date(), cacheExpiryDate)) {
+            if (isBefore(cacheExpiryDate, lastUpdated)) {
                 // Cache is valid, return cached data
-                return cachedData.data as T;
+                return cachedResult.data as T;
             }
         }
     } catch (e) {
-         console.error('An unexpected error occurred during Supabase cache read:', e);
+         console.error(`An unexpected error occurred during Supabase cache read for key "${key}":`, e);
     }
 
     // 3. If cache is invalid or doesn't exist, fetch from API
+    let apiData: T | null = null;
     try {
-        const apiData = await fetcher();
-        if (apiData === null) {
-            return null; // Don't cache null responses
-        }
+        apiData = await fetcher();
+    } catch (error) {
+        console.error(`An error occurred while fetching from API for key "${key}":`, error);
+        return null;
+    }
+    
+    if (apiData === null) {
+        return null; // Don't cache null responses
+    }
 
-        // 4. Update the cache in Supabase asynchronously (don't block the response)
-        supabase
+    // 4. Update the cache in Supabase asynchronously (don't block the response)
+    try {
+        await supabase
             .from('coingecko_cache')
             .upsert({
                 id: key,
                 data: apiData,
                 updated_at: new Date().toISOString(),
-            })
-            .then(({ error: upsertError }) => {
-                if (upsertError) {
-                    console.warn(`Supabase cache write error for key "${key}":`, upsertError.message);
-                }
             });
-            
-        return apiData;
-    } catch (error) {
-        console.error(`An error occurred while fetching from API for key "${key}":`, error);
-        return null;
+    } catch(upsertError) {
+        console.warn(`Supabase cache write error for key "${key}":`, upsertError);
     }
+            
+    return apiData;
 }
 
 
@@ -103,14 +104,14 @@ export async function fetchFearGreedData(): Promise<{ today: FearGreedData | nul
         return response.json();
     };
 
-    const data = await fetchWithCache<{data: any[]}>(key, fetcher, 3600); // Cache for 1 hour
+    const result = await fetchWithCache<{data: any[]}>(key, fetcher, 3600); // Cache for 1 hour
 
-    if (!data?.data || data.data.length === 0) {
+    if (!result?.data || result.data.length === 0) {
         return { today: null, weekAgo: null };
     }
     
-    const todayData = data.data[0];
-    const weekAgoData = data.data.length > 7 ? data.data[7] : null;
+    const todayData = result.data[0];
+    const weekAgoData = result.data.length > 7 ? result.data[7] : null;
 
     return {
         today: {
@@ -164,7 +165,7 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
         ]);
         
         if (!globalData?.data || !fearAndGreed.today || !topCoins || topCoins.length === 0 || !specificCoins || specificCoins.length === 0) {
-            console.error("Failed to fetch one or more necessary market data sources.", { globalData, fearAndGreed, topCoins, specificCoins });
+            console.error("Failed to fetch one or more necessary market data sources.", { hasGlobal: !!globalData, hasFearGreed: !!fearAndGreed.today, hasTopCoins: !!topCoins, hasSpecific: !!specificCoins });
             return null;
         }
 
@@ -246,5 +247,3 @@ export async function fetchBinancePrice(symbol: string): Promise<number | null> 
         return null;
     }
 }
-
-    

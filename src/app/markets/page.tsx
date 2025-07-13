@@ -7,25 +7,38 @@ import { CurrencySwitcher } from "@/components/molecules/currency-switcher";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertTriangle } from "lucide-react";
+import { CryptoData } from "@/types";
 
 async function MarketDataTable({ currency }: { currency: string }) {
+  let data: CryptoData[] | null = [];
+  let error: string | null = null;
+  
   try {
-    const data = await getTopCoins(100, currency);
-    const columns = getColumns(currency);
-    // Add a fallback for data to prevent crash if API fails
-    return <DataTable columns={columns} data={data || []} />;
+    data = await getTopCoins(100, currency);
+    if (data === null) {
+      // This case handles when the API call itself returns null, but doesn't throw.
+      error = "Gagal memuat data market. API tidak merespons.";
+    }
   } catch (err) {
     console.error("Failed to fetch market data for MarketDataTable:", err);
-    return (
+    error = err instanceof Error ? err.message : "Terjadi kesalahan tak terduga.";
+  }
+
+  if (error) {
+     return (
         <div className="flex flex-col items-center justify-center p-12 text-center text-destructive">
             <AlertTriangle className="h-12 w-12 mb-4" />
             <h3 className="text-xl font-semibold">Gagal Memuat Data Pasar</h3>
-            <p className="text-sm text-destructive/80 mt-2">
-                Terjadi kesalahan saat mengambil data. Silakan coba segarkan halaman atau periksa koneksi internet Anda.
+            <p className="text-sm text-destructive/80 mt-2 max-w-md">
+                {error}
             </p>
       </div>
     );
   }
+
+  const columns = getColumns(currency);
+  // Add a fallback for data to prevent crash if API fails
+  return <DataTable columns={columns} data={data || []} />;
 }
 
 function TableSkeleton() {

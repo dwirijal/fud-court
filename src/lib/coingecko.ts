@@ -31,12 +31,13 @@ async function fetchWithCache<T>(key: string, fetcher: () => Promise<T | null>, 
             console.warn(`Supabase cache read error for key "${key}":`, readError.message);
         }
 
+        // CORRECTED LOGIC: Check if cachedResult and its properties exist and are valid.
         if (cachedResult?.data && cachedResult?.updated_at) {
             const lastUpdated = new Date(cachedResult.updated_at);
             const cacheExpiryDate = sub(new Date(), { seconds: revalidateTime });
             
             if (isBefore(cacheExpiryDate, lastUpdated)) {
-                // Cache is valid, return cached data
+                // Cache is valid, return the data from the 'data' property
                 return cachedResult.data as T;
             }
         }
@@ -50,20 +51,20 @@ async function fetchWithCache<T>(key: string, fetcher: () => Promise<T | null>, 
         apiData = await fetcher();
     } catch (error) {
         console.error(`An error occurred while fetching from API for key "${key}":`, error);
-        return null;
+        return null; // Return null if API fetch fails
     }
     
     if (apiData === null) {
         return null; // Don't cache null responses
     }
 
-    // 4. Update the cache in Supabase asynchronously (don't block the response)
+    // 4. Update the cache in Supabase with the CORRECT structure
     try {
         await supabase
             .from('coingecko_cache')
             .upsert({
                 id: key,
-                data: apiData,
+                data: apiData, // The data is stored inside the 'data' property
                 updated_at: new Date().toISOString(),
             });
     } catch(upsertError) {
@@ -84,7 +85,7 @@ export async function getTopCoins(limit: number = 100, currency: string = 'usd')
     const key = `topCoins_${limit}_${currency}`;
     const fetcher = async () => {
         const url = `${API_BASE_URL}/coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=${limit}&page=1&sparkline=true&price_change_percentage=1h,24h,7d`;
-        const response = await fetch(url);
+        const response = await fetch(url, { next: { revalidate: CACHE_DURATION_SECONDS }});
         if (!response.ok) return null;
         return response.json();
     };
@@ -164,8 +165,9 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
             specificCoinsPromise,
         ]);
         
+        // Corrected Check: Ensure globalData.data exists
         if (!globalData?.data || !fearAndGreed.today || !topCoins || topCoins.length === 0 || !specificCoins || specificCoins.length === 0) {
-            console.error("Failed to fetch one or more necessary market data sources.", { hasGlobal: !!globalData, hasFearGreed: !!fearAndGreed.today, hasTopCoins: !!topCoins, hasSpecific: !!specificCoins });
+            console.error("Failed to fetch one or more necessary market data sources.", { hasGlobal: !!globalData?.data, hasFearGreed: !!fearAndGreed.today, hasTopCoins: !!topCoins, hasSpecific: !!specificCoins });
             return null;
         }
 

@@ -1,9 +1,12 @@
-
 'use server';
 
 import type { CryptoData, FearGreedData, MarketAnalysisInput, MarketStats, TopCoinForAnalysis, CombinedMarketData, CGMarket } from '@/types';
+import { supabase } from './supabase'; // Import Supabase client
+import { getTopCoinsFromBinance } from './binance'; // Import Binance fallback
+import { getTopCoinsFromCoinMarketCap } from './coinmarketcap'; // Import CoinMarketCap fallback
 
 const API_BASE_URL = 'https://api.coingecko.com/api/v3';
+const CACHE_DURATION_SECONDS = 300; // 5 minutes for crypto data
 
 /**
  * Fetches a list of top cryptocurrencies from the CoinGecko API using direct fetch.
@@ -13,17 +16,57 @@ const API_BASE_URL = 'https://api.coingecko.com/api/v3';
  */
 export async function getTopCoins(limit: number = 100, currency: string = 'usd'): Promise<CryptoData[] | null> {
     try {
+        // 1. Try to fetch from Supabase cache
+        const { data: cachedData, error: cacheError } = await supabase
+            .from('crypto_data')
+            .select('*')
+            .order('market_cap_rank', { ascending: true })
+            .limit(limit);
+
+        if (cachedData && cachedData.length > 0) {
+            const lastUpdated = new Date(cachedData[0].last_updated).getTime();
+            const now = new Date().getTime();
+            if ((now - lastUpdated) / 1000 < CACHE_DURATION_SECONDS) {
+                console.log('Serving top coins from Supabase cache.');
+                return cachedData as CryptoData[];
+            }
+        }
+
+        if (cacheError) {
+            console.error('Supabase cache read error:', cacheError);
+        }
+
+        // 2. If cache is stale or empty, fetch from CoinGecko
+        console.log('Fetching top coins from CoinGecko API.');
         const url = `${API_BASE_URL}/coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=${limit}&page=1&sparkline=true&price_change_percentage=1h,24h,7d`;
-        const response = await fetch(url, { next: { revalidate: 300 }}); // Revalidate every 5 minutes
+        const response = await fetch(url, { next: { revalidate: 300 }}); // Keep Next.js revalidate for initial fetch
 
         if (!response.ok) {
             console.error(`CoinGecko API error for getTopCoins: ${response.status} ${response.statusText}`);
+            
+            // If CoinGecko fails, try CoinMarketCap as fallback
+            console.warn('CoinGecko API failed, attempting to fetch from CoinMarketCap as fallback.');
+            const cmcData = await getTopCoinsFromCoinMarketCap(limit);
+            if (cmcData) {
+                console.log('Successfully fetched data from CoinMarketCap fallback.');
+                return cmcData;
+            }
+
+            // If CoinMarketCap also fails, try Binance as fallback
+            console.warn('CoinMarketCap fallback also failed, attempting to fetch from Binance as fallback.');
+            const binanceData = await getTopCoinsFromBinance(limit);
+            if (binanceData) {
+                console.log('Successfully fetched data from Binance fallback.');
+                return binanceData;
+            } else if (cachedData && cachedData.length > 0) {
+                console.warn('Binance fallback also failed, serving stale data from Supabase cache.');
+                return cachedData as CryptoData[];
+            }
             return null;
         }
 
         const data: CGMarket[] = await response.json();
 
-        // This mapping also ensures that any null values from the API are handled gracefully.
         const mappedData: CryptoData[] = data.map((coin) => ({
             id: coin.id ?? '',
             symbol: coin.symbol ?? '',
@@ -42,6 +85,14 @@ export async function getTopCoins(limit: number = 100, currency: string = 'usd')
             ath: coin.ath ?? 0,
             ath_market_cap: coin.ath_market_cap ?? null,
         }));
+        
+        // 3. Store/Update cache in Supabase using upsert for efficiency
+        const { error: upsertError } = await supabase.from('crypto_data').upsert(mappedData, { onConflict: 'id' });
+        if (upsertError) {
+            console.error('Error upserting crypto_data into cache:', upsertError.message || upsertError.details || upsertError);
+        } else {
+            console.log('Successfully upserted Supabase cache with new CoinGecko data.');
+        }
         
         return mappedData;
 
@@ -121,10 +172,11 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
         if (topCoinsResult.status === 'fulfilled' && topCoinsResult.value) {
             top20Coins = topCoinsResult.value;
         } else {
-            console.warn("Could not fetch top coins data. Proceeding with empty array.");
+            console.warn("Warning: Top coins data could not be fetched or was not fulfilled.");
         }
         
-        // Use a stable, hardcoded value for historical max cap to avoid another API call
+        // Use a stable, hardcoded value for historical max cap to avoid another API call.
+        // Consider externalizing this value (e.g., to a database or environment variable) if it needs to be dynamic or updated frequently.
         const maxHistoricalData = { cap: 2.9e12, date: '2021-11-10' };
 
         const btcMarketCap = totalMarketCap * (btcDominance / 100);
@@ -145,7 +197,7 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
             totalMarketCap,
             maxHistoricalMarketCap: maxHistoricalData.cap,
             totalVolume24h: globalData.total_volume?.usd ?? 0,
-            avg30DayVolume: globalData.total_volume?.usd ?? 0, // Fallback to current volume
+            avg30DayVolume: globalData.total_volume?.usd ?? 0, // TODO: Implement actual 30-day average volume calculation or fetch from a different source if needed.
             btcDominance,
             fearAndGreedIndex,
             topCoins: top20Coins.map(c => ({

@@ -51,3 +51,9 @@ lerna-debug.log*
 
 # Turborepo
 .turbo
+
+# Gemini CLI
+GEMINI.md
+.idx/
+.modified
+workspace/

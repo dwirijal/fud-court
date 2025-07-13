@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import anime from 'animejs';
-import type { CombinedMarketData } from '@/lib/coingecko';
+import type { CombinedMarketData } from '@/types';
 
 const indicatorExplanations: Record<string, string> = {
     marketCapScore: "Mengukur valuasi pasar saat ini terhadap puncak historisnya.",

@@ -20,6 +20,10 @@ Built with Next.js and leveraging a modern tech stack, Fud Court serves as an al
 - **⚡ Dynamic & Modern UI**: Built with Next.js App Router, Radix, and styled with Tailwind CSS & ShadCN UI for a responsive, performant, and aesthetically pleasing user experience.
 - **Aesthetic Themes**: Includes beautifully crafted light and dark mode themes.
 
+## Known Issues
+
+- The application currently experiences some issues with Next.js Server and Client Components, particularly on the `/markets` page. We are actively working on a fix.
+
 ## Tech Stack
 
 - **Framework**: [Next.js](https://nextjs.org/) (App Router)

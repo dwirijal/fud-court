@@ -1,7 +1,7 @@
 
 
 import { z } from 'zod';
-import type { Market } from '@coingecko/coingecko-typescript-api';
+
 
 // This is our internal, simplified type for crypto data.
 // We map the more complex CoinGecko type to this.

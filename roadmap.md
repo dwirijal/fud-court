@@ -26,8 +26,8 @@ The initial version focuses on setting up the technical foundation of the projec
 
 ## v0.3.0: Real-time Crypto Data
 
-- [ ] **Feature**: Integrate a third-party API (e.g., CoinGecko, CryptoCompare) for live cryptocurrency data.
-- [ ] **Feature**: Replace mock crypto data on the dashboard with real-time data.
+- [x] **Feature**: Integrate a third-party API (e.g., CoinGecko, CryptoCompare) for live cryptocurrency data.
+- [x] **Feature**: Replace mock crypto data on the dashboard with real-time data.
 - [ ] **Feature**: Create dynamic pages for individual cryptocurrencies (`/token/[id]`).
 - [ ] **Feature**: Implement detailed charts and historical data views on token pages.
 - [ ] **Enhancement**: Add a "Favorites" or "Watchlist" feature for users.
@@ -43,9 +43,11 @@ The initial version focuses on setting up the technical foundation of the projec
 
 - [ ] **Feature**: Implement a "Degen" page to show real-time trending tokens.
 
-## Future Milestones (Placeholder)
+## Future Milestones & Suggested Improvements
 
 - **Milestone**: Portfolio Tracking
 - **Milestone**: Advanced Charting Tools
 - **Milestone**: Mobile App (React Native)
 - **Milestone**: API for third-party developers
+- **Refactor**: Improve the implementation of Next.js Server and Client Components to prevent rendering issues.
+- **Testing**: Increase test coverage for all new features.

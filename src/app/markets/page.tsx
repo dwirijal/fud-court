@@ -1,55 +1,8 @@
-
-import { getTopCoins } from "@/lib/coingecko";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { getColumns } from "./columns";
-import { DataTable } from "@/components/ui/data-table";
+import { Card, CardContent } from "@/components/ui/card";
 import { CurrencySwitcher } from "@/components/molecules/currency-switcher";
 import { Suspense } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { AlertTriangle } from "lucide-react";
-import { CryptoData } from "@/types";
-
-async function MarketDataTable({ currency }: { currency: string }) {
-  let data: CryptoData[] | null = [];
-  let error: string | null = null;
-  
-  try {
-    data = await getTopCoins(100, currency);
-    if (data === null) {
-      // This case handles when the API call itself returns null, but doesn't throw.
-      error = "Gagal memuat data market. API tidak merespons.";
-    }
-  } catch (err) {
-    console.error("Failed to fetch market data for MarketDataTable:", err);
-    error = err instanceof Error ? err.message : "Terjadi kesalahan tak terduga.";
-  }
-
-  if (error) {
-     return (
-        <div className="flex flex-col items-center justify-center p-12 text-center text-destructive">
-            <AlertTriangle className="h-12 w-12 mb-4" />
-            <h3 className="text-xl font-semibold">Gagal Memuat Data Pasar</h3>
-            <p className="text-sm text-destructive/80 mt-2 max-w-md">
-                {error}
-            </p>
-      </div>
-    );
-  }
-
-  const columns = getColumns(currency);
-  // Add a fallback for data to prevent crash if API fails
-  return <DataTable columns={columns} data={data || []} />;
-}
-
-function TableSkeleton() {
-    return (
-        <div className="p-4 space-y-2">
-            {Array.from({ length: 15 }).map((_, i) => (
-                <Skeleton key={i} className="h-12 w-full" />
-            ))}
-        </div>
-    );
-}
+import { MarketDataTable } from "./market-data-table";
+import { TableSkeleton } from "./market-data-table-client";
 
 export default async function MarketsPage({
   searchParams,
@@ -84,5 +37,3 @@ export default async function MarketsPage({
     </div>
   );
 }
-
-    

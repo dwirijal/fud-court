@@ -38,7 +38,7 @@ async function fetchWithCache<T>(url: string, revalidateTime: number = CACHE_DUR
             console.warn(`Supabase cache read error for key "${key}":`, readError.message);
         }
 
-        if (cachedData) {
+        if (cachedData?.data && cachedData?.updated_at) {
             const lastUpdated = new Date(cachedData.updated_at);
             const cacheExpiryDate = new Date(lastUpdated.getTime() + revalidateTime * 1000);
             

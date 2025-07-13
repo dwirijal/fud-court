@@ -14,11 +14,12 @@ async function MarketDataTable({ currency }: { currency: string }) {
     // Add a fallback for data to prevent crash if API fails
     return <DataTable columns={columns} data={data || []} />;
   } catch (err) {
+    console.error("Failed to fetch market data for MarketDataTable:", err);
     return (
-        <div className="flex flex-col items-center justify-center p-12 text-center">
-            <AlertTriangle className="h-12 w-12 text-destructive mb-4" />
-            <h3 className="text-xl font-semibold text-destructive">Gagal Memuat Data Pasar</h3>
-            <p className="text-sm text-muted-foreground mt-2">
+        <div className="flex flex-col items-center justify-center p-12 text-center text-destructive">
+            <AlertTriangle className="h-12 w-12 mb-4" />
+            <h3 className="text-xl font-semibold">Gagal Memuat Data Pasar</h3>
+            <p className="text-sm text-destructive/80 mt-2">
                 Terjadi kesalahan saat mengambil data. Silakan coba segarkan halaman atau periksa koneksi internet Anda.
             </p>
       </div>

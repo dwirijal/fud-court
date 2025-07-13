@@ -18,6 +18,8 @@ export async function getTopCoins(limit: number = 100, currency: string = 'usd')
         const response = await fetch(url, { next: { revalidate: CACHE_REVALIDATE_SECONDS }});
         if (!response.ok) {
             console.error(`CoinGecko API error for getTopCoins: ${response.status} ${response.statusText}`);
+            const errorBody = await response.text();
+            console.error("Error body:", errorBody);
             return null;
         }
         return await response.json();
@@ -41,7 +43,8 @@ export async function fetchFearGreedData(): Promise<{ today: FearGreedData | nul
         }
         const result = await response.json();
 
-        if (!result?.data || result.data.length === 0) {
+        if (!result?.data || !Array.isArray(result.data) || result.data.length === 0) {
+            console.warn("Fear & Greed data is empty or invalid format.");
             return { today: null, weekAgo: null };
         }
     
@@ -49,10 +52,10 @@ export async function fetchFearGreedData(): Promise<{ today: FearGreedData | nul
         const weekAgoData = result.data.length > 7 ? result.data[7] : null;
 
         return {
-            today: {
+            today: todayData ? {
                 value: parseInt(todayData.value, 10),
                 value_classification: todayData.value_classification,
-            },
+            } : null,
             weekAgo: weekAgoData ? {
                 value: parseInt(weekAgoData.value, 10),
                 value_classification: weekAgoData.value_classification,
@@ -70,63 +73,67 @@ export async function fetchFearGreedData(): Promise<{ today: FearGreedData | nul
  */
 export async function fetchMarketData(): Promise<CombinedMarketData | null> {
     try {
-        const globalDataPromise = fetch(`${API_BASE_URL}/global`, { next: { revalidate: CACHE_REVALIDATE_SECONDS }});
-        const fearAndGreedPromise = fetchFearGreedData();
-        const topCoinsPromise = getTopCoins(20, 'usd'); 
-
-        const specificCoinIds = 'bitcoin,ethereum,solana,tether,usd-coin,dai,frax,ethena-usde';
-        const specificCoinsPromise = fetch(`${API_BASE_URL}/coins/markets?vs_currency=usd&ids=${specificCoinIds}`, { next: { revalidate: CACHE_REVALIDATE_SECONDS }});
-        
         const [
-            globalDataResponse, 
-            fearAndGreed, 
-            topCoins, 
-            specificCoinsResponse
-        ] = await Promise.all([
-            globalDataPromise,
-            fearAndGreedPromise,
-            topCoinsPromise,
-            specificCoinsPromise,
+            globalDataResponse,
+            fearAndGreedResult,
+            topCoins,
+        ] = await Promise.allSettled([
+            fetch(`${API_BASE_URL}/global`, { next: { revalidate: CACHE_REVALIDATE_SECONDS }}),
+            fetchFearGreedData(),
+            getTopCoins(20, 'usd'),
         ]);
 
-        if (!globalDataResponse.ok || !specificCoinsResponse.ok || !fearAndGreed.today || !topCoins) {
-            console.error("Failed to fetch one or more necessary market data sources.");
+        // --- Process Global Data ---
+        let globalData: any = null;
+        if (globalDataResponse.status === 'fulfilled' && globalDataResponse.value.ok) {
+            const data = await globalDataResponse.value.json();
+            globalData = data.data;
+        } else {
+            console.error("Failed to fetch global market data.");
+            return null; // Critical data, return null if fails
+        }
+
+        // --- Process Fear & Greed Data ---
+        let fearAndGreed: { today: FearGreedData | null } = { today: null };
+        if (fearAndGreedResult.status === 'fulfilled') {
+            fearAndGreed = fearAndGreedResult.value;
+        } else {
+            console.warn("Could not fetch Fear & Greed data. Proceeding without it.");
+        }
+        
+        // --- Process Top Coins Data ---
+        let top20Coins: CryptoData[] = [];
+        if (topCoins.status === 'fulfilled' && topCoins.value) {
+            top20Coins = topCoins.value;
+        } else {
+            console.warn("Could not fetch top 20 coins data. Proceeding with empty list.");
+        }
+
+        const totalMarketCap = globalData?.total_market_cap?.usd ?? 0;
+        if (totalMarketCap === 0) {
+            console.error("Total market cap is zero, cannot proceed with calculations.");
             return null;
         }
 
-        const globalData = await globalDataResponse.json();
-        const specificCoins = await specificCoinsResponse.json();
-
-        if (!globalData?.data || !specificCoins || specificCoins.length === 0) {
-            console.error("Invalid data structure from market data sources.");
-            return null;
-        }
-
-        const totalMarketCap = globalData.data.total_market_cap.usd;
         const maxHistoricalData = { cap: 2.9e12, date: '2021-11-10' };
         
-        const getCoinData = (id: string) => specificCoins.find((c: any) => c.id === id);
-
-        const btcData = getCoinData('bitcoin');
-        const ethData = getCoinData('ethereum');
-        const solData = getCoinData('solana');
+        const btcData = top20Coins.find(c => c.id === 'bitcoin');
+        const ethData = top20Coins.find(c => c.id === 'ethereum');
+        const solData = top20Coins.find(c => c.id === 'solana');
         
         const stablecoinIds = ['tether', 'usd-coin', 'dai', 'frax', 'ethena-usde'];
-        const stablecoinMarketCap = stablecoinIds.reduce((sum, id) => {
-            const coin = getCoinData(id);
-            return sum + (coin?.market_cap || 0);
-        }, 0);
-
-        const avg30DayVolume = globalData.data.total_volume.usd;
+        const stablecoinMarketCap = top20Coins
+            .filter(c => stablecoinIds.includes(c.id))
+            .reduce((sum, coin) => sum + (coin.market_cap || 0), 0);
 
         const analysisInput: MarketAnalysisInput = {
             totalMarketCap,
             maxHistoricalMarketCap: maxHistoricalData.cap,
-            totalVolume24h: globalData.data.total_volume.usd,
-            avg30DayVolume,
-            btcDominance: globalData.data.market_cap_percentage.btc,
-            fearAndGreedIndex: fearAndGreed.today.value,
-            topCoins: topCoins.map(c => ({
+            totalVolume24h: globalData.total_volume.usd ?? 0,
+            avg30DayVolume: globalData.total_volume.usd ?? 0, // Use current as fallback
+            btcDominance: globalData.market_cap_percentage.btc ?? 0,
+            fearAndGreedIndex: fearAndGreed.today?.value ?? 50, // Default to neutral 50
+            topCoins: top20Coins.map(c => ({
                 price_change_percentage_24h: c.price_change_percentage_24h_in_currency,
                 ath: c.ath,
                 current_price: c.current_price,
@@ -139,14 +146,14 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
             ethMarketCap: ethData?.market_cap || 0,
             solMarketCap: solData?.market_cap || 0,
             stablecoinMarketCap,
-            btcDominance: globalData.data.market_cap_percentage.btc,
-            ethDominance: globalData.data.market_cap_percentage.eth,
+            btcDominance: globalData.market_cap_percentage.btc ?? 0,
+            ethDominance: globalData.market_cap_percentage.eth ?? 0,
             solDominance: solData ? (solData.market_cap / totalMarketCap) * 100 : 0,
             stablecoinDominance: (stablecoinMarketCap / totalMarketCap) * 100,
             maxHistoricalMarketCap: maxHistoricalData.cap
         };
 
-        const topCoinsForAnalysis: TopCoinForAnalysis[] = topCoins.map(c => ({
+        const topCoinsForAnalysis: TopCoinForAnalysis[] = top20Coins.map(c => ({
             name: c.name,
             symbol: c.symbol,
             current_price: c.current_price,
@@ -158,12 +165,11 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
             ...analysisInput,
             ...marketStats,
             topCoinsForAnalysis,
-            maxHistoricalMarketCap: maxHistoricalData.cap,
             maxHistoricalMarketCapDate: maxHistoricalData.date,
         };
 
     } catch (error) {
-        console.error("Failed to fetch comprehensive market data:", error);
+        console.error("A critical error occurred in fetchMarketData:", error);
         return null;
     }
 }

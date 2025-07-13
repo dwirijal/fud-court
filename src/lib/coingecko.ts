@@ -236,18 +236,4 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
     }
 }
 
-export async function fetchBinancePrice(symbol: string): Promise<number | null> {
-    const url = `https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`;
-    // Binance data is too volatile for caching, fetch directly.
-    try {
-        const response = await fetch(url, { next: { revalidate: 10 }}); // short revalidate time
-        if (!response.ok) return null;
-        const data = await response.json();
-        return parseFloat(data.price);
-    } catch (error) {
-        console.error('Failed to fetch Binance price:', error);
-        return null;
-    }
-}
-
     

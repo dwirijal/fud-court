@@ -30,109 +30,96 @@ export async function getTopCoins(limit: number = 100, currency: string = 'usd')
 }
 
 /**
- * Fetches Fear & Greed data for today and 7 days ago.
- * @returns A promise resolving to an object with today's and last week's F&G data.
+ * Fetches Fear & Greed data for today.
+ * @returns A promise resolving to today's F&G data or null on failure.
  */
-export async function fetchFearGreedData(): Promise<{ today: FearGreedData | null, weekAgo: FearGreedData | null }> {
+export async function fetchFearGreedData(): Promise<{ today: FearGreedData | null }> {
     try {
-        const url = 'https://api.alternative.me/fng/?limit=8';
+        const url = 'https://api.alternative.me/fng/?limit=1';
         const response = await fetch(url, { next: { revalidate: 3600 }}); // Revalidate F&G every hour
         if (!response.ok) {
             console.error(`Fear & Greed API error: ${response.status} ${response.statusText}`);
-            return { today: null, weekAgo: null };
+            return { today: null };
         }
         const result = await response.json();
 
         if (!result?.data || !Array.isArray(result.data) || result.data.length === 0) {
             console.warn("Fear & Greed data is empty or invalid format.");
-            return { today: null, weekAgo: null };
+            return { today: null };
         }
     
         const todayData = result.data[0];
-        const weekAgoData = result.data.length > 7 ? result.data[7] : null;
-
         return {
             today: todayData ? {
                 value: parseInt(todayData.value, 10),
                 value_classification: todayData.value_classification,
             } : null,
-            weekAgo: weekAgoData ? {
-                value: parseInt(weekAgoData.value, 10),
-                value_classification: weekAgoData.value_classification,
-            } : null
         };
     } catch (error) {
         console.error('An error occurred while fetching Fear & Greed data:', error);
-        return { today: null, weekAgo: null };
+        return { today: null };
     }
 }
 
 /**
  * Fetches all necessary data for the market analysis and stats cards.
- * @returns A promise that resolves to a combined object of MarketAnalysisInput and MarketStats or null if failed.
+ * This function is designed to be resilient and return default values on failure.
+ * @returns A promise that resolves to a combined object of MarketAnalysisInput and MarketStats or null if critical data fails.
  */
 export async function fetchMarketData(): Promise<CombinedMarketData | null> {
     try {
-        const [
-            globalDataResponse,
-            fearAndGreedResult,
-            topCoins,
-        ] = await Promise.allSettled([
+        const [globalDataResponse, fearAndGreedResult, topCoinsResult] = await Promise.allSettled([
             fetch(`${API_BASE_URL}/global`, { next: { revalidate: CACHE_REVALIDATE_SECONDS }}),
             fetchFearGreedData(),
             getTopCoins(20, 'usd'),
         ]);
 
-        // --- Process Global Data ---
-        let globalData: any = null;
-        if (globalDataResponse.status === 'fulfilled' && globalDataResponse.value.ok) {
-            const data = await globalDataResponse.value.json();
-            globalData = data.data;
-        } else {
-            console.error("Failed to fetch global market data.");
-            return null; // Critical data, return null if fails
-        }
-
-        // --- Process Fear & Greed Data ---
-        let fearAndGreed: { today: FearGreedData | null } = { today: null };
-        if (fearAndGreedResult.status === 'fulfilled') {
-            fearAndGreed = fearAndGreedResult.value;
-        } else {
-            console.warn("Could not fetch Fear & Greed data. Proceeding without it.");
-        }
-        
-        // --- Process Top Coins Data ---
-        let top20Coins: CryptoData[] = [];
-        if (topCoins.status === 'fulfilled' && topCoins.value) {
-            top20Coins = topCoins.value;
-        } else {
-            console.warn("Could not fetch top 20 coins data. Proceeding with empty list.");
-        }
-
-        const totalMarketCap = globalData?.total_market_cap?.usd ?? 0;
-        if (totalMarketCap === 0) {
-            console.error("Total market cap is zero, cannot proceed with calculations.");
+        // --- Process Global Data (Critical) ---
+        if (globalDataResponse.status !== 'fulfilled' || !globalDataResponse.value.ok) {
+            console.error("Critical failure: Could not fetch global market data from CoinGecko.");
             return null;
         }
+        const globalData = (await globalDataResponse.value.json()).data;
+        const totalMarketCap = globalData?.total_market_cap?.usd ?? 0;
+        if (totalMarketCap === 0) {
+            console.error("Critical failure: Total market cap is zero.");
+            return null;
+        }
+        const btcDominance = globalData?.market_cap_percentage?.btc ?? 0;
+        const ethDominance = globalData?.market_cap_percentage?.eth ?? 0;
 
-        const maxHistoricalData = { cap: 2.9e12, date: '2021-11-10' };
+        // --- Process Fear & Greed Data (Non-critical) ---
+        const fearAndGreedIndex = fearAndGreedResult.status === 'fulfilled' 
+            ? fearAndGreedResult.value.today?.value ?? 50 
+            : 50; // Default to neutral 50
+
+        // --- Process Top Coins Data (Non-critical) ---
+        const top20Coins = topCoinsResult.status === 'fulfilled' ? topCoinsResult.value ?? [] : [];
         
-        const btcData = top20Coins.find(c => c.id === 'bitcoin');
-        const ethData = top20Coins.find(c => c.id === 'ethereum');
+        // Use a stable, hardcoded value for historical max cap to avoid another API call
+        const maxHistoricalData = { cap: 2.9e12, date: '2021-11-10' };
+
+        const btcMarketCap = totalMarketCap * (btcDominance / 100);
+        const ethMarketCap = totalMarketCap * (ethDominance / 100);
+        
+        // For Solana and Stablecoins, derive from topCoins if available, otherwise default to 0
         const solData = top20Coins.find(c => c.id === 'solana');
+        const solMarketCap = solData?.market_cap ?? 0;
+        const solDominance = totalMarketCap > 0 ? (solMarketCap / totalMarketCap) * 100 : 0;
         
         const stablecoinIds = ['tether', 'usd-coin', 'dai', 'frax', 'ethena-usde'];
         const stablecoinMarketCap = top20Coins
             .filter(c => stablecoinIds.includes(c.id))
             .reduce((sum, coin) => sum + (coin.market_cap || 0), 0);
+        const stablecoinDominance = totalMarketCap > 0 ? (stablecoinMarketCap / totalMarketCap) * 100 : 0;
 
         const analysisInput: MarketAnalysisInput = {
             totalMarketCap,
             maxHistoricalMarketCap: maxHistoricalData.cap,
             totalVolume24h: globalData.total_volume.usd ?? 0,
-            avg30DayVolume: globalData.total_volume.usd ?? 0, // Use current as fallback
-            btcDominance: globalData.market_cap_percentage.btc ?? 0,
-            fearAndGreedIndex: fearAndGreed.today?.value ?? 50, // Default to neutral 50
+            avg30DayVolume: globalData.total_volume.usd ?? 0, // Fallback to current volume
+            btcDominance,
+            fearAndGreedIndex,
             topCoins: top20Coins.map(c => ({
                 price_change_percentage_24h: c.price_change_percentage_24h_in_currency,
                 ath: c.ath,
@@ -142,15 +129,15 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
         
         const marketStats: MarketStats = {
             totalMarketCap,
-            btcMarketCap: btcData?.market_cap || 0,
-            ethMarketCap: ethData?.market_cap || 0,
-            solMarketCap: solData?.market_cap || 0,
+            btcMarketCap,
+            ethMarketCap,
+            solMarketCap,
             stablecoinMarketCap,
-            btcDominance: globalData.market_cap_percentage.btc ?? 0,
-            ethDominance: globalData.market_cap_percentage.eth ?? 0,
-            solDominance: solData ? (solData.market_cap / totalMarketCap) * 100 : 0,
-            stablecoinDominance: (stablecoinMarketCap / totalMarketCap) * 100,
-            maxHistoricalMarketCap: maxHistoricalData.cap
+            btcDominance,
+            ethDominance,
+            solDominance,
+            stablecoinDominance,
+            maxHistoricalMarketCap: maxHistoricalData.cap,
         };
 
         const topCoinsForAnalysis: TopCoinForAnalysis[] = top20Coins.map(c => ({

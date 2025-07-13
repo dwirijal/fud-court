@@ -2,7 +2,7 @@
 'use server';
 
 import type { CryptoData, FearGreedData, MarketAnalysisInput, MarketStats, TopCoinForAnalysis } from '@/types';
-import { subDays, getUnixTime, isBefore } from 'date-fns';
+import { isBefore } from 'date-fns';
 import { supabase } from './supabase';
 
 const API_BASE_URL = 'https://api.coingecko.com/api/v3';
@@ -133,30 +133,6 @@ export type CombinedMarketData = MarketAnalysisInput & MarketStats & {
 };
 
 
-async function getMaxHistoricalMarketCap(): Promise<{ cap: number, date: string }> {
-    const url = `${API_BASE_URL}/global`;
-    try {
-        // Fetch global market data. This is a more reliable source for max market cap.
-        const data = await fetchWithCache<{ data: { total_market_cap: { usd: number } } }>(url, 86400); // Revalidate once a day
-        
-        if (data && data.data && data.data.total_market_cap) {
-            // Using a reliable historical peak from late 2021 as a stable reference.
-            // Direct API for historical max is not available, so this is a robust alternative.
-            const historicalMax = 2.9e12; // Approx. $2.9 Trillion
-            const currentDate = new Date().toISOString().split('T')[0];
-            return { cap: historicalMax, date: '2021-11-10' };
-        }
-        
-        // Fallback value if API fails
-        return { cap: 3e12, date: '2021-11-10' };
-
-    } catch (error) {
-        console.error("An error occurred while fetching max historical market cap:", error);
-        // Fallback to a hardcoded safe value
-        return { cap: 3e12, date: '2021-11-10' };
-    }
-}
-
 /**
  * Fetches all necessary data for the market analysis and stats cards.
  * @returns A promise that resolves to a combined object of MarketAnalysisInput and MarketStats or null if failed.
@@ -166,17 +142,18 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
         const globalDataPromise = fetchWithCache<any>(`${API_BASE_URL}/global`);
         const fearAndGreedPromise = fetchFearGreedData();
         const topCoinsPromise = getTopCoins(20, 'usd'); 
-        const maxHistoricalCapPromise = getMaxHistoricalMarketCap();
 
         const specificCoinIds = 'bitcoin,ethereum,solana,tether,usd-coin,dai,frax,ethena-usde';
         const specificCoinsPromise = fetchWithCache<any[]>(`${API_BASE_URL}/coins/markets?vs_currency=usd&ids=${specificCoinIds}`);
+        
+        // Use a stable, hardcoded value for the historical max market cap to improve reliability and reduce API calls.
+        const maxHistoricalData = { cap: 2.9e12, date: '2021-11-10' };
 
-        const [globalData, fearAndGreed, topCoins, specificCoins, maxHistoricalData] = await Promise.all([
+        const [globalData, fearAndGreed, topCoins, specificCoins] = await Promise.all([
             globalDataPromise,
             fearAndGreedPromise,
             topCoinsPromise,
             specificCoinsPromise,
-            maxHistoricalCapPromise
         ]);
         
         if (!globalData?.data || !fearAndGreed.today || !topCoins || topCoins.length === 0 || !specificCoins || specificCoins.length === 0) {
@@ -262,3 +239,5 @@ export async function fetchBinancePrice(symbol: string): Promise<number | null> 
         return null;
     }
 }
+
+    

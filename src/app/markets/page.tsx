@@ -1,3 +1,4 @@
+
 import { getTopCoins } from "@/lib/coingecko";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { getColumns } from "./columns";
@@ -70,3 +71,5 @@ export default async function MarketsPage({
     </div>
   );
 }
+
+    

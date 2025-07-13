@@ -8,20 +8,13 @@ import { supabase } from './supabase';
 const API_BASE_URL = 'https://api.coingecko.com/api/v3';
 const CACHE_DURATION_SECONDS = 300; // 5 minutes default
 
-async function fetchWithCache<T>(url: string, revalidateTime: number = CACHE_DURATION_SECONDS): Promise<T | null> {
-    const key = url;
-
-    // 1. If Supabase is not configured, skip caching and fetch directly from API.
+async function fetchWithCache<T>(key: string, fetcher: () => Promise<T | null>, revalidateTime: number = CACHE_DURATION_SECONDS): Promise<T | null> {
+    // 1. If Supabase is not configured, skip caching and fetch directly.
     if (!supabase) {
         try {
-            const response = await fetch(url, { next: { revalidate: revalidateTime } });
-            if (!response.ok) {
-                console.error(`API request failed for URL "${url}" with status: ${response.status}`);
-                return null;
-            }
-            return await response.json() as T;
+            return await fetcher();
         } catch (error) {
-            console.error(`An error occurred while fetching from API for URL "${url}":`, error);
+            console.error(`An error occurred while fetching from API for key "${key}":`, error);
             return null;
         }
     }
@@ -53,12 +46,10 @@ async function fetchWithCache<T>(url: string, revalidateTime: number = CACHE_DUR
 
     // 3. If cache is invalid or doesn't exist, fetch from API
     try {
-        const response = await fetch(url, { next: { revalidate: revalidateTime } });
-        if (!response.ok) {
-            console.error(`API request failed for URL "${url}" with status: ${response.status}`);
-            return null;
+        const apiData = await fetcher();
+        if (apiData === null) {
+            return null; // Don't cache null responses
         }
-        const apiData = await response.json() as T;
 
         // 4. Update the cache in Supabase asynchronously (don't block the response)
         supabase
@@ -76,7 +67,7 @@ async function fetchWithCache<T>(url: string, revalidateTime: number = CACHE_DUR
             
         return apiData;
     } catch (error) {
-        console.error(`An error occurred while fetching from API for URL "${url}":`, error);
+        console.error(`An error occurred while fetching from API for key "${key}":`, error);
         return null;
     }
 }
@@ -89,8 +80,14 @@ async function fetchWithCache<T>(url: string, revalidateTime: number = CACHE_DUR
  * @returns A promise that resolves to an array of CryptoData objects or null on failure.
  */
 export async function getTopCoins(limit: number = 100, currency: string = 'usd'): Promise<CryptoData[] | null> {
-    const url = `${API_BASE_URL}/coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=${limit}&page=1&sparkline=true&price_change_percentage=1h,24h,7d`;
-    return fetchWithCache<CryptoData[]>(url);
+    const key = `topCoins_${limit}_${currency}`;
+    const fetcher = async () => {
+        const url = `${API_BASE_URL}/coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=${limit}&page=1&sparkline=true&price_change_percentage=1h,24h,7d`;
+        const response = await fetch(url);
+        if (!response.ok) return null;
+        return response.json();
+    };
+    return fetchWithCache<CryptoData[]>(key, fetcher);
 }
 
 /**
@@ -98,31 +95,33 @@ export async function getTopCoins(limit: number = 100, currency: string = 'usd')
  * @returns A promise resolving to an object with today's and last week's F&G data.
  */
 export async function fetchFearGreedData(): Promise<{ today: FearGreedData | null, weekAgo: FearGreedData | null }> {
-    const url = 'https://api.alternative.me/fng/?limit=8';
-    try {
-        const data = await fetchWithCache<{data: any[]}>(url, 3600); // Cache for 1 hour
+    const key = 'fear_greed_index';
+    const fetcher = async () => {
+        const url = 'https://api.alternative.me/fng/?limit=8';
+        const response = await fetch(url, { next: { revalidate: 3600 }}); // short revalidate time
+        if (!response.ok) return null;
+        return response.json();
+    };
 
-        if (!data?.data || data.data.length === 0) {
-            return { today: null, weekAgo: null };
-        }
-        
-        const todayData = data.data[0];
-        const weekAgoData = data.data[7]; // The 8th item is from 7 days ago
+    const data = await fetchWithCache<{data: any[]}>(key, fetcher, 3600); // Cache for 1 hour
 
-        return {
-            today: {
-                value: parseInt(todayData.value, 10),
-                value_classification: todayData.value_classification,
-            },
-            weekAgo: weekAgoData ? {
-                value: parseInt(weekAgoData.value, 10),
-                value_classification: weekAgoData.value_classification,
-            } : null
-        };
-    } catch (error) {
-        console.error("Failed to fetch Fear & Greed data:", error);
+    if (!data?.data || data.data.length === 0) {
         return { today: null, weekAgo: null };
     }
+    
+    const todayData = data.data[0];
+    const weekAgoData = data.data.length > 7 ? data.data[7] : null;
+
+    return {
+        today: {
+            value: parseInt(todayData.value, 10),
+            value_classification: todayData.value_classification,
+        },
+        weekAgo: weekAgoData ? {
+            value: parseInt(weekAgoData.value, 10),
+            value_classification: weekAgoData.value_classification,
+        } : null
+    };
 }
 
 
@@ -139,14 +138,22 @@ export type CombinedMarketData = MarketAnalysisInput & MarketStats & {
  */
 export async function fetchMarketData(): Promise<CombinedMarketData | null> {
     try {
-        const globalDataPromise = fetchWithCache<any>(`${API_BASE_URL}/global`);
+        const globalDataPromise = fetchWithCache<any>('global_data', async () => {
+            const response = await fetch(`${API_BASE_URL}/global`);
+            if (!response.ok) return null;
+            return response.json();
+        });
+
         const fearAndGreedPromise = fetchFearGreedData();
         const topCoinsPromise = getTopCoins(20, 'usd'); 
 
         const specificCoinIds = 'bitcoin,ethereum,solana,tether,usd-coin,dai,frax,ethena-usde';
-        const specificCoinsPromise = fetchWithCache<any[]>(`${API_BASE_URL}/coins/markets?vs_currency=usd&ids=${specificCoinIds}`);
+        const specificCoinsPromise = fetchWithCache<any[]>(`specific_coins_${specificCoinIds}`, async () => {
+            const response = await fetch(`${API_BASE_URL}/coins/markets?vs_currency=usd&ids=${specificCoinIds}`);
+            if (!response.ok) return null;
+            return response.json();
+        });
         
-        // Use a stable, hardcoded value for the historical max market cap to improve reliability and reduce API calls.
         const maxHistoricalData = { cap: 2.9e12, date: '2021-11-10' };
 
         const [globalData, fearAndGreed, topCoins, specificCoins] = await Promise.all([
@@ -157,7 +164,7 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
         ]);
         
         if (!globalData?.data || !fearAndGreed.today || !topCoins || topCoins.length === 0 || !specificCoins || specificCoins.length === 0) {
-            console.error("Failed to fetch one or more necessary market data sources.");
+            console.error("Failed to fetch one or more necessary market data sources.", { globalData, fearAndGreed, topCoins, specificCoins });
             return null;
         }
 

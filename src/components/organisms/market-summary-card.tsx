@@ -4,15 +4,15 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
-import { fetchMarketData } from '@/lib/coingecko';
 import type { MarketAnalysisOutput } from '@/types';
 import { analyzeMarketSentiment } from '@/ai/flows/market-analysis-flow';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { AlertTriangle, CheckCircle, ArrowUpRight, BookOpen } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { AlertTriangle, CheckCircle, BookOpen } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import anime from 'animejs';
+import type { CombinedMarketData } from '@/lib/coingecko';
 
 const indicatorExplanations: Record<string, string> = {
     marketCapScore: "Mengukur valuasi pasar saat ini terhadap puncak historisnya.",
@@ -94,26 +94,28 @@ const AnimatedProgress = ({ value, className, indicatorClassName }: { value: num
     return <Progress value={progressValue} className={className} indicatorClassName={cn(indicatorClassName)} />
 }
 
+interface MarketSummaryCardProps {
+    marketData: CombinedMarketData | null;
+}
 
-export function MarketSummaryCard() {
-  const [isLoading, setIsLoading] = useState(true);
+export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
   const [analysisResult, setAnalysisResult] = useState<MarketAnalysisOutput | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const getMarketAnalysis = async () => {
+      if (!marketData) {
+        setError("Gagal mengambil data pasar.");
+        setIsLoading(false);
+        return;
+      }
+      
       setIsLoading(true);
       setError(null);
       try {
-        const marketData = await fetchMarketData();
-        
-        if (!marketData) {
-          throw new Error("Gagal mengambil data pasar dari CoinGecko.");
-        }
-        
         const result = await analyzeMarketSentiment(marketData);
         setAnalysisResult(result);
-
       } catch (e) {
         console.error("Analisis pasar gagal:", e);
         const message = e instanceof Error ? e.message : "Terjadi kesalahan yang tidak diketahui.";
@@ -125,7 +127,7 @@ export function MarketSummaryCard() {
     };
 
     getMarketAnalysis();
-  }, []);
+  }, [marketData]);
 
   if (isLoading) {
     return (

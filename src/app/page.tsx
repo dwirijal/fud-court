@@ -6,10 +6,11 @@ import { MarketCarousel } from "@/components/molecules/market-carousel";
 import { HeroSection } from "@/components/organisms/hero-section";
 import { MarketSummaryCard } from "@/components/organisms/market-summary-card";
 import { MarketStatsCard } from "@/components/organisms/market-stats-card";
+import { CombinedMarketData } from "@/lib/coingecko";
 
 export default async function Home() {
   // Fetch all data concurrently for better performance
-  const [posts, cryptoData, marketStats] = await Promise.all([
+  const [posts, cryptoData, marketData] = await Promise.all([
     getPosts(),
     getTopCoins(10),
     fetchMarketData(),
@@ -31,8 +32,8 @@ export default async function Home() {
           </div>
           
           <div className="space-y-8">
-            <MarketSummaryCard />
-            <MarketStatsCard marketStats={marketStats} />
+            <MarketSummaryCard marketData={marketData} />
+            <MarketStatsCard marketStats={marketData} />
           </div>
 
           <div className="mt-16">

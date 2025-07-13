@@ -5,12 +5,11 @@ import { MarketCarousel } from "@/components/molecules/market-carousel";
 import { HeroSection } from "@/components/organisms/hero-section";
 import { MarketSummaryCard } from "@/components/organisms/market-summary-card";
 import { MarketStatsCard } from "@/components/organisms/market-stats-card";
-import { NewsTicker } from "@/components/molecules/news-ticker";
 
 export default async function Home() {
   // Fetch all data concurrently for better performance
-  const [newsPosts, cryptoData, marketData] = await Promise.all([
-    getPosts({ tag: 'news', limit: 20 }), // Fetch 20 latest news for the ticker
+  // News fetching is now handled in RootLayout for the global ticker
+  const [cryptoData, marketData] = await Promise.all([
     getTopCoins(10),
     fetchMarketData(),
   ]);
@@ -39,10 +38,6 @@ export default async function Home() {
             <MarketCarousel data={cryptoData || []} />
           </div>
         </div>
-      </section>
-
-      <section className="py-8 md:py-12 border-b">
-        <NewsTicker posts={newsPosts} />
       </section>
     </>
   );

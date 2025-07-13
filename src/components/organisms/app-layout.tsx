@@ -22,15 +22,17 @@ export function AppLayout({ children }: AppLayoutProps) {
       enableSystem
       disableTransitionOnChange
     >
-      {isLoginPage ? (
-        <>{children}</>
-      ) : (
-        <div className="flex min-h-screen flex-col">
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
-        </div>
-      )}
+      <div className="flex min-h-screen flex-col">
+        {isLoginPage ? (
+          children
+        ) : (
+          <>
+            <Header />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </>
+        )}
+      </div>
       <Toaster />
     </ThemeProvider>
   );

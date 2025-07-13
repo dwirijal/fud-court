@@ -1,11 +1,11 @@
-
 import { getTopCoins } from "@/lib/coingecko";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { getColumns } from "./columns";
 import { DataTable } from "@/components/ui/data-table";
 import { CurrencySwitcher } from "@/components/molecules/currency-switcher";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AlertTriangle } from "lucide-react";
 
 async function MarketDataTable({ currency }: { currency: string }) {
   try {
@@ -14,7 +14,15 @@ async function MarketDataTable({ currency }: { currency: string }) {
     // Add a fallback for data to prevent crash if API fails
     return <DataTable columns={columns} data={data || []} />;
   } catch (err) {
-    return <div className="p-4 text-destructive">Gagal memuat data market. Silakan refresh atau cek koneksi.</div>;
+    return (
+        <div className="flex flex-col items-center justify-center p-12 text-center">
+            <AlertTriangle className="h-12 w-12 text-destructive mb-4" />
+            <h3 className="text-xl font-semibold text-destructive">Gagal Memuat Data Pasar</h3>
+            <p className="text-sm text-muted-foreground mt-2">
+                Terjadi kesalahan saat mengambil data. Silakan coba segarkan halaman atau periksa koneksi internet Anda.
+            </p>
+      </div>
+    );
   }
 }
 

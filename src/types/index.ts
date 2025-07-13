@@ -1,5 +1,34 @@
 
+
 import { z } from 'zod';
+import type { Market } from '@coingecko/coingecko-typescript-api';
+
+// This is our internal, simplified type for crypto data.
+// We map the more complex CoinGecko type to this.
+export interface CryptoData {
+  id: string;
+  symbol: string;
+  name: string;
+  image: string;
+  current_price: number;
+  market_cap: number;
+  market_cap_rank: number;
+  total_volume: number;
+  high_24h: number;
+  low_24h: number;
+  price_change_percentage_1h_in_currency: number | null;
+  price_change_percentage_24h_in_currency: number | null;
+  price_change_percentage_7d_in_currency: number | null;
+  sparkline_in_7d?: {
+    price: number[];
+  };
+  ath: number;
+  ath_market_cap: number | null;
+}
+
+// Export the CoinGecko Market type for mapping
+export type CGMarket = Market;
+
 
 export interface Post {
   id: string;
@@ -13,27 +42,6 @@ export interface Post {
     name: string;
   } | null;
   html?: string;
-}
-
-export interface CryptoData {
-  id: string;
-  symbol: string;
-  name: string;
-  image: string;
-  current_price: number;
-  market_cap: number;
-  market_cap_rank: number;
-  total_volume: number;
-  high_24h: number;
-  low_24h: number;
-  price_change_percentage_1h_in_currency: number;
-  price_change_percentage_24h_in_currency: number;
-  price_change_percentage_7d_in_currency: number;
-  sparkline_in_7d?: {
-    price: number[];
-  };
-  ath: number;
-  ath_market_cap: number | null;
 }
 
 // DexScreener Types
@@ -182,3 +190,10 @@ export interface TopCoinForAnalysis {
     ath: number;
     price_change_percentage_24h: number | null;
 }
+
+
+// A combined type for the resilient fetchMarketData function
+export type CombinedMarketData = MarketAnalysisInput & MarketStats & {
+    topCoinsForAnalysis: TopCoinForAnalysis[];
+    maxHistoricalMarketCapDate: string;
+};

@@ -247,3 +247,5 @@ export async function fetchBinancePrice(symbol: string): Promise<number | null> 
         return null;
     }
 }
+
+    

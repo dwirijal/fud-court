@@ -1,17 +1,16 @@
 
-import { NewsCard } from "@/components/molecules/news-card";
 import { getPosts } from "@/lib/ghost";
 import { fetchMarketData, getTopCoins } from "@/lib/coingecko";
 import { MarketCarousel } from "@/components/molecules/market-carousel";
 import { HeroSection } from "@/components/organisms/hero-section";
 import { MarketSummaryCard } from "@/components/organisms/market-summary-card";
 import { MarketStatsCard } from "@/components/organisms/market-stats-card";
-import { CombinedMarketData } from "@/lib/coingecko";
+import { NewsTicker } from "@/components/molecules/news-ticker";
 
 export default async function Home() {
   // Fetch all data concurrently for better performance
-  const [posts, cryptoData, marketData] = await Promise.all([
-    getPosts(),
+  const [newsPosts, cryptoData, marketData] = await Promise.all([
+    getPosts({ tag: 'news', limit: 20 }), // Fetch 20 latest news for the ticker
     getTopCoins(10),
     fetchMarketData(),
   ]);
@@ -42,22 +41,8 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <div className="text-center max-w-3xl mx-auto">
-            <h2 className="text-4xl font-extrabold tracking-tight font-headline mb-4">
-              Berita Terbaru
-            </h2>
-            <p className="text-muted-foreground mb-12">
-              Tetap terinformasi dengan pembaruan dan analisis terbaru dari dunia kripto.
-            </p>
-          </div>
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {posts.slice(0, 12).map((post) => (
-              <NewsCard key={post.id} post={post} />
-            ))}
-          </div>
-        </div>
+      <section className="py-8 md:py-12 border-b">
+        <NewsTicker posts={newsPosts} />
       </section>
     </>
   );

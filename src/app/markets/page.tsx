@@ -8,10 +8,14 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 async function MarketDataTable({ currency }: { currency: string }) {
-  const data = await getTopCoins(100, currency);
-  const columns = getColumns(currency);
-  // Add a fallback for data to prevent crash if API fails
-  return <DataTable columns={columns} data={data || []} />;
+  try {
+    const data = await getTopCoins(100, currency);
+    const columns = getColumns(currency);
+    // Add a fallback for data to prevent crash if API fails
+    return <DataTable columns={columns} data={data || []} />;
+  } catch (err) {
+    return <div className="p-4 text-destructive">Gagal memuat data market. Silakan refresh atau cek koneksi.</div>;
+  }
 }
 
 function TableSkeleton() {

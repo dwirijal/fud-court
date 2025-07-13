@@ -2,9 +2,76 @@
 'use server';
 
 import type { CryptoData, FearGreedData, MarketAnalysisInput, MarketStats, TopCoinForAnalysis } from '@/types';
-import { subDays, getUnixTime } from 'date-fns';
+import { subDays, getUnixTime, isBefore } from 'date-fns';
+import { supabase } from './supabase';
 
 const API_BASE_URL = 'https://api.coingecko.com/api/v3';
+const CACHE_DURATION_SECONDS = 300; // 5 minutes
+
+async function fetchWithCache<T>(url: string, revalidateTime: number = CACHE_DURATION_SECONDS): Promise<T | null> {
+    const key = url;
+
+    // 1. Try to fetch from Supabase cache first
+    if (supabase) {
+        try {
+            const { data: cachedData, error } = await supabase
+                .from('coingecko_cache')
+                .select('data, updated_at')
+                .eq('id', key)
+                .single();
+
+            if (error && error.code !== 'PGRST116') { // Ignore "Row not found" error
+                console.warn(`Supabase cache read error for key "${key}":`, error.message);
+            }
+
+            if (cachedData) {
+                const lastUpdated = new Date(cachedData.updated_at);
+                const cacheExpiryDate = new Date(lastUpdated.getTime() + revalidateTime * 1000);
+                
+                if (isBefore(new Date(), cacheExpiryDate)) {
+                    // Cache is valid, return cached data
+                    return cachedData.data as T;
+                }
+            }
+        } catch (e) {
+             console.error('An unexpected error occurred during Supabase cache read:', e);
+        }
+    }
+
+    // 2. If cache is invalid or Supabase is not available, fetch from API
+    try {
+        const response = await fetch(url, { next: { revalidate: revalidateTime } });
+        if (!response.ok) {
+            console.error(`API request failed for URL "${url}" with status: ${response.status}`);
+            return null;
+        }
+        const apiData = await response.json() as T;
+
+        // 3. Update the cache in Supabase
+        if (supabase) {
+            try {
+                const { error: upsertError } = await supabase
+                    .from('coingecko_cache')
+                    .upsert({
+                        id: key,
+                        data: apiData,
+                        updated_at: new Date().toISOString(),
+                    });
+
+                if (upsertError) {
+                    console.warn(`Supabase cache write error for key "${key}":`, upsertError.message);
+                }
+            } catch (e) {
+                console.error('An unexpected error occurred during Supabase cache write:', e);
+            }
+        }
+        return apiData;
+    } catch (error) {
+        console.error(`An error occurred while fetching from API for URL "${url}":`, error);
+        return null;
+    }
+}
+
 
 /**
  * Fetches a list of top cryptocurrencies from the CoinGecko API.
@@ -14,18 +81,7 @@ const API_BASE_URL = 'https://api.coingecko.com/api/v3';
  */
 export async function getTopCoins(limit: number = 100, currency: string = 'usd'): Promise<CryptoData[] | null> {
     const url = `${API_BASE_URL}/coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=${limit}&page=1&sparkline=true&price_change_percentage=1h,24h,7d`;
-    try {
-      const response = await fetch(url, { next: { revalidate: 300 } }); // Revalidate every 5 minutes
-      if (!response.ok) {
-        console.error(`CoinGecko API request failed with status: ${response.status}`);
-        return null;
-      }
-      const data: CryptoData[] = await response.json();
-      return data;
-    } catch (error) {
-      console.error("An error occurred while fetching from CoinGecko API:", error);
-      return null;
-    }
+    return fetchWithCache<CryptoData[]>(url);
 }
 
 /**
@@ -33,12 +89,9 @@ export async function getTopCoins(limit: number = 100, currency: string = 'usd')
  * @returns A promise resolving to an object with today's and last week's F&G data.
  */
 export async function fetchFearGreedData(): Promise<{ today: FearGreedData | null, weekAgo: FearGreedData | null }> {
+    const url = 'https://api.alternative.me/fng/?limit=8';
     try {
-        const response = await fetch('https://api.alternative.me/fng/?limit=8', { next: { revalidate: 3600 } });
-        if (!response.ok) {
-            throw new Error('Failed to fetch Fear & Greed data');
-        }
-        const data = await response.json();
+        const data = await fetchWithCache<{data: any[]}>(url, 3600); // Cache for 1 hour
 
         if (!data?.data || data.data.length === 0) {
             return { today: null, weekAgo: null };
@@ -74,21 +127,12 @@ export type CombinedMarketData = MarketAnalysisInput & MarketStats & {
 async function getMaxHistoricalMarketCap(): Promise<{ cap: number, date: Date | null }> {
     const from = getUnixTime(subDays(new Date(), 2000)); // ~5.5 years ago
     const to = getUnixTime(new Date());
+    const url = `${API_BASE_URL}/coins/bitcoin/market_chart/range?vs_currency=usd&from=${from}&to=${to}`;
 
     try {
-        const res = await fetch(`${API_BASE_URL}/coins/bitcoin/market_chart/range?vs_currency=usd&from=${from}&to=${to}`, {
-            next: { revalidate: 86400 } // Revalidate once a day
-        });
-
-        // Return a default on failure instead of throwing an error
-        if (!res.ok) {
-            console.warn(`Failed to fetch historical market data. Status: ${res.status}. Falling back to default.`);
-            return { cap: 3e12, date: new Date('2021-11-10T00:00:00.000Z') };
-        }
+        const data = await fetchWithCache<{ market_caps: [number, number][] }>(url, 86400); // Revalidate once a day
         
-        const data = await res.json();
-        
-        if (!data.market_caps || data.market_caps.length === 0) {
+        if (!data || !data.market_caps || data.market_caps.length === 0) {
             console.warn("No historical market cap data found. Falling back to default.");
             return { cap: 3e12, date: new Date('2021-11-10T00:00:00.000Z') };
         }
@@ -103,8 +147,6 @@ async function getMaxHistoricalMarketCap(): Promise<{ cap: number, date: Date | 
             }
         }
         
-        // This is an estimation. The true total market cap is ~2x Bitcoin's on average.
-        // This is a reasonable proxy since a direct historical total_market_cap endpoint is not available on the free tier.
         const estimatedTotalMaxCap = maxCap * 2; 
 
         return {
@@ -113,7 +155,6 @@ async function getMaxHistoricalMarketCap(): Promise<{ cap: number, date: Date | 
         };
     } catch (error) {
         console.error("An error occurred while fetching max historical market cap:", error);
-        // Return a sensible default on error to prevent crashes.
         return { cap: 3e12, date: new Date('2021-11-10T00:00:00.000Z') };
     }
 }
@@ -124,14 +165,13 @@ async function getMaxHistoricalMarketCap(): Promise<{ cap: number, date: Date | 
  */
 export async function fetchMarketData(): Promise<CombinedMarketData | null> {
     try {
-        const globalDataPromise = fetch(`${API_BASE_URL}/global`, { next: { revalidate: 300 } }).then(res => res.json());
+        const globalDataPromise = fetchWithCache<any>(`${API_BASE_URL}/global`);
         const fearAndGreedPromise = fetchFearGreedData();
         const topCoinsPromise = getTopCoins(20, 'usd'); 
         const maxHistoricalCapPromise = getMaxHistoricalMarketCap();
 
-        // Expand the list to include more stablecoins
         const specificCoinIds = 'bitcoin,ethereum,solana,tether,usd-coin,dai,frax,ethena-usde';
-        const specificCoinsPromise = fetch(`${API_BASE_URL}/coins/markets?vs_currency=usd&ids=${specificCoinIds}`, { next: { revalidate: 300 } }).then(res => res.json());
+        const specificCoinsPromise = fetchWithCache<any[]>(`${API_BASE_URL}/coins/markets?vs_currency=usd&ids=${specificCoinIds}`);
 
         const [globalData, fearAndGreed, topCoins, specificCoins, maxHistoricalData] = await Promise.all([
             globalDataPromise,
@@ -141,8 +181,9 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
             maxHistoricalCapPromise
         ]);
         
-        if (!globalData?.data || !fearAndGreed.today || !topCoins || topCoins.length === 0 || specificCoins.length === 0) {
-            throw new Error("Failed to fetch necessary market data.");
+        if (!globalData?.data || !fearAndGreed.today || !topCoins || topCoins.length === 0 || !specificCoins || specificCoins.length === 0) {
+            console.error("Failed to fetch one or more necessary market data sources.");
+            return null;
         }
 
         const totalMarketCap = globalData.data.total_market_cap.usd;
@@ -153,14 +194,12 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
         const ethData = getCoinData('ethereum');
         const solData = getCoinData('solana');
         
-        // Sum market caps of all fetched stablecoins
         const stablecoinIds = ['tether', 'usd-coin', 'dai', 'frax', 'ethena-usde'];
         const stablecoinMarketCap = stablecoinIds.reduce((sum, id) => {
             const coin = getCoinData(id);
             return sum + (coin?.market_cap || 0);
         }, 0);
 
-        // Data for Analysis Flow
         const avg30DayVolume = globalData.data.total_volume.usd;
 
         const analysisInput: MarketAnalysisInput = {
@@ -177,7 +216,6 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
             })),
         };
         
-        // Data for Stats Card
         const marketStats: MarketStats = {
             totalMarketCap,
             btcMarketCap: btcData?.market_cap || 0,
@@ -191,7 +229,6 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
             maxHistoricalMarketCap: maxHistoricalData.cap
         };
 
-        // Extra data for UI display
         const topCoinsForAnalysis: TopCoinForAnalysis[] = topCoins.map(c => ({
             name: c.name,
             symbol: c.symbol,
@@ -214,16 +251,16 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
     }
 }
 
-// Fungsi fetch harga crypto real-time dari Binance (tanpa cache)
 export async function fetchBinancePrice(symbol: string): Promise<number | null> {
-  try {
     const url = `https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`;
-    const response = await fetch(url);
-    if (!response.ok) return null;
-    const data = await response.json();
-    return parseFloat(data.price);
-  } catch (error) {
-    console.error('Failed to fetch Binance price:', error);
-    return null;
-  }
+    // Binance data is too volatile for caching, fetch directly.
+    try {
+        const response = await fetch(url, { next: { revalidate: 10 }}); // short revalidate time
+        if (!response.ok) return null;
+        const data = await response.json();
+        return parseFloat(data.price);
+    } catch (error) {
+        console.error('Failed to fetch Binance price:', error);
+        return null;
+    }
 }

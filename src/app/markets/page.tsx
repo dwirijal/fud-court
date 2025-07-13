@@ -1,16 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { CurrencySwitcher } from "@/components/molecules/currency-switcher";
 import { Suspense } from "react";
-import { MarketDataTable } from "./market-data-table";
-import { TableSkeleton } from "./market-data-table-client";
+import { MarketDataTable, TableSkeleton } from "./market-data-table";
+import { CurrencySwitcherClient } from "@/components/molecules/currency-switcher-client";
 
-export default async function MarketsPage({
-  searchParams,
-}: {
-  searchParams?: { [key: string]: string | string[] | undefined };
-}) {
-  const currency = typeof searchParams?.currency === 'string' ? searchParams.currency.toLowerCase() : 'usd';
-
+export default async function MarketsPage() {
   return (
     <div className="container mx-auto px-4 py-12 md:py-24">
       <header className="mb-12">
@@ -23,14 +16,16 @@ export default async function MarketsPage({
               Jelajahi harga mata uang kripto, kapitalisasi pasar, dan volume perdagangan secara real-time.
             </p>
           </div>
-          <CurrencySwitcher defaultValue={currency} />
+          <Suspense fallback={<div>Loading...</div>}>
+            <CurrencySwitcherClient />
+          </Suspense>
         </div>
       </header>
 
       <div className="w-full overflow-x-auto">
         <Card className="bg-card/60 backdrop-blur-md">
-            <Suspense key={currency} fallback={<TableSkeleton />}>
-              <MarketDataTable currency={currency} />
+            <Suspense fallback={<TableSkeleton />}>
+              <MarketDataTable currency="usd" />
             </Suspense>
         </Card>
       </div>

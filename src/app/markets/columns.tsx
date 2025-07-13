@@ -5,6 +5,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 import type { CryptoData } from '@/types'
 import { TrendingDown, TrendingUp } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { cn } from '@/lib/utils'
 
 export const getColumns = (currency: string): ColumnDef<CryptoData>[] => {
@@ -75,7 +76,7 @@ export const getColumns = (currency: string): ColumnDef<CryptoData>[] => {
             cell: ({ row }) => {
                 const crypto = row.original
                 return (
-                    <div className="flex items-center gap-4">
+                    <Link href={`/coins/${crypto.id}`} className="flex items-center gap-4 hover:underline">
                         {crypto.image ? (
                             <Image
                                 src={crypto.image}
@@ -93,7 +94,7 @@ export const getColumns = (currency: string): ColumnDef<CryptoData>[] => {
                                 {(crypto.symbol || '').toUpperCase() || '-' }
                             </div>
                         </div>
-                    </div>
+                    </Link>
                 )
             },
         },

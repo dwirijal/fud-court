@@ -67,6 +67,64 @@ export interface CGMarket {
     ath_market_cap: number | null;
 }
 
+export interface DetailedCoinData {
+  id: string;
+  symbol: string;
+  name: string;
+  image: {
+    thumb: string;
+    small: string;
+    large: string;
+  };
+  description: {
+    en: string;
+  };
+  links: {
+    homepage: string[];
+    blockchain_site: string[];
+    repos_url: {
+      github: string[];
+      bitbucket: string[];
+    };
+    subreddit_url: string;
+    twitter_screen_name: string;
+  };
+  current_price: number;
+  market_cap: number;
+  total_volume: number;
+  high_24h: number;
+  low_24h: number;
+  ath: number;
+  ath_date: string;
+  atl: number;
+  atl_date: string;
+  circulating_supply: number;
+  total_supply: number | null;
+  max_supply: number | null;
+  price_change_percentage_24h: number;
+  price_change_percentage_7d: number;
+  price_change_percentage_30d: number;
+  price_change_percentage_1y: number;
+  sentiment_votes_up_percentage: number;
+  sentiment_votes_down_percentage: number;
+  genesis_date: string;
+}
+
+export interface KlineData {
+  openTime: number;
+  open: string;
+  high: string;
+  low: string;
+  close: string;
+  volume: string;
+  closeTime: number;
+  quoteAssetVolume: string;
+  numberOfTrades: number;
+  takerBuyBaseAssetVolume: string;
+  takerBuyQuoteAssetVolume: string;
+  ignore: string;
+}
+
 
 
 export interface Post {

@@ -1,6 +1,6 @@
 'use server';
 
-import type { CryptoData } from '@/types';
+import type { CryptoData, KlineData } from '@/types';
 
 const BINANCE_API_BASE_URL = 'https://api.binance.com/api/v3';
 
@@ -81,6 +81,41 @@ export async function getTopCoinsFromBinance(limit: number = 20): Promise<Crypto
 
   } catch (error) {
     console.error('An error occurred while fetching top coins from Binance:', error);
+    return null;
+  }
+}
+
+export async function getKlinesData(symbol: string, interval: string = '1d', limit: number = 500): Promise<KlineData[] | null> {
+  try {
+    const url = `${BINANCE_API_BASE_URL}/klines?symbol=${symbol.toUpperCase()}&interval=${interval}&limit=${limit}`;
+    const response = await fetch(url, { next: { revalidate: 3600 }}); // Revalidate hourly
+
+    if (!response.ok) {
+      console.error(`Binance Klines API error for ${symbol}: ${response.status} ${response.statusText}`);
+      return null;
+    }
+
+    const data: any[][] = await response.json();
+
+    const mappedData: KlineData[] = data.map(kline => ({
+      openTime: kline[0],
+      open: kline[1],
+      high: kline[2],
+      low: kline[3],
+      close: kline[4],
+      volume: kline[5],
+      closeTime: kline[6],
+      quoteAssetVolume: kline[7],
+      numberOfTrades: kline[8],
+      takerBuyBaseAssetVolume: kline[9],
+      takerBuyQuoteAssetVolume: kline[10],
+      ignore: kline[11],
+    }));
+
+    return mappedData;
+
+  } catch (error) {
+    console.error(`An error occurred while fetching Klines data for ${symbol}:`, error);
     return null;
   }
 }

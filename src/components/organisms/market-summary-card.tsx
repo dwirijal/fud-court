@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -11,16 +10,9 @@ import { AlertTriangle, CheckCircle, BookOpen } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
+
 import anime from 'animejs';
 import type { CombinedMarketData } from '@/types';
-
-const indicatorExplanations: Record<string, string> = {
-    marketCapScore: "Mengukur valuasi pasar saat ini terhadap puncak historisnya.",
-    volumeScore: "Mengukur aktivitas pasar berdasarkan volume harian vs. rata-rata.",
-    fearGreedScore: "Mewakili sentimen emosional pasar.",
-    athScore: "Mengukur seberapa jauh aset utama dari Harga Tertinggi Sepanjang Masa (ATH).",
-    marketBreadthScore: "Mengukur apakah pergerakan didukung oleh banyak aset atau hanya beberapa."
-};
 
 const getProgressColorClass = (score: number) => {
     if (score < 40) return 'bg-destructive';
@@ -157,11 +149,11 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
   }
   
   const indicators = [
-      { name: "Skor Kapitalisasi Pasar", value: analysisResult.components.marketCapScore, description: indicatorExplanations.marketCapScore },
-      { name: "Skor Volume", value: analysisResult.components.volumeScore, description: indicatorExplanations.volumeScore },
-      { name: "Skor Fear & Greed", value: analysisResult.components.fearGreedScore, description: indicatorExplanations.fearGreedScore },
-      { name: "Skor ATH", value: analysisResult.components.athScore, description: indicatorExplanations.athScore },
-      { name: "Skor Sebaran Pasar", value: analysisResult.components.marketBreadthScore, description: indicatorExplanations.marketBreadthScore },
+      { name: "Skor Kapitalisasi Pasar", value: analysisResult.components.marketCapScore },
+      { name: "Skor Volume", value: analysisResult.components.volumeScore },
+      { name: "Skor Fear & Greed", value: analysisResult.components.fearGreedScore },
+      { name: "Skor ATH", value: analysisResult.components.athScore },
+      { name: "Skor Sebaran Pasar", value: analysisResult.components.marketBreadthScore },
   ];
   
   const activeColorClass = getActiveColorClass(analysisResult.marketCondition);
@@ -194,7 +186,6 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                        <CardContent className="p-4 flex flex-1 items-center justify-between gap-4">
                             <div className="space-y-1 flex-grow">
                                 <p className="text-sm font-semibold">{indicator.name}</p>
-                                <p className="text-xs text-muted-foreground line-clamp-2">{indicator.description}</p>
                             </div>
                             <div className="text-right flex-shrink-0 pl-2">
                                 <AnimatedNumber to={indicator.value} className="text-3xl font-mono font-bold" delay={200 + index * 100} />

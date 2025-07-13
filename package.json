@@ -6,10 +6,10 @@
     "dev": "next dev --port 9002 --hostname 0.0.0.0",
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
-    "build": "next build",
+    "build": "next build && npm run lint",
+    "typecheck": "tsc --noEmit",
     "start": "next start",
-    "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "lint": "next lint"
   },
   "dependencies": {
     "@genkit-ai/googleai": "^1.14.1",
@@ -60,6 +60,7 @@
     "react-day-picker": "^8.10.1",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.52.1",
+    "react-resizable-panels": "^3.0.3",
     "recharts": "^2.15.1",
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",

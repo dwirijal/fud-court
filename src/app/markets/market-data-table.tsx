@@ -2,6 +2,7 @@ import { getTopCoins } from "@/lib/coingecko";
 import { AlertTriangle } from "lucide-react";
 import { CryptoData } from "@/types";
 import { MarketDataTableClient } from "./market-data-table-client";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export async function MarketDataTable({ currency }: { currency: string }) {
   let data: CryptoData[] | null = [];

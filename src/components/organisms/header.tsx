@@ -21,7 +21,49 @@ import {
 
 // Define navigation structure
 const mainNavLinks = [
-  { href: "/markets", label: "Pasar" },
+];
+
+const marketComponents: { title: string; href: string; description: string }[] = [
+  {
+    title: "Market Overview",
+    href: "/markets/dashboard",
+    description: "Ringkasan data pasar kripto secara keseluruhan.",
+  },
+  {
+    title: "Harga & Volume Top Crypto",
+    href: "/markets/top-crypto-prices",
+    description: "Harga dan volume perdagangan koin kripto teratas.",
+  },
+  {
+    title: "Stablecoin Metrics",
+    href: "/markets/stablecoin-metrics",
+    description: "Metrik penting terkait stablecoin.",
+  },
+  {
+    title: "On-Chain Macro Indicators",
+    href: "/markets/on-chain-macro-indicators",
+    description: "Indikator makro dari data on-chain.",
+  },
+  {
+    title: "Technical Indicators",
+    href: "/markets/technical-indicators",
+    description: "Indikator teknikal untuk analisis harga.",
+  },
+  {
+    title: "DeFi & TVL Metrics",
+    href: "/markets/defi-tvl-metrics",
+    description: "Metrik terkait keuangan terdesentralisasi (DeFi) dan Total Value Locked (TVL).",
+  },
+  {
+    title: "Macro Global",
+    href: "/markets/macro-global",
+    description: "Indikator makro ekonomi global yang memengaruhi pasar kripto.",
+  },
+  {
+    title: "Alert / Signal Log",
+    href: "/markets/alert-signal-log",
+    description: "Log sinyal dan peringatan pasar.",
+  },
 ];
 
 const readingComponents: { title: string; href: string; description: string }[] = [
@@ -48,6 +90,7 @@ const readingComponents: { title: string; href: string; description: string }[] 
 const mobileNavLinks = [
     { href: "/", label: "Beranda" },
     ...mainNavLinks, 
+    ...marketComponents.map(item => ({ href: item.href, label: item.title })),
     ...readingComponents.map(item => ({ href: item.href, label: item.title }))
 ];
 
@@ -153,6 +196,30 @@ export function Header() {
                       </NavigationMenuLink>
                     </NavigationMenuItem>
                 ))}
+
+                <NavigationMenuItem value="market">
+                    <NavigationMenuTrigger 
+                      className={cn(
+                        "bg-transparent hover:bg-accent text-sm font-medium data-[state=open]:bg-accent/50",
+                        marketComponents.some(c => pathname.startsWith(c.href)) ? "text-primary" : "text-foreground/70"
+                      )}
+                    >
+                        Pasar
+                    </NavigationMenuTrigger>
+                    <NavigationMenuContent>
+                        <ul className="grid w-[300px] gap-2 p-3">
+                            {marketComponents.map((component) => (
+                                <ListItem
+                                    key={component.title}
+                                    href={component.href}
+                                    title={component.title}
+                                >
+                                    {component.description}
+                                </ListItem>
+                            ))}
+                        </ul>
+                    </NavigationMenuContent>
+                </NavigationMenuItem>
 
                 <NavigationMenuItem value="reading">
                     <NavigationMenuTrigger 

@@ -1,6 +1,6 @@
 'use server';
 
-import type { CryptoData, FearGreedData, MarketAnalysisInput, MarketStats, TopCoinForAnalysis, CombinedMarketData, CGMarket } from '@/types';
+import type { CryptoData, FearGreedData, MarketAnalysisInput, MarketStats, TopCoinForAnalysis, CombinedMarketData, CGMarket, DetailedCoinData } from '@/types';
 import { supabase } from './supabase'; // Import Supabase client
 import { getTopCoinsFromBinance } from './binance'; // Import Binance fallback
 import { getTopCoinsFromCoinMarketCap } from './coinmarketcap'; // Import CoinMarketCap fallback
@@ -139,6 +139,56 @@ export async function fetchFearGreedData(): Promise<{ today: FearGreedData | nul
  * This function is designed to be resilient and return default values on failure.
  * @returns A promise that resolves to a combined object of MarketAnalysisInput and MarketStats or null if critical data fails.
  */
+export async function getDetailedCoinData(id: string): Promise<DetailedCoinData | null> {
+    try {
+        const url = `${API_BASE_URL}/coins/${id}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`;
+        const response = await fetch(url, { next: { revalidate: 300 }});
+
+        if (!response.ok) {
+            console.error(`CoinGecko API error for ${id}: ${response.status} ${response.statusText}`);
+            return null;
+        }
+
+        const data = await response.json();
+
+        return {
+            id: data.id,
+            symbol: data.symbol,
+            name: data.name,
+            image: data.image,
+            description: data.description,
+            links: data.links,
+            current_price: data.market_data?.current_price?.usd,
+            market_cap: data.market_data?.market_cap?.usd,
+            total_volume: data.market_data?.total_volume?.usd,
+            high_24h: data.market_data?.high_24h?.usd,
+            low_24h: data.market_data?.low_24h?.usd,
+            ath: data.market_data?.ath?.usd,
+            ath_date: data.market_data?.ath_date?.usd,
+            atl: data.market_data?.atl?.usd,
+            atl_date: data.market_data?.atl_date?.usd,
+            circulating_supply: data.market_data?.circulating_supply,
+            total_supply: data.market_data?.total_supply,
+            max_supply: data.market_data?.max_supply,
+            price_change_percentage_24h: data.market_data?.price_change_percentage_24h,
+            price_change_percentage_7d: data.market_data?.price_change_percentage_7d,
+            price_change_percentage_30d: data.market_data?.price_change_percentage_30d,
+            price_change_percentage_1y: data.market_data?.price_change_percentage_1y,
+            sentiment_votes_up_percentage: data.sentiment_votes_up_percentage,
+            sentiment_votes_down_percentage: data.sentiment_votes_down_percentage,
+            genesis_date: data.genesis_date,
+        };
+    } catch (error) {
+        console.error(`An error occurred while fetching detailed coin data for ${id}:`, error);
+        return null;
+    }
+}
+
+/**
+ * Fetches all necessary data for the market analysis and stats cards.
+ * This function is designed to be resilient and return default values on failure.
+ * @returns A promise that resolves to a combined object of MarketAnalysisInput and MarketStats or null if critical data fails.
+ */
 export async function fetchMarketData(): Promise<CombinedMarketData | null> {
     try {
         const [globalDataResult, fearAndGreedResult, topCoinsResult] = await Promise.allSettled([
@@ -177,7 +227,10 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
         
         // Use a stable, hardcoded value for historical max cap to avoid another API call.
         // Consider externalizing this value (e.g., to a database or environment variable) if it needs to be dynamic or updated frequently.
-        const maxHistoricalData = { cap: 2.9e12, date: '2021-11-10' };
+        // NOTE: This maxHistoricalMarketCap is hardcoded. For a more accurate S1 score,
+        // consider fetching the actual all-time high market cap from a reliable historical data source.
+        // For now, ensure it's at least the current totalMarketCap to prevent scores > 100.
+        const maxHistoricalData = { cap: Math.max(2.9e12, totalMarketCap), date: '2021-11-10' };
 
         const btcMarketCap = totalMarketCap * (btcDominance / 100);
         const ethMarketCap = totalMarketCap * (ethDominance / 100);

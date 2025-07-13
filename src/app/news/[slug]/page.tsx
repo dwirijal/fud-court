@@ -16,20 +16,15 @@ import {
 } from "@/components/ui/breadcrumb";
 import type { Metadata, ResolvingMetadata } from 'next';
 
-type Props = {
-  params: { slug: string };
-};
 
-interface PostPageProps {
-    params: {
-        slug: string;
-    };
-}
+
+
 
 export async function generateMetadata(
-  { params }: Props,
+  { params }: { params: { slug: string } },
   parent: ResolvingMetadata
 ): Promise<Metadata> {
+  const castedParams = params as { slug: string };
   const post = await getPostBySlug(params.slug);
 
   if (!post) {
@@ -72,7 +67,7 @@ export async function generateStaticParams() {
     }));
 }
 
-export default async function PostPage({ params }: PostPageProps) {
+export default async function PostPage({ params }: { params: { slug: string } }) {
   const post = await getPostBySlug(params.slug);
 
   if (!post) {

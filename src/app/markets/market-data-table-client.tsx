@@ -10,12 +10,3 @@ export function MarketDataTableClient({ data, currency }: { data: CryptoData[], 
   return <DataTable columns={columns} data={data} />;
 }
 
-export function TableSkeleton() {
-    return (
-        <div className="p-4 space-y-2">
-            {Array.from({ length: 15 }).map((_, i) => (
-                <Skeleton key={i} className="h-12 w-full" />
-            ))}
-        </div>
-    );
-}

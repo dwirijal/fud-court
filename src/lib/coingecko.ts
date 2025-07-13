@@ -1,37 +1,30 @@
 
 'use server';
 
-import CoinGecko from '@coingecko/coingecko-typescript';
 import type { CryptoData, FearGreedData, MarketAnalysisInput, MarketStats, TopCoinForAnalysis, CombinedMarketData, CGMarket } from '@/types';
 
-// Initialize the CoinGecko client
-const client = new CoinGecko();
+const API_BASE_URL = 'https://api.coingecko.com/api/v3';
 
 /**
- * Fetches a list of top cryptocurrencies from the CoinGecko API using the client.
+ * Fetches a list of top cryptocurrencies from the CoinGecko API using direct fetch.
  * @param limit The number of coins to fetch. Defaults to 100.
  * @param currency The target currency of the prices. Defaults to 'usd'.
  * @returns A promise that resolves to an array of CryptoData objects or null on failure.
  */
 export async function getTopCoins(limit: number = 100, currency: string = 'usd'): Promise<CryptoData[] | null> {
     try {
-        const response = await client.coin.markets({
-            vs_currency: currency,
-            order: 'market_cap_desc',
-            per_page: limit,
-            page: 1,
-            sparkline: true,
-            price_change_percentage: ['1h', '24h', '7d'],
-        });
+        const url = `${API_BASE_URL}/coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=${limit}&page=1&sparkline=true&price_change_percentage=1h,24h,7d`;
+        const response = await fetch(url, { next: { revalidate: 300 }}); // Revalidate every 5 minutes
 
-        if (!response.success) {
-            console.error(`CoinGecko API error for getTopCoins: ${response.message}`);
+        if (!response.ok) {
+            console.error(`CoinGecko API error for getTopCoins: ${response.status} ${response.statusText}`);
             return null;
         }
 
-        // The client returns data in a slightly different structure, so we map it to our CryptoData type.
+        const data: CGMarket[] = await response.json();
+
         // This mapping also ensures that any null values from the API are handled gracefully.
-        const mappedData: CryptoData[] = response.data.map((coin: CGMarket) => ({
+        const mappedData: CryptoData[] = data.map((coin) => ({
             id: coin.id ?? '',
             symbol: coin.symbol ?? '',
             name: coin.name ?? '',
@@ -98,17 +91,18 @@ export async function fetchFearGreedData(): Promise<{ today: FearGreedData | nul
 export async function fetchMarketData(): Promise<CombinedMarketData | null> {
     try {
         const [globalDataResult, fearAndGreedResult, topCoinsResult] = await Promise.allSettled([
-            client.global(),
+            fetch(`${API_BASE_URL}/global`, { next: { revalidate: 300 }}),
             fetchFearGreedData(),
             getTopCoins(20, 'usd'),
         ]);
 
         // --- Process Global Data (Critical) ---
-        if (globalDataResult.status !== 'fulfilled' || !globalDataResult.value.success) {
+        if (globalDataResult.status !== 'fulfilled' || !globalDataResult.value.ok) {
             console.error("Critical failure: Could not fetch global market data from CoinGecko.");
             return null;
         }
-        const globalData = globalDataResult.value.data.data; // The client nests data twice
+        const globalResponse = await globalDataResult.value.json();
+        const globalData = globalResponse.data;
         const totalMarketCap = globalData?.total_market_cap?.usd ?? 0;
         if (totalMarketCap === 0) {
             console.error("Critical failure: Total market cap is zero.");

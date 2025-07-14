@@ -71,6 +71,7 @@ export async function getTopCoins(limit: number = 100, currency: string = 'usd')
             sparkline_in_7d: coin.sparkline_in_7d,
             ath: coin.ath ?? 0,
             ath_market_cap: coin.ath_market_cap ?? null,
+            last_updated: coin.last_updated,
         }));
         
         // 3. Asynchronously store/update cache in Supabase. Don't block the response.

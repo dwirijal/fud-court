@@ -24,6 +24,7 @@ export interface CryptoData {
   };
   ath: number;
   ath_market_cap: number | null;
+  last_updated: string;
 }
 
 // This is the shape of the data returned by the CoinGecko /coins/markets endpoint

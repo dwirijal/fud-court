@@ -20,7 +20,7 @@ import { DollarSign, TrendingUp, TrendingDown, Package, Scale, Zap, Link as Link
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import TradingViewWidget from "@/components/molecules/trading-view-chart";
-import DOMPurify from 'isomorphic-dompurify';
+import DOMPurify from 'dompurify';
 
 
 interface CoinPageProps {

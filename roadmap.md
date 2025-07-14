@@ -2,9 +2,7 @@
 
 This document outlines the development roadmap for Fud Court, a dashboard for adjudicating crypto claims.
 
-## v0.1.0: Foundation & Core Setup (Current)
-
-The initial version focuses on setting up the technical foundation of the project.
+## v0.1.0: Foundation & Core Setup (Completed)
 
 - [x] **Project Scaffolding**: Initialize Next.js 14+ with TypeScript.
 - [x] **Styling Engine**: Set up Tailwind CSS with a custom theme configuration.
@@ -18,8 +16,8 @@ The initial version focuses on setting up the technical foundation of the projec
 
 ## v0.2.0: CMS Integration & Content Display
 
-- [ ] **Feature**: Connect to a live Ghost CMS instance (Headless).
-- [ ] **Feature**: Create dynamic routes for individual news articles (`/news/[slug]`).
+- [x] **Feature**: Connect to a live Ghost CMS instance (Headless).
+- [x] **Feature**: Create dynamic routes for individual news articles (`/news/[slug]`).
 - [ ] **Feature**: Implement a dedicated news feed page with pagination.
 - [ ] **Enhancement**: Add search functionality for news articles.
 - [ ] **Task**: Write unit and integration tests for CMS fetching logic.

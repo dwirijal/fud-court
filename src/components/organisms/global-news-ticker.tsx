@@ -1,12 +1,13 @@
 import { getPosts } from '@/lib/ghost';
 import { NewsTicker } from '@/components/molecules/news-ticker';
+import type { Post } from '@/types';
 
 /**
  * A resilient server component to fetch news posts and render the news ticker.
  * It handles potential fetching errors gracefully.
  */
 export async function GlobalNewsTicker() {
-  let newsPosts = [];
+  let newsPosts: Post[] = [];
 
   try {
     // Fetch news in a try-catch block to prevent crashing the entire layout

@@ -2,67 +2,54 @@
 
 import type { CryptoData, FearGreedData, MarketAnalysisInput, MarketStats, TopCoinForAnalysis, CombinedMarketData, CGMarket, DetailedCoinData } from '@/types';
 import { supabase } from './supabase'; // Import Supabase client
-import { getTopCoinsFromBinance } from './binance'; // Import Binance fallback
-import { getTopCoinsFromCoinMarketCap } from './coinmarketcap'; // Import CoinMarketCap fallback
 
 const API_BASE_URL = 'https://api.coingecko.com/api/v3';
 const CACHE_DURATION_SECONDS = 300; // 5 minutes for crypto data
 
 /**
- * Fetches a list of top cryptocurrencies from the CoinGecko API using direct fetch.
+ * Fetches a list of top cryptocurrencies, prioritizing a fresh cache, then CoinGecko API,
+ * and falling back to a stale cache if the API fails.
  * @param limit The number of coins to fetch. Defaults to 100.
  * @param currency The target currency of the prices. Defaults to 'usd'.
- * @returns A promise that resolves to an array of CryptoData objects or null on failure.
+ * @returns A promise that resolves to an array of CryptoData objects or null on complete failure.
  */
 export async function getTopCoins(limit: number = 100, currency: string = 'usd'): Promise<CryptoData[] | null> {
+    let cachedData: CryptoData[] | null = null;
+
+    // 1. Try to fetch from Supabase cache first
     try {
-        // 1. Try to fetch from Supabase cache
-        const { data: cachedData, error: cacheError } = await supabase
+        const { data, error } = await supabase
             .from('crypto_data')
             .select('*')
             .order('market_cap_rank', { ascending: true })
             .limit(limit);
 
-        if (cachedData && cachedData.length > 0) {
+        if (error) {
+            console.error('Supabase cache read error:', error);
+        } else if (data && data.length > 0) {
+            cachedData = data as CryptoData[];
             const lastUpdated = new Date(cachedData[0].last_updated).getTime();
             const now = new Date().getTime();
+
+            // If cache is fresh, return it immediately
             if ((now - lastUpdated) / 1000 < CACHE_DURATION_SECONDS) {
-                console.log('Serving top coins from Supabase cache.');
-                return cachedData as CryptoData[];
+                console.log('Serving top coins from fresh Supabase cache.');
+                return cachedData;
             }
+            console.log('Supabase cache is stale. Will fetch from API.');
         }
+    } catch (e) {
+        console.error('An unexpected error occurred during cache fetch:', e);
+    }
 
-        if (cacheError) {
-            console.error('Supabase cache read error:', cacheError);
-        }
-
-        // 2. If cache is stale or empty, fetch from CoinGecko
+    // 2. If cache is stale or empty, fetch from CoinGecko
+    try {
         console.log('Fetching top coins from CoinGecko API.');
         const url = `${API_BASE_URL}/coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=${limit}&page=1&sparkline=true&price_change_percentage=1h,24h,7d`;
-        const response = await fetch(url, { next: { revalidate: 300 }}); // Keep Next.js revalidate for initial fetch
+        const response = await fetch(url, { next: { revalidate: 300 }});
 
         if (!response.ok) {
-            console.error(`CoinGecko API error for getTopCoins: ${response.status} ${response.statusText}`);
-            
-            // If CoinGecko fails, try CoinMarketCap as fallback
-            console.warn('CoinGecko API failed, attempting to fetch from CoinMarketCap as fallback.');
-            const cmcData = await getTopCoinsFromCoinMarketCap(limit);
-            if (cmcData) {
-                console.log('Successfully fetched data from CoinMarketCap fallback.');
-                return cmcData;
-            }
-
-            // If CoinMarketCap also fails, try Binance as fallback
-            console.warn('CoinMarketCap fallback also failed, attempting to fetch from Binance as fallback.');
-            const binanceData = await getTopCoinsFromBinance(limit);
-            if (binanceData) {
-                console.log('Successfully fetched data from Binance fallback.');
-                return binanceData;
-            } else if (cachedData && cachedData.length > 0) {
-                console.warn('Binance fallback also failed, serving stale data from Supabase cache.');
-                return cachedData as CryptoData[];
-            }
-            return null;
+            throw new Error(`API error: ${response.status} ${response.statusText}`);
         }
 
         const data: CGMarket[] = await response.json();
@@ -86,18 +73,26 @@ export async function getTopCoins(limit: number = 100, currency: string = 'usd')
             ath_market_cap: coin.ath_market_cap ?? null,
         }));
         
-        // 3. Store/Update cache in Supabase using upsert for efficiency
-        const { error: upsertError } = await supabase.from('crypto_data').upsert(mappedData, { onConflict: 'id' });
-        if (upsertError) {
-            console.error('Error upserting crypto_data into cache:', upsertError.message || upsertError.details || upsertError);
-        } else {
-            console.log('Successfully upserted Supabase cache with new CoinGecko data.');
-        }
+        // 3. Asynchronously store/update cache in Supabase. Don't block the response.
+        supabase.from('crypto_data').upsert(mappedData, { onConflict: 'id' })
+            .then(({ error: upsertError }) => {
+                if (upsertError) {
+                    console.error('Error upserting crypto_data into cache:', upsertError.message);
+                } else {
+                    console.log('Successfully updated Supabase cache with new CoinGecko data.');
+                }
+            });
         
         return mappedData;
 
     } catch (error) {
-        console.error('An error occurred while fetching top coins:', error);
+        console.error('Failed to fetch from CoinGecko API:', error);
+        // 4. If API fails, return stale cache data as a last resort
+        if (cachedData) {
+            console.warn('CoinGecko API failed, serving stale data from Supabase cache.');
+            return cachedData;
+        }
+        // Return null only if both cache and API fail
         return null;
     }
 }

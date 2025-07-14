@@ -24,7 +24,6 @@ export async function generateMetadata(
   { params }: { params: { slug: string } },
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const castedParams = params as { slug: string };
   const post = await getPostBySlug(params.slug);
 
   if (!post) {
@@ -34,24 +33,29 @@ export async function generateMetadata(
     };
   }
 
+  // Use specific SEO fields from Ghost if available, otherwise fall back to defaults.
+  const seoTitle = post.meta_title || post.og_title || post.title;
+  const seoDescription = post.meta_description || post.og_description || post.excerpt;
+  const seoImage = post.og_image || post.twitter_image || post.feature_image;
+
   const previousImages = (await parent).openGraph?.images || [];
 
   return {
-    title: post.title,
-    description: post.excerpt,
+    title: seoTitle,
+    description: seoDescription,
     openGraph: {
-      title: post.title,
-      description: post.excerpt,
+      title: post.og_title || seoTitle,
+      description: post.og_description || seoDescription,
       type: 'article',
       publishedTime: post.published_at,
       url: `/news/${post.slug}`,
-      images: post.feature_image ? [post.feature_image, ...previousImages] : previousImages,
+      images: seoImage ? [seoImage, ...previousImages] : previousImages,
     },
     twitter: {
         card: 'summary_large_image',
-        title: post.title,
-        description: post.excerpt,
-        images: post.feature_image ? [post.feature_image] : [],
+        title: post.twitter_title || seoTitle,
+        description: post.twitter_description || seoDescription,
+        images: seoImage ? [seoImage] : [],
     },
     alternates: {
       canonical: `/news/${post.slug}`,

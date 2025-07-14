@@ -139,6 +139,15 @@ export interface Post {
     name: string;
   } | null;
   html?: string;
+  // SEO fields from Ghost
+  meta_title?: string | null;
+  meta_description?: string | null;
+  og_title?: string | null;
+  og_description?: string | null;
+  og_image?: string | null;
+  twitter_title?: string | null;
+  twitter_description?: string | null;
+  twitter_image?: string | null;
 }
 
 // DexScreener Types

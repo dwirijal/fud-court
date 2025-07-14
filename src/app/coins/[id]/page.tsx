@@ -20,6 +20,7 @@ import { DollarSign, TrendingUp, TrendingDown, Package, Scale, Zap, Link as Link
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import TradingViewWidget from "@/components/molecules/trading-view-chart";
+import DOMPurify from 'isomorphic-dompurify';
 
 
 interface CoinPageProps {
@@ -96,6 +97,8 @@ export default async function CoinPage({ params }: CoinPageProps) {
   const tvl = defiLlamaData?.tvl;
   const chains = defiLlamaData?.chains;
   const protocols = defiLlamaData?.protocols;
+  
+  const sanitizedDescription = description?.en ? DOMPurify.sanitize(description.en) : '';
 
   return (
     <div className="container mx-auto px-4 py-12 md:py-24">
@@ -279,7 +282,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
         </CardContent>
       </Card>
 
-      {description?.en && (
+      {sanitizedDescription && (
         <Card className="mb-12">
           <CardHeader>
             <CardTitle>Tentang {name}</CardTitle>
@@ -287,7 +290,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
           <CardContent>
             <div
               className="prose prose-invert prose-sm max-w-none"
-              dangerouslySetInnerHTML={{ __html: description.en }}
+              dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
             />
           </CardContent>
         </Card>
@@ -351,7 +354,8 @@ export default async function CoinPage({ params }: CoinPageProps) {
                 <Badge key={index} variant="secondary">
                   {protocol.name}
                 </Badge>
-              ))}
+              ))
+            }
             </div>
           </CardContent>
         </Card>
@@ -359,3 +363,4 @@ export default async function CoinPage({ params }: CoinPageProps) {
     </div>
   );
 }
+

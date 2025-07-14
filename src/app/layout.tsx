@@ -5,8 +5,7 @@ import { AppLayout } from '@/components/organisms/app-layout';
 import { Inter, Space_Grotesk } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { getPosts } from '@/lib/ghost';
-import { NewsTicker } from '@/components/molecules/news-ticker';
+import { GlobalNewsTicker } from '@/components/organisms/global-news-ticker';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -30,15 +29,12 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Fetch news here for the global news ticker
-  const newsPosts = await getPosts({ tag: 'news', limit: 20 });
-
   return (
     <html lang="id" suppressHydrationWarning>
       <body className={`${inter.variable} ${spaceGrotesk.variable} font-body antialiased`}>
         <AppLayout>
           {children}
-          <NewsTicker posts={newsPosts} />
+          <GlobalNewsTicker />
         </AppLayout>
         <Analytics />
         <SpeedInsights />

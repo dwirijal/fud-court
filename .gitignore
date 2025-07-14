@@ -29,6 +29,10 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+*.log
+
+# TypeScript cache
+*.tsbuildinfo
 
 # Local environment variables
 .env.local

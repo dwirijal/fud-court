@@ -110,7 +110,7 @@ export default function StablecoinMetricsPage() {
   const stablecoinsToDisplay = stablecoins.slice(0, displayedCount);
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-24">
+    <div className="container mx-auto px-4 py-12 md:py-16">
       <Breadcrumb className="mb-8">
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -134,13 +134,13 @@ export default function StablecoinMetricsPage() {
       <header className="mb-12">
         <div className="flex items-center gap-4 mb-2">
             <div className="bg-primary/10 text-primary p-2 rounded-lg">
-                <Scale className="h-8 w-8" />
+                <Scale className="h-[2rem] w-[2rem]" />
             </div>
-            <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight">
+            <h1 className="text-4xl md:text-5xl font-semibold font-headline tracking-tight">
                 Stablecoin Metrics
             </h1>
         </div>
-        <p className="text-xl text-muted-foreground mt-2">
+        <p className="text-lg text-muted-foreground mt-2">
             Jelajahi metrik penting terkait stablecoin, termasuk kapitalisasi pasar dan sirkulasi di berbagai jaringan.
         </p>
       </header>
@@ -156,12 +156,11 @@ export default function StablecoinMetricsPage() {
               {stablecoinsToDisplay.map((sc) => (
                 <Card key={sc.id} className="flex flex-col">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <DollarSign className="h-5 w-5 text-muted-foreground" />
-                      {sc.name} <span className="text-muted-foreground font-normal">({sc.symbol})</span>
+                    <CardTitle className="flex items-center gap-2 text-xl font-headline">
+                      {sc.name} <span className="text-muted-foreground font-normal text-lg">({sc.symbol})</span>
                     </CardTitle>
                     <CardDescription>
-                      Harga Saat Ini: {formatCurrency(sc.price)}
+                      Harga Saat Ini: <span className="font-semibold text-foreground">{formatCurrency(sc.price)}</span>
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="flex-grow space-y-4">
@@ -184,7 +183,7 @@ export default function StablecoinMetricsPage() {
                         <Badge variant="secondary" className="max-w-[150px] truncate">{sc.pegMechanism}</Badge>
                       </div>
                     </div>
-                     <div className="flex items-center gap-2 text-sm text-muted-foreground pt-2 border-t">
+                     <div className="flex items-center gap-2 text-sm text-muted-foreground pt-4 mt-2 border-t">
                         <Server className="h-4 w-4" />
                         <span className="font-medium">Jaringan:</span>
                         <div className="flex flex-wrap items-center gap-1">

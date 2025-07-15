@@ -96,7 +96,7 @@ export default async function PostPage({ params }: { params: { slug: string } })
 
 
   return (
-    <article className="container mx-auto px-4 py-12 md:py-24 max-w-4xl">
+    <article className="container mx-auto px-4 py-12 md:py-16 max-w-4xl">
       <Breadcrumb className="mb-8">
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -155,6 +155,7 @@ export default async function PostPage({ params }: { params: { slug: string } })
       {post.html && (
         <div
           className="prose prose-invert prose-lg max-w-none 
+                     prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl
                      prose-headings:font-headline prose-headings:text-foreground
                      prose-a:text-primary hover:prose-a:text-primary/90
                      prose-strong:text-foreground

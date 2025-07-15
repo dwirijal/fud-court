@@ -7,12 +7,12 @@ export default async function LearnPage() {
   const posts = await getPosts({ tag: 'learn' });
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-24">
+    <div className="container mx-auto px-4 py-12 md:py-16">
       <header className="mb-12 text-center">
-        <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight mb-2">
+        <h1 className="text-4xl md:text-5xl font-semibold font-headline tracking-tight mb-2">
           Belajar Kripto
         </h1>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           Sumber daya pendidikan untuk membantu Anda memahami dunia kripto.
         </p>
       </header>

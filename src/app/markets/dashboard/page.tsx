@@ -47,7 +47,7 @@ export default async function MarketDashboardPage() {
 
   if (!marketData) {
     return (
-      <div className="container mx-auto px-4 py-12 md:py-24 text-center">
+      <div className="container mx-auto px-4 py-12 md:py-16 text-center">
         <h1 className="text-4xl font-semibold mb-8">Market Overview</h1>
         <p className="text-red-500">Failed to load market data. Please try again later.</p>
       </div>
@@ -116,7 +116,7 @@ export default async function MarketDashboardPage() {
   ];
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-24">
+    <div className="container mx-auto px-4 py-12 md:py-16">
       <h1 className="text-4xl md:text-5xl font-semibold font-headline tracking-tight mb-8">Market Overview</h1>
 
       <section className="mb-12">
@@ -127,7 +127,7 @@ export default async function MarketDashboardPage() {
         <DetailedMarketStatsSection marketStats={marketData} />
       </section>
 
-      <h2 className="text-3xl md:text-4xl font-semibold font-headline tracking-tight mb-6 mt-12">Detailed Indicator Explanations</h2>
+      <h2 className="text-3xl font-semibold font-headline tracking-tight mb-6 mt-12">Detailed Indicator Explanations</h2>
 
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {explanationCards.map((card) => (
@@ -158,7 +158,7 @@ export default async function MarketDashboardPage() {
         ))}
       </section>
 
-      <h2 className="text-3xl md:text-4xl font-semibold font-headline tracking-tight mb-6 mt-12">Top Cryptocurrencies</h2>
+      <h2 className="text-3xl font-semibold font-headline tracking-tight mb-6 mt-12">Top Cryptocurrencies</h2>
       <section>
         <Card>
           <CardContent className="p-0">

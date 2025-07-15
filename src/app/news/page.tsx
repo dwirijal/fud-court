@@ -7,12 +7,12 @@ export default async function NewsPage() {
   const posts = await getPosts({ tag: 'news' });
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-24">
+    <div className="container mx-auto px-4 py-12 md:py-16">
       <header className="mb-12 text-center">
-        <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight mb-2">
+        <h1 className="text-4xl md:text-5xl font-semibold font-headline tracking-tight mb-2">
           Berita Fud Court
         </h1>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           Sumber Anda untuk berita kripto yang tidak bias dan wawasan berbasis data.
         </p>
       </header>

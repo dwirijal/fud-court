@@ -18,7 +18,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { DollarSign, TrendingUp, TrendingDown, Package, Scale, Zap, Link as LinkIcon, Newspaper, Info } from "lucide-react";
+import { DollarSign, Scale, Zap, Link as LinkIcon, Newspaper, Info } from "lucide-react";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import TradingViewWidget from "@/components/molecules/trading-view-chart";
@@ -107,7 +107,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
   const relatedArticles = await getPosts({ tag: symbol?.toLowerCase(), limit: 3 });
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-24">
+    <div className="container mx-auto px-4 py-12 md:py-16">
       <Breadcrumb className="mb-8">
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -133,16 +133,16 @@ export default async function CoinPage({ params }: CoinPageProps) {
           <Image
             src={image.large}
             alt={name ?? ''}
-            width={96}
-            height={96}
-            className="rounded-full shadow-lg"
+            width={80}
+            height={80}
+            className="rounded-full shadow-lg h-20 w-20"
           />
         )}
         <div className="text-center md:text-left">
-          <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight mb-2">
-            {name ?? 'N/A'} <span className="text-muted-foreground text-3xl">({symbol?.toUpperCase() ?? 'N/A'})</span>
+          <h1 className="text-4xl md:text-5xl font-semibold font-headline tracking-tight mb-2">
+            {name ?? 'N/A'} <span className="text-muted-foreground text-2xl md:text-3xl">({symbol?.toUpperCase() ?? 'N/A'})</span>
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl">
+          <p className="text-lg text-muted-foreground max-w-3xl">
             Data harga, kapitalisasi pasar, dan informasi detail untuk {name ?? 'koin ini'}.
           </p>
         </div>
@@ -151,11 +151,11 @@ export default async function CoinPage({ params }: CoinPageProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Harga Saat Ini</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-base font-medium">Harga Saat Ini</CardTitle>
+            <DollarSign className="h-[1.25rem] w-[1.25rem] text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-4xl font-bold">{formatCurrency(current_price)}</div>
+            <div className="text-3xl font-bold">{formatCurrency(current_price)}</div>
             <p className="text-xs text-muted-foreground">
               Perubahan 24j: {price_change_percentage_24h?.toFixed(2) ?? 'N/A'}%
             </p>
@@ -163,8 +163,8 @@ export default async function CoinPage({ params }: CoinPageProps) {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Kapitalisasi Pasar</CardTitle>
-            <Scale className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-base font-medium">Kapitalisasi Pasar</CardTitle>
+            <Scale className="h-[1.25rem] w-[1.25rem] text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(market_cap, 'usd', true)}</div>
@@ -175,8 +175,8 @@ export default async function CoinPage({ params }: CoinPageProps) {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Value Locked (TVL)</CardTitle>
-            <Zap className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-base font-medium">Total Value Locked (TVL)</CardTitle>
+            <Zap className="h-[1.25rem] w-[1.25rem] text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <Suspense fallback={<Skeleton className="h-8 w-3/4" />}>
@@ -192,7 +192,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
         <Card>
           <CardHeader>
-            <CardTitle>Statistik Harga</CardTitle>
+            <CardTitle className="text-xl">Statistik Harga</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
@@ -223,7 +223,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
                         Level Support
                         <TooltipProvider>
                             <Tooltip>
-                                <TooltipTrigger><Info className="h-3.5 w-3.5 text-muted-foreground" /></TooltipTrigger>
+                                <TooltipTrigger><Info className="h-[1rem] w-[1rem] text-muted-foreground" /></TooltipTrigger>
                                 <TooltipContent>
                                     <p className="max-w-xs">Estimasi level support berdasarkan Fibonacci retracement dari ATH.</p>
                                 </TooltipContent>
@@ -239,7 +239,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
                         Level Resistance
                         <TooltipProvider>
                             <Tooltip>
-                                <TooltipTrigger><Info className="h-3.5 w-3.5 text-muted-foreground" /></TooltipTrigger>
+                                <TooltipTrigger><Info className="h-[1rem] w-[1rem] text-muted-foreground" /></TooltipTrigger>
                                 <TooltipContent>
                                     <p className="max-w-xs">Estimasi level resistance berdasarkan faktor pemulihan dari ATL.</p>
                                 </TooltipContent>
@@ -256,7 +256,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
 
         <Card>
           <CardHeader>
-            <CardTitle>Statistik Pasokan</CardTitle>
+            <CardTitle className="text-xl">Statistik Pasokan</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
@@ -286,7 +286,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
       <TradingViewWidget symbol={symbol || ''} />
       <Card className="mb-12">
         <CardHeader>
-          <CardTitle>Perubahan Harga (%)</CardTitle>
+          <CardTitle className="text-xl">Perubahan Harga (%)</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
@@ -323,7 +323,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
       {description?.en && (
         <Card className="mb-12">
           <CardHeader>
-            <CardTitle>Tentang {name ?? 'koin ini'}</CardTitle>
+            <CardTitle className="text-xl">Tentang {name ?? 'koin ini'}</CardTitle>
           </CardHeader>
           <CardContent>
             <SanitizedHtml
@@ -337,7 +337,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
       {links && (
         <Card className="mb-12">
           <CardHeader>
-            <CardTitle>Tautan Resmi</CardTitle>
+            <CardTitle className="text-xl">Tautan Resmi</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2">
@@ -384,7 +384,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
       {protocols && protocols.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Protokol DeFi Terkait</CardTitle>
+            <CardTitle className="text-xl">Protokol DeFi Terkait</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
@@ -400,9 +400,9 @@ export default async function CoinPage({ params }: CoinPageProps) {
       )}
 
       {relatedArticles.length > 0 && (
-        <section className="mb-12">
-          <h2 className="text-3xl md:text-4xl font-semibold font-headline tracking-tight mb-6 mt-12 flex items-center gap-3">
-            <Newspaper className="h-8 w-8 text-muted-foreground" /> Artikel Terkait
+        <section className="mt-12">
+          <h2 className="text-3xl font-semibold font-headline tracking-tight mb-6 flex items-center gap-3">
+            <Newspaper className="h-[1.75rem] w-[1.75rem] text-muted-foreground" /> Artikel Terkait
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {relatedArticles.map((article) => (

@@ -38,7 +38,7 @@ export default async function DefiTvlMetricsPage() {
   const protocols = await getDefiLlamaProtocols();
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-24">
+    <div className="container mx-auto px-4 py-12 md:py-16">
       <Breadcrumb className="mb-8">
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -62,13 +62,13 @@ export default async function DefiTvlMetricsPage() {
       <header className="mb-12">
         <div className="flex items-center gap-4 mb-2">
             <div className="bg-primary/10 text-primary p-2 rounded-lg">
-                <Zap className="h-8 w-8" />
+                <Zap className="h-[2rem] w-[2rem]" />
             </div>
-            <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight">
+            <h1 className="text-4xl md:text-5xl font-semibold font-headline tracking-tight">
                 DeFi TVL Metrics
             </h1>
         </div>
-        <p className="text-xl text-muted-foreground mt-2">
+        <p className="text-lg text-muted-foreground mt-2">
             Jelajahi Total Value Locked (TVL) untuk berbagai protokol keuangan terdesentralisasi (DeFi).
         </p>
       </header>

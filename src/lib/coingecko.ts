@@ -1,7 +1,9 @@
+
 'use server';
 
 import type { CryptoData, FearGreedData, MarketAnalysisInput, MarketStats, TopCoinForAnalysis, CombinedMarketData, CGMarket, DetailedCoinData } from '@/types';
 import { supabase } from './supabase'; // Import Supabase client
+import { getDefiLlamaStablecoins } from './defillama';
 import { calculateMarketSentimentScore, calculateSharpeRatio, calculateVolatilityIndex, calculateLiquidityRatio, calculateSupportResistanceLevels, calculatePriceSignal, validateMarketData, detectOutliers, rateLimitedCalculation, calculateSMA, calculateEMA } from './calculations';
 
 const API_BASE_URL = 'https://api.coingecko.com/api/v3';
@@ -140,10 +142,12 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
     const HARDCODED_MAX_HISTORICAL_CAP_DATE = "2021-11-01";
     
     try {
-        const [globalDataResult, fearGreedResult, topCoinsResult] = await Promise.allSettled([
+        const [globalDataResult, fearGreedResult, topCoinsResult, stablecoinsResult, solanaResult] = await Promise.allSettled([
             fetch(`${API_BASE_URL}/global`, { next: { revalidate: 300 }}).then(res => res.json()),
             fetchFearGreedData(),
-            getTopCoins(1, 20) // Fetch top 20 coins
+            getTopCoins(1, 20),
+            getDefiLlamaStablecoins(), // Fetch all stablecoins for market cap calculation
+            fetch(`${API_BASE_URL}/coins/markets?vs_currency=usd&ids=solana`).then(res => res.json()),
         ]);
 
         // Process Global Data
@@ -181,6 +185,36 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
         } else {
             console.warn("Could not fetch top 20 coins for analysis.");
         }
+
+        // Process Solana Data
+        let solMarketCap = 0;
+        let solDominance = 0;
+        if (solanaResult.status === 'fulfilled' && solanaResult.value?.[0]?.market_cap) {
+            solMarketCap = solanaResult.value[0].market_cap;
+        } else {
+            console.warn("Could not fetch Solana market data.");
+        }
+
+        // Process Stablecoin Data
+        let stablecoinMarketCap = 0;
+        let stablecoinDominance = 0;
+        if (stablecoinsResult.status === 'fulfilled' && stablecoinsResult.value) {
+            stablecoinMarketCap = stablecoinsResult.value.reduce((sum, coin) => {
+                return sum + (coin.circulating?.peggedUSD || 0);
+            }, 0);
+        } else {
+            console.warn("Could not fetch stablecoin data.");
+        }
+        
+        // Calculate Dominance if we have the total market cap
+        if (totalMarketCap > 0) {
+            if (solMarketCap > 0) {
+                solDominance = (solMarketCap / totalMarketCap) * 100;
+            }
+            if (stablecoinMarketCap > 0) {
+                stablecoinDominance = (stablecoinMarketCap / totalMarketCap) * 100;
+            }
+        }
         
         const maxHistoricalMarketCap = Math.max(HARDCODED_MAX_HISTORICAL_CAP, totalMarketCap);
         const btcMarketCap = totalMarketCap * (btcDominance / 100);
@@ -194,14 +228,14 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
             avg30DayVolume: totalVolume24h * 0.8, // Placeholder
             btcDominance,
             ethDominance,
-            solDominance: 0, // Placeholder
-            stablecoinDominance: 0, // Placeholder
+            solDominance,
+            stablecoinDominance,
             fearAndGreedIndex,
             topCoins: top20Coins,
             btcMarketCap,
             ethMarketCap,
-            solMarketCap: 0, // Placeholder
-            stablecoinMarketCap: 0, // Placeholder
+            solMarketCap,
+            stablecoinMarketCap,
             topCoinsForAnalysis: top20Coins,
         };
     } catch (error) {

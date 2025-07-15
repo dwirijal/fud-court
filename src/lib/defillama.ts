@@ -117,32 +117,20 @@ export async function getDefiLlamaStablecoins(limit?: number): Promise<DefiLlama
         const { data, error: cacheError } = await supabase
             .from('defillama_stablecoins')
             .select('*')
-            .order('last_updated', { ascending: false })
-            .limit(1);
+            .single();
 
-        if (data && data.length > 0) {
-            const lastUpdated = new Date(data[0].last_updated).getTime();
+        if (data && data.stablecoins) {
+             const lastUpdated = new Date(data.last_updated).getTime();
             const now = new Date().getTime();
             if ((now - lastUpdated) / 1000 < CACHE_DURATION_SECONDS) {
                 console.log('Serving DefiLlama stablecoins from fresh Supabase cache.');
-                // Here we need to map the supabase data to our type
-                cachedData = data.map(sc => ({
-                    id: sc.id,
-                    name: sc.name,
-                    symbol: sc.symbol,
-                    pegType: sc.peg_type,
-                    pegMechanism: sc.peg_mechanism,
-                    circulating: { peggedUSD: sc.circulating_pegged_usd },
-                    chains: sc.chains,
-                    chainCirculating: sc.chain_circulating,
-                    price: sc.price,
-                }));
-                return cachedData.slice(0, limit);
+                cachedData = data.stablecoins as DefiLlamaStablecoin[];
+                return limit ? cachedData.slice(0, limit) : cachedData;
             }
             console.log('Supabase DefiLlama stablecoins cache is stale. Will fetch from API.');
         }
 
-        if (cacheError) {
+        if (cacheError && cacheError.code !== 'PGRST116') {
             console.error('Supabase DefiLlama stablecoins cache read error:', cacheError);
         }
       } catch (e) {
@@ -158,7 +146,7 @@ export async function getDefiLlamaStablecoins(limit?: number): Promise<DefiLlama
       console.error(`DefiLlama Stablecoins API error: ${response.status} ${response.statusText}`);
       if (cachedData) {
         console.warn('DefiLlama Stablecoins API failed, serving stale data from Supabase cache.');
-        return cachedData.slice(0, limit);
+        return limit ? cachedData.slice(0, limit) : cachedData;
       }
       return null;
     }
@@ -167,25 +155,17 @@ export async function getDefiLlamaStablecoins(limit?: number): Promise<DefiLlama
 
     // 3. Store/Update cache in Supabase, if client is available
     if (supabase) {
-      const stablecoinsToUpsert = stablecoinsData.map(sc => ({
-        id: sc.id,
-        name: sc.name,
-        symbol: sc.symbol,
-        peg_type: sc.pegType,
-        peg_mechanism: sc.pegMechanism,
-        circulating_pegged_usd: sc.circulating?.peggedUSD ?? 0,
-        chains: sc.chains,
-        chain_circulating: sc.chainCirculating,
-        price: sc.price,
-        last_updated: new Date().toISOString(),
-      }));
-
-      const { error: upsertError } = await supabase.from('defillama_stablecoins').upsert(stablecoinsToUpsert, { onConflict: 'id' });
-      if (upsertError) {
-        console.error('Error upserting DefiLlama stablecoins into cache:', upsertError.message);
-      } else {
-        console.log('Successfully updated Supabase cache with new DefiLlama stablecoins data.');
-      }
+        const { error: upsertError } = await supabase.from('defillama_stablecoins').upsert({
+            id: 'all-stablecoins',
+            stablecoins: stablecoinsData,
+            last_updated: new Date().toISOString()
+        }, { onConflict: 'id' });
+        
+        if (upsertError) {
+            console.error('Error upserting DefiLlama stablecoins into cache:', upsertError.message);
+        } else {
+            console.log('Successfully updated Supabase cache with new DefiLlama stablecoins data.');
+        }
     }
 
     return limit ? stablecoinsData.slice(0, limit) : stablecoinsData;
@@ -193,7 +173,7 @@ export async function getDefiLlamaStablecoins(limit?: number): Promise<DefiLlama
     console.error("An error occurred while fetching DefiLlama stablecoins:", error);
     if (cachedData) {
         console.warn('DefiLlama Stablecoins API failed, serving stale data from Supabase cache as fallback.');
-        return cachedData.slice(0, limit);
+        return limit ? cachedData.slice(0, limit) : cachedData;
     }
     return null;
   }

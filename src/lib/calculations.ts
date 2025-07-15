@@ -35,15 +35,20 @@ export function calculateMarketSentimentScore(
 }
 
 export function calculateSupportResistanceLevels(currentPrice: number, ath: number, atl: number): { supportLevel: number | null; resistanceLevel: number | null } {
-    if (ath <= 0 || atl < 0 || currentPrice <= 0) {
+    if (ath <= 0 || atl < 0 || currentPrice <= 0 || ath <= atl) {
         return { supportLevel: null, resistanceLevel: null };
     }
 
     const athDrawdown = (ath - currentPrice) / ath; // Percentage drawdown from ATH
     const recoveryFactor = (currentPrice - atl) / (ath - atl); // Percentage recovery from ATL
 
-    const supportLevel = currentPrice * (1 - (athDrawdown * 0.618));
-    const resistanceLevel = currentPrice * (1 + (recoveryFactor * 0.382));
+    // Ensure factors are between 0 and 1
+    const validAthDrawdown = Math.max(0, Math.min(1, athDrawdown));
+    const validRecoveryFactor = Math.max(0, Math.min(1, recoveryFactor));
+
+
+    const supportLevel = currentPrice * (1 - (validAthDrawdown * 0.618));
+    const resistanceLevel = currentPrice * (1 + (validRecoveryFactor * 0.382));
 
     return { supportLevel, resistanceLevel };
 }

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { getDetailedCoinData } from "@/lib/coingecko";
 import { getDefiLlamaCoinData } from "@/lib/defillama";
 import { getPosts } from "@/lib/ghost"; // Import getPosts
+import { calculateSupportResistanceLevels } from "@/lib/calculations";
 
 import { format } from "date-fns";
 import {
@@ -17,11 +18,12 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { DollarSign, TrendingUp, TrendingDown, Package, Scale, Zap, Link as LinkIcon, Newspaper } from "lucide-react";
+import { DollarSign, TrendingUp, TrendingDown, Package, Scale, Zap, Link as LinkIcon, Newspaper, Info } from "lucide-react";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import TradingViewWidget from "@/components/molecules/trading-view-chart";
 import { SanitizedHtml } from "@/components/atoms/sanitized-html";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 
 interface CoinPageProps {
@@ -94,6 +96,8 @@ export default async function CoinPage({ params }: CoinPageProps) {
     description,
     links,
   } = coinData;
+
+  const { supportLevel, resistanceLevel } = calculateSupportResistanceLevels(current_price, ath, atl);
 
   const tvl = defiLlamaData?.tvl;
   const chains = defiLlamaData?.chains;
@@ -212,6 +216,38 @@ export default async function CoinPage({ params }: CoinPageProps) {
                   <TableCell className="text-right">
                     {formatCurrency(atl)} ({atl_date ? format(new Date(atl_date), 'dd MMM yyyy') : 'N/A'})
                   </TableCell>
+                </TableRow>
+                 <TableRow>
+                  <TableCell>
+                    <div className="flex items-center gap-1.5">
+                        Level Support
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger><Info className="h-3.5 w-3.5 text-muted-foreground" /></TooltipTrigger>
+                                <TooltipContent>
+                                    <p className="max-w-xs">Estimasi level support berdasarkan Fibonacci retracement dari ATH.</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right text-chart-2 font-semibold">{formatCurrency(supportLevel)}</TableCell>
+                </TableRow>
+                 <TableRow>
+                  <TableCell>
+                     <div className="flex items-center gap-1.5">
+                        Level Resistance
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger><Info className="h-3.5 w-3.5 text-muted-foreground" /></TooltipTrigger>
+                                <TooltipContent>
+                                    <p className="max-w-xs">Estimasi level resistance berdasarkan faktor pemulihan dari ATL.</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right text-destructive font-semibold">{formatCurrency(resistanceLevel)}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>

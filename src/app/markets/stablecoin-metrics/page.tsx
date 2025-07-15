@@ -111,11 +111,7 @@ export default function StablecoinMetricsPage() {
       </header>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Daftar Stablecoin</CardTitle>
-          <CardDescription>Data sirkulasi terbaru dari DefiLlama.</CardDescription>
-        </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           {loading && <p className="text-center">Memuat data stablecoin...</p>}
           {error && <p className="text-center text-red-500">Error: {error}</p>}
           {!loading && !error && stablecoinsToDisplay.length === 0 && (

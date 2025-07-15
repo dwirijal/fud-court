@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getDetailedCoinData } from "@/lib/coingecko";
 import { getDefiLlamaCoinData } from "@/lib/defillama";
+import { getPosts } from "@/lib/ghost"; // Import getPosts
 
 import { format } from "date-fns";
 import {
@@ -13,13 +14,14 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { DollarSign, TrendingUp, TrendingDown, Package, Scale, Zap, Link as LinkIcon } from "lucide-react";
+import { DollarSign, TrendingUp, TrendingDown, Package, Scale, Zap, Link as LinkIcon, Newspaper } from "lucide-react";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import TradingViewWidget from "@/components/molecules/trading-view-chart";
+import { SanitizedHtml } from "@/components/atoms/sanitized-html";
 
 
 interface CoinPageProps {
@@ -28,8 +30,8 @@ interface CoinPageProps {
   };
 }
 
-const formatCurrency = (value: number, currency: string = 'usd', compact: boolean = false) => {
-  if (value === null || isNaN(value)) return 'N/A';
+const formatCurrency = (value: number | null | undefined, currency: string = 'usd', compact: boolean = false) => {
+  if (value === null || value === undefined || isNaN(value)) return 'N/A';
   const options: Intl.NumberFormatOptions = {
     style: 'currency',
     currency: currency.toUpperCase(),
@@ -43,8 +45,8 @@ const formatCurrency = (value: number, currency: string = 'usd', compact: boolea
   return new Intl.NumberFormat('en-US', options).format(value);
 };
 
-const formatNumber = (value: number | null, compact: boolean = false) => {
-  if (value === null || isNaN(value)) return 'N/A';
+const formatNumber = (value: number | null | undefined, compact: boolean = false) => {
+  if (value === null || value === undefined || isNaN(value)) return 'N/A';
   const options: Intl.NumberFormatOptions = {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
@@ -60,11 +62,11 @@ export default async function CoinPage({ params }: CoinPageProps) {
   const awaitedParams = await Promise.resolve(params);
   const { id: coinId } = awaitedParams;
   const coinData = await getDetailedCoinData(coinId);
-  const defiLlamaData = await getDefiLlamaCoinData(coinId);
-
   if (!coinData) {
     notFound();
   }
+
+  const defiLlamaData = await getDefiLlamaCoinData(coinData.symbol);
 
   const {
     name,
@@ -96,6 +98,9 @@ export default async function CoinPage({ params }: CoinPageProps) {
   const tvl = defiLlamaData?.tvl;
   const chains = defiLlamaData?.chains;
   const protocols = defiLlamaData?.protocols;
+  
+  // Fetch related articles based on coin symbol
+  const relatedArticles = await getPosts({ tag: symbol?.toLowerCase(), limit: 3 });
 
   return (
     <div className="container mx-auto px-4 py-12 md:py-24">
@@ -114,7 +119,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>{name}</BreadcrumbPage>
+            <BreadcrumbPage>{name ?? 'N/A'}</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
@@ -123,7 +128,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
         {image?.large && (
           <Image
             src={image.large}
-            alt={name}
+            alt={name ?? ''}
             width={96}
             height={96}
             className="rounded-full shadow-lg"
@@ -131,10 +136,10 @@ export default async function CoinPage({ params }: CoinPageProps) {
         )}
         <div className="text-center md:text-left">
           <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight mb-2">
-            {name} <span className="text-muted-foreground text-3xl">({symbol?.toUpperCase()})</span>
+            {name ?? 'N/A'} <span className="text-muted-foreground text-3xl">({symbol?.toUpperCase() ?? 'N/A'})</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl">
-            Data harga, kapitalisasi pasar, dan informasi detail untuk {name}.
+            Data harga, kapitalisasi pasar, dan informasi detail untuk {name ?? 'koin ini'}.
           </p>
         </div>
       </header>
@@ -146,9 +151,9 @@ export default async function CoinPage({ params }: CoinPageProps) {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-4xl font-bold">{formatCurrency(current_price || 0)}</div>
+            <div className="text-4xl font-bold">{formatCurrency(current_price)}</div>
             <p className="text-xs text-muted-foreground">
-              Perubahan 24j: {price_change_percentage_24h?.toFixed(2) || 'N/A'}%
+              Perubahan 24j: {price_change_percentage_24h?.toFixed(2) ?? 'N/A'}%
             </p>
           </CardContent>
         </Card>
@@ -158,9 +163,9 @@ export default async function CoinPage({ params }: CoinPageProps) {
             <Scale className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(market_cap || 0, 'usd', true)}</div>
+            <div className="text-2xl font-bold">{formatCurrency(market_cap, 'usd', true)}</div>
             <p className="text-xs text-muted-foreground">
-              Volume 24j: {formatCurrency(total_volume || 0, 'usd', true)}
+              Volume 24j: {formatCurrency(total_volume, 'usd', true)}
             </p>
           </CardContent>
         </Card>
@@ -190,22 +195,22 @@ export default async function CoinPage({ params }: CoinPageProps) {
               <TableBody>
                 <TableRow>
                   <TableCell>Harga Tertinggi 24j</TableCell>
-                  <TableCell className="text-right">{formatCurrency(high_24h || 0)}</TableCell>
+                  <TableCell className="text-right">{formatCurrency(high_24h)}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>Harga Terendah 24j</TableCell>
-                  <TableCell className="text-right">{formatCurrency(low_24h || 0)}</TableCell>
+                  <TableCell className="text-right">{formatCurrency(low_24h)}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>All-Time High (ATH)</TableCell>
                   <TableCell className="text-right">
-                    {formatCurrency(ath || 0)} ({ath_date ? format(new Date(ath_date), 'dd MMM yyyy') : 'N/A'})
+                    {formatCurrency(ath)} ({ath_date ? format(new Date(ath_date), 'dd MMM yyyy') : 'N/A'})
                   </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>All-Time Low (ATL)</TableCell>
                   <TableCell className="text-right">
-                    {formatCurrency(atl || 0)} ({atl_date ? format(new Date(atl_date), 'dd MMM yyyy') : 'N/A'})
+                    {formatCurrency(atl)} ({atl_date ? format(new Date(atl_date), 'dd MMM yyyy') : 'N/A'})
                   </TableCell>
                 </TableRow>
               </TableBody>
@@ -222,15 +227,15 @@ export default async function CoinPage({ params }: CoinPageProps) {
               <TableBody>
                 <TableRow>
                   <TableCell>Pasokan Beredar</TableCell>
-                  <TableCell className="text-right">{formatNumber(circulating_supply)} {symbol?.toUpperCase()}</TableCell>
+                  <TableCell className="text-right">{formatNumber(circulating_supply)} {symbol?.toUpperCase() ?? ''}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>Total Pasokan</TableCell>
-                  <TableCell className="text-right">{formatNumber(total_supply)} {symbol?.toUpperCase()}</TableCell>
+                  <TableCell className="text-right">{formatNumber(total_supply)} {symbol?.toUpperCase() ?? ''}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>Pasokan Maksimum</TableCell>
-                  <TableCell className="text-right">{formatNumber(max_supply)} {symbol?.toUpperCase()}</TableCell>
+                  <TableCell className="text-right">{formatNumber(max_supply)} {symbol?.toUpperCase() ?? ''}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>Tanggal Genesis</TableCell>
@@ -253,25 +258,25 @@ export default async function CoinPage({ params }: CoinPageProps) {
               <TableRow>
                 <TableCell>24 Jam</TableCell>
                 <TableCell className={`text-right ${price_change_percentage_24h && price_change_percentage_24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                  {price_change_percentage_24h?.toFixed(2) || 'N/A'}%
+                  {price_change_percentage_24h?.toFixed(2) ?? 'N/A'}%
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>7 Hari</TableCell>
                 <TableCell className={`text-right ${price_change_percentage_7d && price_change_percentage_7d >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                  {price_change_percentage_7d?.toFixed(2) || 'N/A'}%
+                  {price_change_percentage_7d?.toFixed(2) ?? 'N/A'}%
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>30 Hari</TableCell>
                 <TableCell className={`text-right ${price_change_percentage_30d && price_change_percentage_30d >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                  {price_change_percentage_30d?.toFixed(2) || 'N/A'}%
+                  {price_change_percentage_30d?.toFixed(2) ?? 'N/A'}%
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>1 Tahun</TableCell>
                 <TableCell className={`text-right ${price_change_percentage_1y && price_change_percentage_1y >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                  {price_change_percentage_1y?.toFixed(2) || 'N/A'}%
+                  {price_change_percentage_1y?.toFixed(2) ?? 'N/A'}%
                 </TableCell>
               </TableRow>
             </TableBody>
@@ -282,25 +287,25 @@ export default async function CoinPage({ params }: CoinPageProps) {
       {description?.en && (
         <Card className="mb-12">
           <CardHeader>
-            <CardTitle>Tentang {name}</CardTitle>
+            <CardTitle>Tentang {name ?? 'koin ini'}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div
+            <SanitizedHtml
               className="prose prose-invert prose-sm max-w-none"
-              dangerouslySetInnerHTML={{ __html: description.en }}
+              html={description.en}
             />
           </CardContent>
         </Card>
       )}
 
-      {links?.homepage?.[0] && (
+      {links && (
         <Card className="mb-12">
           <CardHeader>
             <CardTitle>Tautan Resmi</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2">
-              {links.homepage[0] && (
+              {links.homepage?.[0] && (
                 <li>
                   <Link href={links.homepage[0]} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-2">
                     <LinkIcon className="h-4 w-4" /> Situs Web Resmi
@@ -351,10 +356,54 @@ export default async function CoinPage({ params }: CoinPageProps) {
                 <Badge key={index} variant="secondary">
                   {protocol.name}
                 </Badge>
-              ))}
+              ))
+            }
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {relatedArticles.length > 0 && (
+        <section className="mb-12">
+          <h2 className="text-3xl md:text-4xl font-semibold font-headline tracking-tight mb-6 mt-12 flex items-center gap-3">
+            <Newspaper className="h-8 w-8 text-muted-foreground" /> Artikel Terkait
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {relatedArticles.map((article) => (
+              <Card key={article.id} className="flex flex-col overflow-hidden">
+                {article.feature_image && (
+                  <div className="relative h-48 w-full">
+                    <Image
+                      src={article.feature_image}
+                      alt={article.title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                  </div>
+                )}
+                <CardHeader className="flex-grow">
+                  {article.primary_tag && (
+                    <Badge variant="secondary" className="mb-2 w-fit">
+                      {article.primary_tag.name}
+                    </Badge>
+                  )}
+                  <CardTitle className="text-xl font-headline leading-tight">
+                    <Link href={`/news/${article.slug}`} className="hover:underline">
+                      {article.title}
+                    </Link>
+                  </CardTitle>
+                  <CardDescription className="line-clamp-3">
+                    {article.excerpt}
+                  </CardDescription>
+                </CardHeader>
+                <CardFooter className="text-sm text-muted-foreground">
+                  Diterbitkan pada {format(new Date(article.published_at), "d MMMM yyyy")}
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        </section>
       )}
     </div>
   );

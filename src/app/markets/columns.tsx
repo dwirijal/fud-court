@@ -22,15 +22,15 @@ export const getColumns = (currency: string): ColumnDef<CryptoData>[] => {
         }
     }
 
-    const formatCurrency = (amount: number, cur: string) => {
+    const formatValue = (amount: number, cur: string, isPrice: boolean = false) => {
         if (cur.toLowerCase() === 'xau') {
-          const formattedAmount = new Intl.NumberFormat('en-US', {
-            notation: 'compact',
-            compactDisplay: 'short',
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }).format(amount);
-          return `XAU ${formattedAmount}`;
+          const options: Intl.NumberFormatOptions = {
+            minimumFractionDigits: isPrice ? 2 : 0,
+            maximumFractionDigits: isPrice && amount < 1 ? 6 : 2,
+            notation: isPrice ? undefined : 'compact',
+            compactDisplay: isPrice ? undefined : 'short',
+          };
+          return `XAU ${new Intl.NumberFormat('en-US', options).format(amount)}`;
         }
     
         const locale = getLocaleForCurrency(cur);
@@ -38,30 +38,11 @@ export const getColumns = (currency: string): ColumnDef<CryptoData>[] => {
         return new Intl.NumberFormat(locale, {
           style: 'currency',
           currency: cur.toUpperCase(),
-          notation: 'compact',
-          compactDisplay: 'short',
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
+          minimumFractionDigits: isPrice ? 2 : 0,
+          maximumFractionDigits: isPrice && amount < 1 ? 6 : 2,
+          notation: isPrice ? undefined : 'compact',
+          compactDisplay: isPrice ? undefined : 'short',
         }).format(amount);
-    };
-      
-    const formatPrice = (price: number, cur: string) => {
-        if (cur.toLowerCase() === 'xau') {
-            const formattedPrice = new Intl.NumberFormat('en-US', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: price < 1 ? 6 : 2,
-            }).format(price);
-            return `XAU ${formattedPrice}`;
-        }
-    
-        const locale = getLocaleForCurrency(cur);
-        
-        return new Intl.NumberFormat(locale, {
-            style: 'currency',
-            currency: cur.toUpperCase(),
-            minimumFractionDigits: 2,
-            maximumFractionDigits: price < 1 ? 6 : 2,
-        }).format(price)
     };
 
     return [
@@ -103,7 +84,7 @@ export const getColumns = (currency: string): ColumnDef<CryptoData>[] => {
             header: () => <div className="text-right">Harga</div>,
             cell: ({ row }) => {
                 const price = parseFloat(row.getValue('current_price'))
-                return <div className="font-mono text-right">{formatPrice(price, currency)}</div>
+                return <div className="font-mono text-right">{formatValue(price, currency, true)}</div>
             },
         },
         {
@@ -154,12 +135,12 @@ export const getColumns = (currency: string): ColumnDef<CryptoData>[] => {
         {
             accessorKey: 'market_cap',
             header: () => <div className="text-right">Kapitalisasi Pasar</div>,
-            cell: ({ row }) => <div className="font-mono text-right text-muted-foreground">{formatCurrency(row.getValue('market_cap'), currency)}</div>,
+            cell: ({ row }) => <div className="font-mono text-right text-muted-foreground">{formatValue(row.getValue('market_cap'), currency)}</div>,
         },
         {
             accessorKey: 'total_volume',
             header: () => <div className="text-right">Volume (24j)</div>,
-            cell: ({ row }) => <div className="font-mono text-right text-muted-foreground">{formatCurrency(row.getValue('total_volume'), currency)}</div>,
+            cell: ({ row }) => <div className="font-mono text-right text-muted-foreground">{formatValue(row.getValue('total_volume'), currency)}</div>,
         },
     ]
 }

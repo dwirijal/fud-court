@@ -1,3 +1,4 @@
+'use client';
 
 import {
     Card,
@@ -25,9 +26,19 @@ import {
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, Database, AlertTriangle, ArrowRight, TrendingUp, TrendingDown, Weight, Calculator } from "lucide-react";
+import { BookOpen, Database, AlertTriangle, ArrowRight, TrendingUp, TrendingDown, Weight, Calculator, Info } from "lucide-react";
 import { fetchMarketData } from "@/lib/coingecko";
 import { TrendChange } from "@/components/ui/TrendChange";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+
 
 const indicators = [
     {
@@ -280,53 +291,77 @@ export default async function MarketIndicatorsPage() {
 
         <div className="space-y-6">
             <h2 className="text-3xl font-headline font-semibold">Rincian Indikator</h2>
-            {indicators.map((indicator, index) => (
-                <Card key={index}>
-                    <CardHeader>
-                        <div className="flex justify-between items-start">
-                            <CardTitle className="text-2xl font-headline">{indicator.name}</CardTitle>
-                            <Badge variant="secondary">Bobot: {indicator.weight}</Badge>
-                        </div>
-                        <CardDescription>{indicator.purpose}</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        {indicatorScores && indicatorScores[indicator.id] ? (
-                            <div className="bg-muted/50 p-4 rounded-lg space-y-4">
-                                <div>
-                                    <h4 className="font-semibold text-sm mb-2 text-muted-foreground uppercase tracking-wider">Input Data</h4>
-                                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-                                        {Object.entries(indicatorScores[indicator.id].raw).map(([key, value]) => (
-                                            <div key={key} className="flex justify-between items-baseline border-b border-muted">
-                                                <span>{key}</span>
-                                                <span className="font-mono font-medium">{value}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                                
-                                <div>
-                                    <h4 className="font-semibold text-sm mb-1 text-muted-foreground uppercase tracking-wider">Rumus</h4>
-                                    <p className="font-mono text-xs bg-background p-3 rounded-md">{indicator.formula}</p>
-                                </div>
-
-                                <div className="flex items-center justify-between bg-background p-3 rounded-md">
-                                     <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Hasil</h4>
-                                     <div className="flex items-center gap-2">
-                                        <span className="font-mono font-bold text-xl text-primary">{indicatorScores[indicator.id].score}</span>
-                                        <span className="text-sm text-muted-foreground">/ 100</span>
-                                     </div>
-                                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {indicators.map((indicator, index) => (
+                    <Card key={index} className="flex flex-col">
+                        <CardHeader className="flex-grow">
+                            <div className="flex justify-between items-start">
+                                <CardTitle className="text-xl font-headline">{indicator.name}</CardTitle>
+                                <Badge variant="secondary">Bobot: {indicator.weight}</Badge>
                             </div>
-                        ) : (
-                             <div className="bg-muted/50 p-4 rounded-lg text-sm text-muted-foreground">Data perhitungan langsung tidak tersedia.</div>
-                        )}
-                        <div>
-                            <h4 className="font-semibold text-sm mb-1 text-muted-foreground uppercase tracking-wider">Interpretasi</h4>
-                            <p className="text-muted-foreground text-sm">{indicator.interpretation}</p>
-                        </div>
-                    </CardContent>
-                </Card>
-            ))}
+                            <CardDescription className="line-clamp-2">{indicator.purpose}</CardDescription>
+                        </CardHeader>
+                        <CardContent className="flex justify-between items-center">
+                            <div className="flex items-center gap-2 text-lg font-bold text-primary">
+                                {indicatorScores && indicatorScores[indicator.id] ? (
+                                    <>
+                                        {indicatorScores[indicator.id].score} <span className="text-sm text-muted-foreground">/ 100</span>
+                                    </>
+                                ) : (
+                                    <span className="text-muted-foreground">N/A</span>
+                                )}
+                            </div>
+                            <Sheet>
+                                <SheetTrigger asChild>
+                                    <Button variant="outline" size="sm" className="gap-1">
+                                        <Info className="h-4 w-4" /> Detail
+                                    </Button>
+                                </SheetTrigger>
+                                <SheetContent side="right" className="w-full md:w-1/2 lg:w-1/3 overflow-y-auto">
+                                    <SheetHeader>
+                                        <SheetTitle>{indicator.name}</SheetTitle>
+                                        <SheetDescription>
+                                            {indicator.purpose}
+                                        </SheetDescription>
+                                    </SheetHeader>
+                                    <div className="mt-6 space-y-6">
+                                        <div>
+                                            <h4 className="font-semibold text-sm mb-2 text-muted-foreground uppercase tracking-wider">Rumus</h4>
+                                            <p className="font-mono text-xs bg-muted p-3 rounded-md">{indicator.formula}</p>
+                                        </div>
+                                        {indicatorScores && indicatorScores[indicator.id] && (
+                                            <div>
+                                                <h4 className="font-semibold text-sm mb-2 text-muted-foreground uppercase tracking-wider">Input Data</h4>
+                                                <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm bg-muted p-3 rounded-md">
+                                                    {Object.entries(indicatorScores[indicator.id].raw).map(([key, value]) => (
+                                                        <div key={key} className="flex justify-between items-baseline border-b border-border/50 pb-1">
+                                                            <span>{key}</span>
+                                                            <span className="font-mono font-medium">{value}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                        {indicatorScores && indicatorScores[indicator.id] && (
+                                            <div className="flex items-center justify-between bg-primary/10 p-3 rounded-md">
+                                                <h4 className="font-semibold text-sm text-primary uppercase tracking-wider">Skor Dihitung</h4>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-mono font-bold text-xl text-primary">{indicatorScores[indicator.id].score}</span>
+                                                    <span className="text-sm text-primary/80">/ 100</span>
+                                                </div>
+                                            </div>
+                                        )}
+                                        <div>
+                                            <h4 className="font-semibold text-sm mb-2 text-muted-foreground uppercase tracking-wider">Interpretasi</h4>
+                                            <p className="text-muted-foreground text-sm">{indicator.interpretation}</p>
+                                        </div>
+                                    </div>
+                                </SheetContent>
+                            </Sheet>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
 
             <Card>
                 <CardHeader>

@@ -45,6 +45,15 @@ function mapGhostPost(post: PostOrPage): Post {
       name: post.primary_tag.name || '',
     } : null,
     html: post.html || '',
+    // Map SEO fields
+    meta_title: post.meta_title,
+    meta_description: post.meta_description,
+    og_title: post.og_title,
+    og_description: post.og_description,
+    og_image: post.og_image,
+    twitter_title: post.twitter_title,
+    twitter_description: post.twitter_description,
+    twitter_image: post.twitter_image,
   }
 }
 
@@ -58,6 +67,7 @@ export async function getPosts(options?: { tag?: string, page?: number, limit?: 
       limit,
       page,
       include: ['tags'],
+      fields: 'id,slug,title,excerpt,feature_image,published_at,primary_tag' // Only fetch necessary fields for list view
     };
 
     if (options?.tag) {
@@ -76,7 +86,7 @@ export async function getPostBySlug(slug: string): Promise<Post | undefined> {
   if (!api) return undefined;
   
   try {
-    const post = await api.posts.read({ slug }, { include: ['tags'] });
+    const post = await api.posts.read({ slug }, { include: ['tags'], formats: ['html'] });
     return mapGhostPost(post);
   } catch (error) {
     // Ghost API throws a specific error for not found which we can handle gracefully.

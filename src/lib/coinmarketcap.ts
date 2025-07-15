@@ -3,7 +3,7 @@
 import type { CryptoData } from '@/types';
 
 const COINMARKETCAP_API_BASE_URL = 'https://pro-api.coinmarketcap.com/v1';
-const COINMARKETCAP_API_KEY = process.env.NEXT_PUBLIC_COINMARKETCAP_API_KEY;
+const COINMARKETCAP_API_KEY = process.env.COINMARKETCAP_API_KEY;
 
 interface CMCCrypto {
   id: number;

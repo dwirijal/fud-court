@@ -74,6 +74,7 @@ export async function getTopCoinsFromBinance(limit: number = 20): Promise<Crypto
         sparkline_in_7d: undefined, // Not available directly
         ath: 0, // Not available directly
         ath_market_cap: null, // Not available directly
+        last_updated: new Date().toISOString(), // Add current timestamp as last_updated
       };
     });
 

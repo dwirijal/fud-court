@@ -1,5 +1,3 @@
-
-
 import { z } from 'zod';
 
 
@@ -24,6 +22,7 @@ export interface CryptoData {
   };
   ath: number;
   ath_market_cap: number | null;
+  last_updated: string;
 }
 
 // This is the shape of the data returned by the CoinGecko /coins/markets endpoint
@@ -139,6 +138,15 @@ export interface Post {
     name: string;
   } | null;
   html?: string;
+  // SEO fields from Ghost
+  meta_title?: string | null;
+  meta_description?: string | null;
+  og_title?: string | null;
+  og_description?: string | null;
+  og_image?: string | null;
+  twitter_title?: string | null;
+  twitter_description?: string | null;
+  twitter_image?: string | null;
 }
 
 // DexScreener Types
@@ -294,3 +302,33 @@ export type CombinedMarketData = MarketAnalysisInput & MarketStats & {
     topCoinsForAnalysis: TopCoinForAnalysis[];
     maxHistoricalMarketCapDate: string;
 };
+
+// DefiLlama Types
+export interface DefiLlamaProtocol {
+  id: string;
+  name: string;
+  symbol: string;
+  category: string;
+  chains: string[];
+  tvl: number;
+  chainTvls: Record<string, number>;
+  change_1d: number;
+  change_7d: number;
+}
+
+export interface DefiLlamaStablecoin {
+  id: string;
+  name: string;
+  symbol: string;
+  pegType: string;
+  pegMechanism: string;
+  circulating: { peggedUSD: number };
+  chains: string[];
+  chainCirculating: Record<string, { current: { peggedUSD: number } }>;
+  price: number;
+}
+
+export interface DefiLlamaHistoricalTvl {
+  date: number; // Unix timestamp
+  tvl: number; // Total Value Locked in USD
+}

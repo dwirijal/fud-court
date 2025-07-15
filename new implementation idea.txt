@@ -1,0 +1,510 @@
+Crypto Dashboard Implementation Plan
+CoinGecko + GraphQL Integration for /coins/[ID]
+
+🎯 Project Overview
+Dashboard crypto yang comprehensive dengan route /coins/[ID] yang mengkombinasikan:
+
+CoinGecko API untuk market data global
+GraphQL Subgraphs untuk on-chain DeFi data
+Dynamic routing untuk detail per cryptocurrency
+
+
+📁 Project Structure
+src/
+├── pages/
+│   └── coins/
+│       └── [id].tsx                 # Dynamic route untuk coin detail
+├── components/
+│   ├── CoinOverview.tsx             # Market data dari CoinGecko
+│   ├── DeFiAnalytics.tsx            # On-chain data dari GraphQL
+│   ├── PriceChart.tsx               # Combined price charts
+│   ├── TradingPairs.tsx             # DEX trading pairs
+│   ├── LendingRates.tsx             # Aave/Compound rates
+│   └── MarketSentiment.tsx          # Social & sentiment data
+├── services/
+│   ├── coingecko.ts                 # CoinGecko API service
+│   ├── graphql.ts                   # GraphQL queries service
+│   └── dataProcessor.ts             # Data normalization
+├── hooks/
+│   ├── useCoinData.ts              # Combined data fetching
+│   ├── useRealtimePrice.ts         # Real-time price updates
+│   └── useGraphQLData.ts           # GraphQL data management
+├── utils/
+│   ├── constants.ts                # API endpoints & configs
+│   ├── formatters.ts               # Data formatting utilities
+│   └── types.ts                    # TypeScript definitions
+└── styles/
+    └── globals.css                 # Tailwind + custom styles
+
+🔧 Technical Implementation
+1. API Services Layer
+CoinGecko Service (services/coingecko.ts)
+typescriptinterface CoinGeckoService {
+  // Market data
+  getCoinDetails(id: string): Promise<CoinDetails>
+  getMarketData(id: string): Promise<MarketData>
+  getPriceHistory(id: string, days: number): Promise<PriceHistory[]>
+  
+  // Global data
+  getGlobalMarketData(): Promise<GlobalMarket>
+  getTrendingCoins(): Promise<TrendingCoin[]>
+  getExchangeRates(): Promise<ExchangeRates>
+}
+GraphQL Service (services/graphql.ts)
+typescriptinterface GraphQLService {
+  // Uniswap V3 data
+  getUniswapPairs(tokenAddress: string): Promise<UniswapPair[]>
+  getPoolLiquidity(poolId: string): Promise<PoolData>
+  
+  // Aave lending data
+  getAaveLendingRates(asset: string): Promise<LendingRates>
+  getAaveUserData(userAddress: string): Promise<UserPositions>
+  
+  // Compound data
+  getCompoundMarkets(asset: string): Promise<CompoundMarket[]>
+  
+  // Cross-protocol aggregation
+  getAllDeFiData(tokenSymbol: string): Promise<DeFiData>
+}
+2. Data Processing Layer
+Data Processor (services/dataProcessor.ts)
+typescriptinterface DataProcessor {
+  // Normalize different data sources
+  normalizePrice(coingeckoPrice: number, uniswapPrice: number): NormalizedPrice
+  
+  // Combine market data
+  combineMarketData(
+    coingeckoData: CoinGeckoData,
+    graphqlData: GraphQLData
+  ): CombinedCoinData
+  
+  // Calculate metrics
+  calculateAPY(lendingRates: LendingRates): APYData
+  calculateArbitrage(exchanges: ExchangePrice[]): ArbitrageOpportunity[]
+}
+3. React Hooks Layer
+Combined Data Hook (hooks/useCoinData.ts)
+typescriptconst useCoinData = (coinId: string) => {
+  const [data, setData] = useState<CombinedCoinData>()
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Parallel fetching for better performance
+        const [coingeckoData, graphqlData] = await Promise.all([
+          coingeckoService.getCoinDetails(coinId),
+          graphqlService.getAllDeFiData(coinId)
+        ])
+        
+        const combinedData = dataProcessor.combineMarketData(
+          coingeckoData, 
+          graphqlData
+        )
+        
+        setData(combinedData)
+      } catch (err) {
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    fetchData()
+  }, [coinId])
+  
+  return { data, loading, error }
+}
+
+🎨 UI Components Design
+1. Page Layout (pages/coins/[id].tsx)
+typescriptconst CoinDetailPage = () => {
+  const router = useRouter()
+  const { id } = router.query
+  const { data, loading, error } = useCoinData(id as string)
+  
+  if (loading) return <LoadingSpinner />
+  if (error) return <ErrorMessage error={error} />
+  
+  return (
+    <div className="container mx-auto px-4 py-8">
+      {/* Header with coin info */}
+      <CoinHeader coin={data.coin} />
+      
+      {/* Main content grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left column - Charts & Analysis */}
+        <div className="lg:col-span-2 space-y-6">
+          <PriceChart data={data.priceData} />
+          <DeFiAnalytics defiData={data.defiData} />
+          <TradingPairs pairs={data.tradingPairs} />
+        </div>
+        
+        {/* Right column - Market data */}
+        <div className="space-y-6">
+          <CoinOverview market={data.marketData} />
+          <LendingRates rates={data.lendingRates} />
+          <MarketSentiment sentiment={data.sentiment} />
+        </div>
+      </div>
+    </div>
+  )
+}
+2. Component Breakdown
+CoinOverview Component
+typescriptconst CoinOverview = ({ market }: { market: MarketData }) => (
+  <div className="bg-white rounded-lg shadow-lg p-6">
+    <h3 className="text-lg font-semibold mb-4">Market Overview</h3>
+    
+    {/* Price from CoinGecko */}
+    <div className="space-y-3">
+      <div className="flex justify-between">
+        <span>Price (CoinGecko)</span>
+        <span className="font-bold">${market.current_price}</span>
+      </div>
+      
+      <div className="flex justify-between">
+        <span>Market Cap</span>
+        <span>${market.market_cap.toLocaleString()}</span>
+      </div>
+      
+      <div className="flex justify-between">
+        <span>24h Volume</span>
+        <span>${market.total_volume.toLocaleString()}</span>
+      </div>
+    </div>
+  </div>
+)
+DeFiAnalytics Component
+typescriptconst DeFiAnalytics = ({ defiData }: { defiData: DeFiData }) => (
+  <div className="bg-white rounded-lg shadow-lg p-6">
+    <h3 className="text-lg font-semibold mb-4">DeFi Analytics</h3>
+    
+    {/* Uniswap liquidity */}
+    <div className="grid grid-cols-2 gap-4 mb-6">
+      <div className="bg-pink-50 p-4 rounded-lg">
+        <h4 className="font-semibold text-pink-900">Uniswap Liquidity</h4>
+        <p className="text-2xl font-bold text-pink-700">
+          ${defiData.uniswap.totalLiquidity.toLocaleString()}
+        </p>
+      </div>
+      
+      <div className="bg-purple-50 p-4 rounded-lg">
+        <h4 className="font-semibold text-purple-900">Aave TVL</h4>
+        <p className="text-2xl font-bold text-purple-700">
+          ${defiData.aave.totalValueLocked.toLocaleString()}
+        </p>
+      </div>
+    </div>
+    
+    {/* Real-time price comparison */}
+    <div className="space-y-2">
+      <div className="flex justify-between items-center">
+        <span>CoinGecko Price</span>
+        <span className="font-mono">${defiData.coingeckoPrice}</span>
+      </div>
+      <div className="flex justify-between items-center">
+        <span>Uniswap Price</span>
+        <span className="font-mono">${defiData.uniswapPrice}</span>
+      </div>
+      <div className="flex justify-between items-center">
+        <span>Price Difference</span>
+        <span className={`font-mono ${
+          defiData.priceDifference > 0 ? 'text-green-600' : 'text-red-600'
+        }`}>
+          {defiData.priceDifference > 0 ? '+' : ''}
+          {defiData.priceDifference.toFixed(2)}%
+        </span>
+      </div>
+    </div>
+  </div>
+)
+
+🚀 Data Flow Architecture
+1. Data Fetching Strategy
+typescript// Parallel fetching for optimal performance
+const fetchCoinData = async (coinId: string) => {
+  const [
+    // CoinGecko data
+    coinDetails,
+    priceHistory,
+    marketData,
+    
+    // GraphQL data
+    uniswapPairs,
+    aaveLending,
+    compoundMarkets
+  ] = await Promise.all([
+    coingeckoService.getCoinDetails(coinId),
+    coingeckoService.getPriceHistory(coinId, 30),
+    coingeckoService.getMarketData(coinId),
+    
+    graphqlService.getUniswapPairs(coinId),
+    graphqlService.getAaveLendingRates(coinId),
+    graphqlService.getCompoundMarkets(coinId)
+  ])
+  
+  return dataProcessor.combineMarketData({
+    coingecko: { coinDetails, priceHistory, marketData },
+    graphql: { uniswapPairs, aaveLending, compoundMarkets }
+  })
+}
+2. Real-time Updates
+typescript// WebSocket or polling for real-time data
+const useRealtimePrice = (coinId: string) => {
+  const [price, setPrice] = useState<RealtimePrice>()
+  
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      // Get latest price from both sources
+      const [coingeckoPrice, uniswapPrice] = await Promise.all([
+        coingeckoService.getCurrentPrice(coinId),
+        graphqlService.getUniswapPrice(coinId)
+      ])
+      
+      setPrice({
+        coingecko: coingeckoPrice,
+        uniswap: uniswapPrice,
+        difference: ((uniswapPrice - coingeckoPrice) / coingeckoPrice) * 100,
+        timestamp: Date.now()
+      })
+    }, 30000) // Update every 30 seconds
+    
+    return () => clearInterval(interval)
+  }, [coinId])
+  
+  return price
+}
+
+📊 Data Sources Mapping
+CoinGecko Endpoints
+typescriptconst COINGECKO_ENDPOINTS = {
+  coinDetails: (id: string) => `/coins/${id}`,
+  marketData: (id: string) => `/coins/${id}/market_chart?vs_currency=usd&days=30`,
+  priceHistory: (id: string, days: number) => `/coins/${id}/history?date=${days}`,
+  trending: () => `/search/trending`,
+  global: () => `/global`
+}
+GraphQL Subgraphs
+typescriptconst GRAPHQL_SUBGRAPHS = {
+  uniswapV3: 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3',
+  aaveV2: 'https://api.thegraph.com/subgraphs/name/aave/protocol-v2',
+  compound: 'https://api.thegraph.com/subgraphs/name/graphprotocol/compound-v2',
+  balancer: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-v2',
+  curve: 'https://api.thegraph.com/subgraphs/name/convex-community/curve-pools'
+}
+
+🔄 Error Handling & Fallbacks
+1. Graceful Degradation
+typescriptconst useCoinDataWithFallback = (coinId: string) => {
+  const [data, setData] = useState<CombinedCoinData>()
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  
+  useEffect(() => {
+    const fetchWithFallback = async () => {
+      const results = await Promise.allSettled([
+        coingeckoService.getCoinDetails(coinId),
+        graphqlService.getAllDeFiData(coinId)
+      ])
+      
+      const [coingeckoResult, graphqlResult] = results
+      
+      // Handle CoinGecko failure
+      if (coingeckoResult.status === 'rejected') {
+        setErrors(prev => ({ ...prev, coingecko: coingeckoResult.reason }))
+        // Fallback to GraphQL price data
+      }
+      
+      // Handle GraphQL failure
+      if (graphqlResult.status === 'rejected') {
+        setErrors(prev => ({ ...prev, graphql: graphqlResult.reason }))
+        // Continue with CoinGecko data only
+      }
+      
+      // Combine available data
+      const combinedData = dataProcessor.combineMarketData(
+        coingeckoResult.status === 'fulfilled' ? coingeckoResult.value : null,
+        graphqlResult.status === 'fulfilled' ? graphqlResult.value : null
+      )
+      
+      setData(combinedData)
+    }
+    
+    fetchWithFallback()
+  }, [coinId])
+  
+  return { data, errors }
+}
+2. Rate Limit Handling
+typescriptconst coingeckoService = {
+  async getCoinDetails(id: string) {
+    try {
+      const response = await fetch(`${COINGECKO_BASE_URL}/coins/${id}`)
+      
+      if (response.status === 429) {
+        // Rate limited - wait and retry
+        await new Promise(resolve => setTimeout(resolve, 60000))
+        return this.getCoinDetails(id)
+      }
+      
+      return response.json()
+    } catch (error) {
+      throw new Error(`CoinGecko API Error: ${error.message}`)
+    }
+  }
+}
+
+🎯 Performance Optimization
+1. Data Caching
+typescript// Redis/Memory cache for frequently accessed data
+const cacheService = {
+  async getCachedCoinData(coinId: string): Promise<CombinedCoinData | null> {
+    const cached = await redis.get(`coin:${coinId}`)
+    return cached ? JSON.parse(cached) : null
+  },
+  
+  async setCachedCoinData(coinId: string, data: CombinedCoinData) {
+    await redis.setex(`coin:${coinId}`, 300, JSON.stringify(data)) // 5 min cache
+  }
+}
+2. Lazy Loading
+typescriptconst CoinDetailPage = () => {
+  const [activeTab, setActiveTab] = useState('overview')
+  
+  return (
+    <div>
+      <TabNavigation activeTab={activeTab} onChange={setActiveTab} />
+      
+      {/* Only load active tab component */}
+      {activeTab === 'overview' && <CoinOverview />}
+      {activeTab === 'defi' && <DeFiAnalytics />}
+      {activeTab === 'trading' && <TradingPairs />}
+    </div>
+  )
+}
+
+📱 Mobile Responsive Design
+1. Responsive Layout
+typescriptconst CoinDetailPage = () => (
+  <div className="container mx-auto px-4 py-8">
+    {/* Mobile: Stack vertically */}
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="lg:col-span-2 space-y-6">
+        {/* Charts optimized for mobile */}
+        <PriceChart responsive />
+        
+        {/* Tabs for mobile navigation */}
+        <div className="lg:hidden">
+          <TabNavigation />
+        </div>
+      </div>
+      
+      {/* Desktop: Sidebar */}
+      <div className="hidden lg:block space-y-6">
+        <CoinOverview />
+        <LendingRates />
+      </div>
+    </div>
+  </div>
+)
+
+🔐 Environment Configuration
+1. Environment Variables
+bash# .env.local
+COINGECKO_API_KEY=your_coingecko_api_key
+GRAPHQL_ENDPOINT_UNISWAP=https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3
+GRAPHQL_ENDPOINT_AAVE=https://api.thegraph.com/subgraphs/name/aave/protocol-v2
+REDIS_URL=redis://localhost:6379
+2. Configuration File
+typescript// utils/config.ts
+export const config = {
+  coingecko: {
+    baseUrl: 'https://api.coingecko.com/api/v3',
+    apiKey: process.env.COINGECKO_API_KEY,
+    rateLimit: 30 // requests per minute
+  },
+  graphql: {
+    endpoints: {
+      uniswap: process.env.GRAPHQL_ENDPOINT_UNISWAP,
+      aave: process.env.GRAPHQL_ENDPOINT_AAVE,
+      compound: process.env.GRAPHQL_ENDPOINT_COMPOUND
+    }
+  },
+  cache: {
+    redis: process.env.REDIS_URL,
+    ttl: 300 // 5 minutes
+  }
+}
+
+🚦 Implementation Phases
+Phase 1: Core Setup (Week 1)
+
+ Project structure setup
+ CoinGecko API integration
+ Basic routing /coins/[id]
+ Simple coin overview page
+
+Phase 2: GraphQL Integration (Week 2)
+
+ GraphQL service setup
+ Uniswap V3 subgraph integration
+ Data combination logic
+ Price comparison features
+
+Phase 3: Advanced Features (Week 3)
+
+ Aave & Compound integration
+ Real-time price updates
+ Trading pairs analysis
+ Lending rates display
+
+Phase 4: Optimization (Week 4)
+
+ Performance optimization
+ Caching implementation
+ Error handling
+ Mobile responsive design
+
+Phase 5: Testing & Deployment (Week 5)
+
+ Unit testing
+ Integration testing
+ Performance testing
+ Production deployment
+
+
+🎉 Expected Results
+Dashboard Features
+
+Comprehensive coin details with market data dari CoinGecko
+Real-time DeFi analytics dari multiple GraphQL subgraphs
+Price arbitrage opportunities between CEX dan DEX
+Lending/borrowing rates dari Aave dan Compound
+Trading pairs analysis dari Uniswap dan exchanges lain
+Mobile-first responsive design
+
+Performance Targets
+
+Page load time: < 2 seconds
+Data update frequency: 30 seconds
+API response time: < 500ms
+Error rate: < 1%
+Mobile performance: 90+ Lighthouse score
+
+
+📚 Resources & Documentation
+APIs Documentation
+
+CoinGecko API Docs
+The Graph Documentation
+Uniswap V3 Subgraph
+
+GraphQL Queries Examples
+
+Uniswap Subgraph Queries
+Aave Subgraph Queries
+Compound Subgraph Queries
+
+
+This implementation plan provides a comprehensive roadmap for building a powerful crypto dashboard that combines the best of both CoinGecko's market data and GraphQL's on-chain insights!

@@ -20,7 +20,13 @@ import {
 } from "@/components/ui/navigation-menu";
 
 // Define navigation structure
-const mainNavLinks = [
+interface NavLinkType {
+  label: string;
+  href: string;
+}
+
+const mainNavLinks: NavLinkType[] = [
+  { href: "/", label: "Beranda" },
 ];
 
 const marketComponents: { title: string; href: string; description: string }[] = [

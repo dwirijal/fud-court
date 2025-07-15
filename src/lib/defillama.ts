@@ -44,26 +44,23 @@ export async function getDefiLlamaProtocols(): Promise<DefiLlamaProtocol[] | nul
     try {
       const { data, error: cacheError } = await supabase
         .from('defillama_protocols')
-        .select('protocols')
-        .order('last_updated', { ascending: false })
-        .limit(1);
+        .select('protocols, last_updated')
+        .eq('id', 'all-protocols')
+        .single();
 
-      if (data && data.length > 0 && data[0].protocols) {
-        // Assuming 'protocols' column stores the array
-        const protocolArray = data[0].protocols as DefiLlamaProtocol[]; 
-        const { data: timestampData } = await supabase.from('defillama_protocols').select('last_updated').limit(1).single();
-        const lastUpdated = new Date(timestampData?.last_updated).getTime();
+      if (data && data.protocols) {
+        cachedData = data.protocols as DefiLlamaProtocol[];
+        const lastUpdated = new Date(data.last_updated).getTime();
         const now = new Date().getTime();
         
         if ((now - lastUpdated) / 1000 < CACHE_DURATION_SECONDS) {
           console.log('Serving DefiLlama protocols from fresh Supabase cache.');
-          return protocolArray;
+          return cachedData;
         }
-        cachedData = protocolArray;
         console.log('Supabase DefiLlama protocols cache is stale. Will fetch from API.');
       }
 
-      if (cacheError) {
+      if (cacheError && cacheError.code !== 'PGRST116') { // Ignore "No rows found" error
         console.error('Supabase DefiLlama protocols cache read error:', cacheError);
       }
     } catch (e) {

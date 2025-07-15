@@ -1,4 +1,4 @@
-import { getTopCoins } from "@/lib/coingecko";
+import { getTopCoins, getExchangeRate } from "@/lib/coingecko";
 import { AlertTriangle } from "lucide-react";
 import { CryptoData } from "@/types";
 import { MarketDataTableClient } from "./market-data-table-client";
@@ -9,10 +9,37 @@ export async function MarketDataTable({ currency }: { currency: string }) {
   let error: string | null = null;
   
   try {
-    data = await getTopCoins(100, currency);
-    if (data === null) {
+    // Always fetch in USD, then convert
+    const usdData = await getTopCoins(1, 20); 
+    if (usdData === null) {
       error = "Gagal memuat data market. API tidak merespons.";
     }
+
+    // Fetch exchange rate if currency is not USD
+    let exchangeRate = 1;
+    if (currency.toLowerCase() !== 'usd') {
+      const rate = await getExchangeRate(currency);
+      if (rate) {
+        exchangeRate = rate;
+      } else {
+        console.warn(`Failed to fetch exchange rate for ${currency}. Displaying in USD.`);
+      }
+    }
+
+    // Apply exchange rate to all relevant fields
+    if (usdData) {
+      data = usdData.map(coin => ({
+        ...coin,
+        current_price: coin.current_price * exchangeRate,
+        market_cap: coin.market_cap * exchangeRate,
+        total_volume: coin.total_volume * exchangeRate,
+        high_24h: coin.high_24h * exchangeRate,
+        low_24h: coin.low_24h * exchangeRate,
+        ath: coin.ath * exchangeRate,
+        ath_market_cap: coin.ath_market_cap ? coin.ath_market_cap * exchangeRate : null,
+      }));
+    }
+
   } catch (err) {
     console.error("Failed to fetch market data for MarketDataTable:", err);
     error = err instanceof Error ? err.message : "Terjadi kesalahan tak terduga.";
@@ -30,7 +57,10 @@ export async function MarketDataTable({ currency }: { currency: string }) {
     );
   }
 
-  return <MarketDataTableClient data={data || []} currency={currency} />;
+  // Sort data by market_cap_rank before passing to client component
+  const sortedData = (data || []).sort((a, b) => a.market_cap_rank - b.market_cap_rank);
+
+  return <MarketDataTableClient data={sortedData} currency={currency} />;
 }
 
 export function TableSkeleton() {

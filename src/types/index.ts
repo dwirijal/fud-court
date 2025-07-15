@@ -1,5 +1,3 @@
-
-
 import { z } from 'zod';
 
 
@@ -304,3 +302,33 @@ export type CombinedMarketData = MarketAnalysisInput & MarketStats & {
     topCoinsForAnalysis: TopCoinForAnalysis[];
     maxHistoricalMarketCapDate: string;
 };
+
+// DefiLlama Types
+export interface DefiLlamaProtocol {
+  id: string;
+  name: string;
+  symbol: string;
+  category: string;
+  chains: string[];
+  tvl: number;
+  chainTvls: Record<string, number>;
+  change_1d: number;
+  change_7d: number;
+}
+
+export interface DefiLlamaStablecoin {
+  id: string;
+  name: string;
+  symbol: string;
+  pegType: string;
+  pegMechanism: string;
+  circulating: { peggedUSD: number };
+  chains: string[];
+  chainCirculating: Record<string, { current: { peggedUSD: number } }>;
+  price: number;
+}
+
+export interface DefiLlamaHistoricalTvl {
+  date: number; // Unix timestamp
+  tvl: number; // Total Value Locked in USD
+}

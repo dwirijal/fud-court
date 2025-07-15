@@ -128,7 +128,9 @@ export function MarketStatsCard({ marketStats }: MarketStatsCardProps) {
         <Card className="h-full">
             <CardHeader>
                 <CardTitle>Market Dominance</CardTitle>
-                <CardDescription>Total Market Cap: <span className="font-bold font-mono">{formatCurrency(totalMarketCap)}</span></CardDescription>
+                <CardDescription>
+                    Dominasi Pasar (Cap: {formatCurrency(totalMarketCap)}) Bitcoin mendominasi {formatPercentage(btcDominance)} dari total market cap, diikuti oleh Ethereum ({formatPercentage(ethDominance)}) dan lainnya.
+                </CardDescription>
             </CardHeader>
             <CardContent>
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

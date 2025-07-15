@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ResizablePanelGroup, ResizablePanel } from "@/components/ui/resizable";
+import { rgbToHex } from "@/lib/utils";
 
 interface TradingViewWidgetProps {
   symbol: string;
@@ -14,14 +15,22 @@ function TradingViewWidget({ symbol }: TradingViewWidgetProps) {
   useEffect(() => {
     if (!container.current) return;
 
+    // Get computed CSS variable values
+    const rootStyles = getComputedStyle(document.documentElement);
+    const backgroundColor = rgbToHex(rootStyles.getPropertyValue('--background').trim());
+    const gridColor = rgbToHex(rootStyles.getPropertyValue('--border').trim());
+
     const script = document.createElement("script");
     script.src = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
     script.type = "text/javascript";
     script.async = true;
+    
+    const chartSymbol = symbol ? `BINANCE:${symbol.toUpperCase()}USDT` : 'BINANCE:BTCUSDT';
+
     script.innerHTML = `
       {
         "autosize": true,
-        "symbol": "BINANCE:${symbol}USDT",
+        "symbol": "${chartSymbol}",
         "interval": "60",
         "timezone": "Asia/Jakarta",
         "theme": "dark",
@@ -34,8 +43,8 @@ function TradingViewWidget({ symbol }: TradingViewWidgetProps) {
         "calendar": false,
         "hide_volume": true,
         "support_host": "https://www.tradingview.com",
-        "backgroundColor": "var(--background)",
-        "gridColor": "var(--border)",
+        "backgroundColor": "${backgroundColor}",
+        "gridColor": "${gridColor}",
         "details": false,
         "hide_top_toolbar": true,
         "hide_legend": true,
@@ -59,7 +68,7 @@ function TradingViewWidget({ symbol }: TradingViewWidgetProps) {
         currentContainer.removeChild(script);
       }
     };
-  }, [symbol]);
+  }, [symbol]); // Dependency on symbol
 
   return (
     <Card className="mb-12">

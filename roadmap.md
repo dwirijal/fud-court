@@ -26,8 +26,10 @@ This document outlines the development roadmap for Fud Court, a dashboard for ad
 
 - [x] **Feature**: Integrate a third-party API (e.g., CoinGecko, CryptoCompare) for live cryptocurrency data.
 - [x] **Feature**: Replace mock crypto data on the dashboard with real-time data.
-- [ ] **Feature**: Create dynamic pages for individual cryptocurrencies (`/token/[id]`).
-- [ ] **Feature**: Implement detailed charts and historical data views on token pages.
+- [x] **Feature**: Create dynamic pages for individual cryptocurrencies (`/token/[id]`).
+- [x] **Feature**: Implement detailed charts and historical data views on token pages.
+- [x] **Enhancement**: Implement robust currency conversion for market data.
+- [x] **Enhancement**: Implement infinite scroll for market data tables.
 - [ ] **Enhancement**: Add a "Favorites" or "Watchlist" feature for users.
 
 ## v0.4.0: User Accounts & Personalization

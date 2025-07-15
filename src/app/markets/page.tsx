@@ -3,7 +3,8 @@ import { Suspense } from "react";
 import { MarketDataTable, TableSkeleton } from "./market-data-table";
 import { CurrencySwitcherClient } from "@/components/molecules/currency-switcher-client";
 
-export default async function MarketsPage() {
+export default async function MarketsPage({ searchParams }: { searchParams?: { currency?: string } }) {
+  const currency = searchParams?.currency?.toLowerCase() || 'usd';
   return (
     <div className="container mx-auto px-4 py-12 md:py-24">
       <header className="mb-12">
@@ -25,7 +26,7 @@ export default async function MarketsPage() {
       <div className="w-full overflow-x-auto">
         <Card className="bg-card/60 backdrop-blur-md">
             <Suspense fallback={<TableSkeleton />}>
-              <MarketDataTable currency="usd" />
+              <MarketDataTable currency={currency} />
             </Suspense>
         </Card>
       </div>

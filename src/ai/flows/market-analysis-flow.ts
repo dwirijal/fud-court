@@ -74,11 +74,11 @@ export async function analyzeMarketSentiment(input: MarketAnalysisInput): Promis
     const normalize = (value: number) => Math.max(0, Math.min(100, value));
 
     const finalScores = {
-        marketCap: normalize(s1_marketCap),
-        volume: normalize(s2_volume),
-        fearAndGreed: normalize(s3_fearAndGreed),
-        ath: normalize(s4_ath),
-        marketBreadth: normalize(s5_marketBreadth),
+        marketCap: Math.round(normalize(s1_marketCap)),
+        volume: Math.round(normalize(s2_volume)),
+        fearAndGreed: Math.round(normalize(s3_fearAndGreed)),
+        ath: Math.round(normalize(s4_ath)),
+        marketBreadth: Math.round(normalize(s5_marketBreadth)),
     };
 
     // Calculate final macro score (M)

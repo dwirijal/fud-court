@@ -2,21 +2,15 @@
 import type {Metadata} from 'next';
 import './globals.css';
 import { AppLayout } from '@/components/organisms/app-layout';
-import { Inter, Space_Grotesk } from 'next/font/google';
+import { Plus_Jakarta_Sans } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GlobalNewsTicker } from '@/components/organisms/global-news-ticker';
 
-const inter = Inter({
+const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-inter',
-});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-space-grotesk',
+  variable: '--font-plus-jakarta-sans',
 });
 
 export const metadata: Metadata = {
@@ -31,7 +25,7 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="id" suppressHydrationWarning>
-      <body className={`${inter.variable} ${spaceGrotesk.variable} font-body antialiased`}>
+      <body className={`${plusJakartaSans.variable} font-body antialiased`}>
         <AppLayout>
           {children}
           <GlobalNewsTicker />

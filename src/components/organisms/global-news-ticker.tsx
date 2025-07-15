@@ -11,7 +11,7 @@ export async function GlobalNewsTicker() {
 
   try {
     // Fetch news in a try-catch block to prevent crashing the entire layout
-    newsPosts = await getPosts({ tag: 'news', limit: 20 });
+    newsPosts = await getPosts({ tag: 'realtime-news', limit: 20 });
   } catch (error) {
     console.error("Failed to fetch posts for news ticker:", error);
     // On error, newsPosts remains an empty array, so the ticker simply won't render.

@@ -4,7 +4,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { getDefiLlamaStablecoins } from "@/lib/defillama";
-import { format } from "date-fns";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -14,23 +13,25 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
-import { Scale, DollarSign } from "lucide-react";
+import { Scale, DollarSign, Server } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DefiLlamaStablecoin } from "@/types";
-
-// Metadata is not directly supported in client components, but can be set in a layout.tsx or a parent server component.
-// export const metadata = {
-//   title: 'Stablecoin Metrics',
-//   description: 'Metrik penting terkait stablecoin, termasuk kapitalisasi pasar dan sirkulasi.',
-// };
+import { Badge } from '@/components/ui/badge';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Skeleton } from '@/components/ui/skeleton';
 
 const formatCurrency = (value: number | null | undefined, currency: string = 'usd', compact: boolean = false) => {
   if (value === null || value === undefined || isNaN(value)) return 'N/A';
   const options: Intl.NumberFormatOptions = {
     style: 'currency',
     currency: currency.toUpperCase(),
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    minimumFractionDigits: value > 0.1 ? 2 : 4,
+    maximumFractionDigits: value > 0.1 ? 2 : 6,
   };
   if (compact) {
     options.notation = 'compact';
@@ -39,7 +40,25 @@ const formatCurrency = (value: number | null | undefined, currency: string = 'us
   return new Intl.NumberFormat('en-US', options).format(value);
 };
 
-const ITEMS_PER_LOAD = 10;
+const ITEMS_PER_LOAD = 9;
+
+function StablecoinCardSkeleton() {
+  return (
+    <Card>
+      <CardHeader>
+        <Skeleton className="h-5 w-3/4 mb-2" />
+        <Skeleton className="h-4 w-1/2" />
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <Skeleton className="h-8 w-1/2" />
+        <div className="space-y-2">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
 
 export default function StablecoinMetricsPage() {
   const [stablecoins, setStablecoins] = useState<DefiLlamaStablecoin[]>([]);
@@ -55,11 +74,11 @@ export default function StablecoinMetricsPage() {
       if (data) {
         setStablecoins(data);
       } else {
-        setError('Failed to fetch stablecoin data.');
+        setError('Gagal mengambil data stablecoin.');
       }
     } catch (err) {
       console.error("Error fetching stablecoins:", err);
-      setError('An error occurred while fetching data.');
+      setError('Terjadi kesalahan saat mengambil data.');
     } finally {
       setLoading(false);
     }
@@ -112,43 +131,72 @@ export default function StablecoinMetricsPage() {
       </header>
 
       <div>
-        {loading && <p className="text-center">Memuat data stablecoin...</p>}
-        {error && <p className="text-center text-red-500">Error: {error}</p>}
-        {!loading && !error && stablecoinsToDisplay.length === 0 && (
-          <p className="text-center text-muted-foreground">Tidak ada data stablecoin yang ditemukan.</p>
-        )}
-        {!loading && !error && stablecoinsToDisplay.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {stablecoinsToDisplay.map((sc) => (
-              <Card key={sc.id} className="flex flex-col">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-lg font-medium">{sc.name} ({sc.symbol})</CardTitle>
-                  <DollarSign className="h-5 w-5 text-muted-foreground" />
-                </CardHeader>
-                <CardContent className="flex-grow">
-                  <div className="text-2xl font-bold mb-2">
-                    {sc.circulating && typeof sc.circulating.peggedUSD === 'number'
-                      ? formatCurrency(sc.circulating.peggedUSD, 'usd', true)
-                      : 'N/A'
-                    }
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Harga: {formatCurrency(sc.price, 'usd', false)}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Tipe Peg: {sc.pegType}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Mekanisme Peg: {sc.pegMechanism}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Jaringan: {sc.chains.join(', ')}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+        {error && <p className="text-center text-destructive">Error: {error}</p>}
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {loading ? (
+             Array.from({ length: ITEMS_PER_LOAD }).map((_, i) => <StablecoinCardSkeleton key={i} />)
+          ) : stablecoinsToDisplay.length > 0 ? (
+            <TooltipProvider>
+              {stablecoinsToDisplay.map((sc) => (
+                <Card key={sc.id} className="flex flex-col">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <DollarSign className="h-5 w-5 text-muted-foreground" />
+                      {sc.name} <span className="text-muted-foreground font-normal">({sc.symbol})</span>
+                    </CardTitle>
+                    <CardDescription>
+                      Harga Saat Ini: {formatCurrency(sc.price)}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex-grow space-y-4">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Sirkulasi</p>
+                      <p className="text-2xl font-bold">
+                        {sc.circulating && typeof sc.circulating.peggedUSD === 'number'
+                          ? formatCurrency(sc.circulating.peggedUSD, 'usd', true)
+                          : 'N/A'
+                        }
+                      </p>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-muted-foreground">Tipe Peg</span>
+                        <Badge variant="secondary">{sc.pegType}</Badge>
+                      </div>
+                       <div className="flex justify-between items-center text-sm">
+                        <span className="text-muted-foreground">Mekanisme</span>
+                        <Badge variant="secondary" className="max-w-[150px] truncate">{sc.pegMechanism}</Badge>
+                      </div>
+                    </div>
+                     <div className="flex items-center gap-2 text-sm text-muted-foreground pt-2 border-t">
+                        <Server className="h-4 w-4" />
+                        <span className="font-medium">Jaringan:</span>
+                        <div className="flex flex-wrap items-center gap-1">
+                            {sc.chains.slice(0, 3).map(chain => (
+                                <Badge key={chain} variant="outline" className="font-normal">{chain}</Badge>
+                            ))}
+                            {sc.chains.length > 3 && (
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Badge variant="outline" className="cursor-help">+{sc.chains.length - 3} lainnya</Badge>
+                                    </TooltipTrigger>
+                                    <TooltipContent className="max-w-xs text-center">
+                                        <p>{sc.chains.slice(3).join(', ')}</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            )}
+                        </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </TooltipProvider>
+          ) : (
+             !error && <p className="col-span-full text-center text-muted-foreground">Tidak ada data stablecoin yang ditemukan.</p>
+          )}
+        </div>
+        
         {!loading && !error && displayedCount < stablecoins.length && (
           <div className="flex justify-center mt-8">
             <Button onClick={handleLoadMore} variant="outline">

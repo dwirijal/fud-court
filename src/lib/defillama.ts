@@ -71,7 +71,6 @@ export async function getDefiLlamaProtocols(): Promise<DefiLlamaProtocol[] | nul
   // 2. If cache is stale or empty, fetch from API
   try {
     console.log('Fetching DefiLlama protocols from API.');
-    // The response from this endpoint is > 2MB, so we cannot use Next.js fetch cache.
     const response = await fetch(`${DEFILLAMA_API_BASE_URL}/protocols`, { cache: 'no-store' });
     if (!response.ok) {
         console.error(`DefiLlama Protocols API error: ${response.status} ${response.statusText}`);
@@ -117,20 +116,20 @@ export async function getDefiLlamaStablecoins(limit?: number): Promise<DefiLlama
         const { data, error: cacheError } = await supabase
             .from('defillama_stablecoins')
             .select('*')
-            .single();
+            .order('circulating->peggedUSD', { ascending: false, nullsFirst: false });
 
-        if (data && data.stablecoins) {
-             const lastUpdated = new Date(data.last_updated).getTime();
+        if (data && data.length > 0) {
+             const lastUpdated = new Date(data[0].last_updated).getTime();
             const now = new Date().getTime();
             if ((now - lastUpdated) / 1000 < CACHE_DURATION_SECONDS) {
                 console.log('Serving DefiLlama stablecoins from fresh Supabase cache.');
-                cachedData = data.stablecoins as DefiLlamaStablecoin[];
+                cachedData = data as DefiLlamaStablecoin[];
                 return limit ? cachedData.slice(0, limit) : cachedData;
             }
             console.log('Supabase DefiLlama stablecoins cache is stale. Will fetch from API.');
         }
 
-        if (cacheError && cacheError.code !== 'PGRST116') {
+        if (cacheError) {
             console.error('Supabase DefiLlama stablecoins cache read error:', cacheError);
         }
       } catch (e) {
@@ -155,11 +154,15 @@ export async function getDefiLlamaStablecoins(limit?: number): Promise<DefiLlama
 
     // 3. Store/Update cache in Supabase, if client is available
     if (supabase) {
-        const { error: upsertError } = await supabase.from('defillama_stablecoins').upsert({
-            id: 'all-stablecoins',
-            stablecoins: stablecoinsData,
+        const stablecoinsToUpsert = stablecoinsData.map(sc => ({
+            ...sc,
             last_updated: new Date().toISOString()
-        }, { onConflict: 'id' });
+        }));
+
+        const { error: upsertError } = await supabase.from('defillama_stablecoins').upsert(
+            stablecoinsToUpsert, 
+            { onConflict: 'id' }
+        );
         
         if (upsertError) {
             console.error('Error upserting DefiLlama stablecoins into cache:', upsertError.message);

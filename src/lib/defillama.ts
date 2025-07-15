@@ -1,3 +1,4 @@
+
 'use server';
 
 import type { DefiLlamaProtocol, DefiLlamaStablecoin, DefiLlamaHistoricalTvl } from '@/types';
@@ -73,7 +74,8 @@ export async function getDefiLlamaProtocols(): Promise<DefiLlamaProtocol[] | nul
   // 2. If cache is stale or empty, fetch from API
   try {
     console.log('Fetching DefiLlama protocols from API.');
-    const response = await fetch(`${DEFILLAMA_API_BASE_URL}/protocols`, { next: { revalidate: CACHE_DURATION_SECONDS }});
+    // The response from this endpoint is > 2MB, so we cannot use Next.js fetch cache.
+    const response = await fetch(`${DEFILLAMA_API_BASE_URL}/protocols`, { cache: 'no-store' });
     if (!response.ok) {
         console.error(`DefiLlama Protocols API error: ${response.status} ${response.statusText}`);
         if (cachedData) {

@@ -213,7 +213,7 @@ export function Header() {
                         Pasar
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>
-                        <ul className="grid w-[300px] gap-2 p-3">
+                        <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
                             {marketComponents.map((component) => (
                                 <ListItem
                                     key={component.title}

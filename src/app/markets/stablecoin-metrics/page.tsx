@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -110,54 +111,52 @@ export default function StablecoinMetricsPage() {
         </p>
       </header>
 
-      <Card>
-        <CardContent className="pt-6">
-          {loading && <p className="text-center">Memuat data stablecoin...</p>}
-          {error && <p className="text-center text-red-500">Error: {error}</p>}
-          {!loading && !error && stablecoinsToDisplay.length === 0 && (
-            <p className="text-center text-muted-foreground">Tidak ada data stablecoin yang ditemukan.</p>
-          )}
-          {!loading && !error && stablecoinsToDisplay.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {stablecoinsToDisplay.map((sc) => (
-                <Card key={sc.id} className="flex flex-col">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-lg font-medium">{sc.name} ({sc.symbol})</CardTitle>
-                    <DollarSign className="h-5 w-5 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent className="flex-grow">
-                    <div className="text-2xl font-bold mb-2">
-                      {sc.circulating && typeof sc.circulating.peggedUSD === 'number'
-                        ? formatCurrency(sc.circulating.peggedUSD, 'usd', true)
-                        : 'N/A'
-                      }
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      Harga: {formatCurrency(sc.price, 'usd', false)}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Tipe Peg: {sc.pegType}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Mekanisme Peg: {sc.pegMechanism}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Jaringan: {sc.chains.join(', ')}
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-          {!loading && !error && displayedCount < stablecoins.length && (
-            <div className="flex justify-center mt-8">
-              <Button onClick={handleLoadMore} variant="outline">
-                Muat Lebih Banyak ({stablecoins.length - displayedCount} tersisa)
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <div>
+        {loading && <p className="text-center">Memuat data stablecoin...</p>}
+        {error && <p className="text-center text-red-500">Error: {error}</p>}
+        {!loading && !error && stablecoinsToDisplay.length === 0 && (
+          <p className="text-center text-muted-foreground">Tidak ada data stablecoin yang ditemukan.</p>
+        )}
+        {!loading && !error && stablecoinsToDisplay.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {stablecoinsToDisplay.map((sc) => (
+              <Card key={sc.id} className="flex flex-col">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-lg font-medium">{sc.name} ({sc.symbol})</CardTitle>
+                  <DollarSign className="h-5 w-5 text-muted-foreground" />
+                </CardHeader>
+                <CardContent className="flex-grow">
+                  <div className="text-2xl font-bold mb-2">
+                    {sc.circulating && typeof sc.circulating.peggedUSD === 'number'
+                      ? formatCurrency(sc.circulating.peggedUSD, 'usd', true)
+                      : 'N/A'
+                    }
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Harga: {formatCurrency(sc.price, 'usd', false)}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Tipe Peg: {sc.pegType}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Mekanisme Peg: {sc.pegMechanism}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Jaringan: {sc.chains.join(', ')}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+        {!loading && !error && displayedCount < stablecoins.length && (
+          <div className="flex justify-center mt-8">
+            <Button onClick={handleLoadMore} variant="outline">
+              Muat Lebih Banyak ({stablecoins.length - displayedCount} tersisa)
+            </Button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

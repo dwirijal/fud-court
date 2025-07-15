@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -28,6 +29,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import React from "react";
 
 
 const indicators = [
@@ -73,7 +75,12 @@ const indicators = [
     }
 ];
 
-const formatCurrency = (value: number, compact: boolean = true) => {
+interface MarketIndicatorsClientProps {
+    marketData: CombinedMarketData | null;
+}
+
+export function MarketIndicatorsClient({ marketData }: MarketIndicatorsClientProps) {
+  const formatCurrency = React.useCallback((value: number, compact: boolean = true) => {
     const options: Intl.NumberFormatOptions = {
         style: 'currency',
         currency: 'USD',
@@ -86,14 +93,8 @@ const formatCurrency = (value: number, compact: boolean = true) => {
         options.maximumFractionDigits = value < 1 ? 6 : 2;
     }
     return new Intl.NumberFormat('en-US', options).format(value);
-};
+  }, []);
 
-
-interface MarketIndicatorsClientProps {
-    marketData: CombinedMarketData | null;
-}
-
-export function MarketIndicatorsClient({ marketData }: MarketIndicatorsClientProps) {
   let indicatorScores: Record<string, { raw: Record<string, any>; score: number }> | null = null;
   let finalScore: number | null = null;
 

@@ -1,13 +1,9 @@
 
-import { getPosts } from "@/lib/ghost";
 import { fetchMarketData, getTopCoins } from "@/lib/coingecko";
 import { MarketCarousel } from "@/components/molecules/market-carousel";
 import { HeroSection } from "@/components/organisms/hero-section";
 import { MarketSummaryCard } from "@/components/organisms/market-summary-card";
 import { MarketStatsCard } from "@/components/organisms/market-stats-card";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
 
 export default async function Home() {
   // Fetch all data concurrently for better performance

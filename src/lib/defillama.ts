@@ -39,28 +39,25 @@ export async function getDefiLlamaCoinData(coinId: string): Promise<DefiLlamaCoi
 
 export async function getDefiLlamaProtocols(): Promise<DefiLlamaProtocol[] | null> {
   let cachedData: DefiLlamaProtocol[] | null = null;
-  // 1. Try to fetch from Supabase cache, if client is available
   if (supabase) {
     try {
       const { data, error: cacheError } = await supabase
         .from('defillama_protocols')
-        .select('protocols, last_updated')
-        .eq('id', 'all-protocols')
-        .single();
+        .select('*');
 
-      if (data && data.protocols) {
-        cachedData = data.protocols as DefiLlamaProtocol[];
-        const lastUpdated = new Date(data.last_updated).getTime();
+      if (data && data.length > 0) {
+        const lastUpdated = new Date(data[0].last_updated).getTime();
         const now = new Date().getTime();
         
         if ((now - lastUpdated) / 1000 < CACHE_DURATION_SECONDS) {
           console.log('Serving DefiLlama protocols from fresh Supabase cache.');
-          return cachedData;
+          return data; // Data is already in the correct format
         }
+        cachedData = data;
         console.log('Supabase DefiLlama protocols cache is stale. Will fetch from API.');
       }
 
-      if (cacheError && cacheError.code !== 'PGRST116') { // Ignore "No rows found" error
+      if (cacheError && cacheError.code !== 'PGRST116') {
         console.error('Supabase DefiLlama protocols cache read error:', cacheError);
       }
     } catch (e) {
@@ -68,7 +65,6 @@ export async function getDefiLlamaProtocols(): Promise<DefiLlamaProtocol[] | nul
     }
   }
 
-  // 2. If cache is stale or empty, fetch from API
   try {
     console.log('Fetching DefiLlama protocols from API.');
     const response = await fetch(`${DEFILLAMA_API_BASE_URL}/protocols`, { cache: 'no-store' });
@@ -82,14 +78,21 @@ export async function getDefiLlamaProtocols(): Promise<DefiLlamaProtocol[] | nul
     }
     const protocolsData: DefiLlamaProtocol[] = await response.json();
 
-    // 3. Store/Update cache in Supabase, if client is available
     if (supabase) {
-        const { error: upsertError } = await supabase.from('defillama_protocols').upsert({ 
-            id: 'all-protocols', // Use a static ID for this singleton row
-            protocols: protocolsData, 
+        const protocolsToUpsert = protocolsData.map(p => ({
+            id: p.id,
+            name: p.name,
+            symbol: p.symbol,
+            category: p.category,
+            chains: p.chains,
+            tvl: p.tvl,
+            chain_tvls: p.chainTvls,
+            change_1d: p.change_1d,
+            change_7d: p.change_7d,
             last_updated: new Date().toISOString()
-        }, { onConflict: 'id' });
+        }));
 
+        const { error: upsertError } = await supabase.from('defillama_protocols').upsert(protocolsToUpsert, { onConflict: 'id' });
         if (upsertError) {
             console.error('Error upserting DefiLlama protocols into cache:', upsertError.message);
         } else {
@@ -110,26 +113,35 @@ export async function getDefiLlamaProtocols(): Promise<DefiLlamaProtocol[] | nul
 
 export async function getDefiLlamaStablecoins(limit?: number): Promise<DefiLlamaStablecoin[] | null> {
   let cachedData: DefiLlamaStablecoin[] | null = null;
-  // 1. Try to fetch from Supabase cache, if client is available
   if (supabase) {
       try {
         const { data, error: cacheError } = await supabase
             .from('defillama_stablecoins')
             .select('*')
-            .order('circulating->peggedUSD', { ascending: false, nullsFirst: false });
+            .order('circulating_pegged_usd', { ascending: false, nullsFirst: false });
 
         if (data && data.length > 0) {
-             const lastUpdated = new Date(data[0].last_updated).getTime();
+            const lastUpdated = new Date(data[0].last_updated).getTime();
             const now = new Date().getTime();
             if ((now - lastUpdated) / 1000 < CACHE_DURATION_SECONDS) {
                 console.log('Serving DefiLlama stablecoins from fresh Supabase cache.');
-                cachedData = data as DefiLlamaStablecoin[];
+                cachedData = data.map(sc => ({
+                    id: sc.id,
+                    name: sc.name,
+                    symbol: sc.symbol,
+                    pegType: sc.peg_type,
+                    pegMechanism: sc.peg_mechanism,
+                    circulating: { peggedUSD: sc.circulating_pegged_usd },
+                    chains: sc.chains,
+                    chainCirculating: sc.chain_circulating,
+                    price: sc.price,
+                }));
                 return limit ? cachedData.slice(0, limit) : cachedData;
             }
             console.log('Supabase DefiLlama stablecoins cache is stale. Will fetch from API.');
         }
 
-        if (cacheError) {
+        if (cacheError && cacheError.code !== 'PGRST116') {
             console.error('Supabase DefiLlama stablecoins cache read error:', cacheError);
         }
       } catch (e) {
@@ -137,7 +149,6 @@ export async function getDefiLlamaStablecoins(limit?: number): Promise<DefiLlama
       }
   }
 
-  // 2. If cache is stale or empty, fetch from DefiLlama API
   try {
     console.log('Fetching DefiLlama stablecoins from API.');
     const response = await fetch(`${DEFILLAMA_STABLECOINS_API_BASE_URL}/stablecoins?includePrices=true`, { next: { revalidate: CACHE_DURATION_SECONDS }});
@@ -150,12 +161,19 @@ export async function getDefiLlamaStablecoins(limit?: number): Promise<DefiLlama
       return null;
     }
     const data = await response.json();
-    const stablecoinsData = data.peggedAssets as DefiLlamaStablecoin[];
-
-    // 3. Store/Update cache in Supabase, if client is available
+    const stablecoinsData: DefiLlamaStablecoin[] = data.peggedAssets;
+    
     if (supabase) {
         const stablecoinsToUpsert = stablecoinsData.map(sc => ({
-            ...sc,
+            id: sc.id,
+            name: sc.name,
+            symbol: sc.symbol,
+            peg_type: sc.pegType,
+            peg_mechanism: sc.pegMechanism,
+            circulating_pegged_usd: sc.circulating?.peggedUSD,
+            chains: sc.chains,
+            chain_circulating: sc.chainCirculating,
+            price: sc.price,
             last_updated: new Date().toISOString()
         }));
 
@@ -184,7 +202,6 @@ export async function getDefiLlamaStablecoins(limit?: number): Promise<DefiLlama
 
 export async function getDefiLlamaHistoricalTvl(): Promise<DefiLlamaHistoricalTvl[] | null> {
   let cachedData: DefiLlamaHistoricalTvl[] | null = null;
-  // 1. Try to fetch from Supabase cache, if client is available
   if (supabase) {
     try {
         const { data, error: cacheError } = await supabase
@@ -203,7 +220,7 @@ export async function getDefiLlamaHistoricalTvl(): Promise<DefiLlamaHistoricalTv
             console.log('Supabase DefiLlama historical TVL cache is stale. Will fetch from API.');
         }
 
-        if (cacheError) {
+        if (cacheError && cacheError.code !== 'PGRST116') {
             console.error('Supabase DefiLlama historical TVL cache read error:', cacheError);
         }
     } catch(e) {
@@ -211,7 +228,6 @@ export async function getDefiLlamaHistoricalTvl(): Promise<DefiLlamaHistoricalTv
     }
   }
 
-  // 2. If cache is stale or empty, fetch from DefiLlama API
   try {
     console.log('Fetching DefiLlama historical TVL from API.');
     const response = await fetch(`${DEFILLAMA_API_BASE_URL}/v2/historicalChainTvl`, { next: { revalidate: CACHE_DURATION_SECONDS }});
@@ -225,7 +241,6 @@ export async function getDefiLlamaHistoricalTvl(): Promise<DefiLlamaHistoricalTv
     }
     const data: DefiLlamaHistoricalTvl[] = await response.json();
 
-    // 3. Store/Update cache in Supabase, if client is available
     if (supabase) {
         const historicalTvlToUpsert = data.map(tvl => ({
             date: tvl.date, // 'date' is the primary key

@@ -312,8 +312,8 @@ export interface DefiLlamaProtocol {
   chains: string[];
   tvl: number;
   chainTvls: Record<string, number>;
-  change_1d: number;
-  change_7d: number;
+  change_1d: number | null;
+  change_7d: number | null;
 }
 
 export interface DefiLlamaStablecoin {
@@ -322,10 +322,10 @@ export interface DefiLlamaStablecoin {
   symbol: string;
   pegType: string;
   pegMechanism: string;
-  circulating: { peggedUSD: number };
+  circulating: { peggedUSD: number | null };
   chains: string[];
   chainCirculating: Record<string, { current: { peggedUSD: number } }>;
-  price: number;
+  price: number | null;
 }
 
 export interface DefiLlamaHistoricalTvl {

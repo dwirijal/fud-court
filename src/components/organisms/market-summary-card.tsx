@@ -32,10 +32,8 @@ const AnimatedNumber = ({ to, className, delay = 0 }: { to: number, className?: 
     const target = useRef({ value: 0 }).current;
 
     useEffect(() => {
-        // No need to re-animate if value is already set by a previous animation run
         if (hasAnimated.current && value === to) return;
         
-        // If the `to` prop changes dynamically, reset the animation target
         if (hasAnimated.current) {
             target.value = value;
         }
@@ -59,6 +57,50 @@ const AnimatedNumber = ({ to, className, delay = 0 }: { to: number, className?: 
 }
 
 const IndicatorCard = ({ index, icon: Icon, name, score, formula }: { index: number; icon: LucideIcon; name: string; score: number; formula: string; }) => {
+  const cardRef = useRef(null);
+  const scoreRef = useRef(null);
+  const formulaRef = useRef(null);
+
+  const animation = useRef<anime.AnimeInstance | null>(null);
+
+  useEffect(() => {
+    if (!scoreRef.current || !formulaRef.current) return;
+    
+    // Set initial states
+    anime.set(scoreRef.current, { opacity: 1, translateY: 0 });
+    anime.set(formulaRef.current, { opacity: 0, translateY: 10 });
+
+    animation.current = anime.timeline({
+      easing: 'easeOutExpo',
+      duration: 300,
+      autoplay: false,
+    })
+    .add({
+      targets: scoreRef.current,
+      opacity: 0,
+      translateY: -10,
+    })
+    .add({
+      targets: formulaRef.current,
+      opacity: 1,
+      translateY: 0,
+    }, '-=200'); // Start formula animation slightly before score finishes
+
+  }, []);
+
+  const handleMouseEnter = () => {
+    if (animation.current) {
+      animation.current.play();
+      animation.current.reverse();
+    }
+  };
+
+  const handleMouseLeave = () => {
+     if (animation.current) {
+      animation.current.reverse();
+    }
+  };
+
   const cardVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -74,29 +116,31 @@ const IndicatorCard = ({ index, icon: Icon, name, score, formula }: { index: num
 
   return (
     <motion.div
+      ref={cardRef}
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.5 }}
       variants={cardVariants}
       className="group relative h-24 overflow-hidden rounded-lg"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <Card className="h-full w-full bg-card/80 transition-colors duration-300 group-hover:bg-muted/50">
         <CardContent className="p-4 flex flex-col justify-between h-full">
-            {/* Top part: Icon and Name */}
             <div className="flex items-center gap-2">
                 <Icon className="h-4 w-4 text-muted-foreground" />
                 <p className="text-sm font-semibold text-foreground">{name}</p>
             </div>
-            {/* Bottom part: Score (visible by default) */}
-             <div className="text-right transition-all duration-300 ease-in-out group-hover:opacity-0 group-hover:-translate-y-2">
+            <div className="relative text-right h-8">
+              <div ref={scoreRef} className="absolute bottom-0 right-0">
                 <p className="text-2xl font-mono font-bold">{score}</p>
+              </div>
+              <div ref={formulaRef} className="absolute bottom-0 right-0">
+                <p className="text-xs text-center font-mono text-primary">{formula}</p>
+              </div>
             </div>
         </CardContent>
       </Card>
-      {/* Formula (hidden by default, appears on hover) */}
-      <div className="absolute inset-0 flex items-center justify-center p-3 opacity-0 transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:bg-primary/10">
-        <p className="text-xs text-center font-mono text-primary">{formula}</p>
-      </div>
     </motion.div>
   )
 }

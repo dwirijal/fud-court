@@ -49,11 +49,11 @@ export function HeroSection() {
           </div>
           <div className="lg:col-span-3 text-center lg:text-left">
             <AnimatedText
-              text="Kejelasan di Tengah Kekacauan."
-              className="text-5xl font-extrabold font-headline tracking-tighter mb-5 [&_.letter]:inline-block"
+              text="Clarity in Chaos."
+              className="text-5xl font-extrabold tracking-tighter mb-5 [&_.letter]:inline-block"
             />
             <p className="text-lg text-muted-foreground max-w-xl mx-auto lg:mx-0 mb-6">
-              Fud Court membelah kebisingan pasar dengan analisis berbasis data dan berita yang tidak bias, memberdayakan Anda untuk membuat keputusan investasi kripto yang lebih cerdas.
+              CryptoPulse cuts through market noise with data-driven analysis and unbiased news, empowering you to make smarter crypto investment decisions.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
               <Button size="lg" asChild>

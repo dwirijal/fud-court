@@ -28,7 +28,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const formSchema = z.object({
-  email: z.string().email('Harap masukkan alamat email yang valid.'),
+  email: z.string().email('Please enter a valid email address.'),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -56,7 +56,7 @@ export function LoginForm() {
       toast({
         title: 'Error',
         description:
-          error instanceof Error ? error.message : 'Terjadi kesalahan yang tidak diketahui.',
+          error instanceof Error ? error.message : 'An unknown error occurred.',
         variant: 'destructive',
       });
     } finally {
@@ -74,15 +74,15 @@ export function LoginForm() {
     return (
         <Card className="w-full">
             <CardHeader className="text-center">
-                <CardTitle className="text-2xl">Periksa Kotak Masuk Anda</CardTitle>
+                <CardTitle className="text-2xl">Check Your Inbox</CardTitle>
                 <CardDescription>
-                    Kami telah mengirimkan tautan ajaib yang aman ke{' '}
+                    We've sent a secure magic link to{' '}
                     <span className="font-semibold text-foreground">{submittedEmail}</span>.
                 </CardDescription>
             </CardHeader>
             <CardContent>
                 <Button onClick={handleReset} className="w-full" variant="outline">
-                    Gunakan email yang berbeda
+                    Use a different email
                 </Button>
             </CardContent>
         </Card>
@@ -98,16 +98,16 @@ export function LoginForm() {
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <Tabs defaultValue="signin" className="w-full" onValueChange={handleTabChange}>
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="signin">Masuk</TabsTrigger>
-            <TabsTrigger value="signup">Daftar</TabsTrigger>
+            <TabsTrigger value="signin">Sign In</TabsTrigger>
+            <TabsTrigger value="signup">Sign Up</TabsTrigger>
           </TabsList>
           
           <TabsContent value="signin">
             <Card>
               <CardHeader>
-                <CardTitle>Selamat Datang Kembali</CardTitle>
+                <CardTitle>Welcome Back</CardTitle>
                 <CardDescription>
-                  Masukkan email Anda di bawah ini untuk menerima tautan ajaib untuk masuk ke akun Anda.
+                  Enter your email below to receive a magic link to sign in to your account.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -116,9 +116,9 @@ export function LoginForm() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Alamat Email</FormLabel>
+                      <FormLabel>Email Address</FormLabel>
                       <FormControl>
-                        <Input type="email" placeholder="anda@example.com" {...field} />
+                        <Input type="email" placeholder="you@example.com" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -127,7 +127,7 @@ export function LoginForm() {
               </CardContent>
               <CardFooter>
                 <Button type="submit" disabled={isSubmitting} className="w-full">
-                  {isSubmitting ? "Mengirim..." : "Kirim Tautan Masuk"}
+                  {isSubmitting ? "Sending..." : "Send Sign In Link"}
                 </Button>
               </CardFooter>
             </Card>
@@ -136,9 +136,9 @@ export function LoginForm() {
           <TabsContent value="signup">
             <Card>
               <CardHeader>
-                <CardTitle>Buat Akun</CardTitle>
+                <CardTitle>Create an Account</CardTitle>
                 <CardDescription>
-                  Masukkan email Anda untuk membuat akun. Tidak perlu kata sandi!
+                  Enter your email to create an account. No password required!
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -147,9 +147,9 @@ export function LoginForm() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Alamat Email</FormLabel>
+                      <FormLabel>Email Address</FormLabel>
                       <FormControl>
-                        <Input type="email" placeholder="anda@example.com" {...field} />
+                        <Input type="email" placeholder="you@example.com" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -158,7 +158,7 @@ export function LoginForm() {
               </CardContent>
               <CardFooter>
                 <Button type="submit" disabled={isSubmitting} className="w-full">
-                  {isSubmitting ? "Mengirim..." : "Kirim Tautan Daftar"}
+                  {isSubmitting ? "Sending..." : "Send Sign Up Link"}
                 </Button>
               </CardFooter>
             </Card>

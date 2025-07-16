@@ -13,12 +13,12 @@ export function Footer() {
           <div className="md:col-span-4">
             <Link href="/" className="flex items-center gap-3 mb-4">
               <Logo />
-              <span className="text-xl font-semibold font-headline tracking-tight text-foreground">
-                Fud Court
+              <span className="text-xl font-semibold tracking-tight text-foreground">
+                CryptoPulse
               </span>
             </Link>
             <p className="text-muted-foreground text-sm max-w-xs">
-              Kejelasan di Tengah Kekacauan. Fud Court membelah kebisingan pasar dengan analisis berbasis data dan berita yang tidak bias.
+              Clarity in Chaos. CryptoPulse cuts through market noise with data-driven analysis and unbiased news.
             </p>
           </div>
 
@@ -66,7 +66,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="mt-16 pt-8 border-t border-border/50 text-center">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Fud Court. Hak Cipta Dilindungi.
+            © {new Date().getFullYear()} CryptoPulse. All Rights Reserved.
           </p>
         </div>
       </div>

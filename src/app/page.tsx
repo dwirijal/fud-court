@@ -25,7 +25,7 @@ export default async function Home() {
       <section className="py-12 md:py-16 border-y bg-background/50">
         <div className="container space-y-12">
           <div className="text-center max-w-3xl mx-auto">
-            <h2 className="text-4xl font-bold tracking-tight font-headline mb-4">
+            <h2 className="text-4xl font-bold tracking-tight mb-4">
               Gambaran Pasar
             </h2>
             <p className="text-lg text-muted-foreground">
@@ -48,7 +48,7 @@ export default async function Home() {
         <div className="container">
             <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-8">
                 <div className="max-w-xl">
-                    <h2 className="text-4xl font-bold tracking-tight font-headline mb-4">
+                    <h2 className="text-4xl font-bold tracking-tight mb-4">
                       Berita & Analisis Terbaru
                     </h2>
                     <p className="text-lg text-muted-foreground">

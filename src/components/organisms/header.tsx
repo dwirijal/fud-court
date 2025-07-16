@@ -106,8 +106,8 @@ export function Header() {
       <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-border bg-background/60 px-4 backdrop-blur-md md:hidden">
         <Link href="/" className="flex items-center gap-3">
           <Logo />
-          <span className="text-xl font-semibold font-headline tracking-tight text-foreground">
-            Fud Court
+          <span className="text-xl font-semibold tracking-tight text-foreground">
+            CryptoPulse
           </span>
         </Link>
         <Sheet>
@@ -124,8 +124,8 @@ export function Header() {
             <div className="flex h-full flex-col p-6">
               <Link href="/" className="flex items-center gap-3 mb-6">
                 <Logo />
-                <span className="text-xl font-semibold font-headline tracking-tight text-foreground">
-                  Fud Court
+                <span className="text-xl font-semibold tracking-tight text-foreground">
+                  CryptoPulse
                 </span>
               </Link>
               <nav className="grid gap-4 text-lg font-medium">

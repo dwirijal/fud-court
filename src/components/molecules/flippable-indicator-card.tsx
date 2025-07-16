@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { LucideIcon } from 'lucide-react';
 import { AnimatedNumber } from './animated-number';
+import { cn } from '@/lib/utils';
 
 interface FlippableIndicatorCardProps {
     index: number;
@@ -54,8 +55,8 @@ export function FlippableIndicatorCard({
             >
                 {/* Card Front */}
                 <div className="absolute w-full h-full backface-hidden">
-                    <Card className="h-full hover:bg-muted/50 transition-colors cursor-pointer">
-                        <CardContent className="p-4 flex flex-1 items-center justify-between gap-4 h-full">
+                    <Card className="h-full hover:bg-muted/50 transition-colors cursor-pointer flex flex-col">
+                        <CardContent className="p-4 flex-1 flex items-center justify-between gap-4">
                             <div className="space-y-1 flex-grow">
                                 <p className="text-sm font-semibold flex items-center gap-2">
                                     <Icon className="h-4 w-4 text-muted-foreground" />

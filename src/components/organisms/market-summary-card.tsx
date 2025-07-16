@@ -43,12 +43,14 @@ interface IndicatorCardProps {
     score: number;
     formula: string;
     rawData: Record<string, string | number>;
+    weight: number;
+    weightedScore: number;
 }
 
-function IndicatorCard({ name, score, formula, rawData }: IndicatorCardProps) {
+function IndicatorCard({ name, score, formula, rawData, weight, weightedScore }: IndicatorCardProps) {
   return (
     <Card className="flex flex-col h-full">
-      <CardContent className="p-4 flex flex-col flex-grow justify-between">
+      <CardContent className="p-4 flex flex-col flex-grow justify-between relative">
         <p className="text-sm font-semibold text-muted-foreground">{name}</p>
         
         <TooltipProvider>
@@ -60,12 +62,25 @@ function IndicatorCard({ name, score, formula, rawData }: IndicatorCardProps) {
                 </TooltipTrigger>
                 <TooltipContent className="w-64 p-3">
                     <div className="space-y-2 text-xs w-full">
+                        <h4 className="font-bold text-foreground">Data Mentah</h4>
                         {Object.entries(rawData).map(([key, value]) => (
                             <div key={key} className="flex justify-between items-baseline">
-                            <span className="text-muted-foreground truncate" title={key}>{key}</span>
-                            <span className="font-mono text-foreground font-semibold">{value}</span>
+                                <span className="text-muted-foreground truncate" title={key}>{key}</span>
+                                <span className="font-mono text-foreground font-semibold">{value}</span>
                             </div>
                         ))}
+                    </div>
+                    <Separator className="my-2 bg-border/50"/>
+                     <div className="space-y-2 text-xs w-full">
+                        <h4 className="font-bold text-foreground">Kontribusi Skor</h4>
+                        <div className="flex justify-between items-baseline">
+                            <span className="text-muted-foreground">Bobot</span>
+                            <span className="font-mono text-foreground font-semibold">{(weight * 100).toFixed(0)}%</span>
+                        </div>
+                        <div className="flex justify-between items-baseline">
+                            <span className="text-muted-foreground">Skor Tertimbang</span>
+                            <span className="font-mono text-foreground font-semibold">{weightedScore.toFixed(2)}</span>
+                        </div>
                     </div>
                     <Separator className="my-2 bg-border/50"/>
                     <p className="text-xs text-center font-mono text-primary/80" title={formula}>
@@ -144,26 +159,44 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
   
   const risingTokens = marketData.topCoins.filter(c => (c.price_change_percentage_24h || 0) > 0).length;
 
+  const weights = {
+      marketCap: 0.25,
+      volume: 0.20,
+      fearAndGreed: 0.20,
+      ath: 0.25,
+      marketBreadth: 0.10
+  };
+
   const indicators = [
-      { name: "Kapitalisasi Pasar", value: analysisResult.components.marketCapScore,
+      { name: "Kapitalisasi Pasar", score: analysisResult.components.marketCapScore,
         formula: "(Cap / Peak) * 100",
         rawData: { "Kap. Pasar Saat Ini": formatCurrency(marketData.totalMarketCap), "Kap. Pasar Puncak": formatCurrency(marketData.maxHistoricalMarketCap) },
+        weight: weights.marketCap,
+        weightedScore: analysisResult.components.marketCapScore * weights.marketCap,
       },
-      { name: "Volume", value: analysisResult.components.volumeScore,
+      { name: "Volume", score: analysisResult.components.volumeScore,
         formula: "(Vol / Avg) * 50",
         rawData: { "Volume 24j": formatCurrency(marketData.totalVolume24h), "Rata-rata 30h": formatCurrency(marketData.avg30DayVolume) },
+        weight: weights.volume,
+        weightedScore: analysisResult.components.volumeScore * weights.volume,
        },
-      { name: "Fear & Greed", value: analysisResult.components.fearGreedScore,
+      { name: "Fear & Greed", score: analysisResult.components.fearGreedScore,
         formula: "Indeks Fear & Greed",
         rawData: { "Nilai Indeks": marketData.fearAndGreedIndex },
+        weight: weights.fearAndGreed,
+        weightedScore: analysisResult.components.fearGreedScore * weights.fearAndGreed,
        },
-      { name: "Jarak ATH", value: analysisResult.components.athScore,
+      { name: "Jarak ATH", score: analysisResult.components.athScore,
         formula: "100 - Avg. ATH Distance",
         rawData: { "Koin Teratas": `${marketData.topCoins.length} aset` },
+        weight: weights.ath,
+        weightedScore: analysisResult.components.athScore * weights.ath,
        },
-      { name: "Sebaran Pasar", value: analysisResult.components.marketBreadthScore,
+      { name: "Sebaran Pasar", score: analysisResult.components.marketBreadthScore,
         formula: "(Aset Naik / Total) * 100",
         rawData: { "Aset Naik": `${risingTokens} / ${marketData.topCoins.length}` },
+        weight: weights.marketBreadth,
+        weightedScore: analysisResult.components.marketBreadthScore * weights.marketBreadth,
        },
   ];
   
@@ -200,13 +233,15 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
         <CardFooter className="flex-col items-start p-6 pt-0">
             <Separator className="mb-4" />
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 w-full">
-                {indicators.map((indicator, index) => (
+                {indicators.map((indicator) => (
                     <IndicatorCard
                         key={indicator.name}
                         name={indicator.name}
-                        score={indicator.value}
+                        score={indicator.score}
                         formula={indicator.formula}
                         rawData={indicator.rawData}
+                        weight={indicator.weight}
+                        weightedScore={indicator.weightedScore}
                     />
                 ))}
             </div>

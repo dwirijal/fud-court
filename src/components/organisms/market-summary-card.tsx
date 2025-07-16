@@ -211,19 +211,19 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
   
   const indicators = [
       { name: "Kapitalisasi Pasar", value: analysisResult.components.marketCapScore, icon: Scale,
-        formula: "(Saat Ini / Puncak) * 100"
+        formula: "(Cap / Peak) * 100"
       },
       { name: "Volume", value: analysisResult.components.volumeScore, icon: Zap,
-        formula: "(Saat Ini / Rata-rata) * 50"
+        formula: "(Vol / Avg) * 50"
        },
       { name: "Fear & Greed", value: analysisResult.components.fearGreedScore, icon: AlertTriangle,
-        formula: "Nilai indeks langsung"
+        formula: "Indeks Fear & Greed"
        },
       { name: "Jarak ATH", value: analysisResult.components.athScore, icon: TrendingUp,
-        formula: "100 - Rata-rata jarak dari ATH"
+        formula: "100 - Avg. ATH Distance"
        },
       { name: "Sebaran Pasar", value: analysisResult.components.marketBreadthScore, icon: Package,
-        formula: "(Naik / Total) * 100"
+        formula: "(Aset Naik / Total) * 100"
        },
   ];
   

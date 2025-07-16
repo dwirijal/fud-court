@@ -102,15 +102,6 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Define indicator details for tooltips and linking
-  const indicatorDetails = [
-    { id: "market-cap-explanation", name: "Skor Kapitalisasi Pasar", summary: "Seberapa Dekat Pasar dengan Puncaknya?" },
-    { id: "volume-explanation", name: "Skor Volume", summary: "Seberapa Aktif Pasar Hari Ini?" },
-    { id: "fear-greed-explanation", name: "Skor Fear & Greed", summary: "Mengukur Rasa Takut atau Serakah Investor" },
-    { id: "ath-explanation", name: "Skor ATH", summary: "Seberapa Jauh dari Puncak?" },
-    { id: "market-breadth-explanation", name: "Skor Sebaran Pasar", summary: "Apakah Pasar Bergerak Secara Luas?" },
-  ];
-
   useEffect(() => {
     const getMarketAnalysis = async () => {
       if (!marketData) {
@@ -190,7 +181,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                         </Badge>
                     </div>
                     <div className="text-center md:text-right flex-shrink-0 pl-4">
-                        <AnimatedNumber to={analysisResult.macroScore} className={cn("text-7xl font-bold tracking-tighter", activeColorClass)} />
+                        <AnimatedNumber to={analysisResult.macroScore} className={cn("text-6xl font-bold tracking-tighter", activeColorClass)} />
                         <p className={cn("font-semibold text-2xl", activeColorClass)}>{analysisResult.marketCondition}</p>
                     </div>
                 </div>
@@ -198,53 +189,47 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <TooltipProvider>
-                    {indicators.map((indicator, index) => {
-                        const detail = indicatorDetails.find(d => d.id === indicator.id);
-                        return (
-                            <Tooltip key={indicator.id}>
-                                <TooltipTrigger asChild>
-                                    <Link href={`/learn/market-indicators#${indicator.id}`} className="group block h-full">
-                                        <Card className="flex flex-col h-full hover:bg-muted/50 transition-colors">
-                                            <CardContent className="p-4 flex flex-1 items-center justify-between gap-4">
-                                                <div className="space-y-1 flex-grow">
-                                                    <p className="text-sm font-semibold flex items-center gap-2">
-                                                        {indicator.icon && <indicator.icon className="h-4 w-4 text-muted-foreground" />}
-                                                        {indicator.name}
-                                                    </p>
-                                                </div>
-                                                <div className="text-right flex-shrink-0 pl-2">
-                                                    <AnimatedNumber to={indicator.value} className="text-2xl font-mono font-bold" delay={200 + index * 100} />
-                                                    <AnimatedProgress value={indicator.value} className="h-1 w-12 mt-1" indicatorClassName={cn(getProgressColorClass(indicator.value))} />
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-                                    </Link>
-                                </TooltipTrigger>
-                                {detail && (
-                                    <TooltipContent>
-                                        <p>{detail.summary}</p>
-                                    </TooltipContent>
-                                )}
-                            </Tooltip>
-                        );
-                    })}
+                    {indicators.map((indicator, index) => (
+                        <Tooltip key={indicator.id}>
+                            <TooltipTrigger asChild>
+                                <Link href={`/learn/market-indicators#${indicator.id}`} className="group block h-full">
+                                    <Card className="flex flex-col h-full hover:bg-muted/50 transition-colors">
+                                        <CardContent className="p-4 flex flex-1 items-center justify-between gap-4">
+                                            <div className="space-y-1 flex-grow">
+                                                <p className="text-sm font-semibold flex items-center gap-2">
+                                                    {indicator.icon && <indicator.icon className="h-4 w-4 text-muted-foreground" />}
+                                                    {indicator.name}
+                                                </p>
+                                            </div>
+                                            <div className="text-right flex-shrink-0 pl-2">
+                                                <AnimatedNumber to={indicator.value} className="text-2xl font-mono font-bold" delay={200 + index * 100} />
+                                                <AnimatedProgress value={indicator.value} className="h-1 w-12 mt-1" indicatorClassName={cn(getProgressColorClass(indicator.value))} />
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </Link>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Klik untuk melihat detail perhitungan.</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    ))}
+                     <Link href="/learn/market-indicators" className="group block h-full">
+                        <Card className="flex flex-col h-full hover:bg-muted/50 transition-colors">
+                            <CardContent className="p-4 flex flex-1 items-center justify-between gap-4">
+                                <div className="space-y-1 flex-grow">
+                                    <p className="text-sm font-semibold flex items-center gap-2">
+                                        <BookOpen className="h-4 w-4 text-muted-foreground" />
+                                        Pelajari Skor Ini
+                                    </p>
+                                </div>
+                                <div className="text-right flex-shrink-0 pl-2 text-muted-foreground group-hover:text-primary transition-colors">
+                                    <ArrowRight className="h-5 w-5" />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </Link>
                 </TooltipProvider>
-                 <Link href="/learn/market-indicators" className="group block h-full">
-                   <Card className="flex flex-col h-full hover:bg-muted/50 transition-colors">
-                       <CardContent className="p-4 flex flex-1 items-center justify-between gap-4">
-                            <div className="space-y-1 flex-grow">
-                                <p className="text-sm font-semibold flex items-center gap-2">
-                                    <BookOpen className="h-4 w-4 text-muted-foreground" />
-                                    Pelajari Skor Ini
-                                </p>
-                                <p className="text-xs text-muted-foreground">Lihat rincian metode</p>
-                            </div>
-                            <div className="text-right flex-shrink-0 pl-2 text-muted-foreground group-hover:text-primary transition-colors">
-                                <ArrowRight className="h-5 w-5" />
-                            </div>
-                       </CardContent>
-                   </Card>
-                </Link>
             </div>
         </CardContent>
     </Card>

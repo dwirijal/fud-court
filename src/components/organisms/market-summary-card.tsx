@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { MarketAnalysisOutput } from '@/types';
 import { analyzeMarketSentiment } from '@/ai/flows/market-analysis-flow';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { AlertTriangle, CheckCircle, BookOpen, Scale, Zap, TrendingUp, Package } from 'lucide-react';
+import { AlertTriangle, CheckCircle, BookOpen, Scale, Zap, TrendingUp, Package, ArrowRight } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
@@ -203,7 +203,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                         return (
                             <Tooltip key={indicator.id}>
                                 <TooltipTrigger asChild>
-                                    <Link href={`/learn/market-indicators#${indicator.id}`} className="group block">
+                                    <Link href={`/learn/market-indicators#${indicator.id}`} className="group block h-full">
                                         <Card className="flex flex-col h-full hover:bg-muted/50 transition-colors">
                                             <CardContent className="p-4 flex flex-1 items-center justify-between gap-4">
                                                 <div className="space-y-1 flex-grow">
@@ -229,11 +229,20 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                         );
                     })}
                 </TooltipProvider>
-                 <Link href="/learn/market-indicators" className="group block">
-                   <Card className="h-full flex flex-col items-center justify-center text-center p-4 bg-muted/50 hover:bg-muted transition-colors">
-                       <BookOpen className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
-                       <p className="text-sm font-semibold mt-2 text-foreground group-hover:text-primary transition-colors">Pelajari Skor Ini</p>
-                       <p className="text-xs text-muted-foreground">Lihat rincian metode & interpretasi ➜</p>
+                 <Link href="/learn/market-indicators" className="group block h-full">
+                   <Card className="flex flex-col h-full hover:bg-muted/50 transition-colors">
+                       <CardContent className="p-4 flex flex-1 items-center justify-between gap-4">
+                            <div className="space-y-1 flex-grow">
+                                <p className="text-sm font-semibold flex items-center gap-2">
+                                    <BookOpen className="h-4 w-4 text-muted-foreground" />
+                                    Pelajari Skor Ini
+                                </p>
+                                <p className="text-xs text-muted-foreground">Lihat rincian metode</p>
+                            </div>
+                            <div className="text-right flex-shrink-0 pl-2 text-muted-foreground group-hover:text-primary transition-colors">
+                                <ArrowRight className="h-5 w-5" />
+                            </div>
+                       </CardContent>
                    </Card>
                 </Link>
             </div>

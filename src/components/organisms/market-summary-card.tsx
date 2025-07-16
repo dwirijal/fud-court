@@ -81,10 +81,10 @@ function IndicatorCard({ detail, value }: { detail: typeof indicatorDetails[numb
                                     <detail.icon className="h-4 w-4 text-muted-foreground" />
                                 </div>
                             </div>
-                            <div className="w-full text-left">
+                            <div className="w-full text-left space-y-2">
+                                <p className="text-xs font-medium text-muted-foreground">{detail.name}</p>
                                 <AnimatedNumber to={value} className="text-5xl font-bold tracking-tighter" />
-                                <p className="text-xs font-medium text-muted-foreground mt-1">{detail.name}</p>
-                                <Progress value={value} className="h-1.5 w-full mt-2" />
+                                <Progress value={value} className="h-1.5 w-full mt-1" />
                             </div>
                         </Card>
                     </Link>
@@ -164,7 +164,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
     <div className="space-y-6">
         <Card className="bg-primary/5 border-primary/20 overflow-hidden">
              <CardHeader>
-                <CardTitle className="text-3xl md:text-4xl font-headline">Gambaran Umum Pasar Saat Ini</CardTitle>
+                <CardTitle className="headline-3">Gambaran Umum Pasar Saat Ini</CardTitle>
                 <CardDescription className="text-sm max-w-2xl text-muted-foreground">
                     Mengukur kondisi pasar crypto secara keseluruhan menggunakan 5 indikator gabungan utama.
                 </CardDescription>

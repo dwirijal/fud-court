@@ -182,7 +182,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                     <div className="space-y-2 text-center md:text-left mb-6 md:mb-0">
                        <CardTitle className="text-3xl font-headline">Gambaran Umum Pasar</CardTitle>
                         <CardDescription className="text-lg max-w-md">
-                            Kondisi pasar crypto menggunakan indikator gabungan utama.
+                            Mengukur kondisi pasar crypto secara keseluruhan menggunakan indikator gabungan utama.
                         </CardDescription>
                          <Badge variant="secondary" className="cursor-help flex-shrink-0 mx-auto md:mx-0">
                             <CheckCircle className="h-4 w-4 mr-1.5" />
@@ -230,10 +230,10 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                     })}
                 </TooltipProvider>
                 <Link href="/learn/market-indicators" className="group block">
-                   <Card className="h-full flex flex-col items-center justify-center text-center p-4 bg-muted/50 hover:bg-muted transition-colors">
+                   <Card className="h-full flex flex-col items-center justify-center text-center p-6 bg-muted/50 hover:bg-muted transition-colors">
                        <BookOpen className="h-8 w-8 text-muted-foreground group-hover:text-primary transition-colors" />
-                       <p className="text-sm font-semibold mt-2 text-muted-foreground group-hover:text-primary transition-colors">Pelajari Skor Ini</p>
-                       <p className="text-xs text-muted-foreground">Lihat rincian metode & interpretasi ➜</p>
+                       <p className="text-base font-semibold mt-2 text-foreground group-hover:text-primary transition-colors">Pelajari Skor Ini</p>
+                       <p className="text-sm text-muted-foreground">Lihat rincian metode & interpretasi ➜</p>
                    </Card>
                 </Link>
             </div>

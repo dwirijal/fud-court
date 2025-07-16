@@ -5,7 +5,7 @@ import { Logo } from "@/components/atoms/logo";
 export function Footer() {
   return (
     <footer className="border-t border-border/50 bg-background">
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-12">
           {/* Logo and Description */}
           <div className="md:col-span-4">
@@ -44,7 +44,7 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-border/50 text-center">
+        <div className="mt-8 pt-8 border-t border-border/50 text-center">
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} Fud Court. All Rights Reserved.
           </p>

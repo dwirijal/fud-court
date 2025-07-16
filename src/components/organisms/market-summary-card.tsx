@@ -22,6 +22,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 
 const getActiveColorClass = (interpretation: string) => {
@@ -46,70 +47,48 @@ const formatCurrency = (value: number) => {
   }).format(value);
 };
 
-interface IndicatorDetailSheetProps {
-    name: string;
-    interpretation: string;
-    formula: string;
-    rawData: Record<string, string | number>;
-}
-
-function IndicatorDetailSheet({ name, interpretation, formula, rawData }: IndicatorDetailSheetProps) {
-    return (
-        <Sheet>
-            <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="absolute top-2 right-2 h-7 w-7">
-                    <Info className="h-4 w-4" />
-                    <span className="sr-only">Lihat Detail {name}</span>
-                </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-full md:w-1/2 lg:w-1/3 overflow-y-auto">
-                <SheetHeader>
-                    <SheetTitle>{name}</SheetTitle>
-                    <SheetDescription>
-                        {interpretation}
-                    </SheetDescription>
-                </SheetHeader>
-                <div className="mt-6 space-y-6">
-                    <div>
-                        <h4 className="font-semibold text-sm mb-2 text-muted-foreground uppercase tracking-wider">Data Mentah</h4>
-                        <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm bg-muted p-3 rounded-md">
-                            {Object.entries(rawData).map(([key, value]) => (
-                                <div key={key} className="flex justify-between items-baseline border-b border-border/50 pb-1">
-                                    <span>{key}</span>
-                                    <span className="font-mono font-medium">{value}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                     <div>
-                        <h4 className="font-semibold text-sm mb-2 text-muted-foreground uppercase tracking-wider">Rumus</h4>
-                        <p className="font-mono text-xs bg-muted p-3 rounded-md">{formula}</p>
-                    </div>
-                </div>
-            </SheetContent>
-        </Sheet>
-    )
-}
-
 interface IndicatorCardProps {
     name: string;
     score: number;
     formula: string;
-    interpretation: string;
     rawData: Record<string, string | number>;
     weight: number;
     weightedScore: number;
 }
 
-function IndicatorCard({ name, score, formula, interpretation, rawData, weight, weightedScore }: IndicatorCardProps) {
+function IndicatorCard({ name, score, formula, rawData, weight, weightedScore }: IndicatorCardProps) {
   return (
-    <Card className="flex flex-col h-full relative">
-        <IndicatorDetailSheet name={name} interpretation={interpretation} formula={formula} rawData={rawData} />
-        <CardContent className="p-4 flex flex-col flex-grow justify-between">
-            <p className="text-sm font-semibold text-muted-foreground">{name}</p>
-            <div className="my-auto text-4xl font-mono font-bold py-2">
-                {score}
-            </div>
+    <Card className="flex flex-col h-full">
+      <CardContent className="p-4 flex flex-col flex-grow justify-between relative">
+          <p className="text-sm font-semibold text-muted-foreground">{name}</p>
+          <TooltipProvider>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <div className="my-auto text-4xl font-mono font-bold py-2 cursor-help text-center">
+                        {score}
+                    </div>
+                </TooltipTrigger>
+                <TooltipContent side="top" align="center" className="max-w-xs text-center">
+                    <div className="space-y-3 p-2">
+                        <div>
+                            <h4 className="font-semibold text-sm mb-2 text-muted-foreground uppercase tracking-wider">Data Mentah</h4>
+                            <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm bg-muted p-3 rounded-md">
+                                {Object.entries(rawData).map(([key, value]) => (
+                                    <div key={key} className="flex justify-between items-baseline border-b border-border/50 pb-1">
+                                        <span>{key}</span>
+                                        <span className="font-mono font-medium">{value}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div>
+                            <h4 className="font-semibold text-sm mb-2 text-muted-foreground uppercase tracking-wider">Formula</h4>
+                            <p className="font-mono text-xs bg-muted p-3 rounded-md">{formula}</p>
+                        </div>
+                    </div>
+                </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
             <div>
                 <Separator className="mb-2" />
                 <div className="flex justify-between text-xs text-muted-foreground">
@@ -243,7 +222,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
 
   return (
     <Card className="bg-primary/5 border-primary/20 overflow-hidden">
-        <CardContent className="p-6">
+        <CardHeader className="p-6 pb-0">
             <div className="flex flex-col md:flex-row justify-between items-center gap-6">
                 <div className="space-y-3 text-center md:text-left">
                   <CardTitle className="text-2xl font-headline">
@@ -260,17 +239,20 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                 <div className="text-center md:text-right flex-shrink-0 md:pl-4 flex flex-col items-center md:items-end">
                   <AnimatedNumber to={analysisResult.macroScore} className={cn("text-6xl font-bold font-mono tracking-tighter", activeColorClass)} />
                   <p className={cn("font-semibold text-2xl mb-2", activeColorClass)}>{analysisResult.marketCondition}</p>
-                   <Button variant="link" asChild className="text-muted-foreground hover:text-primary h-auto p-0">
-                      <Link href="/learn/market-indicators" className="flex items-center gap-1">
-                          Pelajari Skor Ini <ArrowRight className="h-4 w-4" />
-                      </Link>
-                   </Button>
                 </div>
             </div>
+        </CardHeader>
+
+        <CardContent className="p-6">
+            <Button variant="link" asChild className="text-muted-foreground hover:text-primary h-auto p-0 -mt-4">
+                <Link href="/learn/market-indicators" className="flex items-center gap-1">
+                    Pelajari Skor Ini <ArrowRight className="h-4 w-4" />
+                </Link>
+            </Button>
         </CardContent>
 
         <CardFooter className="flex-col items-start p-6 pt-0">
-            <Separator className="mb-4" />
+            <Separator className="mb-6" />
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 w-full">
                 {indicators.map((indicator) => (
                     <IndicatorCard

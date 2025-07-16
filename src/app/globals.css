@@ -25,6 +25,9 @@
     --space-4: 2rem;     /* 32px */
     --space-5: 2.5rem;   /* 40px */
     --space-6: 3rem;     /* 48px */
+    --space-8: 4rem;     /* 64px */
+    --space-10: 5rem;    /* 80px */
+
 
     /* Font Families */
     --font-primary: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;

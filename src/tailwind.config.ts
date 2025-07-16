@@ -1,3 +1,4 @@
+
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -10,7 +11,7 @@ export default {
   theme: {
     container: {
       center: true,
-      padding: "2rem",
+      padding: "1rem", // Default padding 16px
       screens: {
         "2xl": "1400px",
       },
@@ -24,37 +25,15 @@ export default {
         headline: ['var(--font-primary)', 'sans-serif'],
         code: ['var(--font-mono)', 'monospace'],
       },
-      fontSize: {
-        'xs': 'var(--text-xs)',
-        'sm': 'var(--text-sm)',
-        'base': 'var(--text-base)',
-        'lg': 'var(--text-lg)',
-        'xl': 'var(--text-xl)',
-        '2xl': 'var(--text-2xl)',
-        '3xl': 'var(--text-3xl)',
-        '4xl': 'var(--text-4xl)',
-        '5xl': 'var(--text-5xl)',
-        '6xl': 'var(--text-6xl)',
-      },
-      fontWeight: {
-        light: 'var(--font-light)',       // 300
-        normal: 'var(--font-regular)',    // 400
-        medium: 'var(--font-medium)',     // 500
-        semibold: 'var(--font-semibold)', // 600
-        bold: 'var(--font-bold)',         // 700
-        extrabold: 'var(--font-extrabold)', // 800
-      },
       spacing: {
-        '1': 'var(--space-1)',
-        '2': 'var(--space-2)',
-        '3': 'var(--space-3)',
-        '4': 'var(--space-4)',
-        '5': 'var(--space-5)',
-        '6': 'var(--space-6)',
-        '7': 'var(--space-7)',
-        '8': 'var(--space-8)',
-        '9': 'var(--space-9)',
-        '10': 'var(--space-10)',
+        '1': 'var(--space-1)', // 8px
+        '2': 'var(--space-2)', // 16px
+        '3': 'var(--space-3)', // 24px
+        '4': 'var(--space-4)', // 32px
+        '5': 'var(--space-5)', // 40px
+        '6': 'var(--space-6)', // 48px
+        '8': 'var(--space-8)', // 64px
+        '10': 'var(--space-10)', // 80px
       },
       colors: {
         // Background colors
@@ -152,13 +131,11 @@ export default {
         '2': 'var(--radius-2)',
         '3': 'var(--radius-3)',
         '4': 'var(--radius-4)',
-        '5': 'var(--radius-5)',
-        '6': 'var(--radius-6)',
         'full': 'var(--radius-full)',
         // Legacy support for ShadCN
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
+        lg: 'var(--radius-3)',
+        md: 'var(--radius-2)',
+        sm: 'var(--radius-1)',
       },
       transitionTimingFunction: {
         'out-expo': 'var(--ease-out-expo)',
@@ -236,12 +213,12 @@ export default {
           width: '100%',
           marginLeft: 'auto',
           marginRight: 'auto',
-          paddingLeft: 'var(--space-2)',
-          paddingRight: 'var(--space-2)',
+          paddingLeft: 'var(--space-4)',
+          paddingRight: 'var(--space-4)',
         },
         '.section-spacing': {
-          paddingTop: 'var(--space-6)',
-          paddingBottom: 'var(--space-6)',
+          paddingTop: 'var(--space-8)',
+          paddingBottom: 'var(--space-8)',
         },
         '.focus-ring:focus': {
           outline: '2px solid var(--accent-primary)',

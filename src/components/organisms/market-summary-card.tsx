@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import anime from 'animejs';
 import type { CombinedMarketData } from '@/types';
 import { Separator } from '../ui/separator';
+import { IndicatorCard } from '../molecules/indicator-card';
 
 const getActiveColorClass = (interpretation: string) => {
     const lowerCaseInterpretation = interpretation.toLowerCase();
@@ -64,80 +65,6 @@ const formatCurrency = (value: number) => {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(value);
-};
-
-const IndicatorCard = ({ index, icon: Icon, name, score, formula, rawData }: {
-  index: number;
-  icon: any;
-  name: string;
-  score: number;
-  formula: string;
-  rawData: Record<string, string | number>;
-}) => {
-  const cardRef = useRef(null);
-  const scoreRef = useRef(null);
-  const detailsRef = useRef(null);
-  const animation = useRef<anime.AnimeInstance | null>(null);
-
-  useEffect(() => {
-    animation.current = anime.timeline({
-      easing: 'easeOutExpo',
-      duration: 400,
-      autoplay: false,
-    });
-
-    animation.current
-      .add({
-        targets: scoreRef.current,
-        translateY: -15,
-        opacity: 0,
-      })
-      .add({
-        targets: detailsRef.current,
-        translateY: [15, 0],
-        opacity: [0, 1],
-      }, '-=300'); // Start details animation slightly before score finishes
-
-  }, []);
-
-  const handleMouseEnter = () => animation.current?.play();
-  const handleMouseLeave = () => animation.current?.reverse();
-  
-  return (
-    <div
-      ref={cardRef}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      className="relative h-24 overflow-hidden rounded-lg border bg-secondary p-4 cursor-pointer group"
-    >
-      {/* Top part with name and icon */}
-      <div className="flex items-center justify-between text-sm font-semibold text-muted-foreground mb-2">
-        <span>{name}</span>
-        <Icon className="h-4 w-4" />
-      </div>
-      
-      {/* Animated content */}
-      <div className="relative h-full">
-        {/* Score - visible by default */}
-        <div ref={scoreRef} className="absolute inset-0 flex items-center justify-center">
-          <p className="text-2xl font-bold font-mono text-foreground">{score}</p>
-        </div>
-        
-        {/* Details - hidden by default */}
-        <div ref={detailsRef} className="absolute inset-0 flex flex-col justify-center items-center opacity-0">
-          <div className="text-xs w-full">
-            {Object.entries(rawData).map(([key, value]) => (
-              <div key={key} className="flex justify-between items-center">
-                <span className="text-muted-foreground">{key}</span>
-                <span className="font-mono text-foreground">{value}</span>
-              </div>
-            ))}
-          </div>
-          <p className="text-xs text-primary/80 font-mono mt-1">{formula}</p>
-        </div>
-      </div>
-    </div>
-  );
 };
 
 interface MarketSummaryCardProps {

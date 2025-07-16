@@ -106,11 +106,9 @@ function IndicatorCard({ name, score, formula, interpretation, rawData, weight, 
     <Card className="flex flex-col h-full relative">
         <IndicatorDetailSheet name={name} interpretation={interpretation} formula={formula} rawData={rawData} />
         <CardContent className="p-4 flex flex-col flex-grow justify-between">
-            <div>
-              <p className="text-sm font-semibold text-muted-foreground">{name}</p>
-              <div className="text-4xl font-mono font-bold my-2">
-                  {score}
-              </div>
+            <p className="text-sm font-semibold text-muted-foreground">{name}</p>
+            <div className="my-auto text-4xl font-mono font-bold py-2">
+                {score}
             </div>
             <div>
                 <Separator className="mb-2" />

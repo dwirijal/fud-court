@@ -1,14 +1,12 @@
 
 import Link from "next/link";
 import { Logo } from "@/components/atoms/logo";
-import { Twitter, Github, Linkedin } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 export function Footer() {
   return (
     <footer className="border-t border-border/50 bg-background">
-      <div className="container mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 gap-12 md:grid-cols-12">
+      <div className="container mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-12">
           {/* Logo and Description */}
           <div className="md:col-span-4">
             <Link href="/" className="flex items-center gap-3 mb-4">
@@ -21,6 +19,9 @@ export function Footer() {
               Clarity in Chaos. Fud Court cuts through market noise with data-driven analysis and unbiased news.
             </p>
           </div>
+
+          {/* Spacer */}
+          <div className="hidden md:block md:col-span-2"></div>
 
           {/* Navigation Links */}
           <div className="md:col-span-2">
@@ -40,31 +41,10 @@ export function Footer() {
             </nav>
           </div>
 
-          {/* Social Links */}
-          <div className="md:col-span-4 text-left md:text-right">
-            <h3 className="font-semibold mb-4 text-foreground">Hubungi Kami</h3>
-            <div className="flex md:justify-end space-x-1">
-              <Button variant="ghost" size="icon" asChild>
-                <a href="#" aria-label="Twitter">
-                  <Twitter className="h-5 w-5" />
-                </a>
-              </Button>
-              <Button variant="ghost" size="icon" asChild>
-                <a href="#" aria-label="GitHub">
-                  <Github className="h-5 w-5" />
-                </a>
-              </Button>
-              <Button variant="ghost" size="icon" asChild>
-                <a href="#" aria-label="LinkedIn">
-                  <Linkedin className="h-5 w-5" />
-                </a>
-              </Button>
-            </div>
-          </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-16 pt-8 border-t border-border/50 text-center">
+        <div className="mt-12 pt-8 border-t border-border/50 text-center">
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} Fud Court. All Rights Reserved.
           </p>

@@ -18,8 +18,8 @@ export default async function Home() {
     <>
       <HeroSection />
       
-      <main className="pt-4">
-        <section className="bg-card/20 border-t border-b border-border">
+      <main>
+        <section className="bg-card/20 border-t border-b border-border py-6 md:py-8">
           <div className="container mx-auto px-4">
             <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
               <h2 className="text-4xl font-extrabold tracking-tight font-headline mb-4">

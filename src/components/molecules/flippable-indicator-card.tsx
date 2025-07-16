@@ -47,13 +47,6 @@ export function FlippableIndicatorCard({
         }
     };
 
-    const handleClick = (e: React.MouseEvent) => {
-        // Prevent click from propagating to parent Link if it exists
-        e.preventDefault();
-        e.stopPropagation();
-        setIsFlipped(!isFlipped);
-    };
-
     return (
         <motion.div
             initial="hidden"
@@ -61,7 +54,8 @@ export function FlippableIndicatorCard({
             viewport={{ once: true, amount: 0.5 }}
             variants={cardVariants}
             className="perspective-1000 h-24"
-            onClick={handleClick}
+            onMouseEnter={() => setIsFlipped(true)}
+            onMouseLeave={() => setIsFlipped(false)}
         >
             <motion.div
                 className="relative h-full w-full preserve-3d"
@@ -110,4 +104,3 @@ export function FlippableIndicatorCard({
         </motion.div>
     );
 }
-

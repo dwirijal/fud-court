@@ -20,15 +20,6 @@ import {
 } from "@/components/ui/navigation-menu";
 
 // Define navigation structure
-interface NavLinkType {
-  label: string;
-  href: string;
-}
-
-const mainNavLinks: NavLinkType[] = [
-  { href: "/", label: "Beranda" },
-];
-
 const marketComponents: { title: string; href: string; description: string }[] = [
   {
     title: "Market Overview",
@@ -184,25 +175,6 @@ export function Header() {
           >
             <NavigationMenu onValueChange={setActiveMenu} >
               <NavigationMenuList>
-                {mainNavLinks.map((item) => (
-                    <NavigationMenuItem key={item.label}>
-                      <NavigationMenuLink asChild>
-                        <Link
-                          href={item.href}
-                          className={cn(
-                            navigationMenuTriggerStyle(),
-                            "bg-transparent hover:bg-accent text-sm font-medium",
-                            pathname === item.href
-                              ? "text-primary"
-                              : "text-foreground/70"
-                          )}
-                        >
-                          {item.label}
-                        </Link>
-                      </NavigationMenuLink>
-                    </NavigationMenuItem>
-                ))}
-                
                 <NavigationMenuItem value="markets">
                     <NavigationMenuLink asChild>
                       <Link

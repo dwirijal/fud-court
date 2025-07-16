@@ -16,42 +16,47 @@ interface IndicatorCardProps {
 }
 
 export function IndicatorCard({ index, icon: Icon, name, score, formula, rawData }: IndicatorCardProps) {
-  const cardRef = useRef(null);
   const scoreContainerRef = useRef(null);
   const detailsContainerRef = useRef(null);
   const animation = useRef<anime.AnimeInstance | null>(null);
 
   useEffect(() => {
-    animation.current = anime.timeline({
-      easing: 'easeOutExpo',
-      duration: 400,
-      autoplay: false,
-    });
+    // Ensure refs are current before creating timeline
+    if (scoreContainerRef.current && detailsContainerRef.current) {
+        animation.current = anime.timeline({
+          easing: 'easeOutExpo',
+          duration: 400,
+          autoplay: false,
+        });
 
-    animation.current
-      .add({
-        targets: scoreContainerRef.current,
-        translateY: -10,
-        opacity: 0,
-      })
-      .add({
-        targets: detailsContainerRef.current,
-        translateY: [10, 0],
-        opacity: [0, 1],
-      }, '-=300');
-
+        animation.current
+          .add({
+            targets: scoreContainerRef.current,
+            translateY: [0, -10],
+            opacity: [1, 0],
+          })
+          .add({
+            targets: detailsContainerRef.current,
+            translateY: [10, 0],
+            opacity: [0, 1],
+          }, '-=300'); // Overlap animations for smoother transition
+    }
   }, []);
 
-  const handleMouseEnter = () => animation.current?.play();
-  const handleMouseLeave = () => animation.current?.reverse();
+  const handleMouseEnter = () => {
+      animation.current?.play();
+  };
+  const handleMouseLeave = () => {
+      animation.current?.reverse();
+  };
   
   return (
     <div
-      ref={cardRef}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       className="relative overflow-hidden rounded-lg border bg-secondary p-4 cursor-pointer group h-24"
     >
+      {/* Container for the visible score */}
       <div ref={scoreContainerRef} className="absolute inset-4 flex flex-col justify-between h-[calc(100%-2rem)]">
         <div className="flex items-center justify-between text-sm font-semibold text-muted-foreground">
           <span>{name}</span>
@@ -60,6 +65,7 @@ export function IndicatorCard({ index, icon: Icon, name, score, formula, rawData
         <p className="text-2xl font-bold font-mono text-foreground">{score}</p>
       </div>
 
+      {/* Container for the hidden details, revealed on hover */}
       <div ref={detailsContainerRef} className="absolute inset-4 flex flex-col justify-center items-center opacity-0 h-[calc(100%-2rem)]">
         <div className="text-xs w-full space-y-1">
           {Object.entries(rawData).map(([key, value]) => (

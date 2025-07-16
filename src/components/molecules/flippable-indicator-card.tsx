@@ -46,7 +46,7 @@ export function FlippableIndicatorCard({
             whileInView="visible"
             viewport={{ once: true, amount: 0.5 }}
             variants={cardVariants}
-            className="perspective-1000 h-24"
+            className="perspective-1000 h-24" // Set a fixed height for consistency
             onMouseEnter={() => setIsFlipped(true)}
             onMouseLeave={() => setIsFlipped(false)}
         >
@@ -75,10 +75,10 @@ export function FlippableIndicatorCard({
                 {/* Card Back */}
                 <div className="absolute w-full h-full backface-hidden [transform:rotateX(180deg)]">
                      <Card className="h-full bg-muted/80 border-primary/20 flex flex-col justify-center p-3 cursor-pointer">
-                        <div className="space-y-2 text-xs w-full">
+                        <div className="space-y-1 text-xs w-full">
                           {Object.entries(rawData).map(([key, value]) => (
-                            <div key={key} className="flex justify-between items-center text-muted-foreground">
-                              <span className="truncate" title={key}>{key}</span>
+                            <div key={key} className="flex justify-between items-baseline border-b border-border/20 pb-1">
+                              <span className="text-muted-foreground truncate" title={key}>{key}</span>
                               <span className="font-mono text-foreground font-semibold">{value}</span>
                             </div>
                           ))}

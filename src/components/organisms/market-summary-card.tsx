@@ -56,7 +56,7 @@ function IndicatorCard({ name, score, formula, rawData, weight, weightedScore }:
         <TooltipProvider>
             <Tooltip>
                 <TooltipTrigger asChild>
-                    <div className="text-4xl font-mono font-bold hover:text-primary transition-colors cursor-help -mx-2 px-2 py-1 rounded-md">
+                    <div className="text-4xl font-mono font-bold hover:text-primary transition-colors cursor-help -mx-2 px-2 py-1 my-2 rounded-md text-center">
                         {score}
                     </div>
                 </TooltipTrigger>
@@ -72,23 +72,27 @@ function IndicatorCard({ name, score, formula, rawData, weight, weightedScore }:
                     </div>
                     <Separator className="my-2 bg-border/50"/>
                      <div className="space-y-2 text-xs w-full">
-                        <h4 className="font-bold text-foreground">Kontribusi Skor</h4>
-                        <div className="flex justify-between items-baseline">
-                            <span className="text-muted-foreground">Bobot</span>
-                            <span className="font-mono text-foreground font-semibold">{(weight * 100).toFixed(0)}%</span>
-                        </div>
-                        <div className="flex justify-between items-baseline">
-                            <span className="text-muted-foreground">Skor Tertimbang</span>
-                            <span className="font-mono text-foreground font-semibold">{weightedScore.toFixed(2)}</span>
-                        </div>
+                        <h4 className="font-bold text-foreground">Formula</h4>
+                         <p className="text-xs text-center font-mono text-primary/80" title={formula}>
+                            {formula}
+                        </p>
                     </div>
-                    <Separator className="my-2 bg-border/50"/>
-                    <p className="text-xs text-center font-mono text-primary/80" title={formula}>
-                        {formula}
-                    </p>
                 </TooltipContent>
             </Tooltip>
         </TooltipProvider>
+
+        <Separator className="mb-2" />
+
+        <div className="flex justify-between text-xs text-muted-foreground">
+            <div className="text-center">
+                <p>Bobot</p>
+                <p className="font-mono font-semibold text-foreground">{(weight * 100).toFixed(0)}%</p>
+            </div>
+            <div className="text-center">
+                <p>Kontribusi</p>
+                <p className="font-mono font-semibold text-foreground">{weightedScore.toFixed(2)}</p>
+            </div>
+        </div>
       </CardContent>
     </Card>
   );

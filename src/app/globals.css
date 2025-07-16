@@ -4,8 +4,8 @@
 @tailwind utilities;
 
 @layer base {
-  /* Import Plus Jakarta Sans font */
-  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+  /* Import Space Grotesk font */
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
   :root {
     /* ===== NEON GLAM DESIGN SYSTEM ===== */
@@ -36,7 +36,7 @@
     --space-16: 4rem;    /* 64px */
 
     /* Font Families */
-    --font-primary: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --font-primary: "Space Grotesk", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     --font-mono: "SF Mono", Monaco, "Roboto Mono", monospace;
 
     /* Animation */

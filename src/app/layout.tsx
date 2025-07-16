@@ -2,16 +2,16 @@
 import type {Metadata} from 'next';
 import './globals.css';
 import { AppLayout } from '@/components/organisms/app-layout';
-import { Plus_Jakarta_Sans } from 'next/font/google';
+import { Space_Grotesk } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GlobalNewsTicker } from '@/components/organisms/global-news-ticker';
 
-const fontSans = Plus_Jakarta_Sans({
+const fontSans = Space_Grotesk({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-primary',
-  weight: ['400', '500', '600', '700', '800']
+  weight: ['400', '500', '600', '700']
 });
 
 export const metadata: Metadata = {

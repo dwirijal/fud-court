@@ -7,19 +7,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { LucideIcon } from 'lucide-react';
 import { AnimatedNumber } from './animated-number';
 
-const formatCurrency = (value: number) => {
-    if (Math.abs(value) < 1) {
-        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 6 }).format(value);
-    }
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', notation: 'compact', compactDisplay: 'short' }).format(value);
-};
-
 interface FlippableIndicatorCardProps {
     index: number;
     icon: LucideIcon;
     name: string;
     score: number;
-    rawData: Record<string, number | string>;
     formula: string;
 }
 
@@ -28,7 +20,6 @@ export function FlippableIndicatorCard({
     icon: Icon,
     name,
     score,
-    rawData,
     formula,
 }: FlippableIndicatorCardProps) {
     const [isFlipped, setIsFlipped] = useState(false);
@@ -58,7 +49,7 @@ export function FlippableIndicatorCard({
         >
             <motion.div
                 className="relative h-full w-full preserve-3d"
-                animate={{ rotateY: isFlipped ? 180 : 0 }}
+                animate={{ rotateX: isFlipped ? 180 : 0 }}
                 transition={{ duration: 0.6, ease: 'easeInOut' }}
             >
                 {/* Card Front */}
@@ -79,7 +70,7 @@ export function FlippableIndicatorCard({
                 </div>
 
                 {/* Card Back */}
-                <div className="absolute w-full h-full backface-hidden [transform:rotateY(180deg)]">
+                <div className="absolute w-full h-full backface-hidden [transform:rotateX(180deg)]">
                      <Card className="h-full bg-muted/80 border-primary/20 flex flex-col justify-center items-center p-3 cursor-pointer">
                         <p className="text-xs text-center font-mono text-primary/80" title={formula}>
                             {formula}

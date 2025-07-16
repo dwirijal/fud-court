@@ -52,7 +52,7 @@ export function NewsCard({ post }: { post: Post }) {
         <Card className="h-full flex flex-col bg-card/60 backdrop-blur-md transition-shadow duration-300 hover:shadow-xl">
           {showImage && (
             <CardHeader className="p-0">
-              <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
+<div className="relative h-[24rem] w-full overflow-hidden rounded-t-lg">
                 <Image
                   src={post.feature_image || "https://placehold.co/600x400"}
                   alt={post.title}

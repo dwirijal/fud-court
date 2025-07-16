@@ -52,6 +52,34 @@ SMA(n) = (P₁ + P₂ + ... + Pₙ) / n
 EMA(n) = (Price × (2/(n+1))) + (Previous EMA × (1-(2/(n+1))))
 Price Signal = (EMA(12) - EMA(26)) / EMA(26) × 100
 
+## 10. Volatility Index
+**Formula:**
+`Volatility = sqrt(Σ(price_change_i^2) / n) * 100`
+- `price_change_i`: Perubahan harga untuk periode ke-i.
+- `n`: Jumlah periode.
+
+## 11. Liquidity Ratio
+**Formula:**
+`Liquidity Ratio = (Volume 24 Jam / Kapitalisasi Pasar) * 100`
+
+## 12. Market Sentiment Score
+**Formula:**
+`Raw Score = ((PriceChange * 0.3) + (VolumeChange * 0.2) + (MarketCapChange * 0.2) + (DominanceChange * 0.3)) / 4`
+`Normalized Score = (Raw Score + 100) / 2`
+
+## 13. Support/Resistance Levels (Fibonacci Based)
+**Formula:**
+`Support = CurrentPrice * (1 - ((ATH - CurrentPrice) / ATH) * 0.618)`
+`Resistance = CurrentPrice * (1 + ((CurrentPrice - ATL) / (ATH - ATL)) * 0.382)`
+
+## 14. Price Signal (MACD-like)
+**Formula:**
+`Price Signal = (EMA(12) - EMA(26)) / EMA(26) * 100`
+
+## 15. Sharpe Ratio
+**Formula:**
+`Sharpe Ratio = (Rata-rata Return - Tingkat Bebas Risiko) / Standar Deviasi Return`
+
 ## Validation and Error Handling
 ### 1. Input Validation
 function validateMarketData(data) { ... }

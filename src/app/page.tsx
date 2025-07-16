@@ -1,16 +1,15 @@
-
 import { getPosts } from "@/lib/ghost";
 import { fetchMarketData, getTopCoins } from "@/lib/coingecko";
 import { MarketCarousel } from "@/components/molecules/market-carousel";
 import { HeroSection } from "@/components/organisms/hero-section";
 import { MarketSummaryCard } from "@/components/organisms/market-summary-card";
 import { MarketStatsCard } from "@/components/organisms/market-stats-card";
+import Link from "next/link";
 
 export default async function Home() {
   // Fetch all data concurrently for better performance
-  // News fetching is now handled in RootLayout for the global ticker
-  const [cryptoData, marketData] = await Promise.all([
-    getTopCoins(10),
+  const [topCoins, marketData] = await Promise.all([
+    getTopCoins(1, 50),
     fetchMarketData(),
   ]);
 
@@ -35,7 +34,12 @@ export default async function Home() {
           </div>
 
           <div className="mt-16">
-            <MarketCarousel data={cryptoData || []} />
+            <MarketCarousel data={topCoins || []} />
+            <div className="flex justify-center mt-4">
+              <Link href="/markets" className="text-primary hover:underline">
+                Lihat Semua
+              </Link>
+            </div>
           </div>
         </div>
       </section>

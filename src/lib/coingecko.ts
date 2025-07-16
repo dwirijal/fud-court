@@ -1,22 +1,48 @@
 'use server';
 
-import type { CryptoData, FearGreedData, MarketAnalysisInput, MarketStats, TopCoinForAnalysis, CombinedMarketData, CGMarket, DetailedCoinData } from '@/types';
+import type { CryptoData, FearGreedData, DetailedCoinData, CombinedMarketData, TopCoinForAnalysis } from '@/types';
 import { supabase } from './supabase'; // Import Supabase client
+import { getFearAndGreedIndex } from './fear-greed'; // Import Fear & Greed API function
 
-const API_BASE_URL = 'https://api.coingecko.com/api/v3';
-const CACHE_DURATION_SECONDS = 300; // 5 minutes for crypto data
+const COINGECKO_API_BASE_URL = 'https://api.coingecko.com/api/v3';
+
+interface CoinGeckoGlobalData {
+  data: {
+    active_cryptocurrencies: number;
+    upcoming_icos: number;
+    ongoing_icos: number;
+    ended_icos: number;
+    markets: number;
+    total_market_cap: { [key: string]: number };
+    total_volume: { [key: string]: number };
+    market_cap_percentage: { [key: string]: number };
+    market_cap_change_percentage_24h_usd: number;
+    updated_at: number;
+  };
+}
+
+async function getGlobalMarketData(): Promise<CoinGeckoGlobalData['data'] | null> {
+  try {
+    const response = await fetch(`${COINGECKO_API_BASE_URL}/global`, { next: { revalidate: 3600 } }); // Cache for 1 hour
+    if (!response.ok) {
+      console.error(`CoinGecko Global API error: ${response.status} ${response.statusText}`);
+      return null;
+    }
+    const data: CoinGeckoGlobalData = await response.json();
+    return data.data;
+  } catch (error) {
+    console.error('An error occurred while fetching global market data from CoinGecko:', error);
+    return null;
+  }
+}
 
 /**
- * Fetches a list of top cryptocurrencies, prioritizing a fresh cache, then CoinGecko API,
- * and falling back to a stale cache if the API fails.
+ * Fetches a list of top cryptocurrencies from the Supabase database.
  * @param page The page number to fetch.
  * @param per_page The number of coins per page.
- * @returns A promise that resolves to an array of CryptoData objects or null on complete failure.
+ * @returns A promise that resolves to an array of CryptoData objects or null on failure.
  */
 export async function getTopCoins(page: number = 1, per_page: number = 20): Promise<CryptoData[] | null> {
-    let cachedData: CryptoData[] | null = null;
-
-    // 1. Try to fetch from Supabase cache first
     try {
         const { data, error } = await supabase
             .from('crypto_data')
@@ -25,163 +51,70 @@ export async function getTopCoins(page: number = 1, per_page: number = 20): Prom
             .range((page - 1) * per_page, page * per_page - 1);
 
         if (error) {
-            console.error('Supabase cache read error:', error);
-        } else if (data && data.length > 0) {
-            cachedData = data as CryptoData[];
-            const lastUpdated = new Date(cachedData[0].last_updated).getTime();
-            const now = new Date().getTime();
-
-            // If cache is fresh, return it immediately
-            if ((now - lastUpdated) / 1000 < CACHE_DURATION_SECONDS) {
-                console.log('Serving top coins from fresh Supabase cache.');
-                return cachedData;
-            }
-            console.log('Supabase cache is stale. Will fetch from API.');
-        }
-    } catch (e) {
-        console.error('An unexpected error occurred during cache fetch:', e);
-    }
-
-    // 2. If cache is stale or empty, fetch from CoinGecko in USD
-    try {
-        console.log('Fetching top coins from CoinGecko API in USD.');
-        const url = `${API_BASE_URL}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${per_page}&page=${page}&sparkline=true&price_change_percentage=1h,24h,7d`;
-        const response = await fetch(url, { next: { revalidate: 300 }});
-
-        if (!response.ok) {
-            throw new Error(`API error: ${response.status} ${response.statusText}`);
+            console.error('Error fetching top coins from Supabase:', error);
+            return null;
         }
 
-        const data: CGMarket[] = await response.json();
-
-        const mappedData: CryptoData[] = data.map((coin) => ({
-            id: coin.id ?? '',
-            symbol: coin.symbol ?? '',
-            name: coin.name ?? '',
-            image: coin.image ?? '',
-            current_price: coin.current_price ?? 0,
-            market_cap: coin.market_cap ?? 0,
-            market_cap_rank: coin.market_cap_rank ?? 0,
-            total_volume: coin.total_volume ?? 0,
-            high_24h: coin.high_24h ?? 0,
-            low_24h: coin.low_24h ?? 0,
-            price_change_percentage_1h_in_currency: coin.price_change_percentage_1h_in_currency ?? 0,
-            price_change_percentage_24h_in_currency: coin.price_change_percentage_24h_in_currency ?? 0,
-            price_change_percentage_7d_in_currency: coin.price_change_percentage_7d_in_currency ?? 0,
-            sparkline_in_7d: coin.sparkline_in_7d,
-            ath: coin.ath ?? 0,
-            ath_market_cap: coin.ath_market_cap ?? null,
-            last_updated: coin.last_updated,
-        }));
-        
-        // 3. Asynchronously store/update cache in Supabase. Don't block the response.
-        supabase.from('crypto_data').upsert(mappedData, { onConflict: 'id' })
-            .then(({ error: upsertError }) => {
-                if (upsertError) {
-                    console.error('Error upserting crypto_data into cache:', upsertError.message);
-                } else {
-                    console.log('Successfully updated Supabase cache with new CoinGecko data.');
-                }
-            });
-        
-        return mappedData;
-
+        return data as CryptoData[] || null;
     } catch (error) {
-        console.error('Failed to fetch from CoinGecko API:', error);
-        // 4. If API fails, return stale cache data as a last resort
-        if (cachedData) {
-            console.warn('CoinGecko API failed, serving stale data from Supabase cache.');
-            return cachedData;
-        }
-        // Return null only if both cache and API fail
+        console.error('An unexpected error occurred while fetching top coins from Supabase:', error);
         return null;
     }
 }
 
 /**
- * Fetches Fear & Greed data for today.
+ * Fetches Fear & Greed data for today from the Supabase database.
  * @returns A promise resolving to today's F&G data or null on failure.
  */
+/*
 export async function fetchFearGreedData(): Promise<{ today: FearGreedData | null }> {
     try {
-        const url = 'https://api.alternative.me/fng/?limit=1';
-        const response = await fetch(url, { next: { revalidate: 3600 }}); // Revalidate F&G every hour
-        if (!response.ok) {
-            console.error(`Fear & Greed API error: ${response.status} ${response.statusText}`);
+        const { data, error } = await supabase.from('fear_and_greed').select('*').limit(1);
+        if (error) {
+            console.error('Error fetching Fear & Greed data from Supabase:', error);
             return { today: null };
         }
-        const result = await response.json();
-
-        if (!result?.data || !Array.isArray(result.data) || result.data.length === 0) {
-            console.warn("Fear & Greed data is empty or invalid format.");
-            return { today: null };
-        }
-    
-        const todayData = result.data[0];
+        const todayData = data[0];
         return {
             today: todayData ? {
-                value: parseInt(todayData.value, 10),
+                value: todayData.value,
                 value_classification: todayData.value_classification,
             } : null,
         };
     } catch (error) {
-        console.error('An error occurred while fetching Fear & Greed data:', error);
+        console.error('An error occurred while fetching Fear & Greed data from Supabase:', error);
         return { today: null };
     }
 }
+*/
 
 /**
- * Fetches all necessary data for the market analysis and stats cards.
- * This function is designed to be resilient and return default values on failure.
- * @returns A promise that resolves to a combined object of MarketAnalysisInput and MarketStats or null if critical data fails.
+ * Fetches detailed coin data for a given coin ID from the Supabase database.
+ * @param id The ID of the coin to fetch.
+ * @returns A promise that resolves to the detailed coin data or null on failure.
  */
 export async function getDetailedCoinData(id: string): Promise<DetailedCoinData | null> {
     try {
-        const url = `${API_BASE_URL}/coins/${id}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`;
-        const response = await fetch(url, { next: { revalidate: 300 }});
+        const { data, error } = await supabase
+            .from('crypto_data')
+            .select('*')
+            .eq('id', id)
+            .single();
 
-        if (!response.ok) {
-            console.error(`CoinGecko API error for ${id}: ${response.status} ${response.statusText}`);
+        if (error) {
+            console.error(`Error fetching detailed coin data for ${id} from Supabase:`, error);
             return null;
         }
 
-        const data = await response.json();
-
-        return {
-            id: data.id,
-            symbol: data.symbol,
-            name: data.name,
-            image: data.image,
-            description: data.description,
-            links: data.links,
-            current_price: data.market_data?.current_price?.usd,
-            market_cap: data.market_data?.market_cap?.usd,
-            total_volume: data.market_data?.total_volume?.usd,
-            high_24h: data.market_data?.high_24h?.usd,
-            low_24h: data.market_data?.low_24h?.usd,
-            ath: data.market_data?.ath?.usd,
-            ath_date: data.market_data?.ath_date?.usd,
-            atl: data.market_data?.atl?.usd,
-            atl_date: data.market_data?.atl_date?.usd,
-            circulating_supply: data.market_data?.circulating_supply,
-            total_supply: data.market_data?.total_supply,
-            max_supply: data.market_data?.max_supply,
-            price_change_percentage_24h: data.market_data?.price_change_percentage_24h,
-            price_change_percentage_7d: data.market_data?.price_change_percentage_7d,
-            price_change_percentage_30d: data.market_data?.price_change_percentage_30d,
-            price_change_percentage_1y: data.market_data?.price_change_percentage_1y,
-            sentiment_votes_up_percentage: data.sentiment_votes_up_percentage,
-            sentiment_votes_down_percentage: data.sentiment_votes_down_percentage,
-            genesis_date: data.genesis_date,
-        };
+        return data as DetailedCoinData || null;
     } catch (error) {
-        console.error(`An error occurred while fetching detailed coin data for ${id}:`, error);
+        console.error(`An unexpected error occurred while fetching detailed coin data for ${id} from Supabase:`, error);
         return null;
     }
 }
 
 /**
- * Fetches the exchange rate from USD to a target currency.
+ * Fetches the exchange rate from USD to a target currency from the Supabase database.
  * @param targetCurrency The currency to convert to (e.g., 'idr', 'eur', 'xau').
  * @returns A promise that resolves to the exchange rate or null on failure.
  */
@@ -191,33 +124,134 @@ export async function getExchangeRate(targetCurrency: string): Promise<number | 
     }
 
     try {
-        // Fetch Bitcoin price in both USD and targetCurrency
-        const url = `${API_BASE_URL}/simple/price?ids=bitcoin&vs_currencies=usd,${targetCurrency.toLowerCase()}`;
-        const response = await fetch(url, { next: { revalidate: 3600 }}); // Cache for 1 hour
+        const { data, error } = await supabase
+            .from('exchange_rates')
+            .select('rate')
+            .eq('currency', targetCurrency.toLowerCase())
+            .single();
 
-        if (!response.ok) {
-            console.error(`CoinGecko exchange rate API error for ${targetCurrency}: ${response.status} ${response.statusText}`);
+        if (error) {
+            console.error(`Error fetching exchange rate for ${targetCurrency} from Supabase:`, JSON.stringify(error, null, 2));
             return null;
         }
 
-        const data = await response.json();
-        
-        if (data && data.bitcoin && data.bitcoin.usd && data.bitcoin[targetCurrency.toLowerCase()]) {
-            const btcUsdPrice = data.bitcoin.usd;
-            const btcTargetPrice = data.bitcoin[targetCurrency.toLowerCase()];
-
-            if (btcUsdPrice > 0 && btcTargetPrice > 0) {
-                // Calculate exchange rate: (BTC price in targetCurrency) / (BTC price in USD)
-                // This gives us the value of 1 USD in the target currency.
-                return btcTargetPrice / btcUsdPrice;
-            } else {
-                console.warn(`Invalid BTC prices for exchange rate: BTC/USD=${btcUsdPrice}, BTC/${targetCurrency}=${btcTargetPrice}`);
-                return null;
-            }
-        }
-        return null;
+        return data?.rate || null;
     } catch (error) {
-        console.error(`An error occurred while fetching exchange rate for ${targetCurrency}:`, error);
+        console.error(`An unexpected error occurred while fetching exchange rate for ${targetCurrency} from Supabase:`, error);
+        return null;
+    }
+}
+
+/**
+ * Fetches the current USD prices for EURC, IDRX, and PAXG from CoinGecko
+ * and updates the public.exchange_rates table in Supabase.
+ */
+export async function updateCryptoExchangeRates(): Promise<void> {
+    const cryptoIds = ['eurc', 'idrx', 'pax-gold'];
+    const vsCurrency = 'usd';
+    const url = `${COINGECKO_API_BASE_URL}/simple/price?ids=${cryptoIds.join(',')}&vs_currencies=${vsCurrency}`;
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            console.error(`CoinGecko API error fetching crypto prices: ${response.status} ${response.statusText}`);
+            return;
+        }
+        const data = await response.json();
+
+        const updates = [];
+        if (data.eurc && data.eurc.usd) {
+            updates.push({ currency: 'eurc', rate: data.eurc.usd });
+        }
+        if (data.idrx && data.idrx.usd) {
+            updates.push({ currency: 'idrx', rate: data.idrx.usd });
+        }
+        if (data['pax-gold'] && data['pax-gold'].usd) {
+            updates.push({ currency: 'paxg', rate: data['pax-gold'].usd }); // Store as 'paxg'
+        }
+
+        if (updates.length > 0) {
+            const { error } = await supabase
+                .from('exchange_rates')
+                .upsert(updates, { onConflict: 'currency' });
+
+            if (error) {
+                console.error('Error upserting crypto exchange rates to Supabase:', JSON.stringify(error, null, 2));
+            } else {
+                console.log('Successfully updated crypto exchange rates in Supabase.');
+            }
+        } else {
+            console.warn('No crypto exchange rate data received from CoinGecko to update.');
+        }
+
+    } catch (error) {
+        console.error('An unexpected error occurred while updating crypto exchange rates:', error);
+    }
+}
+
+
+/**
+ * Mengambil data pasar gabungan: market cap, volume, dominance, top coins, dan fear & greed index.
+ * Return sesuai tipe CombinedMarketData.
+ */
+export async function fetchMarketData(): Promise<CombinedMarketData | null> {
+    try {
+        const globalData = await getGlobalMarketData();
+        if (!globalData) {
+            console.error('Failed to fetch global market data.');
+            return null;
+        }
+
+        const fearAndGreed = await getFearAndGreedIndex();
+        if (!fearAndGreed) {
+            console.error('Failed to fetch Fear & Greed data.');
+            return null;
+        }
+
+        const { data: topCoinsData, error: topCoinsError } = await supabase
+            .from('crypto_data')
+            .select('*')
+            .order('market_cap_rank', { ascending: true })
+            .limit(20);
+        if (topCoinsError) {
+            console.error('Error fetching top coins from Supabase:', topCoinsError);
+            return null;
+        }
+        const topCoins = topCoinsData;
+
+        const result: CombinedMarketData = {
+            totalMarketCap: globalData.total_market_cap?.usd ?? 0,
+            maxHistoricalMarketCap: 0, // Not available from CoinGecko /global endpoint
+            totalVolume24h: globalData.total_volume?.usd ?? 0,
+            avg30DayVolume: 0, // Not available from CoinGecko /global endpoint
+            btcDominance: globalData.market_cap_percentage?.btc ?? 0,
+            fearAndGreedIndex: parseInt(fearAndGreed.value),
+            topCoins: topCoins.map(coin => ({
+                name: coin.name,
+                symbol: coin.symbol,
+                current_price: coin.current_price,
+                ath: coin.ath,
+                price_change_percentage_24h: coin.price_change_percentage_24h_in_currency,
+            })),
+            btcMarketCap: globalData.total_market_cap?.btc ?? 0, // Assuming this is available
+            ethMarketCap: globalData.total_market_cap?.eth ?? 0, // Assuming this is available
+            solMarketCap: 0, // Not available from CoinGecko /global endpoint
+            stablecoinMarketCap: 0, // Not available from CoinGecko /global endpoint
+            ethDominance: globalData.market_cap_percentage?.eth ?? 0, // Assuming this is available
+            solDominance: 0, // Not available from CoinGecko /global endpoint
+            stablecoinDominance: 0, // Not available from CoinGecko /global endpoint
+            maxHistoricalMarketCapDate: '', // Not available from CoinGecko /global endpoint
+            topCoinsForAnalysis: topCoins.map(coin => ({
+                name: coin.name,
+                symbol: coin.symbol,
+                current_price: coin.current_price,
+                ath: coin.ath,
+                price_change_percentage_24h: coin.price_change_percentage_24h_in_currency,
+            })),
+        };
+        return result;
+    } catch (err) {
+        console.error('fetchMarketData error:', err);
         return null;
     }
 }
@@ -373,69 +407,4 @@ export async function rateLimitedCalculation<T, R>(calculation: (data: T) => R, 
         queue.push({ resolve, data });
         executeNext(); // Try to execute immediately if possible
     });
-}
-
-/**
- * Mengambil data pasar gabungan: market cap, volume, dominance, top coins, dan fear & greed index.
- * Return sesuai tipe CombinedMarketData.
- */
-export async function fetchMarketData(): Promise<CombinedMarketData | null> {
-    try {
-        // 1. Fetch global market data
-        const globalRes = await fetch(`${API_BASE_URL}/global`, { next: { revalidate: 300 } });
-        if (!globalRes.ok) throw new Error('Failed to fetch global market data');
-        const globalData = await globalRes.json();
-        const g = globalData.data;
-
-        // 2. Fetch top coins (20 teratas)
-        const topCoins = await getTopCoins(1, 20) || [];
-        // Untuk analisis, ambil field yang diperlukan saja
-        const topCoinsForAnalysis = topCoins.map(coin => ({
-            name: coin.name,
-            symbol: coin.symbol,
-            current_price: coin.current_price,
-            ath: coin.ath,
-            price_change_percentage_24h: coin.price_change_percentage_24h_in_currency ?? null,
-        }));
-
-        // 3. Fetch Fear & Greed Index
-        const fg = await fetchFearGreedData();
-        const fearAndGreedIndex = fg.today?.value ?? 50;
-
-        // 4. Rata-rata volume 30 hari (jika ada, fallback ke total_volume)
-        // CoinGecko global tidak menyediakan avg30DayVolume, pakai total_volume_24h sebagai fallback
-        const avg30DayVolume = g.total_volume?.usd ?? 0;
-
-        // 5. Tanggal maxHistoricalMarketCap (jika ada, fallback ke tanggal hari ini)
-        const maxHistoricalMarketCapDate = new Date().toISOString();
-
-        // 6. Gabungkan ke CombinedMarketData
-        const result: CombinedMarketData = {
-            // MarketAnalysisInput
-            totalMarketCap: g.total_market_cap?.usd ?? 0,
-            maxHistoricalMarketCap: g.total_market_cap?.usd ?? 0, // fallback sama, jika tidak ada histori
-            totalVolume24h: g.total_volume?.usd ?? 0,
-            avg30DayVolume,
-            btcDominance: g.market_cap_percentage?.btc ?? 0,
-            fearAndGreedIndex,
-            topCoins: topCoinsForAnalysis,
-            // MarketStats
-            btcMarketCap: g.market_cap_percentage?.btc ? (g.total_market_cap?.usd ?? 0) * (g.market_cap_percentage.btc / 100) : 0,
-            ethMarketCap: g.market_cap_percentage?.eth ? (g.total_market_cap?.usd ?? 0) * (g.market_cap_percentage.eth / 100) : 0,
-            solMarketCap: g.market_cap_percentage?.sol ? (g.total_market_cap?.usd ?? 0) * (g.market_cap_percentage.sol / 100) : 0,
-            stablecoinMarketCap: g.total_market_cap?.usdt ?? 0,
-            btcDominance: g.market_cap_percentage?.btc ?? 0,
-            ethDominance: g.market_cap_percentage?.eth ?? 0,
-            solDominance: g.market_cap_percentage?.sol ?? 0,
-            stablecoinDominance: g.market_cap_percentage?.usdt ?? 0,
-            maxHistoricalMarketCap: g.total_market_cap?.usd ?? 0,
-            // Extra
-            topCoinsForAnalysis,
-            maxHistoricalMarketCapDate,
-        };
-        return result;
-    } catch (err) {
-        console.error('fetchMarketData error:', err);
-        return null;
-    }
 }

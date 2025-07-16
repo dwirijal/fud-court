@@ -47,7 +47,7 @@ export function NewsTable({ posts: initialPosts }: NewsTableProps) {
     return () => {
       if (loaderRef.current) observer.unobserve(loaderRef.current);
     };
-  }, [loadMore, loading, hasMore]);
+  }, [loadMore, loading, hasMore, loaderRef]);
 
   return (
     <div className="w-full overflow-x-auto">

@@ -258,7 +258,7 @@ export default function DesignSystemPage() {
                 Bitcoin Reaches New All-Time High Amid Institutional Adoption
               </h3>
               <p className="news-item-excerpt">
-                The world's largest cryptocurrency has surged to unprecedented levels as major institutions
+                The world&apos;s largest cryptocurrency has surged to unprecedented levels as major institutions
                 continue to add Bitcoin to their balance sheets, signaling growing mainstream acceptance.
               </p>
               <div className="news-item-meta">
@@ -275,7 +275,7 @@ export default function DesignSystemPage() {
                 Ethereum 2.0 Staking Rewards Attract Record Investment
               </h3>
               <p className="news-item-excerpt">
-                Ethereum's proof-of-stake consensus mechanism continues to draw significant investment
+                Ethereum&apos;s proof-of-stake consensus mechanism continues to draw significant investment
                 as validators seek attractive yields in the current market environment.
               </p>
               <div className="news-item-meta">

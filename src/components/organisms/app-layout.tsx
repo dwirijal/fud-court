@@ -3,10 +3,11 @@
 
 import { usePathname } from 'next/navigation';
 import { Header } from '@/components/organisms/header';
+import { MobileBottomNav } from '@/components/organisms/mobile-bottom-nav';
 import { Footer } from '@/components/organisms/footer';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
-import { GlobalNewsTicker } from './global-news-ticker';
+import { cn } from '@/lib/utils';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -20,10 +21,10 @@ export function AppLayout({ children }: AppLayoutProps) {
     <ThemeProvider
       attribute="class"
       defaultTheme="dark"
-      enableSystem
+      enableSystem={false}
       disableTransitionOnChange
     >
-      <div className="flex min-h-screen flex-col">
+      <div className={cn("flex min-h-screen flex-col", isLoginPage ? "" : "pb-16 md:pb-0")}>
         {isLoginPage ? (
           children
         ) : (
@@ -31,6 +32,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             <Header />
             <main className="flex-1">{children}</main>
             <Footer />
+            <MobileBottomNav />
           </>
         )}
       </div>

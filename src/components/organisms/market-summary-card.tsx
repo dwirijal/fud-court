@@ -75,19 +75,17 @@ function IndicatorCard({ detail, value }: { detail: typeof indicatorDetails[numb
             <Tooltip>
                 <TooltipTrigger asChild>
                     <Link href={`/markets#${detail.valueKey}`} className="group block h-full">
-                        <Card className="flex flex-col h-full hover:bg-muted/50 transition-colors">
-                            <CardContent className="p-3 flex flex-col flex-grow justify-between gap-2">
-                                <div className="flex flex-col items-start gap-1">
-                                    <div className="bg-muted p-1 rounded-full w-fit">
-                                        <detail.icon className="h-4 w-4 text-muted-foreground" />
-                                    </div>
-                                    <p className="text-xs font-medium text-muted-foreground">{detail.name}</p>
+                        <Card className="flex flex-col h-full hover:bg-muted/50 transition-colors aspect-square justify-between p-3">
+                            <div className="flex items-center justify-between">
+                                <div className="bg-muted p-1 rounded-full w-fit">
+                                    <detail.icon className="h-4 w-4 text-muted-foreground" />
                                 </div>
-                                <div className="w-full text-left">
-                                    <AnimatedNumber to={value} className="text-5xl font-bold tracking-tighter" />
-                                    <Progress value={value} className="h-1.5 w-full mt-1" />
-                                </div>
-                            </CardContent>
+                                <p className="text-xs font-medium text-muted-foreground">{detail.name}</p>
+                            </div>
+                            <div className="w-full text-right">
+                                <AnimatedNumber to={value} className="text-5xl font-bold tracking-tighter" />
+                                <Progress value={value} className="h-1.5 w-full mt-1" />
+                            </div>
                         </Card>
                     </Link>
                 </TooltipTrigger>
@@ -137,20 +135,18 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
 
   if (isLoading) {
     return (
-        <Card>
-            <CardHeader>
-                <Skeleton className="h-8 w-3/4 mb-2" />
-                <Skeleton className="h-6 w-1/2" />
-            </CardHeader>
-            <CardContent className="p-6">
-                <Skeleton className="h-[120px] w-full mb-4" />
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                        <Skeleton key={i} className="h-24 w-full" />
-                    ))}
-                </div>
-            </CardContent>
-        </Card>
+      <div className="space-y-6">
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-3/4 mb-2" />
+            <Skeleton className="h-6 w-1/2" />
+          </div>
+          <Skeleton className="h-[120px] w-full mb-4" />
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              {Array.from({ length: 5 }).map((_, i) => (
+                  <Skeleton key={i} className="h-24 w-full aspect-square" />
+              ))}
+          </div>
+      </div>
     );
   }
 
@@ -169,53 +165,52 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
   const activeColorClass = getActiveColorClass(analysisResult.marketCondition);
 
   return (
-    <Card>
-        <CardHeader>
-            <CardTitle className="text-3xl md:text-4xl font-headline">Gambaran Umum Pasar Saat Ini</CardTitle>
-            <CardDescription className="text-lg md:text-xl max-w-2xl">
+    <div className="space-y-6">
+        <div>
+            <h2 className="text-3xl md:text-4xl font-headline">Gambaran Umum Pasar Saat Ini</h2>
+            <p className="text-lg md:text-xl max-w-2xl text-muted-foreground">
                 Mengukur kondisi pasar crypto secara keseluruhan menggunakan 5 indikator gabungan utama.
-            </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-            <Card className="bg-primary/5 border-primary/20 overflow-hidden">
-               <div className="flex flex-col md:flex-row justify-between items-center p-6">
-                    <div className="space-y-2 text-center md:text-left mb-6 md:mb-0">
-                         <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Badge variant="secondary" className="cursor-help flex-shrink-0 mx-auto md:mx-0">
-                                        <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
-                                        Akurasi Model: {analysisResult.confidenceScore}%
-                                    </Badge>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <p className="max-w-xs text-center">Skor kepercayaan berdasarkan kelengkapan dan validitas data input.</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
-                         <Button asChild variant="link" className="text-muted-foreground p-0 h-auto flex text-sm">
-                            <Link href="/markets">
-                                Pelajari cara kerja skor ini <ArrowRight className="h-4 w-4 ml-1" />
-                            </Link>
-                        </Button>
-                    </div>
-                    <div className="text-center md:text-right flex-shrink-0 pl-4">
-                        <AnimatedNumber to={analysisResult.macroScore} className={cn("text-7xl md:text-8xl font-bold tracking-tighter", activeColorClass)} />
-                        <p className={cn("font-semibold text-2xl md:text-3xl", activeColorClass)}>{analysisResult.marketCondition}</p>
-                    </div>
+            </p>
+        </div>
+        
+        <Card className="bg-primary/5 border-primary/20 overflow-hidden">
+            <div className="flex flex-col md:flex-row justify-between items-center p-6">
+                <div className="space-y-2 text-center md:text-left mb-6 md:mb-0">
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Badge variant="secondary" className="cursor-help flex-shrink-0 mx-auto md:mx-0">
+                                    <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
+                                    Akurasi Model: {analysisResult.confidenceScore}%
+                                </Badge>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p className="max-w-xs text-center">Skor kepercayaan berdasarkan kelengkapan dan validitas data input.</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                    <Button asChild variant="link" className="text-muted-foreground p-0 h-auto flex text-sm">
+                        <Link href="/markets">
+                            Pelajari cara kerja skor ini <ArrowRight className="h-4 w-4 ml-1" />
+                        </Link>
+                    </Button>
                 </div>
-            </Card>
-
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                {indicatorDetails.map((detail) => (
-                    <IndicatorCard
-                        key={detail.name}
-                        detail={detail}
-                        value={analysisResult.components[detail.valueKey]}
-                    />
-                ))}
+                <div className="text-center md:text-right flex-shrink-0 pl-4">
+                    <AnimatedNumber to={analysisResult.macroScore} className={cn("text-7xl md:text-8xl font-bold tracking-tighter", activeColorClass)} />
+                    <p className={cn("font-semibold text-2xl md:text-3xl", activeColorClass)}>{analysisResult.marketCondition}</p>
+                </div>
             </div>
-        </CardContent>
-    </Card>
+        </Card>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            {indicatorDetails.map((detail) => (
+                <IndicatorCard
+                    key={detail.name}
+                    detail={detail}
+                    value={analysisResult.components[detail.valueKey]}
+                />
+            ))}
+        </div>
+    </div>
   );
 }

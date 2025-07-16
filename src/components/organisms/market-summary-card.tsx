@@ -209,16 +209,16 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                         return (
                             <Tooltip key={indicator.id}>
                                 <TooltipTrigger asChild>
-                                    <Link href={`/markets#${indicator.id}`} className="group block">
+                                    <Link href={`/markets#${indicator.id}`} className="group block h-full">
                                         <Card className="flex flex-col h-full">
-                                            <CardContent className="p-4 flex flex-1 items-center justify-between gap-2">
-                                                <div className="flex-grow space-y-1 min-w-0">
-                                                    <p className="text-sm font-semibold flex items-center gap-2 truncate">
-                                                        {indicator.icon && <indicator.icon className="h-4 w-4 text-muted-foreground flex-shrink-0" />}
-                                                        <span className="truncate">{indicator.name}</span>
+                                            <CardContent className="p-4 flex flex-col flex-grow justify-between gap-2">
+                                                <div>
+                                                    <p className="text-sm font-semibold flex items-center gap-2 text-muted-foreground">
+                                                        {indicator.icon && <indicator.icon className="h-4 w-4 flex-shrink-0" />}
+                                                        <span>{indicator.name}</span>
                                                     </p>
                                                 </div>
-                                                <div className="text-right flex-shrink-0">
+                                                <div className="text-right">
                                                     <AnimatedNumber to={indicator.value} className="text-2xl font-mono font-bold" delay={200 + index * 100} />
                                                     <AnimatedProgress value={indicator.value} className="h-1.5 w-[50px] mt-1 ml-auto" indicatorClassName={cn(getProgressColorClass(indicator.value))} />
                                                 </div>
@@ -240,4 +240,3 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
     </Card>
   );
 }
-

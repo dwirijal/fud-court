@@ -73,7 +73,7 @@ export function FlippableIndicatorCard({
                 </div>
 
                 {/* Card Back */}
-                <div className="absolute w-full h-full backface-hidden [transform:rotateX(180deg)]">
+                 <div className="absolute w-full h-full backface-hidden [transform:rotateX(180deg)]">
                      <Card className="h-full bg-muted/80 border-primary/20 flex flex-col justify-center p-3 cursor-pointer">
                         <div className="space-y-1 text-xs w-full">
                           {Object.entries(rawData).map(([key, value]) => (

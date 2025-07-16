@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 import anime from 'animejs';
 import type { CombinedMarketData } from '@/types';
 import { Separator } from '../ui/separator';
-import { FlippableIndicatorCard } from '../molecules/flippable-indicator-card';
+import { IndicatorCard } from '../molecules/indicator-card';
 
 const getActiveColorClass = (interpretation: string) => {
     const lowerCaseInterpretation = interpretation.toLowerCase();
@@ -183,7 +183,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
             <Separator className="mb-4" />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
                 {indicators.map((indicator, index) => (
-                    <FlippableIndicatorCard
+                    <IndicatorCard
                         key={indicator.name}
                         index={index}
                         icon={indicator.icon}

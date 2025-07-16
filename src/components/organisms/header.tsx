@@ -9,7 +9,6 @@ import { Logo } from "@/components/atoms/logo";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
-import { ProfileMenu } from "@/components/molecules/profile-menu";
 
 const navLinks = [
   { href: "/markets", label: "Pasar" },
@@ -50,11 +49,6 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
-          {/* Profile Menu for Desktop and Mobile */}
-          <div className="hidden md:block">
-            <ProfileMenu />
-          </div>
-
           {/* Mobile Navigation Trigger */}
           <div className="md:hidden">
             <Sheet>
@@ -93,9 +87,6 @@ export function Header() {
                       </Link>
                     ))}
                   </nav>
-                  <div className="mt-auto">
-                    <ProfileMenu />
-                  </div>
                 </div>
               </SheetContent>
             </Sheet>

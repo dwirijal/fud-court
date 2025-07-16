@@ -17,7 +17,7 @@ export default async function Home() {
       <HeroSection />
 
       <section className="py-12 md:py-16 border-y bg-background/50">
-        <div className="container space-y-8">
+        <div className="container space-y-7">
           <div className="text-center max-w-3xl mx-auto">
             <h2 className="text-4xl font-bold tracking-tight mb-4">
               Gambaran Pasar

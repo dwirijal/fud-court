@@ -55,7 +55,7 @@ export function NftCard() {
       className="group relative w-full max-w-xs cursor-pointer"
     >
       <Card className="relative overflow-hidden rounded-xl bg-background/80 backdrop-blur-sm transition-shadow duration-300 group-hover:shadow-2xl">
-        <CardContent className="p-4">
+        <CardContent className="p-5">
           <motion.div
             style={{ transform: 'translateZ(20px)' }}
             className="aspect-[4/5] relative w-full overflow-hidden rounded-lg"

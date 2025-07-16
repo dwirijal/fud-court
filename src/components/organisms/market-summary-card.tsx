@@ -142,7 +142,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
         <Card>
             <CardContent className="p-6">
                 <Skeleton className="h-[120px] w-full mb-6" />
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {Array.from({ length: 6 }).map((_, i) => (
                         <Skeleton key={i} className="h-24 w-full" />
                     ))}
@@ -229,11 +229,11 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                         );
                     })}
                 </TooltipProvider>
-                <Link href="/learn/market-indicators" className="group block">
-                   <Card className="h-full flex flex-col items-center justify-center text-center p-6 bg-muted/50 hover:bg-muted transition-colors">
-                       <BookOpen className="h-8 w-8 text-muted-foreground group-hover:text-primary transition-colors" />
-                       <p className="text-base font-semibold mt-2 text-foreground group-hover:text-primary transition-colors">Pelajari Skor Ini</p>
-                       <p className="text-sm text-muted-foreground">Lihat rincian metode & interpretasi ➜</p>
+                 <Link href="/learn/market-indicators" className="group block">
+                   <Card className="h-full flex flex-col items-center justify-center text-center p-4 bg-muted/50 hover:bg-muted transition-colors">
+                       <BookOpen className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
+                       <p className="text-sm font-semibold mt-2 text-foreground group-hover:text-primary transition-colors">Pelajari Skor Ini</p>
+                       <p className="text-xs text-muted-foreground">Lihat rincian metode & interpretasi ➜</p>
                    </Card>
                 </Link>
             </div>

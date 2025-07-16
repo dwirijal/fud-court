@@ -6,7 +6,6 @@ import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { LucideIcon } from 'lucide-react';
 import { AnimatedNumber } from './animated-number';
-import { cn } from '@/lib/utils';
 
 interface FlippableIndicatorCardProps {
     index: number;

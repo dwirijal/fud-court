@@ -118,35 +118,18 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
   
   const indicators = [
       { name: "Kapitalisasi Pasar", value: analysisResult.components.marketCapScore, icon: Scale,
-        rawData: {
-            "Kap. Pasar Saat Ini": marketData.totalMarketCap,
-            "Kap. Pasar Puncak": marketData.maxHistoricalMarketCap,
-        },
         formula: "(Saat Ini / Puncak) * 100"
       },
       { name: "Volume", value: analysisResult.components.volumeScore, icon: Zap,
-        rawData: {
-            "Volume 24j": marketData.totalVolume24h,
-            "Rata-rata Volume 30h": marketData.avg30DayVolume,
-        },
         formula: "(Saat Ini / Rata-rata) * 50"
        },
       { name: "Fear & Greed", value: analysisResult.components.fearGreedScore, icon: AlertTriangle,
-        rawData: {
-            "Nilai Indeks": marketData.fearAndGreedIndex
-        },
         formula: "Nilai indeks langsung"
        },
       { name: "Jarak ATH", value: analysisResult.components.athScore, icon: TrendingUp,
-        rawData: {
-             "Koin Teratas": `${marketData.topCoinsForAnalysis.length} aset`,
-        },
         formula: "100 - Rata-rata jarak dari ATH"
        },
       { name: "Sebaran Pasar", value: analysisResult.components.marketBreadthScore, icon: Package,
-         rawData: {
-            "Aset Naik": `${marketData.topCoinsForAnalysis.filter(c => (c.price_change_percentage_24h || 0) > 0).length} / ${marketData.topCoinsForAnalysis.length}`,
-        },
         formula: "(Naik / Total) * 100"
        },
   ];
@@ -186,12 +169,11 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                         icon={indicator.icon}
                         name={indicator.name}
                         score={indicator.value}
-                        rawData={indicator.rawData}
                         formula={indicator.formula}
                     />
                 ))}
                  <Link href="/learn/market-indicators" className="group block h-full">
-                   <Card className="h-full hover:bg-muted/50 transition-colors">
+                   <Card className="h-24 hover:bg-muted/50 transition-colors">
                         <CardContent className="p-4 flex flex-1 items-center justify-between gap-4 h-full">
                             <div className="space-y-1 flex-grow">
                                 <p className="text-sm font-semibold flex items-center gap-2">

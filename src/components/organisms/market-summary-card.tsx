@@ -67,33 +67,6 @@ const AnimatedNumber = ({ to, className, delay = 0 }: { to: number, className?: 
     return <p className={className}>{value}</p>;
 }
 
-const AnimatedProgress = ({ value, className, indicatorClassName }: { value: number, className?: string, indicatorClassName?: string }) => {
-    const [progressValue, setProgressValue] = useState(0);
-    const hasAnimated = useRef(false);
-    const target = useRef({ value: 0 }).current;
-
-    useEffect(() => {
-        if (hasAnimated.current) {
-            setProgressValue(value);
-            return;
-        }
-        hasAnimated.current = true;
-        
-        anime({
-            targets: target,
-            value: value,
-            duration: 1200,
-            delay: 400,
-            easing: 'easeOutCubic',
-            update: () => {
-                setProgressValue(target.value);
-            }
-        });
-    }, [value, target]);
-    
-    return <Progress value={progressValue} className={className} indicatorClassName={cn(indicatorClassName)} />
-}
-
 interface MarketSummaryCardProps {
     marketData: CombinedMarketData | null;
 }
@@ -189,15 +162,15 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                             <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
                             Akurasi Model: {analysisResult.confidenceScore}%
                         </Badge>
-                    </div>
-                    <div className="text-center md:text-right flex-shrink-0 pl-4">
-                        <AnimatedNumber to={analysisResult.macroScore} className={cn("text-7xl md:text-8xl font-bold tracking-tighter", activeColorClass)} />
-                        <p className={cn("font-semibold text-2xl md:text-3xl", activeColorClass)}>{analysisResult.marketCondition}</p>
                         <Button variant="link" asChild className="text-muted-foreground mt-2">
                             <Link href="/markets">
                                 Pelajari cara kerja skor ini <ArrowRight className="h-4 w-4 ml-1" />
                             </Link>
                         </Button>
+                    </div>
+                    <div className="text-center md:text-right flex-shrink-0 pl-4">
+                        <AnimatedNumber to={analysisResult.macroScore} className={cn("text-7xl md:text-8xl font-bold tracking-tighter", activeColorClass)} />
+                        <p className={cn("font-semibold text-2xl md:text-3xl", activeColorClass)}>{analysisResult.marketCondition}</p>
                     </div>
                 </div>
             </Card>
@@ -222,7 +195,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                                                 </div>
                                                 <div className="text-right">
                                                     <AnimatedNumber to={indicator.value} className="text-3xl font-mono font-bold" delay={200 + index * 100} />
-                                                    <AnimatedProgress value={indicator.value} className="h-1.5 w-full mt-2" indicatorClassName={cn(getProgressColorClass(indicator.value))} />
+                                                     <Progress value={indicator.value} className={cn("h-1.5 w-full mt-2", getProgressColorClass(indicator.value))}  />
                                                 </div>
                                             </CardContent>
                                         </Card>

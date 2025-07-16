@@ -18,7 +18,7 @@ export default async function Home() {
     <>
       <HeroSection />
       
-      <main className="pt-6">
+      <main className="pt-4">
         <section className="bg-card/20 border-t border-b border-border">
           <div className="container mx-auto px-4">
             <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16">

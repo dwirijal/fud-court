@@ -34,7 +34,7 @@ export function NewsTicker({ posts }: NewsTickerProps) {
             href={`/news/${post.slug}`}
             className="mx-6 text-sm text-muted-foreground hover:text-primary transition-colors flex-shrink-0"
           >
-            <span className="font-semibold text-foreground/80">{post.primary_tag?.name || 'News'}:</span> {post.title}
+            {post.title}
           </Link>
         ))}
       </div>

@@ -7,14 +7,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { MarketAnalysisOutput } from '@/types';
 import { analyzeMarketSentiment } from '@/ai/flows/market-analysis-flow';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { AlertTriangle, CheckCircle, BookOpen, Scale, Zap, TrendingUp, Package, ArrowRight, Info, LucideIcon } from 'lucide-react';
+import { AlertTriangle, CheckCircle, ArrowRight, Info } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { cn } from '@/lib/utils';
 import type { CombinedMarketData } from '@/types';
 import { Separator } from '../ui/separator';
 import { AnimatedNumber } from '../molecules/animated-number';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-
+import { Button } from '@/components/ui/button';
 
 const getActiveColorClass = (interpretation: string) => {
     const lowerCaseInterpretation = interpretation.toLowerCase();
@@ -39,42 +39,47 @@ const formatCurrency = (value: number) => {
 };
 
 interface IndicatorCardProps {
-    icon: LucideIcon;
     name: string;
     score: number;
     formula: string;
     rawData: Record<string, string | number>;
 }
 
-function IndicatorCard({ icon: Icon, name, score, formula, rawData }: IndicatorCardProps) {
+function IndicatorCard({ name, score, formula, rawData }: IndicatorCardProps) {
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Card className="hover:bg-muted/50 transition-colors cursor-help aspect-[3/4]">
-            <CardContent className="p-4 flex flex-col items-center justify-center text-center gap-2 h-full">
-              <Icon className="h-6 w-6 text-muted-foreground mb-2" />
-              <p className="text-sm font-semibold">{name}</p>
-              <p className="text-3xl font-mono font-bold">{score}</p>
-            </CardContent>
-          </Card>
-        </TooltipTrigger>
-        <TooltipContent className="w-64 p-3">
-            <div className="space-y-2 text-xs w-full">
-              {Object.entries(rawData).map(([key, value]) => (
-                <div key={key} className="flex justify-between items-baseline">
-                  <span className="text-muted-foreground truncate" title={key}>{key}</span>
-                  <span className="font-mono text-foreground font-semibold">{value}</span>
-                </div>
-              ))}
-            </div>
-            <Separator className="my-2 bg-border/50"/>
-            <p className="text-xs text-center font-mono text-primary/80" title={formula}>
-                {formula}
-            </p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Card className="flex flex-col h-full">
+      <CardContent className="p-4 flex flex-col flex-grow justify-between relative">
+        <div>
+          <p className="text-sm font-semibold text-muted-foreground">{name}</p>
+          <p className="text-4xl font-mono font-bold">{score}</p>
+        </div>
+        <div className="absolute top-2 right-2">
+            <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:bg-muted/50">
+                            <Info className="h-4 w-4" />
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent className="w-64 p-3">
+                        <div className="space-y-2 text-xs w-full">
+                            {Object.entries(rawData).map(([key, value]) => (
+                                <div key={key} className="flex justify-between items-baseline">
+                                <span className="text-muted-foreground truncate" title={key}>{key}</span>
+                                <span className="font-mono text-foreground font-semibold">{value}</span>
+                                </div>
+                            ))}
+                        </div>
+                        <Separator className="my-2 bg-border/50"/>
+                        <p className="text-xs text-center font-mono text-primary/80" title={formula}>
+                            {formula}
+                        </p>
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -119,7 +124,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
         <Card>
             <CardContent className="p-6">
                 <Skeleton className="h-[120px] w-full mb-6" />
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                     {Array.from({ length: 5 }).map((_, i) => (
                         <Skeleton key={i} className="h-32 w-full" />
                     ))}
@@ -144,23 +149,23 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
   const risingTokens = marketData.topCoins.filter(c => (c.price_change_percentage_24h || 0) > 0).length;
 
   const indicators = [
-      { name: "Kapitalisasi Pasar", value: analysisResult.components.marketCapScore, icon: Scale,
+      { name: "Kapitalisasi Pasar", value: analysisResult.components.marketCapScore,
         formula: "(Cap / Peak) * 100",
         rawData: { "Kap. Pasar Saat Ini": formatCurrency(marketData.totalMarketCap), "Kap. Pasar Puncak": formatCurrency(marketData.maxHistoricalMarketCap) },
       },
-      { name: "Volume", value: analysisResult.components.volumeScore, icon: Zap,
+      { name: "Volume", value: analysisResult.components.volumeScore,
         formula: "(Vol / Avg) * 50",
         rawData: { "Volume 24j": formatCurrency(marketData.totalVolume24h), "Rata-rata 30h": formatCurrency(marketData.avg30DayVolume) },
        },
-      { name: "Fear & Greed", value: analysisResult.components.fearGreedScore, icon: Info,
+      { name: "Fear & Greed", value: analysisResult.components.fearGreedScore,
         formula: "Indeks Fear & Greed",
         rawData: { "Nilai Indeks": marketData.fearAndGreedIndex },
        },
-      { name: "Jarak ATH", value: analysisResult.components.athScore, icon: TrendingUp,
+      { name: "Jarak ATH", value: analysisResult.components.athScore,
         formula: "100 - Avg. ATH Distance",
         rawData: { "Koin Teratas": `${marketData.topCoins.length} aset` },
        },
-      { name: "Sebaran Pasar", value: analysisResult.components.marketBreadthScore, icon: Package,
+      { name: "Sebaran Pasar", value: analysisResult.components.marketBreadthScore,
         formula: "(Aset Naik / Total) * 100",
         rawData: { "Aset Naik": `${risingTokens} / ${marketData.topCoins.length}` },
        },
@@ -187,9 +192,11 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                 <div className="text-center md:text-right flex-shrink-0 md:pl-4 flex flex-col items-center md:items-end">
                   <AnimatedNumber to={analysisResult.macroScore} className={cn("text-6xl font-bold font-mono tracking-tighter", activeColorClass)} />
                   <p className={cn("font-semibold text-2xl mb-2", activeColorClass)}>{analysisResult.marketCondition}</p>
-                  <Link href="/learn/market-indicators" className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
-                      Pelajari selengkapnya <ArrowRight className="h-4 w-4" />
-                  </Link>
+                   <Button variant="link" asChild className="text-muted-foreground hover:text-primary h-auto p-0">
+                      <Link href="/learn/market-indicators" className="flex items-center gap-1">
+                          Pelajari Skor Ini <ArrowRight className="h-4 w-4" />
+                      </Link>
+                   </Button>
                 </div>
             </div>
         </CardContent>
@@ -200,7 +207,6 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                 {indicators.map((indicator, index) => (
                     <IndicatorCard
                         key={indicator.name}
-                        icon={indicator.icon}
                         name={indicator.name}
                         score={indicator.value}
                         formula={indicator.formula}

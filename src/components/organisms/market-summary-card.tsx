@@ -75,9 +75,9 @@ function IndicatorCard({ detail, value }: { detail: typeof indicatorDetails[numb
             <Tooltip>
                 <TooltipTrigger asChild>
                     <Link href={`/markets#${detail.valueKey}`} className="group block h-full">
-                        <Card className="flex flex-col h-full hover:bg-muted/50 transition-colors aspect-square justify-between p-3">
+                        <Card className="flex flex-col h-full hover:bg-muted/50 transition-colors aspect-square justify-between p-4">
                            <div className="flex items-center justify-between">
-                                <div className="bg-muted p-1 rounded-full w-fit">
+                                <div className="bg-muted p-1.5 rounded-full w-fit">
                                     <detail.icon className="h-4 w-4 text-muted-foreground" />
                                 </div>
                             </div>
@@ -139,7 +139,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
           <Skeleton className="h-[220px] w-full mb-4" />
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
               {Array.from({ length: 5 }).map((_, i) => (
-                  <Skeleton key={i} className="h-24 w-full aspect-square" />
+                  <Skeleton key={i} className="h-32 w-full aspect-square" />
               ))}
           </div>
       </div>
@@ -163,15 +163,15 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
   return (
     <div className="space-y-6">
         <Card className="bg-primary/5 border-primary/20 overflow-hidden">
-             <CardHeader>
+            <CardHeader>
                 <CardTitle className="headline-3">Gambaran Umum Pasar Saat Ini</CardTitle>
-                <CardDescription className="text-sm max-w-2xl text-muted-foreground">
+                <CardDescription className="text-sm max-w-2xl">
                     Mengukur kondisi pasar crypto secara keseluruhan menggunakan 5 indikator gabungan utama.
                 </CardDescription>
             </CardHeader>
-            <CardContent>
-                <div className="flex flex-col md:flex-row justify-between items-center">
-                    <div className="space-y-2 text-center md:text-left mb-6 md:mb-0">
+             <CardContent>
+                <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div className="space-y-2 text-center md:text-left">
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
@@ -191,7 +191,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                             </Link>
                         </Button>
                     </div>
-                    <div className="text-center md:text-right flex-shrink-0 pl-4">
+                    <div className="text-center md:text-right flex-shrink-0">
                         <AnimatedNumber to={analysisResult.macroScore} className={cn("text-7xl md:text-8xl font-bold tracking-tighter", activeColorClass)} />
                         <p className={cn("font-semibold text-2xl md:text-3xl", activeColorClass)}>{analysisResult.marketCondition}</p>
                     </div>

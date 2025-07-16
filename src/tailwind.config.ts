@@ -37,6 +37,10 @@ export default {
         '8': 'var(--space-8)',
         '9': 'var(--space-9)',
         '10': 'var(--space-10)',
+        '11': 'var(--space-11)',
+        '12': 'var(--space-12)',
+        '14': 'var(--space-14)',
+        '16': 'var(--space-16)',
       },
       colors: {
         // Background colors
@@ -141,7 +145,7 @@ export default {
         sm: 'var(--radius-1)',
       },
       transitionTimingFunction: {
-        'out-expo': 'var(--ease-out-expo)',
+        'out-expo': 'var(--ease-out-quart)',
         'out-circ': 'var(--ease-out-circ)',
         'out-quart': 'var(--ease-out-quart)',
         'in-out-quart': 'var(--ease-in-out-quart)',
@@ -220,8 +224,8 @@ export default {
           paddingRight: 'var(--space-4)',
         },
         '.section-spacing': {
-          paddingTop: 'var(--space-8)',
-          paddingBottom: 'var(--space-8)',
+          paddingTop: 'var(--space-16)',
+          paddingBottom: 'var(--space-16)',
         },
         '.focus-ring:focus': {
           outline: '2px solid var(--accent-primary)',

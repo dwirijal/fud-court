@@ -10,7 +10,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { AlertTriangle, CheckCircle, ArrowRight, Scale, Zap, TrendingUp, Package } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { cn } from '@/lib/utils';
-import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import {
   Tooltip,
@@ -71,11 +70,11 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
   const [error, setError] = useState<string | null>(null);
 
   const indicatorDetails = [
-    { id: "market-cap-explanation", name: "Kapitalisasi Pasar", summary: "Seberapa Dekat Pasar dengan Puncaknya?" },
-    { id: "volume-explanation", name: "Volume", summary: "Seberapa Aktif Pasar Hari Ini?" },
-    { id: "fear-greed-explanation", name: "Fear & Greed", summary: "Mengukur Rasa Takut atau Serakah Investor" },
-    { id: "ath-explanation", name: "Jarak ATH", summary: "Seberapa Jauh dari Puncak?" },
-    { id: "market-breadth-explanation", name: "Sebaran Pasar", summary: "Apakah Pasar Bergerak Secara Luas?" },
+    { name: "Kapitalisasi Pasar", summary: "Seberapa Dekat Pasar dengan Puncaknya?", icon: Scale },
+    { name: "Volume", summary: "Seberapa Aktif Pasar Hari Ini?", icon: Zap },
+    { name: "Fear & Greed", summary: "Mengukur Rasa Takut atau Serakah Investor", icon: AlertTriangle },
+    { name: "Jarak ATH", summary: "Seberapa Jauh dari Puncak?", icon: TrendingUp },
+    { name: "Sebaran Pasar", summary: "Apakah Pasar Bergerak Secara Luas?", icon: Package },
   ];
 
   useEffect(() => {
@@ -132,30 +131,32 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
   }
   
   const indicators = [
-      { name: "Kapitalisasi Pasar", value: analysisResult.components.marketCapScore, id: "market-cap-explanation", icon: Scale },
-      { name: "Volume", value: analysisResult.components.volumeScore, id: "volume-explanation", icon: Zap },
-      { name: "Fear & Greed", value: analysisResult.components.fearGreedScore, id: "fear-greed-explanation", icon: AlertTriangle },
-      { name: "Jarak ATH", value: analysisResult.components.athScore, id: "ath-explanation", icon: TrendingUp },
-      { name: "Sebaran Pasar", value: analysisResult.components.marketBreadthScore, id: "market-breadth-explanation", icon: Package },
+      { name: "Kapitalisasi Pasar", value: analysisResult.components.marketCapScore, id: "market-cap-explanation" },
+      { name: "Volume", value: analysisResult.components.volumeScore, id: "volume-explanation" },
+      { name: "Fear & Greed", value: analysisResult.components.fearGreedScore, id: "fear-greed-explanation" },
+      { name: "Jarak ATH", value: analysisResult.components.athScore, id: "ath-explanation" },
+      { name: "Sebaran Pasar", value: analysisResult.components.marketBreadthScore, id: "market-breadth-explanation" },
   ];
   
   const activeColorClass = getActiveColorClass(analysisResult.marketCondition);
 
   return (
     <Card>
-        <CardContent className="space-y-4 p-6">
+        <CardHeader>
+            <CardTitle className="text-3xl md:text-4xl font-headline">Gambaran Umum Pasar Saat Ini</CardTitle>
+            <CardDescription className="text-lg md:text-xl max-w-md">
+                Mengukur kondisi pasar crypto secara keseluruhan menggunakan indikator gabungan utama.
+            </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
             <Card className="bg-primary/5 border-primary/20 overflow-hidden">
                <div className="flex flex-col md:flex-row justify-between items-center p-6">
-                    <div className="space-y-2 text-center md:text-left mb-4 md:mb-0">
-                       <CardTitle className="text-3xl md:text-4xl font-headline">Gambaran Umum Pasar Saat Ini</CardTitle>
-                        <CardDescription className="text-lg md:text-xl max-w-md">
-                            Mengukur kondisi pasar crypto secara keseluruhan menggunakan indikator gabungan utama.
-                        </CardDescription>
+                    <div className="space-y-2 text-center md:text-left mb-6 md:mb-0">
                          <Badge variant="secondary" className="cursor-help flex-shrink-0 mx-auto md:mx-0">
                             <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
                             Akurasi Model: {analysisResult.confidenceScore}%
                         </Badge>
-                        <Button variant="link" asChild className="text-muted-foreground p-0 h-auto">
+                        <Button variant="link" asChild className="text-muted-foreground p-0 h-auto flex">
                             <Link href="/markets">
                                 Pelajari cara kerja skor ini <ArrowRight className="h-4 w-4 ml-1" />
                             </Link>
@@ -168,26 +169,26 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                 </div>
             </Card>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 <TooltipProvider>
                     {indicators.map((indicator, index) => {
-                        const detail = indicatorDetails.find(d => d.id === indicator.id);
+                        const detail = indicatorDetails.find(d => d.name === indicator.name);
                         return (
                             <Tooltip key={indicator.id}>
                                 <TooltipTrigger asChild>
                                     <Link href={`/markets#${indicator.id}`} className="group block h-full">
-                                        <Card className="flex flex-col h-full">
-                                            <CardContent className="p-3 flex flex-1 items-center justify-between gap-2">
-                                                <div className="flex items-center gap-2 min-w-0">
-                                                    {indicator.icon && 
+                                        <Card className="flex flex-col h-full hover:bg-muted/50 transition-colors">
+                                            <CardContent className="p-4 flex flex-col flex-grow justify-between gap-4">
+                                                <div className="flex items-center gap-3">
+                                                    {detail?.icon && (
                                                         <div className="bg-muted p-2 rounded-full">
-                                                            <indicator.icon className="h-4 w-4 text-muted-foreground" />
+                                                            <detail.icon className="h-4 w-4 text-muted-foreground" />
                                                         </div>
-                                                    }
-                                                    <p className="text-sm font-medium text-muted-foreground truncate">{indicator.name}</p>
+                                                    )}
+                                                    <p className="text-sm font-medium text-muted-foreground">{indicator.name}</p>
                                                 </div>
-                                                <div className="text-right flex-shrink-0">
-                                                    <AnimatedNumber to={indicator.value} className="text-2xl font-mono font-bold" delay={200 + index * 100} />
+                                                <div className="text-right">
+                                                    <AnimatedNumber to={indicator.value} className="text-3xl font-mono font-bold" delay={200 + index * 100} />
                                                 </div>
                                             </CardContent>
                                         </Card>

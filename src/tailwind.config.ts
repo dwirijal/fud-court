@@ -1,4 +1,3 @@
-
 import type {Config} from 'tailwindcss';
 
 const config: Config = {
@@ -54,6 +53,7 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ['var(--font-primary)', 'sans-serif'],
+        headline: ['var(--font-primary)', 'sans-serif'],
         mono: 'var(--font-mono)',
       },
       fontWeight: {
@@ -139,7 +139,7 @@ const config: Config = {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
-        'fadeInUp': 'fadeInUp 0.5s cubic-bezier(0.25, 1, 0.5, 1)',
+        'fadeInUp': 'fadeInUp 0.5s ease-out',
         'skeleton': 'skeleton 1.5s ease-in-out infinite',
         'pricePulse': 'pricePulse 0.6s ease-in-out',
         'marquee': 'marquee 60s linear infinite',

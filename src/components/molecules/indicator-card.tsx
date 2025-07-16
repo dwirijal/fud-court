@@ -20,7 +20,7 @@ export function IndicatorCard({ index, icon: Icon, name, score, formula, rawData
   const cardRef = useRef<HTMLDivElement>(null);
   const scoreRef = useRef<HTMLDivElement>(null);
   const detailsRef = useRef<HTMLDivElement>(null);
-  
+
   useEffect(() => {
     const cardElement = cardRef.current;
     if (!cardElement) return;
@@ -57,20 +57,18 @@ export function IndicatorCard({ index, icon: Icon, name, score, formula, rawData
 
   return (
     <Card ref={cardRef} className="h-24 overflow-hidden relative group cursor-pointer">
-      <CardContent className="p-4 h-full flex flex-col justify-between">
+      <CardContent className="p-4 h-full flex flex-col justify-center">
         {/* Front Side: Visible by default */}
-        <div ref={scoreRef} className="absolute inset-4">
-          <div className="flex items-center justify-between text-sm text-muted-foreground">
-            <div className="flex items-center gap-2 font-semibold">
+        <div ref={scoreRef} className="absolute inset-4 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
               <Icon className="h-4 w-4" />
               <span>{name}</span>
-            </div>
           </div>
-          <p className="text-3xl font-bold font-mono text-foreground mt-2">{score}</p>
+          <p className="text-3xl font-bold font-mono text-foreground">{score}</p>
         </div>
 
         {/* Back Side: Hidden by default, revealed on hover */}
-        <div ref={detailsRef} className="absolute inset-4 opacity-0">
+        <div ref={detailsRef} className="absolute inset-4 opacity-0 flex flex-col justify-center">
           <div className="text-xs w-full space-y-1">
             {Object.entries(rawData).map(([key, value]) => (
               <div key={key} className="flex justify-between items-baseline">

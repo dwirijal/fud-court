@@ -1,19 +1,20 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { MarketAnalysisOutput } from '@/types';
 import { analyzeMarketSentiment } from '@/ai/flows/market-analysis-flow';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { AlertTriangle, CheckCircle, BookOpen, Scale, Zap, TrendingUp, Package, ArrowRight } from 'lucide-react';
+import { AlertTriangle, CheckCircle, BookOpen, Scale, Zap, TrendingUp, Package, ArrowRight, Info } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { cn } from '@/lib/utils';
-import anime from 'animejs';
 import type { CombinedMarketData } from '@/types';
 import { Separator } from '../ui/separator';
-import { IndicatorCard } from '../molecules/indicator-card';
+import { AnimatedNumber } from '../molecules/animated-number';
+import { FlippableIndicatorCard } from '../molecules/flippable-indicator-card';
+
 
 const getActiveColorClass = (interpretation: string) => {
     const lowerCaseInterpretation = interpretation.toLowerCase();
@@ -25,36 +26,6 @@ const getActiveColorClass = (interpretation: string) => {
     }
     return 'text-muted-foreground';
 };
-
-const AnimatedNumber = ({ to, className, delay = 0 }: { to: number, className?: string, delay?: number }) => {
-    const [value, setValue] = useState(0);
-    const hasAnimated = useRef(false);
-    const target = useRef({ value: 0 }).current;
-
-    useEffect(() => {
-        if (hasAnimated.current && value === to) return;
-        
-        if (hasAnimated.current) {
-            target.value = value;
-        }
-        
-        hasAnimated.current = true;
-        
-        anime({
-            targets: target,
-            value: to,
-            round: 1,
-            duration: 1200,
-            delay: delay,
-            easing: 'easeOutCubic',
-            update: () => {
-                setValue(target.value);
-            }
-        });
-    }, [to, delay, target, value]);
-
-    return <p className={className}>{value}</p>;
-}
 
 const formatCurrency = (value: number) => {
   return new Intl.NumberFormat('en-US', {
@@ -140,7 +111,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
         formula: "(Vol / Avg) * 50",
         rawData: { "Volume 24j": formatCurrency(marketData.totalVolume24h), "Rata-rata 30h": formatCurrency(marketData.avg30DayVolume) },
        },
-      { name: "Fear & Greed", value: analysisResult.components.fearGreedScore, icon: AlertTriangle,
+      { name: "Fear & Greed", value: analysisResult.components.fearGreedScore, icon: Info,
         formula: "Indeks Fear & Greed",
         rawData: { "Nilai Indeks": marketData.fearAndGreedIndex },
        },
@@ -183,7 +154,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
             <Separator className="mb-4" />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
                 {indicators.map((indicator, index) => (
-                    <IndicatorCard
+                    <FlippableIndicatorCard
                         key={indicator.name}
                         index={index}
                         icon={indicator.icon}

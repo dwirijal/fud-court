@@ -25,16 +25,16 @@ export default {
         code: ['var(--font-mono)', 'monospace'],
       },
       fontSize: {
-        'xs': 'var(--text-xs)',     // 10.24px
-        'sm': 'var(--text-sm)',     // 12.8px
-        'base': 'var(--text-base)', // 16px
-        'lg': 'var(--text-lg)',     // 20px
-        'xl': 'var(--text-xl)',     // 25px
-        '2xl': 'var(--text-2xl)',   // 31.25px
-        '3xl': 'var(--text-3xl)',   // 39px
-        '4xl': 'var(--text-4xl)',   // 48.8px
-        '5xl': 'var(--text-5xl)',   // 61px
-        '6xl': 'var(--text-6xl)',   // 76.3px
+        'xs': 'var(--text-xs)',
+        'sm': 'var(--text-sm)',
+        'base': 'var(--text-base)',
+        'lg': 'var(--text-lg)',
+        'xl': 'var(--text-xl)',
+        '2xl': 'var(--text-2xl)',
+        '3xl': 'var(--text-3xl)',
+        '4xl': 'var(--text-4xl)',
+        '5xl': 'var(--text-5xl)',
+        '6xl': 'var(--text-6xl)',
       },
       fontWeight: {
         light: 'var(--font-light)',       // 300
@@ -45,16 +45,16 @@ export default {
         extrabold: 'var(--font-extrabold)', // 800
       },
       spacing: {
-        '1': 'var(--space-1)',   // 4px
-        '2': 'var(--space-2)',   // 8px
-        '3': 'var(--space-3)',   // 12px
-        '4': 'var(--space-4)',   // 16px
-        '5': 'var(--space-5)',   // 24px
-        '6': 'var(--space-6)',   // 36px
-        '7': 'var(--space-7)',   // 54px
-        '8': 'var(--space-8)',   // 81px
-        '9': 'var(--space-9)',   // 121px
-        '10': 'var(--space-10)', // 182px
+        '1': 'var(--space-1)',
+        '2': 'var(--space-2)',
+        '3': 'var(--space-3)',
+        '4': 'var(--space-4)',
+        '5': 'var(--space-5)',
+        '6': 'var(--space-6)',
+        '7': 'var(--space-7)',
+        '8': 'var(--space-8)',
+        '9': 'var(--space-9)',
+        '10': 'var(--space-10)',
       },
       colors: {
         // Background colors
@@ -105,57 +105,57 @@ export default {
         'chart-7': 'var(--chart-color-7)',
         'chart-8': 'var(--chart-color-8)',
         
-        // Legacy Tailwind support
-        background: 'var(--background)',
-        foreground: 'var(--foreground)',
-        card: {
-          DEFAULT: 'var(--card)',
-          foreground: 'var(--card-foreground)',
-        },
-        popover: {
-          DEFAULT: 'var(--popover)',
-          foreground: 'var(--popover-foreground)',
-        },
+        // Legacy Tailwind support for ShadCN
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
         primary: {
-          DEFAULT: 'var(--primary)',
-          foreground: 'var(--primary-foreground)',
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
         },
         secondary: {
-          DEFAULT: 'var(--secondary)',
-          foreground: 'var(--secondary-foreground)',
-        },
-        muted: {
-          DEFAULT: 'var(--muted)',
-          foreground: 'var(--muted-foreground)',
-        },
-        accent: {
-          DEFAULT: 'var(--accent)',
-          foreground: 'var(--accent-foreground)',
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))',
         },
         destructive: {
-          DEFAULT: 'var(--destructive)',
-          foreground: 'var(--destructive-foreground)',
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))',
         },
-        border: 'var(--border)',
-        input: 'var(--input)',
-        ring: 'var(--ring)',
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))',
+        },
+        accent: {
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--accent-foreground))',
+        },
+        popover: {
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))',
+        },
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))',
+        },
         chart: {
-          '1': 'var(--chart-1)',
-          '2': 'var(--chart-2)',
-          '3': 'var(--chart-3)',
-          '4': 'var(--chart-4)',
-          '5': 'var(--chart-5)',
+          '1': 'hsl(var(--chart-1))',
+          '2': 'hsl(var(--chart-2))',
+          '3': 'hsl(var(--chart-3))',
+          '4': 'hsl(var(--chart-4))',
+          '5': 'hsl(var(--chart-5))',
         },
       },
       borderRadius: {
-        '1': 'var(--radius-1)',     // 2px
-        '2': 'var(--radius-2)',     // 4px
-        '3': 'var(--radius-3)',     // 8px
-        '4': 'var(--radius-4)',     // 12px
-        '5': 'var(--radius-5)',     // 16px
-        '6': 'var(--radius-6)',     // 24px
-        'full': 'var(--radius-full)', // 9999px
-        // Legacy support
+        '1': 'var(--radius-1)',
+        '2': 'var(--radius-2)',
+        '3': 'var(--radius-3)',
+        '4': 'var(--radius-4)',
+        '5': 'var(--radius-5)',
+        '6': 'var(--radius-6)',
+        'full': 'var(--radius-full)',
+        // Legacy support for ShadCN
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
@@ -167,29 +167,22 @@ export default {
         'in-out-quart': 'var(--ease-in-out-quart)',
       },
       transitionDuration: {
-        'fast': 'var(--duration-fast)',       // 0.15s
-        'normal': 'var(--duration-normal)',   // 0.3s
-        'slow': 'var(--duration-slow)',       // 0.5s
-        'slower': 'var(--duration-slower)',   // 0.75s
+        'fast': 'var(--duration-fast)',
+        'normal': 'var(--duration-normal)',
+        'slow': 'var(--duration-slow)',
+        'slower': 'var(--duration-slower)',
       },
       screens: {
-        'sm': '640px',   // --breakpoint-sm
-        'md': '768px',   // --breakpoint-md
-        'lg': '1024px',  // --breakpoint-lg
-        'xl': '1280px',  // --breakpoint-xl
-        '2xl': '1536px', // --breakpoint-2xl
+        'sm': '640px',
+        'md': '768px',
+        'lg': '1024px',
+        'xl': '1280px',
+        '2xl': '1536px',
       },
       keyframes: {
-        // New design system animations
         'fadeInUp': {
-          'from': {
-            opacity: '0',
-            transform: 'translateY(20px)',
-          },
-          'to': {
-            opacity: '1',
-            transform: 'translateY(0)',
-          },
+          'from': { opacity: '0', transform: 'translateY(20px)' },
+          'to': { opacity: '1', transform: 'translateY(0)' },
         },
         'skeleton': {
           '0%': { opacity: '1' },
@@ -201,22 +194,13 @@ export default {
           '50%': { transform: 'scale(1.05)' },
           '100%': { transform: 'scale(1)' },
         },
-        // Legacy animations
         'accordion-down': {
-          from: {
-            height: '0',
-          },
-          to: {
-            height: 'var(--radix-accordion-content-height)',
-          },
+          from: { height: '0' },
+          to: { height: 'var(--radix-accordion-content-height)' },
         },
         'accordion-up': {
-          from: {
-            height: 'var(--radix-accordion-content-height)',
-          },
-          to: {
-            height: '0',
-          },
+          from: { height: 'var(--radix-accordion-content-height)' },
+          to: { height: '0' },
         },
         'pulse-gradient': {
           '0%, 100%': { 'background-position': '0% 50%' },
@@ -228,11 +212,9 @@ export default {
         },
       },
       animation: {
-        // New design system animations
         'fadeInUp': 'fadeInUp 0.5s var(--ease-out-quart)',
         'skeleton': 'skeleton 1.5s ease-in-out infinite',
         'pricePulse': 'pricePulse 0.6s ease-in-out',
-        // Legacy animations
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'pulse-gradient': 'pulse-gradient 5s ease-in-out infinite',
@@ -248,44 +230,8 @@ export default {
     require('tailwindcss-animate'), 
     require('@tailwindcss/typography'),
     // Custom plugin for design system utilities
-    function({ addUtilities, theme }: { addUtilities: any; theme: any }) {
+    function({ addUtilities }: { addUtilities: any }) {
       const newUtilities = {
-        // Spacing utilities using design system tokens
-        '.m-1': { margin: 'var(--space-1)' },
-        '.m-2': { margin: 'var(--space-2)' },
-        '.m-3': { margin: 'var(--space-3)' },
-        '.m-4': { margin: 'var(--space-4)' },
-        '.m-5': { margin: 'var(--space-5)' },
-        '.m-6': { margin: 'var(--space-6)' },
-        '.m-7': { margin: 'var(--space-7)' },
-        '.m-8': { margin: 'var(--space-8)' },
-        '.m-9': { margin: 'var(--space-9)' },
-        '.m-10': { margin: 'var(--space-10)' },
-        
-        '.p-1': { padding: 'var(--space-1)' },
-        '.p-2': { padding: 'var(--space-2)' },
-        '.p-3': { padding: 'var(--space-3)' },
-        '.p-4': { padding: 'var(--space-4)' },
-        '.p-5': { padding: 'var(--space-5)' },
-        '.p-6': { padding: 'var(--space-6)' },
-        '.p-7': { padding: 'var(--space-7)' },
-        '.p-8': { padding: 'var(--space-8)' },
-        '.p-9': { padding: 'var(--space-9)' },
-        '.p-10': { padding: 'var(--space-10)' },
-        
-        // Gap utilities
-        '.gap-1': { gap: 'var(--space-1)' },
-        '.gap-2': { gap: 'var(--space-2)' },
-        '.gap-3': { gap: 'var(--space-3)' },
-        '.gap-4': { gap: 'var(--space-4)' },
-        '.gap-5': { gap: 'var(--space-5)' },
-        '.gap-6': { gap: 'var(--space-6)' },
-        '.gap-7': { gap: 'var(--space-7)' },
-        '.gap-8': { gap: 'var(--space-8)' },
-        '.gap-9': { gap: 'var(--space-9)' },
-        '.gap-10': { gap: 'var(--space-10)' },
-        
-        // Layout utilities
         '.container-full': {
           width: '100%',
           marginLeft: 'auto',
@@ -297,14 +243,10 @@ export default {
           paddingTop: 'var(--space-8)',
           paddingBottom: 'var(--space-8)',
         },
-        
-        // Focus utilities
         '.focus-ring:focus': {
           outline: '2px solid var(--accent-primary)',
           outlineOffset: '2px',
         },
-        
-        // Screen reader utilities
         '.sr-only': {
           position: 'absolute',
           width: '1px',
@@ -317,7 +259,10 @@ export default {
         },
       };
       
-      addUtilities(newUtilities);
+      addUtilities(newUtilities, {
+        respectPrefix: false,
+        respectImportant: false,
+      });
     },
   ],
 } satisfies Config;

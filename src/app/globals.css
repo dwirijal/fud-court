@@ -58,17 +58,17 @@
     --status-error: #ff453a;
     --status-info: #007aff;
 
-    /* Typography Scale */
-    --text-xs: 0.64rem;    /* 10.24px */
-    --text-sm: 0.8rem;     /* 12.8px */
+    /* Typography Scale (Major Second - 1.125 ratio) */
+    --text-xs: 0.79rem;    /* 12.64px */
+    --text-sm: 0.889rem;   /* 14.22px */
     --text-base: 1rem;     /* 16px */
-    --text-lg: 1.25rem;    /* 20px */
-    --text-xl: 1.563rem;   /* 25px */
-    --text-2xl: 1.953rem;  /* 31.25px */
-    --text-3xl: 2.441rem;  /* 39px */
-    --text-4xl: 3.052rem;  /* 48.8px */
-    --text-5xl: 3.815rem;  /* 61px */
-    --text-6xl: 4.768rem;  /* 76.3px */
+    --text-lg: 1.125rem;   /* 18px */
+    --text-xl: 1.266rem;   /* 20.25px */
+    --text-2xl: 1.424rem;  /* 22.78px */
+    --text-3xl: 1.602rem;  /* 25.63px */
+    --text-4xl: 1.802rem;  /* 28.83px */
+    --text-5xl: 2.027rem;  /* 32.44px */
+    --text-6xl: 2.281rem;  /* 36.49px */
 
     /* Spacing Scale */
     --space-1: 0.25rem;    /* 4px */
@@ -116,7 +116,7 @@
     --chart-color-7: #6c5ce7;
     --chart-color-8: #a29bfe;
 
-    /* Legacy Tailwind Variables */
+    /* Legacy Tailwind Variables for ShadCN compatibility */
     --background: var(--bg-primary);
     --foreground: var(--text-primary);
     --card: var(--bg-secondary);
@@ -124,14 +124,15 @@
     --popover: var(--bg-secondary);
     --popover-foreground: var(--text-primary);
     --primary: var(--accent-primary);
-    --primary-foreground: var(--text-primary);
+    --primary-foreground: #000000;
     --secondary: var(--bg-tertiary);
     --secondary-foreground: var(--text-primary);
     --muted: var(--bg-tertiary);
     --muted-foreground: var(--text-secondary);
-    --accent: var(--accent-primary);
+    --accent: var(--bg-quaternary);
     --accent-foreground: var(--text-primary);
     --destructive: var(--status-error);
+    --destructive-foreground: #ffffff;
     --border: var(--bg-tertiary);
     --input: var(--bg-tertiary);
     --ring: var(--accent-primary);
@@ -184,7 +185,7 @@
     --status-error: #ff453a;
     --status-info: #007aff;
 
-    /* Legacy Tailwind Variables */
+    /* Legacy Tailwind Variables for ShadCN compatibility */
     --background: var(--bg-primary);
     --foreground: var(--text-primary);
     --card: var(--bg-secondary);
@@ -197,9 +198,10 @@
     --secondary-foreground: var(--text-primary);
     --muted: var(--bg-tertiary);
     --muted-foreground: var(--text-secondary);
-    --accent: var(--accent-primary);
-    --accent-foreground: #000000;
+    --accent: var(--bg-quaternary);
+    --accent-foreground: var(--text-primary);
     --destructive: var(--status-error);
+    --destructive-foreground: #ffffff;
     --border: var(--bg-tertiary);
     --input: var(--bg-tertiary);
     --ring: var(--accent-primary);
@@ -417,6 +419,9 @@
   }
 
   .table-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: var(--space-4);
     border-bottom: 1px solid var(--bg-tertiary);
     transition: background-color 0.2s ease;
@@ -625,12 +630,12 @@
     100% { transform: scale(1); }
   }
 
-  @keyframes accordionDown {
+  @keyframes accordion-down {
     from { height: 0; }
     to { height: var(--radix-accordion-content-height); }
   }
 
-  @keyframes accordionUp {
+  @keyframes accordion-up {
     from { height: var(--radix-accordion-content-height); }
     to { height: 0; }
   }

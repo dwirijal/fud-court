@@ -1,3 +1,4 @@
+
 import { getPosts } from "@/lib/ghost";
 import { fetchMarketData, getTopCoins } from "@/lib/coingecko";
 import { MarketCarousel } from "@/components/molecules/market-carousel";
@@ -17,7 +18,7 @@ export default async function Home() {
     <>
       <HeroSection />
 
-      <section className="py-16 md:py-24 bg-card/20 border-t border-b border-border">
+      <section className="py-6 md:py-8 bg-card/20 border-t border-b border-border">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
             <h2 className="text-4xl font-extrabold tracking-tight font-headline mb-4">

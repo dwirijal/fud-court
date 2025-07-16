@@ -3,10 +3,9 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
-import { LucideIcon, RefreshCw } from 'lucide-react';
-import { AnimatedNumber } from './animated-number'; // Assuming you extract AnimatedNumber
+import { Card, CardContent } from '@/components/ui/card';
+import { LucideIcon } from 'lucide-react';
+import { AnimatedNumber } from './animated-number';
 
 const formatCurrency = (value: number) => {
     if (Math.abs(value) < 1) {
@@ -81,26 +80,10 @@ export function FlippableIndicatorCard({
 
                 {/* Card Back */}
                 <div className="absolute w-full h-full backface-hidden [transform:rotateY(180deg)]">
-                     <Card className="h-full bg-muted/80 border-primary/20 flex flex-col justify-center cursor-pointer">
-                        <CardHeader className="p-3 pb-1">
-                             <p className="text-xs font-semibold text-muted-foreground text-center">Data & Rumus</p>
-                        </CardHeader>
-                        <CardContent className="p-3 pt-0 text-left">
-                            <div className="space-y-1">
-                                {Object.entries(rawData).map(([key, value]) => (
-                                    <div key={key} className="flex justify-between items-baseline text-xs gap-2">
-                                        <span className="text-muted-foreground truncate" title={key}>{key}:</span>
-                                        <span className="font-mono font-medium text-foreground">
-                                            {typeof value === 'number' ? formatCurrency(value) : value}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                             <p className="text-[10px] text-center font-mono text-primary/80 mt-1.5 truncate" title={formula}>
-                                {formula}
-                            </p>
-                            <RefreshCw className="h-3 w-3 text-muted-foreground absolute bottom-1.5 right-1.5" />
-                        </CardContent>
+                     <Card className="h-full bg-muted/80 border-primary/20 flex flex-col justify-center items-center p-3 cursor-pointer">
+                        <p className="text-xs text-center font-mono text-primary/80" title={formula}>
+                            {formula}
+                        </p>
                     </Card>
                 </div>
             </motion.div>

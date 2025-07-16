@@ -51,17 +51,11 @@ function IndicatorCard({ icon: Icon, name, score, formula, rawData }: IndicatorC
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Card className="h-full hover:bg-muted/50 transition-colors cursor-help">
-            <CardContent className="p-4 flex-1 flex items-center justify-between gap-4 h-full">
-              <div className="space-y-1 flex-grow">
-                <p className="text-sm font-semibold flex items-center gap-2">
-                  <Icon className="h-4 w-4 text-muted-foreground" />
-                  {name}
-                </p>
-              </div>
-              <div className="text-right flex-shrink-0 pl-2">
-                <p className="text-2xl font-mono font-bold">{score}</p>
-              </div>
+          <Card className="hover:bg-muted/50 transition-colors cursor-help aspect-[3/4]">
+            <CardContent className="p-4 flex flex-col items-center justify-center text-center gap-2 h-full">
+              <Icon className="h-6 w-6 text-muted-foreground mb-2" />
+              <p className="text-sm font-semibold">{name}</p>
+              <p className="text-3xl font-mono font-bold">{score}</p>
             </CardContent>
           </Card>
         </TooltipTrigger>
@@ -125,9 +119,9 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
         <Card>
             <CardContent className="p-6">
                 <Skeleton className="h-[120px] w-full mb-6" />
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {Array.from({ length: 6 }).map((_, i) => (
-                        <Skeleton key={i} className="h-24 w-full" />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                        <Skeleton key={i} className="h-32 w-full" />
                     ))}
                 </div>
             </CardContent>
@@ -185,21 +179,24 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                   <CardDescription className="text-base text-muted-foreground max-w-md">
                     Mengukur kondisi pasar crypto secara keseluruhan menggunakan indikator gabungan utama.
                   </CardDescription>
-                  <Badge variant="secondary" className="cursor-help flex-shrink-0 mx-auto md:mx-0">
+                   <Badge variant="secondary" className="cursor-help flex-shrink-0 mx-auto md:mx-0">
                     <CheckCircle className="h-4 w-4 mr-1.5" />
                     Akurasi Model: {analysisResult.confidenceScore}%
                   </Badge>
                 </div>
-                <div className="text-center md:text-right flex-shrink-0 md:pl-4">
+                <div className="text-center md:text-right flex-shrink-0 md:pl-4 flex flex-col items-center md:items-end">
                   <AnimatedNumber to={analysisResult.macroScore} className={cn("text-6xl font-bold font-mono tracking-tighter", activeColorClass)} />
-                  <p className={cn("font-semibold text-2xl", activeColorClass)}>{analysisResult.marketCondition}</p>
+                  <p className={cn("font-semibold text-2xl mb-2", activeColorClass)}>{analysisResult.marketCondition}</p>
+                  <Link href="/learn/market-indicators" className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
+                      Pelajari selengkapnya <ArrowRight className="h-4 w-4" />
+                  </Link>
                 </div>
             </div>
         </CardContent>
 
         <CardFooter className="flex-col items-start p-6 pt-0">
             <Separator className="mb-4" />
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 w-full">
                 {indicators.map((indicator, index) => (
                     <IndicatorCard
                         key={indicator.name}
@@ -210,21 +207,6 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                         rawData={indicator.rawData}
                     />
                 ))}
-                 <Link href="/learn/market-indicators" className="group block h-full">
-                   <Card className="h-full hover:bg-muted/50 transition-colors">
-                        <CardContent className="p-4 flex flex-1 items-center justify-between gap-4 h-full">
-                            <div className="space-y-1 flex-grow">
-                                <p className="text-sm font-semibold flex items-center gap-2">
-                                    <BookOpen className="h-4 w-4 text-muted-foreground" />
-                                    Pelajari Skor Ini
-                                </p>
-                            </div>
-                            <div className="text-right flex-shrink-0 pl-2 text-muted-foreground group-hover:text-primary transition-colors">
-                                <ArrowRight className="h-5 w-5" />
-                            </div>
-                        </CardContent>
-                    </Card>
-                </Link>
             </div>
         </CardFooter>
     </Card>

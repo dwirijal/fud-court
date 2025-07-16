@@ -7,13 +7,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { MarketAnalysisOutput } from '@/types';
 import { analyzeMarketSentiment } from '@/ai/flows/market-analysis-flow';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { AlertTriangle, CheckCircle, BookOpen, Scale, Zap, TrendingUp, Package, ArrowRight, Info } from 'lucide-react';
+import { AlertTriangle, CheckCircle, BookOpen, Scale, Zap, TrendingUp, Package, ArrowRight, Info, LucideIcon } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { cn } from '@/lib/utils';
 import type { CombinedMarketData } from '@/types';
 import { Separator } from '../ui/separator';
 import { AnimatedNumber } from '../molecules/animated-number';
-import { FlippableIndicatorCard } from '../molecules/flippable-indicator-card';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 
 const getActiveColorClass = (interpretation: string) => {
@@ -37,6 +37,53 @@ const formatCurrency = (value: number) => {
     maximumFractionDigits: 2,
   }).format(value);
 };
+
+interface IndicatorCardProps {
+    icon: LucideIcon;
+    name: string;
+    score: number;
+    formula: string;
+    rawData: Record<string, string | number>;
+}
+
+function IndicatorCard({ icon: Icon, name, score, formula, rawData }: IndicatorCardProps) {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Card className="h-full hover:bg-muted/50 transition-colors cursor-help">
+            <CardContent className="p-4 flex-1 flex items-center justify-between gap-4 h-full">
+              <div className="space-y-1 flex-grow">
+                <p className="text-sm font-semibold flex items-center gap-2">
+                  <Icon className="h-4 w-4 text-muted-foreground" />
+                  {name}
+                </p>
+              </div>
+              <div className="text-right flex-shrink-0 pl-2">
+                <p className="text-2xl font-mono font-bold">{score}</p>
+              </div>
+            </CardContent>
+          </Card>
+        </TooltipTrigger>
+        <TooltipContent className="w-64 p-3">
+            <div className="space-y-2 text-xs w-full">
+              {Object.entries(rawData).map(([key, value]) => (
+                <div key={key} className="flex justify-between items-baseline">
+                  <span className="text-muted-foreground truncate" title={key}>{key}</span>
+                  <span className="font-mono text-foreground font-semibold">{value}</span>
+                </div>
+              ))}
+            </div>
+            <Separator className="my-2 bg-border/50"/>
+            <p className="text-xs text-center font-mono text-primary/80" title={formula}>
+                {formula}
+            </p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
+
 
 interface MarketSummaryCardProps {
     marketData: CombinedMarketData | null;
@@ -154,9 +201,8 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
             <Separator className="mb-4" />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
                 {indicators.map((indicator, index) => (
-                    <FlippableIndicatorCard
+                    <IndicatorCard
                         key={indicator.name}
-                        index={index}
                         icon={indicator.icon}
                         name={indicator.name}
                         score={indicator.value}

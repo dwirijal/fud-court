@@ -25,6 +25,10 @@ export function IndicatorCard({ index, icon: Icon, name, score, formula, rawData
     const cardElement = cardRef.current;
     if (!cardElement) return;
 
+    // Set initial states
+    anime.set(detailsRef.current, { opacity: 0, translateY: 10 });
+    anime.set(scoreRef.current, { opacity: 1, translateY: 0 });
+
     const animation = anime.timeline({
       easing: 'easeOutExpo',
       duration: 300,
@@ -56,7 +60,7 @@ export function IndicatorCard({ index, icon: Icon, name, score, formula, rawData
   }, []);
 
   return (
-    <Card ref={cardRef} className="h-24 overflow-hidden relative group cursor-pointer">
+    <Card ref={cardRef} className="h-full overflow-hidden relative group cursor-pointer">
       <CardContent className="p-4 h-full flex flex-col justify-center">
         {/* Front Side: Visible by default */}
         <div ref={scoreRef} className="absolute inset-4 flex items-center justify-between">

@@ -5,11 +5,9 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { LucideIcon } from 'lucide-react';
-import { AnimatedNumber } from './animated-number';
 import { Separator } from '../ui/separator';
 
 interface FlippableIndicatorCardProps {
-    index: number;
     icon: LucideIcon;
     name: string;
     score: number;
@@ -18,7 +16,6 @@ interface FlippableIndicatorCardProps {
 }
 
 export function FlippableIndicatorCard({
-    index,
     icon: Icon,
     name,
     score,
@@ -27,26 +24,9 @@ export function FlippableIndicatorCard({
 }: FlippableIndicatorCardProps) {
     const [isFlipped, setIsFlipped] = useState(false);
 
-    const cardVariants = {
-        hidden: { opacity: 0, y: 20 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            transition: {
-                delay: index * 0.1,
-                duration: 0.5,
-                ease: "easeOut"
-            }
-        }
-    };
-
     return (
-        <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.5 }}
-            variants={cardVariants}
-            className="perspective-1000 h-24" // Set a fixed height for consistency
+        <div
+            className="perspective-1000 h-full"
             onMouseEnter={() => setIsFlipped(true)}
             onMouseLeave={() => setIsFlipped(false)}
         >
@@ -66,7 +46,7 @@ export function FlippableIndicatorCard({
                                 </p>
                             </div>
                             <div className="text-right flex-shrink-0 pl-2">
-                                <AnimatedNumber to={score} className="text-2xl font-mono font-bold" />
+                                <p className="text-2xl font-mono font-bold">{score}</p>
                             </div>
                         </CardContent>
                     </Card>
@@ -75,9 +55,9 @@ export function FlippableIndicatorCard({
                 {/* Card Back */}
                  <div className="absolute w-full h-full backface-hidden [transform:rotateX(180deg)]">
                      <Card className="h-full bg-muted/80 border-primary/20 flex flex-col justify-center p-3 cursor-pointer">
-                        <div className="space-y-1 text-xs w-full">
+                        <div className="space-y-2 text-xs w-full">
                           {Object.entries(rawData).map(([key, value]) => (
-                            <div key={key} className="flex justify-between items-baseline border-b border-border/20 pb-1">
+                            <div key={key} className="flex justify-between items-baseline">
                               <span className="text-muted-foreground truncate" title={key}>{key}</span>
                               <span className="font-mono text-foreground font-semibold">{value}</span>
                             </div>
@@ -90,6 +70,6 @@ export function FlippableIndicatorCard({
                     </Card>
                 </div>
             </motion.div>
-        </motion.div>
+        </div>
     );
 }

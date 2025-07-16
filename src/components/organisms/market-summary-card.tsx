@@ -10,22 +10,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { AlertTriangle, CheckCircle, BookOpen, Scale, Zap, TrendingUp, Package, ArrowRight } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { cn } from '@/lib/utils';
-import { Progress } from '@/components/ui/progress';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 import anime from 'animejs';
 import type { CombinedMarketData } from '@/types';
-
-const getProgressColorClass = (score: number) => {
-    if (score < 40) return 'bg-destructive';
-    if (score > 60) return 'bg-chart-2';
-    return 'bg-muted-foreground';
-}
 
 const getActiveColorClass = (interpretation: string) => {
     const lowerCaseInterpretation = interpretation.toLowerCase();
@@ -64,33 +51,6 @@ const AnimatedNumber = ({ to, className, delay = 0 }: { to: number, className?: 
     }, [to, delay, target]);
 
     return <p className={className}>{value}</p>;
-}
-
-const AnimatedProgress = ({ value, className, indicatorClassName }: { value: number, className?: string, indicatorClassName?: string }) => {
-    const [progressValue, setProgressValue] = useState(0);
-    const hasAnimated = useRef(false);
-    const target = useRef({ value: 0 }).current;
-
-    useEffect(() => {
-        if (hasAnimated.current) {
-            setProgressValue(value);
-            return;
-        }
-        hasAnimated.current = true;
-        
-        anime({
-            targets: target,
-            value: value,
-            duration: 1200,
-            delay: 400,
-            easing: 'easeOutCubic',
-            update: () => {
-                setProgressValue(target.value);
-            }
-        });
-    }, [value, target]);
-    
-    return <Progress value={progressValue} className={className} indicatorClassName={cn(indicatorClassName)} />
 }
 
 interface MarketSummaryCardProps {
@@ -166,12 +126,10 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
   const activeColorClass = getActiveColorClass(analysisResult.marketCondition);
 
   return (
-    <Card>
-      <CardHeader className="p-0">
-        <div className="bg-primary/5 border-primary/20 rounded-lg overflow-hidden">
-          <div className="flex flex-col md:flex-row justify-between items-center p-6 gap-6">
+    <Card className="bg-primary/5 border-primary/20 overflow-hidden">
+        <div className="flex flex-col md:flex-row justify-between items-center p-6 gap-6">
             <div className="space-y-3 text-center md:text-left">
-              <CardTitle className="text-3xl font-headline">Gambaran Umum Pasar</CardTitle>
+              <CardTitle className="text-2xl font-headline">Gambaran Umum Pasar</CardTitle>
               <CardDescription className="text-base text-muted-foreground max-w-md">
                 Mengukur kondisi pasar crypto secara keseluruhan menggunakan indikator gabungan utama.
               </CardDescription>
@@ -184,16 +142,11 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
               <AnimatedNumber to={analysisResult.macroScore} className={cn("text-6xl font-bold font-mono tracking-tighter", activeColorClass)} />
               <p className={cn("font-semibold text-2xl", activeColorClass)}>{analysisResult.marketCondition}</p>
             </div>
-          </div>
         </div>
-      </CardHeader>
-      <CardContent className="p-6">
+      <CardContent className="p-6 pt-0">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <TooltipProvider>
             {indicators.map((indicator, index) => (
-              <Tooltip key={indicator.id}>
-                <TooltipTrigger asChild>
-                  <Card className="hover:bg-muted/50 transition-colors">
+                <Card key={indicator.id} className="hover:bg-muted/50 transition-colors">
                     <CardContent className="p-4 flex flex-1 items-center justify-between gap-4">
                       <div className="space-y-1 flex-grow">
                         <p className="text-sm font-semibold flex items-center gap-2">
@@ -203,15 +156,9 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                       </div>
                       <div className="text-right flex-shrink-0 pl-2">
                         <AnimatedNumber to={indicator.value} className="text-2xl font-mono font-bold" delay={200 + index * 100} />
-                        <AnimatedProgress value={indicator.value} className="h-1 w-12 mt-1" indicatorClassName={cn(getProgressColorClass(indicator.value))} />
                       </div>
                     </CardContent>
-                  </Card>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Klik untuk melihat detail perhitungan.</p>
-                </TooltipContent>
-              </Tooltip>
+                </Card>
             ))}
              <Link href="/learn/market-indicators" className="group block h-full">
                <Card className="hover:bg-muted/50 transition-colors h-full">
@@ -228,7 +175,6 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                     </CardContent>
                 </Card>
             </Link>
-          </TooltipProvider>
         </div>
       </CardContent>
     </Card>

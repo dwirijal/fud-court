@@ -96,7 +96,7 @@ export default async function PostPage({ params }: { params: { slug: string } })
 
 
   return (
-    <article className="container mx-auto px-4 py-12 md:py-24 max-w-4xl">
+    <article className="container mx-auto px-4 py-3 md:py-4 max-w-4xl">
       <Breadcrumb className="mb-8">
         <BreadcrumbList>
           <BreadcrumbItem>

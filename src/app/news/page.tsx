@@ -7,7 +7,7 @@ export default async function NewsPage() {
   const posts = await getPosts({ tag: 'realtime-news' });
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-24">
+    <div className="container mx-auto px-4 py-3 md:py-4">
       <header className="mb-12 text-center">
         <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight mb-2">
           Berita Fud Court

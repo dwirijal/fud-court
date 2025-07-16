@@ -10,7 +10,7 @@ export default async function CoinsPage({ searchParams }: { searchParams?: { cur
   const topCoins = await getTopCoins();
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-24">
+    <div className="container mx-auto px-4 py-3 md:py-4">
       <header className="mb-12">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="text-center sm:text-left">

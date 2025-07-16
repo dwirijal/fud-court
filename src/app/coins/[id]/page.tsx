@@ -1,6 +1,6 @@
 export default function CoinDetailPage({ params }: { params: { id: string } }) {
   return (
-    <div className="container mx-auto px-4 py-12 md:py-24">
+    <div className="container mx-auto px-4 py-3 md:py-4">
       <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight mb-2">
         Detail untuk {params.id}
       </h1>

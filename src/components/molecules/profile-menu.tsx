@@ -58,9 +58,7 @@ export function ProfileMenu() {
               alt="User Profile"
               data-ai-hint="user avatar"
             />
-            <AvatarFallback>
-              <User />
-            </AvatarFallback>
+            <AvatarFallback>G</AvatarFallback>
           </Avatar>
           <div className="hidden text-left group-data-[state=expanded]:inline">
             <p className="text-sm font-medium">Tamu</p>

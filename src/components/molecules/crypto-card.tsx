@@ -14,8 +14,8 @@ export function CryptoCard({ data, className }: { data: CryptoData, className?: 
   const isPositive = (data.price_change_percentage_24h_in_currency ?? 0) >= 0;
 
   return (
-    <Card className={cn("flex flex-col justify-between bg-card/60 backdrop-blur-md h-full", className)}>
-      <CardHeader className="flex flex-row items-start justify-between space-y-0 p-2 pb-0">
+    <Card className={cn("flex flex-col justify-between bg-background backdrop-blur-md h-full", className)}>
+      <CardHeader className="flex flex-row items-start justify-between space-y-0 p-2 pb-0 gap-1">
         <div className="flex items-center gap-1">
           <Image
             src={data.image}

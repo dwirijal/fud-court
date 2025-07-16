@@ -6,13 +6,18 @@ import { HeroSection } from "@/components/organisms/hero-section";
 import { MarketSummaryCard } from "@/components/organisms/market-summary-card";
 import { MarketStatsCard } from "@/components/organisms/market-stats-card";
 import Link from "next/link";
+import { CryptoData } from "@/types";
 
 export default async function Home() {
   // Fetch all data concurrently for better performance
-  const [topCoins, marketData] = await Promise.all([
+  const [rawTopCoins, marketData] = await Promise.all([
     getTopCoins(1, 50),
     fetchMarketData(),
   ]);
+
+  const topCoins = rawTopCoins 
+    ? [...rawTopCoins].sort((a, b) => b.market_cap - a.market_cap) 
+    : [];
 
   return (
     <>

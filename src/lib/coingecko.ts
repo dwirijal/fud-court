@@ -268,18 +268,18 @@ export async function calculateSupportResistanceLevels(currentPrice: number, ath
     return { supportLevel, resistanceLevel };
 }
 
-export function calculateSMA(prices: number[], period: number): number | null {
-    if (prices.length < period) return null;
+export async function calculateSMA(prices: number[], period: number): Promise<number | null> {
+    if (prices.length < period) return Promise.resolve(null);
     const sum = prices.slice(0, period).reduce((acc, price) => acc + price, 0);
-    return sum / period;
+    return Promise.resolve(sum / period);
 }
 
-export function calculateEMA(prices: number[], period: number): number | null {
-    if (prices.length < period) return null;
+export async function calculateEMA(prices: number[], period: number): Promise<number | null> {
+    if (prices.length < period) return Promise.resolve(null);
 
     // Calculate SMA for the first EMA value
-    const sma = calculateSMA(prices, period);
-    if (sma === null) return null;
+    const sma = await calculateSMA(prices, period);
+    if (sma === null) return Promise.resolve(null);
 
     const multiplier = 2 / (period + 1);
     let ema = sma;
@@ -288,52 +288,52 @@ export function calculateEMA(prices: number[], period: number): number | null {
     for (let i = period; i < prices.length; i++) {
         ema = (prices[i] - ema) * multiplier + ema;
     }
-    return ema;
+    return Promise.resolve(ema);
 }
 
-export function calculatePriceSignal(prices: number[]): number | null {
-    const ema12 = calculateEMA(prices, 12);
-    const ema26 = calculateEMA(prices, 26);
+export async function calculatePriceSignal(prices: number[]): Promise<number | null> {
+    const ema12 = await calculateEMA(prices, 12);
+    const ema26 = await calculateEMA(prices, 26);
 
-    if (ema12 === null || ema26 === null || ema26 === 0) return null; // Avoid division by zero
+    if (ema12 === null || ema26 === null || ema26 === 0) return Promise.resolve(null); // Avoid division by zero
 
-    return (ema12 - ema26) / ema26 * 100;
+    return Promise.resolve((ema12 - ema26) / ema26 * 100);
 }
 
-export function validateMarketData(data: any): { price: number; volume: number; marketCap: number; dominance: number } {
-    return {
+export async function validateMarketData(data: any): Promise<{ price: number; volume: number; marketCap: number; dominance: number }> {
+    return Promise.resolve({
         price: Math.max(0, parseFloat(data.price) || 0),
         volume: Math.max(0, parseFloat(data.volume) || 0),
         marketCap: Math.max(0, parseFloat(data.marketCap) || 0),
         dominance: Math.min(100, Math.max(0, parseFloat(data.dominance) || 0))
-    };
+    });
 }
 
-function calculateAverage(values: number[]): number {
+async function calculateAverage(values: number[]): Promise<number> {
     if (values.length === 0) return 0;
     const sum = values.reduce((acc, val) => acc + val, 0);
     return sum / values.length;
 }
 
-function calculateStandardDeviation(values: number[]): number {
+async function calculateStandardDeviation(values: number[]): Promise<number> {
     if (values.length < 2) return 0;
-    const avg = calculateAverage(values);
+    const avg = await calculateAverage(values);
     const squareDiffs = values.map(value => Math.pow(value - avg, 2));
-    const avgSquareDiff = calculateAverage(squareDiffs);
+    const avgSquareDiff = await calculateAverage(squareDiffs);
     return Math.sqrt(avgSquareDiff);
 }
 
-export function calculateSharpeRatio(returns: number[], riskFreeRate: number): number {
-    const avgReturn = calculateAverage(returns);
-    const stdDev = calculateStandardDeviation(returns);
+export async function calculateSharpeRatio(returns: number[], riskFreeRate: number): Promise<number> {
+    const avgReturn = await calculateAverage(returns);
+    const stdDev = await calculateStandardDeviation(returns);
 
     if (stdDev === 0) return 0; // Avoid division by zero
 
     return (avgReturn - riskFreeRate) / stdDev;
 }
 
-export function detectOutliers(values: number[]): number[] {
-    if (values.length < 4) return values; // Not enough data to detect outliers reliably
+export async function detectOutliers(values: number[]): Promise<number[]> {
+    if (values.length < 4) return Promise.resolve(values); // Not enough data to detect outliers reliably
 
     const sortedValues = [...values].sort((a, b) => a - b);
     const q1 = sortedValues[Math.floor(sortedValues.length / 4)];
@@ -342,10 +342,10 @@ export function detectOutliers(values: number[]): number[] {
     const lowerBound = q1 - (1.5 * iqr);
     const upperBound = q3 + (1.5 * iqr);
         
-    return values.filter(v => v >= lowerBound && v <= upperBound);
+    return Promise.resolve(values.filter(v => v >= lowerBound && v <= upperBound));
 }
 
-export function rateLimitedCalculation<T, R>(calculation: (data: T) => R, maxPerSecond: number = 10) {
+export async function rateLimitedCalculation<T, R>(calculation: (data: T) => R, maxPerSecond: number = 10) {
     const queue: { resolve: (value: R) => void; data: T }[] = [];
     let lastExecutionTime = 0;
     const delay = 1000 / maxPerSecond;
@@ -369,8 +369,73 @@ export function rateLimitedCalculation<T, R>(calculation: (data: T) => R, maxPer
     // Start the timer to process the queue
     setInterval(executeNext, delay);
 
-    return (data: T) => new Promise<R>((resolve) => {
+    return async (data: T) => new Promise<R>((resolve) => {
         queue.push({ resolve, data });
         executeNext(); // Try to execute immediately if possible
     });
+}
+
+/**
+ * Mengambil data pasar gabungan: market cap, volume, dominance, top coins, dan fear & greed index.
+ * Return sesuai tipe CombinedMarketData.
+ */
+export async function fetchMarketData(): Promise<CombinedMarketData | null> {
+    try {
+        // 1. Fetch global market data
+        const globalRes = await fetch(`${API_BASE_URL}/global`, { next: { revalidate: 300 } });
+        if (!globalRes.ok) throw new Error('Failed to fetch global market data');
+        const globalData = await globalRes.json();
+        const g = globalData.data;
+
+        // 2. Fetch top coins (20 teratas)
+        const topCoins = await getTopCoins(1, 20) || [];
+        // Untuk analisis, ambil field yang diperlukan saja
+        const topCoinsForAnalysis = topCoins.map(coin => ({
+            name: coin.name,
+            symbol: coin.symbol,
+            current_price: coin.current_price,
+            ath: coin.ath,
+            price_change_percentage_24h: coin.price_change_percentage_24h_in_currency ?? null,
+        }));
+
+        // 3. Fetch Fear & Greed Index
+        const fg = await fetchFearGreedData();
+        const fearAndGreedIndex = fg.today?.value ?? 50;
+
+        // 4. Rata-rata volume 30 hari (jika ada, fallback ke total_volume)
+        // CoinGecko global tidak menyediakan avg30DayVolume, pakai total_volume_24h sebagai fallback
+        const avg30DayVolume = g.total_volume?.usd ?? 0;
+
+        // 5. Tanggal maxHistoricalMarketCap (jika ada, fallback ke tanggal hari ini)
+        const maxHistoricalMarketCapDate = new Date().toISOString();
+
+        // 6. Gabungkan ke CombinedMarketData
+        const result: CombinedMarketData = {
+            // MarketAnalysisInput
+            totalMarketCap: g.total_market_cap?.usd ?? 0,
+            maxHistoricalMarketCap: g.total_market_cap?.usd ?? 0, // fallback sama, jika tidak ada histori
+            totalVolume24h: g.total_volume?.usd ?? 0,
+            avg30DayVolume,
+            btcDominance: g.market_cap_percentage?.btc ?? 0,
+            fearAndGreedIndex,
+            topCoins: topCoinsForAnalysis,
+            // MarketStats
+            btcMarketCap: g.market_cap_percentage?.btc ? (g.total_market_cap?.usd ?? 0) * (g.market_cap_percentage.btc / 100) : 0,
+            ethMarketCap: g.market_cap_percentage?.eth ? (g.total_market_cap?.usd ?? 0) * (g.market_cap_percentage.eth / 100) : 0,
+            solMarketCap: g.market_cap_percentage?.sol ? (g.total_market_cap?.usd ?? 0) * (g.market_cap_percentage.sol / 100) : 0,
+            stablecoinMarketCap: g.total_market_cap?.usdt ?? 0,
+            btcDominance: g.market_cap_percentage?.btc ?? 0,
+            ethDominance: g.market_cap_percentage?.eth ?? 0,
+            solDominance: g.market_cap_percentage?.sol ?? 0,
+            stablecoinDominance: g.market_cap_percentage?.usdt ?? 0,
+            maxHistoricalMarketCap: g.total_market_cap?.usd ?? 0,
+            // Extra
+            topCoinsForAnalysis,
+            maxHistoricalMarketCapDate,
+        };
+        return result;
+    } catch (err) {
+        console.error('fetchMarketData error:', err);
+        return null;
+    }
 }

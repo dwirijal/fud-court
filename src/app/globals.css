@@ -3,111 +3,653 @@
 @tailwind utilities;
 
 @layer base {
-:root {
-  --radius: 0.8rem;
-  /* Sakura Theme - Light */
-  --background: oklch(0.99 0.005 340); /* Very light pink */
-  --foreground: oklch(0.2 0.03 340); /* Dark, desaturated pink */
-  
-  /* For the glow effect */
-  --primary-values: 0.6 0.2 330;
+  /* Import Plus Jakarta Sans font */
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
-  --card: oklch(1 0 0); /* White cards */
-  --card-foreground: oklch(0.2 0.03 340);
+  :root {
+    /* ===== CRYPTO FINANCE APP DESIGN SYSTEM ===== */
+    
+    /* Radius Scale */
+    --radius-1: 0.125rem;  /* 2px */
+    --radius-2: 0.25rem;   /* 4px */
+    --radius-3: 0.5rem;    /* 8px */
+    --radius-4: 0.75rem;   /* 12px */
+    --radius-5: 1rem;      /* 16px */
+    --radius-6: 1.5rem;    /* 24px */
+    --radius-full: 9999px; /* Full radius */
+    --radius: var(--radius-4); /* Default radius */
 
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.2 0.03 340);
+    /* ===== LIGHT THEME (Will be overridden by dark) ===== */
+    /* Dark Theme Base Colors */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f8f8;
+    --bg-tertiary: #f0f0f0;
+    --bg-quaternary: #e8e8e8;
 
-  --primary: oklch(var(--primary-values)); /* Strong Pink */
-  --primary-foreground: oklch(0.99 0.005 340); /* Light pink text on primary */
+    /* Text Colors */
+    --text-primary: #000000;
+    --text-secondary: #666666;
+    --text-tertiary: #999999;
+    --text-quaternary: #b7b7b7;
 
-  --secondary: oklch(0.95 0.01 340); /* Lighter pink-gray */
-  --secondary-foreground: oklch(0.2 0.03 340);
+    /* Pastel Red Accent */
+    --accent-primary: #ff6b6b;
+    --accent-secondary: #ff8e8e;
+    --accent-tertiary: #ffb3b3;
 
-  --muted: oklch(0.97 0.008 340);
-  --muted-foreground: oklch(0.4 0.02 340);
+    /* Secondary Colors */
+    --secondary-primary: #64d2ff;
+    --secondary-secondary: #87e8ac;
+    --secondary-tertiary: #ffd93d;
 
-  --accent: oklch(0.7 0.1 200); /* Soft Teal */
-  --accent-foreground: oklch(0.1 0.01 200); /* Dark text on accent */
+    /* Tertiary Colors */
+    --tertiary-primary: #c77dff;
+    --tertiary-secondary: #ff9f43;
+    --tertiary-tertiary: #54a0ff;
 
-  --destructive: oklch(0.6 0.22 20);
-  --border: oklch(0.1 0.02 340 / 20%);
-  --input: oklch(0.1 0.02 340 / 10%);
-  --ring: oklch(var(--primary-values)); /* Ring should match primary */
+    /* Market Colors */
+    --market-up: #30d158;
+    --market-down: #ff453a;
+    --market-neutral: #98989a;
 
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.7 0.1 200); /* Use accent for one chart color */
-  --chart-3: oklch(var(--primary-values));
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
+    /* Status Colors */
+    --status-success: #30d158;
+    --status-warning: #ff9f0a;
+    --status-error: #ff453a;
+    --status-info: #007aff;
 
-  --sidebar: oklch(0.97 0.003 280);
-  --sidebar-foreground: oklch(0.15 0.005 280);
-  --sidebar-primary: oklch(0.3072 0.103 262.3);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.95 0.005 280);
-  --sidebar-accent-foreground: oklch(0.15 0.005 280);
-  --sidebar-border: oklch(0.1 0.01 280 / 15%);
-  --sidebar-ring: oklch(0.3072 0.103 262.3);
-}
+    /* Typography Scale */
+    --text-xs: 0.64rem;    /* 10.24px */
+    --text-sm: 0.8rem;     /* 12.8px */
+    --text-base: 1rem;     /* 16px */
+    --text-lg: 1.25rem;    /* 20px */
+    --text-xl: 1.563rem;   /* 25px */
+    --text-2xl: 1.953rem;  /* 31.25px */
+    --text-3xl: 2.441rem;  /* 39px */
+    --text-4xl: 3.052rem;  /* 48.8px */
+    --text-5xl: 3.815rem;  /* 61px */
+    --text-6xl: 4.768rem;  /* 76.3px */
 
-.dark {
-  /* Sakura Theme - Dark */
-  --background: oklch(0.12 0.025 330); /* Dark desaturated magenta */
-  --foreground: oklch(0.98 0.005 330); /* Light pinkish white */
+    /* Spacing Scale */
+    --space-1: 0.25rem;    /* 4px */
+    --space-2: 0.5rem;     /* 8px */
+    --space-3: 0.75rem;    /* 12px */
+    --space-4: 1rem;       /* 16px */
+    --space-5: 1.5rem;     /* 24px */
+    --space-6: 2.25rem;    /* 36px */
+    --space-7: 3.375rem;   /* 54px */
+    --space-8: 5.063rem;   /* 81px */
+    --space-9: 7.594rem;   /* 121px */
+    --space-10: 11.391rem; /* 182px */
 
-  /* For the glow effect */
-  --primary-values: 0.8 0.18 340;
+    /* Font Families */
+    --font-primary: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --font-mono: "SF Mono", Monaco, "Roboto Mono", monospace;
 
-  --card: oklch(0.15 0.03 330);
-  --card-foreground: oklch(0.98 0.005 330);
+    /* Font Weights */
+    --font-light: 300;
+    --font-regular: 400;
+    --font-medium: 500;
+    --font-semibold: 600;
+    --font-bold: 700;
+    --font-extrabold: 800;
 
-  --popover: oklch(0.13 0.03 330);
-  --popover-foreground: oklch(0.98 0.005 330);
+    /* Animation Easing */
+    --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+    --ease-out-circ: cubic-bezier(0.075, 0.82, 0.165, 1);
+    --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+    --ease-in-out-quart: cubic-bezier(0.77, 0, 0.175, 1);
 
-  --primary: oklch(var(--primary-values)); /* Bright Pink */
-  --primary-foreground: oklch(0.12 0.025 330);
+    /* Duration Tokens */
+    --duration-fast: 0.15s;
+    --duration-normal: 0.3s;
+    --duration-slow: 0.5s;
+    --duration-slower: 0.75s;
 
-  --secondary: oklch(0.2 0.04 330);
-  --secondary-foreground: oklch(0.98 0.005 330);
+    /* Chart Colors */
+    --chart-color-1: #ff6b6b;
+    --chart-color-2: #4ecdc4;
+    --chart-color-3: #45b7d1;
+    --chart-color-4: #f9ca24;
+    --chart-color-5: #f0932b;
+    --chart-color-6: #eb4d4b;
+    --chart-color-7: #6c5ce7;
+    --chart-color-8: #a29bfe;
 
-  --muted: oklch(0.2 0.04 330);
-  --muted-foreground: oklch(0.8 0.02 330);
+    /* Legacy Tailwind Variables */
+    --background: var(--bg-primary);
+    --foreground: var(--text-primary);
+    --card: var(--bg-secondary);
+    --card-foreground: var(--text-primary);
+    --popover: var(--bg-secondary);
+    --popover-foreground: var(--text-primary);
+    --primary: var(--accent-primary);
+    --primary-foreground: var(--text-primary);
+    --secondary: var(--bg-tertiary);
+    --secondary-foreground: var(--text-primary);
+    --muted: var(--bg-tertiary);
+    --muted-foreground: var(--text-secondary);
+    --accent: var(--accent-primary);
+    --accent-foreground: var(--text-primary);
+    --destructive: var(--status-error);
+    --border: var(--bg-tertiary);
+    --input: var(--bg-tertiary);
+    --ring: var(--accent-primary);
+    
+    --chart-1: var(--chart-color-1);
+    --chart-2: var(--chart-color-2);
+    --chart-3: var(--chart-color-3);
+    --chart-4: var(--chart-color-4);
+    --chart-5: var(--chart-color-5);
+  }
 
-  --accent: oklch(0.8 0.1 190); /* Bright Cyan */
-  --accent-foreground: oklch(0.1 0.01 190);
+  .dark {
+    /* ===== DARK THEME - CRYPTO FINANCE APP ===== */
+    
+    /* Dark Theme Base Colors */
+    --bg-primary: #000000;        /* Pure black background */
+    --bg-secondary: #1c1c1e;      /* Secondary surfaces */
+    --bg-tertiary: #2c2c2e;       /* Elevated surfaces */
+    --bg-quaternary: #3a3a3c;     /* Interactive elements */
 
-  --destructive: oklch(0.7 0.22 25);
-  --border: oklch(1 0 0 / 15%);
-  --input: oklch(1 0 0 / 10%);
-  --ring: oklch(var(--primary-values)); /* Ring should match dark primary */
+    /* Text Colors */
+    --text-primary: #ffffff;       /* Primary text */
+    --text-secondary: #98989a;     /* Secondary text */
+    --text-tertiary: #636366;      /* Disabled/subtle text */
+    --text-quaternary: #48484a;    /* Placeholder text */
 
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.8 0.1 190); /* Use accent for one chart color */
-  --chart-3: oklch(var(--primary-values));
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  
-  --sidebar: oklch(0.12 0.002 280);
-  --sidebar-foreground: oklch(0.98 0 0);
-  --sidebar-primary: oklch(0.65 0.22 258);
-  --sidebar-primary-foreground: oklch(0.1 0.01 260);
-  --sidebar-accent: oklch(0.2 0.006 280);
-  --sidebar-accent-foreground: oklch(0.98 0 0);
-  --sidebar-border: oklch(1 0 0 / 15%);
-  --sidebar-ring: oklch(0.65 0.22 258);
-}
+    /* Pastel Red Accent */
+    --accent-primary: #ff6b6b;     /* Main accent - pastel red */
+    --accent-secondary: #ff8e8e;   /* Lighter variant */
+    --accent-tertiary: #ffb3b3;    /* Lightest variant */
+
+    /* Secondary Colors */
+    --secondary-primary: #64d2ff;  /* Soft blue for info */
+    --secondary-secondary: #87e8ac; /* Soft green for success */
+    --secondary-tertiary: #ffd93d;  /* Soft yellow for warning */
+
+    /* Tertiary Colors */
+    --tertiary-primary: #c77dff;   /* Soft purple for special actions */
+    --tertiary-secondary: #ff9f43; /* Soft orange for highlights */
+    --tertiary-tertiary: #54a0ff;  /* Soft blue for links */
+
+    /* Market Colors */
+    --market-up: #30d158;         /* Green for price increase */
+    --market-down: #ff453a;       /* Red for price decrease */
+    --market-neutral: #98989a;    /* Gray for no change */
+
+    /* Status Colors */
+    --status-success: #30d158;
+    --status-warning: #ff9f0a;
+    --status-error: #ff453a;
+    --status-info: #007aff;
+
+    /* Legacy Tailwind Variables */
+    --background: var(--bg-primary);
+    --foreground: var(--text-primary);
+    --card: var(--bg-secondary);
+    --card-foreground: var(--text-primary);
+    --popover: var(--bg-secondary);
+    --popover-foreground: var(--text-primary);
+    --primary: var(--accent-primary);
+    --primary-foreground: #000000;
+    --secondary: var(--bg-tertiary);
+    --secondary-foreground: var(--text-primary);
+    --muted: var(--bg-tertiary);
+    --muted-foreground: var(--text-secondary);
+    --accent: var(--accent-primary);
+    --accent-foreground: #000000;
+    --destructive: var(--status-error);
+    --border: var(--bg-tertiary);
+    --input: var(--bg-tertiary);
+    --ring: var(--accent-primary);
+  }
 }
 
 @layer base {
   * {
     @apply border-border;
   }
+  
   body {
     @apply bg-background text-foreground;
-    background-image: linear-gradient(to bottom, oklch(0.99 0.005 340), oklch(0.98 0.015 350));
+    font-family: var(--font-primary);
+    background: var(--bg-primary);
+    color: var(--text-primary);
   }
-  .dark body {
-    background-image: linear-gradient(to bottom, oklch(0.13 0.028 330), oklch(0.12 0.025 330));
+
+  /* Typography Components */
+  .headline-1 { 
+    font-size: var(--text-6xl); 
+    font-weight: var(--font-bold); 
+    line-height: 1.1; 
+    font-family: var(--font-primary);
+  }
+  
+  .headline-2 { 
+    font-size: var(--text-5xl); 
+    font-weight: var(--font-bold); 
+    line-height: 1.1; 
+    font-family: var(--font-primary);
+  }
+  
+  .headline-3 { 
+    font-size: var(--text-4xl); 
+    font-weight: var(--font-semibold); 
+    line-height: 1.2; 
+    font-family: var(--font-primary);
+  }
+  
+  .headline-4 { 
+    font-size: var(--text-3xl); 
+    font-weight: var(--font-semibold); 
+    line-height: 1.2; 
+    font-family: var(--font-primary);
+  }
+  
+  .headline-5 { 
+    font-size: var(--text-2xl); 
+    font-weight: var(--font-semibold); 
+    line-height: 1.3; 
+    font-family: var(--font-primary);
+  }
+  
+  .headline-6 { 
+    font-size: var(--text-xl); 
+    font-weight: var(--font-semibold); 
+    line-height: 1.3; 
+    font-family: var(--font-primary);
+  }
+
+  /* Body Text */
+  .body-large { 
+    font-size: var(--text-lg); 
+    font-weight: var(--font-regular); 
+    line-height: 1.6; 
+    font-family: var(--font-primary);
+  }
+  
+  .body-regular { 
+    font-size: var(--text-base); 
+    font-weight: var(--font-regular); 
+    line-height: 1.6; 
+    font-family: var(--font-primary);
+  }
+  
+  .body-small { 
+    font-size: var(--text-sm); 
+    font-weight: var(--font-regular); 
+    line-height: 1.5; 
+    font-family: var(--font-primary);
+  }
+
+  /* Captions */
+  .caption-large { 
+    font-size: var(--text-sm); 
+    font-weight: var(--font-medium); 
+    line-height: 1.4; 
+    font-family: var(--font-primary);
+  }
+  
+  .caption-regular { 
+    font-size: var(--text-xs); 
+    font-weight: var(--font-medium); 
+    line-height: 1.4; 
+    font-family: var(--font-primary);
+  }
+
+  /* Numbers (for prices, percentages) */
+  .number-large { 
+    font-family: var(--font-mono); 
+    font-size: var(--text-2xl); 
+    font-weight: var(--font-semibold); 
+  }
+  
+  .number-regular { 
+    font-family: var(--font-mono); 
+    font-size: var(--text-base); 
+    font-weight: var(--font-medium); 
+  }
+  
+  .number-small { 
+    font-family: var(--font-mono); 
+    font-size: var(--text-sm); 
+    font-weight: var(--font-medium); 
+  }
+}
+
+@layer components {
+  /* ===== CARD COMPONENTS ===== */
+  .card-primary {
+    background: var(--bg-secondary);
+    border: 1px solid var(--bg-tertiary);
+    border-radius: var(--radius-4);
+    padding: var(--space-5);
+  }
+
+  .card-elevated {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--bg-quaternary);
+    border-radius: var(--radius-4);
+    padding: var(--space-5);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  }
+
+  .card-news {
+    background: var(--bg-secondary);
+    border: 1px solid var(--bg-tertiary);
+    border-radius: var(--radius-3);
+    padding: var(--space-4);
+    transition: all var(--duration-normal) var(--ease-out-quart);
+  }
+
+  .card-news:hover {
+    border-color: var(--accent-primary);
+    transform: translateY(-2px);
+  }
+
+  /* ===== BUTTON COMPONENTS ===== */
+  .btn-primary {
+    background: var(--accent-primary);
+    color: var(--text-primary);
+    border: none;
+    border-radius: var(--radius-3);
+    padding: var(--space-3) var(--space-5);
+    font-weight: var(--font-semibold);
+    transition: all 0.2s ease;
+    font-family: var(--font-primary);
+  }
+
+  .btn-primary:hover {
+    background: var(--accent-secondary);
+    transform: translateY(-1px);
+  }
+
+  .btn-secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--bg-quaternary);
+    border-radius: var(--radius-3);
+    padding: var(--space-3) var(--space-5);
+    font-weight: var(--font-medium);
+    transition: all 0.2s ease;
+    font-family: var(--font-primary);
+  }
+
+  .btn-secondary:hover {
+    background: var(--bg-quaternary);
+    border-color: var(--accent-primary);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid transparent;
+    border-radius: var(--radius-3);
+    padding: var(--space-3) var(--space-5);
+    font-weight: var(--font-medium);
+    transition: all 0.2s ease;
+    font-family: var(--font-primary);
+  }
+
+  .btn-ghost:hover {
+    color: var(--text-primary);
+    background: var(--bg-tertiary);
+  }
+
+  /* ===== TABLE COMPONENTS ===== */
+  .table-container {
+    background: var(--bg-secondary);
+    border: 1px solid var(--bg-tertiary);
+    border-radius: var(--radius-4);
+    overflow: hidden;
+  }
+
+  .table-header {
+    background: var(--bg-tertiary);
+    padding: var(--space-4);
+    font-weight: var(--font-semibold);
+    color: var(--text-secondary);
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-family: var(--font-primary);
+  }
+
+  .table-row {
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--bg-tertiary);
+    transition: background-color 0.2s ease;
+  }
+
+  .table-row:hover {
+    background: var(--bg-tertiary);
+  }
+
+  .table-cell-number {
+    font-family: var(--font-mono);
+    font-weight: var(--font-medium);
+  }
+
+  .table-cell-positive {
+    color: var(--market-up);
+  }
+
+  .table-cell-negative {
+    color: var(--market-down);
+  }
+
+  /* ===== NEWS COMPONENTS ===== */
+  .news-item {
+    background: var(--bg-secondary);
+    border: 1px solid var(--bg-tertiary);
+    border-radius: var(--radius-3);
+    padding: var(--space-4);
+    margin-bottom: var(--space-3);
+    transition: all var(--duration-normal) var(--ease-out-quart);
+  }
+
+  .news-item:hover {
+    border-color: var(--accent-primary);
+    transform: translateY(-2px);
+  }
+
+  .news-item-title {
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    margin-bottom: var(--space-2);
+    line-height: 1.4;
+    font-family: var(--font-primary);
+  }
+
+  .news-item-excerpt {
+    font-size: var(--text-base);
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: var(--space-3);
+    font-family: var(--font-primary);
+  }
+
+  .news-item-meta {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-primary);
+  }
+
+  /* ===== PRICE COMPONENTS ===== */
+  .price-display {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xl);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+  }
+
+  .price-change {
+    font-family: var(--font-mono);
+    font-size: var(--text-base);
+    font-weight: var(--font-medium);
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+
+  .price-change.positive {
+    color: var(--market-up);
+  }
+
+  .price-change.negative {
+    color: var(--market-down);
+  }
+
+  .price-change.neutral {
+    color: var(--market-neutral);
+  }
+
+  /* ===== CHART COMPONENTS ===== */
+  .chart-container {
+    background: var(--bg-secondary);
+    border: 1px solid var(--bg-tertiary);
+    border-radius: var(--radius-4);
+    padding: var(--space-5);
+    position: relative;
+  }
+
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-4);
+  }
+
+  .chart-title {
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    font-family: var(--font-primary);
+  }
+
+  .chart-controls {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  /* ===== ACCESSIBILITY ===== */
+  .focus-ring:focus {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+  }
+
+  .skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: var(--accent-primary);
+    color: var(--text-primary);
+    padding: 8px;
+    text-decoration: none;
+    z-index: 1000;
+    border-radius: var(--radius-2);
+  }
+
+  .skip-link:focus {
+    top: 6px;
+  }
+
+  /* ===== LAYOUT UTILITIES ===== */
+  .container-full {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 var(--space-4);
+  }
+
+  @media (min-width: 640px) {
+    .container-full { 
+      padding: 0 var(--space-5); 
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container-full { 
+      padding: 0 var(--space-6); 
+    }
+  }
+
+  .section-spacing {
+    padding: var(--space-8) 0;
+  }
+
+  @media (min-width: 768px) {
+    .section-spacing { 
+      padding: var(--space-9) 0; 
+    }
+  }
+}
+
+@layer utilities {
+  /* ===== ANIMATION KEYFRAMES ===== */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes skeleton {
+    0% { opacity: 1; }
+    50% { opacity: 0.4; }
+    100% { opacity: 1; }
+  }
+
+  @keyframes pricePulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes accordionDown {
+    from { height: 0; }
+    to { height: var(--radix-accordion-content-height); }
+  }
+
+  @keyframes accordionUp {
+    from { height: var(--radix-accordion-content-height); }
+    to { height: 0; }
+  }
+
+  /* ===== ACCESSIBILITY MEDIA QUERIES ===== */
+  @media (prefers-contrast: high) {
+    :root {
+      --text-secondary: #cccccc;
+      --text-tertiary: #999999;
+      --bg-tertiary: #333333;
+      --bg-quaternary: #444444;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }

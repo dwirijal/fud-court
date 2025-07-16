@@ -18,15 +18,17 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+import { Home, BookOpen, BarChart3 } from "lucide-react";
 
 // Define navigation structure
 interface NavLinkType {
   label: string;
   href: string;
+  icon?: React.ReactNode;
 }
 
 const mainNavLinks: NavLinkType[] = [
-  { href: "/", label: "Beranda" },
+  { href: "/", label: "Beranda", icon: <Home className="w-5 h-5 mr-1" /> },
 ];
 
 const marketComponents: { title: string; href: string; description: string }[] = [
@@ -95,11 +97,12 @@ const readingComponents: { title: string; href: string; description: string }[] 
 // For mobile, we flatten the structure into a single list and ensure "Home" is present.
 const mobileNavLinks = [
     { href: "/", label: "Beranda" },
-    ...mainNavLinks, 
     ...marketComponents.map(item => ({ href: item.href, label: item.title })),
     ...readingComponents.map(item => ({ href: item.href, label: item.title }))
 ];
 
+const marketMenu = { label: "Pasar", icon: <BarChart3 className="w-5 h-5 mr-1" /> };
+const readingMenu = { label: "Bacaan", icon: <BookOpen className="w-5 h-5 mr-1" /> };
 
 export function Header() {
   const pathname = usePathname();
@@ -158,7 +161,7 @@ export function Header() {
         </Sheet>
       </header>
 
-      {/* Desktop Header: Dynamic Island */}
+      {/* Dynamic Island Lingkaran Sempurna ala Apple */}
       <div
         className="hidden md:flex items-center justify-center fixed top-4 left-0 right-0 z-50 pointer-events-none"
         onMouseEnter={() => setIsHovered(true)}
@@ -166,93 +169,13 @@ export function Header() {
       >
         <div
           className={cn(
-            "flex items-center justify-center rounded-full bg-background/60 border border-border shadow-lg backdrop-blur-md transition-all duration-200 ease-in-out pointer-events-auto",
-            isIslandExpanded ? "px-4 py-2 gap-2" : "p-2.5 gap-0"
+            "flex items-center justify-center rounded-full bg-background/70 border border-border shadow-xl backdrop-blur-lg transition-all duration-200 pointer-events-auto w-16 h-16 mx-auto p-0",
+            isHovered ? "scale-105" : "scale-100"
           )}
         >
-          <Link href="/" className="flex-shrink-0">
+          <Link href="/" className="flex-shrink-0 flex items-center justify-center w-full h-full">
             <Logo />
           </Link>
-
-          <div
-            className={cn(
-              "flex items-center transition-all duration-200 ease-in-out",
-              isIslandExpanded
-                ? "max-w-screen-lg opacity-100"
-                : "max-w-0 opacity-0"
-            )}
-          >
-            <NavigationMenu onValueChange={setActiveMenu} >
-              <NavigationMenuList>
-                {mainNavLinks.map((item) => (
-                    <NavigationMenuItem key={item.label}>
-                      <NavigationMenuLink asChild>
-                        <Link
-                          href={item.href}
-                          className={cn(
-                            navigationMenuTriggerStyle(),
-                            "bg-transparent hover:bg-accent text-sm font-medium",
-                            pathname === item.href
-                              ? "text-primary"
-                              : "text-foreground/70"
-                          )}
-                        >
-                          {item.label}
-                        </Link>
-                      </NavigationMenuLink>
-                    </NavigationMenuItem>
-                ))}
-
-                <NavigationMenuItem value="market">
-                    <NavigationMenuTrigger 
-                      className={cn(
-                        "bg-transparent hover:bg-accent text-sm font-medium data-[state=open]:bg-accent/50",
-                        marketComponents.some(c => pathname.startsWith(c.href)) ? "text-primary" : "text-foreground/70"
-                      )}
-                    >
-                        Pasar
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                        <ul className="grid w-[300px] gap-2 p-3">
-                            {marketComponents.map((component) => (
-                                <ListItem
-                                    key={component.title}
-                                    href={component.href}
-                                    title={component.title}
-                                >
-                                    {component.description}
-                                </ListItem>
-                            ))}
-                        </ul>
-                    </NavigationMenuContent>
-                </NavigationMenuItem>
-
-                <NavigationMenuItem value="reading">
-                    <NavigationMenuTrigger 
-                      className={cn(
-                        "bg-transparent hover:bg-accent text-sm font-medium data-[state=open]:bg-accent/50",
-                        isReadingPage ? "text-primary" : "text-foreground/70"
-                      )}
-                    >
-                        Bacaan
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                        <ul className="grid w-[300px] gap-2 p-3">
-                            {readingComponents.map((component) => (
-                                <ListItem
-                                    key={component.title}
-                                    href={component.href}
-                                    title={component.title}
-                                >
-                                    {component.description}
-                                </ListItem>
-                            ))}
-                        </ul>
-                    </NavigationMenuContent>
-                </NavigationMenuItem>
-              </NavigationMenuList>
-            </NavigationMenu>
-          </div>
         </div>
       </div>
     </>

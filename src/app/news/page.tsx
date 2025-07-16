@@ -4,7 +4,7 @@ import { NewsTable } from "./news-table";
 import Link from "next/link";
 
 export default async function NewsPage() {
-  const posts = await getPosts({ tag: 'news' });
+  const posts = await getPosts({ tag: 'realtime-news' });
 
   return (
     <div className="container mx-auto px-4 py-12 md:py-24">

@@ -31,12 +31,12 @@ const config: Config = {
     },
     borderRadius: {
       sm: 'var(--radius-2)',
-      DEFAULT: 'var(--radius-3)',
       md: 'var(--radius-3)',
       lg: 'var(--radius-4)',
       xl: 'var(--radius-5)',
       '2xl': 'var(--radius-6)',
       full: 'var(--radius-full)',
+      DEFAULT: 'var(--radius-3)',
     },
     fontSize: {
       xs: ['var(--text-xs)', { lineHeight: '1.4' }],

@@ -20,8 +20,8 @@ const buttonVariants = cva(
         link: "text-tertiary-tertiary underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-10 px-5 py-3 rounded-DEFAULT",
-        sm: "h-9 rounded-DEFAULT px-4",
+        default: "h-10 px-5 py-3 rounded-md",
+        sm: "h-9 rounded-md px-4",
         lg: "h-11 rounded-lg px-6 text-lg",
         icon: "h-10 w-10 rounded-full",
       },

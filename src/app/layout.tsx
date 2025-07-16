@@ -10,7 +10,8 @@ import { GlobalNewsTicker } from '@/components/organisms/global-news-ticker';
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-plus-jakarta-sans',
+  variable: '--font-primary',
+  weight: ['300', '400', '500', '600', '700', '800'],
 });
 
 export const metadata: Metadata = {
@@ -25,7 +26,7 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="id" suppressHydrationWarning>
-      <body className={`${plusJakartaSans.variable} font-body antialiased`}>
+      <body className={`${plusJakartaSans.variable} font-primary antialiased`}>
         <AppLayout>
           {children}
         </AppLayout>

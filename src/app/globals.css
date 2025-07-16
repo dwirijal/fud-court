@@ -3,110 +3,106 @@
 @tailwind utilities;
 
 @layer base {
-:root {
-  /* Sakura Theme - Light */
-  --background: oklch(0.99 0.005 340); /* Very light pink */
-  --foreground: oklch(0.2 0.03 340); /* Dark, desaturated pink */
+  :root {
+    /* Color System */
+    --bg-primary: #000000;
+    --bg-secondary: #1c1c1e;
+    --bg-tertiary: #2c2c2e;
+    --bg-quaternary: #3a3a3c;
+    --text-primary: #ffffff;
+    --text-secondary: #98989a;
+    --text-tertiary: #636366;
+    --text-quaternary: #48484a;
+    --accent-primary: #ff6b6b;
+    --accent-secondary: #ff8e8e;
+    --accent-tertiary: #ffb3b3;
+    --secondary-primary: #64d2ff;
+    --secondary-secondary: #87e8ac;
+    --secondary-tertiary: #ffd93d;
+    --tertiary-primary: #c77dff;
+    --tertiary-secondary: #ff9f43;
+    --tertiary-tertiary: #54a0ff;
+    --market-up: #30d158;
+    --market-down: #ff453a;
+    --market-neutral: #98989a;
+    --status-success: #30d158;
+    --status-warning: #ff9f0a;
+    --status-error: #ff453a;
+    --status-info: #007aff;
+    --border: var(--bg-tertiary);
+    --input: var(--bg-quaternary);
+    --ring: var(--accent-primary);
+    
+    /* Typography Scale */
+    --text-xs: 0.64rem;
+    --text-sm: 0.8rem;
+    --text-base: 1rem;
+    --text-lg: 1.25rem;
+    --text-xl: 1.563rem;
+    --text-2xl: 1.953rem;
+    --text-3xl: 2.441rem;
+    --text-4xl: 3.052rem;
+    --text-5xl: 3.815rem;
+    --text-6xl: 4.768rem;
+
+    /* Spacing Scale */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.5rem;
+    --space-6: 2.25rem;
+    --space-7: 3.375rem;
+    --space-8: 5.063rem;
+    --space-9: 7.594rem;
+    --space-10: 11.391rem;
+    
+    /* Border Radius Scale */
+    --radius-1: 0.125rem;
+    --radius-2: 0.25rem;
+    --radius-3: 0.5rem;
+    --radius-4: 0.75rem;
+    --radius-5: 1rem;
+    --radius-6: 1.5rem;
+    --radius-full: 9999px;
+
+    /* Font Family & Weights */
+    --font-primary: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --font-mono: "SF Mono", Monaco, "Roboto Mono", monospace;
+    --font-light: 300;
+    --font-regular: 400;
+    --font-medium: 500;
+    --font-semibold: 600;
+    --font-bold: 700;
+    --font-extrabold: 800;
+
+    /* Animation Tokens */
+    --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+    --ease-out-circ: cubic-bezier(0.075, 0.82, 0.165, 1);
+    --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+    --ease-in-out-quart: cubic-bezier(0.77, 0, 0.175, 1);
+    --duration-fast: 0.15s;
+    --duration-normal: 0.3s;
+    --duration-slow: 0.5s;
+    --duration-slower: 0.75s;
+
+    /* Chart colors are now separate from accent colors */
+    --chart-1: #ff6b6b;
+    --chart-2: #4ecdc4;
+    --chart-3: #45b7d1;
+    --chart-4: #f9ca24;
+    --chart-5: #f0932b;
+  }
   
-  /* For the glow effect */
-  --primary-values: 0.6 0.2 330;
+  .dark {
+    /* The design system is dark-first, so no changes needed here for now. */
+  }
 
-  --card: oklch(1 0 0); /* White cards */
-  --card-foreground: oklch(0.2 0.03 340);
-
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.2 0.03 340);
-
-  --primary: oklch(var(--primary-values)); /* Strong Pink */
-  --primary-foreground: oklch(0.99 0.005 340); /* Light pink text on primary */
-
-  --secondary: oklch(0.95 0.01 340); /* Lighter pink-gray */
-  --secondary-foreground: oklch(0.2 0.03 340);
-
-  --muted: oklch(0.97 0.008 340);
-  --muted-foreground: oklch(0.4 0.02 340);
-
-  --accent: oklch(0.7 0.1 200); /* Soft Teal */
-  --accent-foreground: oklch(0.1 0.01 200); /* Dark text on accent */
-
-  --destructive: oklch(0.6 0.22 20);
-  --border: oklch(0.1 0.02 340 / 20%);
-  --input: oklch(0.1 0.02 340 / 10%);
-  --ring: oklch(var(--primary-values)); /* Ring should match primary */
-
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.7 0.1 200); /* Use accent for one chart color */
-  --chart-3: oklch(var(--primary-values));
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-
-  --sidebar: oklch(0.97 0.003 280);
-  --sidebar-foreground: oklch(0.15 0.005 280);
-  --sidebar-primary: oklch(0.3072 0.103 262.3);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.95 0.005 280);
-  --sidebar-accent-foreground: oklch(0.15 0.005 280);
-  --sidebar-border: oklch(0.1 0.01 280 / 15%);
-  --sidebar-ring: oklch(0.3072 0.103 262.3);
-}
-
-.dark {
-  /* Sakura Theme - Dark */
-  --background: oklch(0.12 0.025 330); /* Dark desaturated magenta */
-  --foreground: oklch(0.98 0.005 330); /* Light pinkish white */
-
-  /* For the glow effect */
-  --primary-values: 0.8 0.18 340;
-
-  --card: oklch(0.15 0.03 330);
-  --card-foreground: oklch(0.98 0.005 330);
-
-  --popover: oklch(0.13 0.03 330);
-  --popover-foreground: oklch(0.98 0.005 330);
-
-  --primary: oklch(var(--primary-values)); /* Bright Pink */
-  --primary-foreground: oklch(0.12 0.025 330);
-
-  --secondary: oklch(0.2 0.04 330);
-  --secondary-foreground: oklch(0.98 0.005 330);
-
-  --muted: oklch(0.2 0.04 330);
-  --muted-foreground: oklch(0.8 0.02 330);
-
-  --accent: oklch(0.8 0.1 190); /* Bright Cyan */
-  --accent-foreground: oklch(0.1 0.01 190);
-
-  --destructive: oklch(0.7 0.22 25);
-  --border: oklch(1 0 0 / 15%);
-  --input: oklch(1 0 0 / 10%);
-  --ring: oklch(var(--primary-values)); /* Ring should match dark primary */
-
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.8 0.1 190); /* Use accent for one chart color */
-  --chart-3: oklch(var(--primary-values));
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  
-  --sidebar: oklch(0.12 0.002 280);
-  --sidebar-foreground: oklch(0.98 0 0);
-  --sidebar-primary: oklch(0.65 0.22 258);
-  --sidebar-primary-foreground: oklch(0.1 0.01 260);
-  --sidebar-accent: oklch(0.2 0.006 280);
-  --sidebar-accent-foreground: oklch(0.98 0 0);
-  --sidebar-border: oklch(1 0 0 / 15%);
-  --sidebar-ring: oklch(0.65 0.22 258);
-}
-}
-
-@layer base {
   * {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground text-base;
-    background-image: linear-gradient(to bottom, oklch(0.99 0.005 340), oklch(0.98 0.015 350));
-  }
-  .dark body {
-    background-image: linear-gradient(to bottom, oklch(0.13 0.028 330), oklch(0.12 0.025 330));
+    @apply bg-bg-primary text-text-primary;
+    font-family: var(--font-primary);
   }
 }

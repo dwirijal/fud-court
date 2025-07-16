@@ -1,6 +1,6 @@
 import type {Config} from 'tailwindcss';
 
-export default {
+const config: Config = {
   darkMode: "class",
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -9,97 +9,141 @@ export default {
   ],
   theme: {
     spacing: {
-      0: '0px',
-      1: '4px',
-      2: '8px',
-      3: '12px',
-      4: '16px',
-      5: '24px',
-      6: '32px',
-      7: '40px',
-      8: '64px',
+      '1': 'var(--space-1)',
+      '2': 'var(--space-2)',
+      '3': 'var(--space-3)',
+      '4': 'var(--space-4)',
+      '5': 'var(--space-5)',
+      '6': 'var(--space-6)',
+      '7': 'var(--space-7)',
+      '8': 'var(--space-8)',
+      '9': 'var(--space-9)',
+      '10': 'var(--space-10)',
     },
     borderRadius: {
-      sm: '4px',
-      DEFAULT: '8px',
-      lg: '12px',
+      '1': 'var(--radius-1)',
+      '2': 'var(--radius-2)',
+      '3': 'var(--radius-3)',
+      '4': 'var(--radius-4)',
+      '5': 'var(--radius-5)',
+      '6': 'var(--radius-6)',
+      'full': 'var(--radius-full)',
     },
     fontSize: {
-      base: ['1rem', '1.5'],      // 16px
-      lg: ['1.25rem', '1.6'],     // 20px
-      xl: ['1.563rem', '1.6'],    // 25px
-      '2xl': ['1.953rem', '1.4'], // 31.25px
-      '3xl': ['2.441rem', '1.3'], // 39px
-      '4xl': ['3.052rem', '1.2'], // 48.8px
+      'xs': 'var(--text-xs)',
+      'sm': 'var(--text-sm)',
+      'base': 'var(--text-base)',
+      'lg': 'var(--text-lg)',
+      'xl': 'var(--text-xl)',
+      '2xl': 'var(--text-2xl)',
+      '3xl': 'var(--text-3xl)',
+      '4xl': 'var(--text-4xl)',
+      '5xl': 'var(--text-5xl)',
+      '6xl': 'var(--text-6xl)',
     },
     extend: {
       fontFamily: {
-        body: ['var(--font-plus-jakarta-sans)', 'sans-serif'],
-        headline: ['var(--font-plus-jakarta-sans)', 'sans-serif'],
-        code: ['monospace'],
+        primary: 'var(--font-primary)',
+        mono: 'var(--font-mono)',
+        body: 'var(--font-primary)',
+        headline: 'var(--font-primary)',
+      },
+      fontWeight: {
+        light: 'var(--font-light)',
+        regular: 'var(--font-regular)',
+        medium: 'var(--font-medium)',
+        semibold: 'var(--font-semibold)',
+        bold: 'var(--font-bold)',
+        extrabold: 'var(--font-extrabold)',
       },
       colors: {
-        background: 'var(--background)',
-        foreground: 'var(--foreground)',
-        card: {
-          DEFAULT: 'var(--card)',
-          foreground: 'var(--card-foreground)',
-        },
-        popover: {
-          DEFAULT: 'var(--popover)',
-          foreground: 'var(--popover-foreground)',
-        },
-        primary: {
-          DEFAULT: 'var(--primary)',
-          foreground: 'var(--primary-foreground)',
-        },
-        secondary: {
-          DEFAULT: 'var(--secondary)',
-          foreground: 'var(--secondary-foreground)',
-        },
-        muted: {
-          DEFAULT: 'var(--muted)',
-          foreground: 'var(--muted-foreground)',
-        },
-        accent: {
-          DEFAULT: 'var(--accent)',
-          foreground: 'var(--accent-foreground)',
-        },
-        destructive: {
-          DEFAULT: 'var(--destructive)',
-          foreground: 'var(--destructive-foreground)',
-        },
+        'bg-primary': 'var(--bg-primary)',
+        'bg-secondary': 'var(--bg-secondary)',
+        'bg-tertiary': 'var(--bg-tertiary)',
+        'bg-quaternary': 'var(--bg-quaternary)',
+        'text-primary': 'var(--text-primary)',
+        'text-secondary': 'var(--text-secondary)',
+        'text-tertiary': 'var(--text-tertiary)',
+        'text-quaternary': 'var(--text-quaternary)',
+        'accent-primary': 'var(--accent-primary)',
+        'accent-secondary': 'var(--accent-secondary)',
+        'accent-tertiary': 'var(--accent-tertiary)',
+        'secondary-primary': 'var(--secondary-primary)',
+        'secondary-secondary': 'var(--secondary-secondary)',
+        'secondary-tertiary': 'var(--secondary-tertiary)',
+        'tertiary-primary': 'var(--tertiary-primary)',
+        'tertiary-secondary': 'var(--tertiary-secondary)',
+        'tertiary-tertiary': 'var(--tertiary-tertiary)',
+        'market-up': 'var(--market-up)',
+        'market-down': 'var(--market-down)',
+        'market-neutral': 'var(--market-neutral)',
+        'status-success': 'var(--status-success)',
+        'status-warning': 'var(--status-warning)',
+        'status-error': 'var(--status-error)',
+        'status-info': 'var(--status-info)',
         border: 'var(--border)',
         input: 'var(--input)',
         ring: 'var(--ring)',
+        background: 'var(--bg-primary)',
+        foreground: 'var(--text-primary)',
+        card: {
+          DEFAULT: 'var(--bg-secondary)',
+          foreground: 'var(--text-primary)',
+        },
+        popover: {
+          DEFAULT: 'var(--bg-tertiary)',
+          foreground: 'var(--text-primary)',
+        },
+        primary: {
+          DEFAULT: 'var(--accent-primary)',
+          foreground: 'var(--text-primary)',
+        },
+        secondary: {
+          DEFAULT: 'var(--bg-tertiary)',
+          foreground: 'var(--text-primary)',
+        },
+        muted: {
+          DEFAULT: 'var(--bg-tertiary)',
+          foreground: 'var(--text-secondary)',
+        },
+        accent: {
+          DEFAULT: 'var(--accent-primary)',
+          foreground: 'var(--text-primary)',
+        },
+        destructive: {
+          DEFAULT: 'var(--status-error)',
+          foreground: 'var(--text-primary)',
+        },
         chart: {
-          '1': 'var(--chart-1)',
-          '2': 'var(--chart-2)',
-          '3': 'var(--chart-3)',
-          '4': 'var(--chart-4)',
-          '5': 'var(--chart-5)',
+          '1': 'var(--chart-color-1)',
+          '2': 'var(--chart-color-2)',
+          '3': 'var(--chart-color-3)',
+          '4': 'var(--chart-color-4)',
+          '5': 'var(--chart-color-5)',
         },
       },
       keyframes: {
         'accordion-down': {
-          from: {
-            height: '0',
-          },
-          to: {
-            height: 'var(--radix-accordion-content-height)',
-          },
+          from: { height: '0' },
+          to: { height: 'var(--radix-accordion-content-height)' },
         },
         'accordion-up': {
-          from: {
-            height: 'var(--radix-accordion-content-height)',
-          },
-          to: {
-            height: '0',
-          },
+          from: { height: 'var(--radix-accordion-content-height)' },
+          to: { height: '0' },
         },
-        'pulse-gradient': {
-          '0%, 100%': { 'background-position': '0% 50%' },
-          '50%': { 'background-position': '100% 50%' },
+        'fadeInUp': {
+          from: { opacity: '0', transform: 'translateY(20px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        'skeleton': {
+          '0%': { opacity: '1' },
+          '50%': { opacity: '0.4' },
+          '100%': { opacity: '1' },
+        },
+        'pricePulse': {
+          '0%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(1.05)' },
+          '100%': { transform: 'scale(1)' },
         },
         'marquee': {
           'from': { transform: 'translateX(0)' },
@@ -109,10 +153,14 @@ export default {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
-        'pulse-gradient': 'pulse-gradient 5s ease-in-out infinite',
+        'fadeInUp': 'fadeInUp var(--duration-normal) var(--ease-out-quart)',
+        'skeleton': 'skeleton 1.5s ease-in-out infinite',
+        'pricePulse': 'pricePulse 0.6s ease-in-out',
         'marquee': 'marquee 60s linear infinite',
       },
     },
   },
   plugins: [require('tailwindcss-animate'), require('@tailwindcss/typography')],
-} satisfies Config;
+};
+
+export default config;

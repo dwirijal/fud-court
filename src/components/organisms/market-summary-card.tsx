@@ -9,7 +9,7 @@ import { analyzeMarketSentiment } from '@/ai/flows/market-analysis-flow';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { AlertTriangle, CheckCircle, ArrowRight, Scale, Zap, TrendingUp, Package } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 import { Button } from '@/components/ui/button';
 import {
   Tooltip,
@@ -136,11 +136,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
   if (isLoading) {
     return (
       <div className="space-y-6">
-          <div className="space-y-2">
-            <Skeleton className="h-8 w-3/4 mb-2" />
-            <Skeleton className="h-6 w-1/2" />
-          </div>
-          <Skeleton className="h-[120px] w-full mb-4" />
+          <Skeleton className="h-[220px] w-full mb-4" />
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
               {Array.from({ length: 5 }).map((_, i) => (
                   <Skeleton key={i} className="h-24 w-full aspect-square" />
@@ -169,7 +165,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
         <Card className="bg-primary/5 border-primary/20 overflow-hidden">
              <CardHeader>
                 <CardTitle className="text-3xl md:text-4xl font-headline">Gambaran Umum Pasar Saat Ini</CardTitle>
-                <CardDescription className="text-lg md:text-xl max-w-2xl text-muted-foreground">
+                <CardDescription className="text-sm max-w-2xl text-muted-foreground">
                     Mengukur kondisi pasar crypto secara keseluruhan menggunakan 5 indikator gabungan utama.
                 </CardDescription>
             </CardHeader>

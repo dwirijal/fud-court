@@ -1,6 +1,7 @@
 
 'use client'
 
+import * as React from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 import type { Post } from '@/types'
 import { format } from 'date-fns'
@@ -48,9 +49,14 @@ export const columns: ColumnDef<Post>[] = [
         header: () => <div className="text-right">Tanggal Terbit</div>,
         cell: ({ row }) => {
             const dateString = row.getValue('published_at') as string;
-            // Formatting only the date is safe from hydration errors.
-            const formattedDate = format(new Date(dateString), "d MMMM yyyy");
-            return <div className="text-right tabular-nums text-muted-foreground">{formattedDate}</div>
+            const [formattedDate, setFormattedDate] = React.useState('');
+
+            React.useEffect(() => {
+                // Defer date formatting to the client to prevent hydration mismatch
+                setFormattedDate(format(new Date(dateString), "d MMMM yyyy"));
+            }, [dateString]);
+            
+            return <div className="text-right tabular-nums text-muted-foreground">{formattedDate || '...'}</div>
         },
     },
 ]

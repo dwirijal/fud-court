@@ -75,17 +75,17 @@ function IndicatorCard({ detail, value }: { detail: typeof indicatorDetails[numb
             <Tooltip>
                 <TooltipTrigger asChild>
                     <Link href={`/markets#${detail.valueKey}`} className="group block h-full">
-                        <Card className="flex flex-col aspect-square hover:bg-muted/50 transition-colors">
-                             <CardContent className="p-4 flex flex-col flex-grow justify-between gap-4">
-                                <div className="bg-muted p-1.5 rounded-full w-fit">
-                                    <detail.icon className="h-4 w-4 text-muted-foreground" />
-                                </div>
-                                
-                                <AnimatedNumber to={value} className="text-5xl font-bold tracking-tighter" />
-
+                        <Card className="flex flex-col aspect-square hover:bg-muted/50 transition-colors h-full">
+                             <CardContent className="p-4 flex flex-col flex-grow justify-between items-start gap-2">
                                 <div>
+                                    <div className="bg-muted p-1.5 rounded-full w-fit mb-2">
+                                        <detail.icon className="h-4 w-4 text-muted-foreground" />
+                                    </div>
                                     <p className="text-xs font-medium text-muted-foreground">{detail.name}</p>
-                                    <Progress value={value} className="h-1 w-full mt-1" />
+                                </div>
+                                <div className="w-full">
+                                    <AnimatedNumber to={value} className="text-4xl font-bold tracking-tighter" />
+                                    <Progress value={value} className="h-1.5 w-full mt-2" />
                                 </div>
                             </CardContent>
                         </Card>

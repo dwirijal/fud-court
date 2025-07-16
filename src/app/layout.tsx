@@ -14,7 +14,7 @@ const fontSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'CryptoPulse',
+  title: 'Fud Court',
   description: 'Clarity in Chaos. Your all-in-one command center for crypto.',
 };
 

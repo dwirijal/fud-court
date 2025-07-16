@@ -30,7 +30,7 @@ export default function LoginPage() {
             <div className="flex flex-col items-center text-center">
                 <Logo />
                 <h1 className="mt-4 text-2xl font-semibold tracking-tight">
-                    Welcome to CryptoPulse
+                    Welcome to Fud Court
                 </h1>
                 <p className="text-sm text-muted-foreground">
                     Your journey to clarity in the crypto world starts here.

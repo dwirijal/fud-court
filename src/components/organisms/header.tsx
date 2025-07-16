@@ -107,7 +107,7 @@ export function Header() {
         <Link href="/" className="flex items-center gap-3">
           <Logo />
           <span className="text-xl font-semibold tracking-tight text-foreground">
-            CryptoPulse
+            Fud Court
           </span>
         </Link>
         <Sheet>
@@ -125,7 +125,7 @@ export function Header() {
               <Link href="/" className="flex items-center gap-3 mb-6">
                 <Logo />
                 <span className="text-xl font-semibold tracking-tight text-foreground">
-                  CryptoPulse
+                  Fud Court
                 </span>
               </Link>
               <nav className="grid gap-4 text-lg font-medium">

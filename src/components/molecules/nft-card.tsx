@@ -62,7 +62,7 @@ export function NftCard() {
           >
             <Image
               src="https://placehold.co/600x600.png"
-              alt="CryptoPulse Genesis NFT"
+              alt="Fud Court Genesis NFT"
               fill
               className="object-cover"
               data-ai-hint="futuristic cyberpunk animal"

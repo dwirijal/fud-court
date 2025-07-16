@@ -14,11 +14,11 @@ export function Footer() {
             <Link href="/" className="flex items-center gap-3 mb-4">
               <Logo />
               <span className="text-xl font-semibold tracking-tight text-foreground">
-                CryptoPulse
+                Fud Court
               </span>
             </Link>
             <p className="text-muted-foreground text-sm max-w-xs">
-              Clarity in Chaos. CryptoPulse cuts through market noise with data-driven analysis and unbiased news.
+              Clarity in Chaos. Fud Court cuts through market noise with data-driven analysis and unbiased news.
             </p>
           </div>
 
@@ -66,7 +66,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="mt-16 pt-8 border-t border-border/50 text-center">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} CryptoPulse. All Rights Reserved.
+            © {new Date().getFullYear()} Fud Court. All Rights Reserved.
           </p>
         </div>
       </div>

@@ -53,7 +53,7 @@ export function HeroSection() {
               className="text-5xl font-extrabold tracking-tighter mb-5 [&_.letter]:inline-block"
             />
             <p className="text-lg text-muted-foreground max-w-xl mx-auto lg:mx-0 mb-6">
-              CryptoPulse cuts through market noise with data-driven analysis and unbiased news, empowering you to make smarter crypto investment decisions.
+              Fud Court cuts through market noise with data-driven analysis and unbiased news, empowering you to make smarter crypto investment decisions.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
               <Button size="lg" asChild>

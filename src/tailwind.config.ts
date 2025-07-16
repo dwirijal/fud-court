@@ -12,9 +12,9 @@ const config: Config = {
     container: {
       center: true,
       padding: {
-        DEFAULT: '1rem', // var(--space-4)
-        sm: '1.5rem',      // var(--space-5)
-        lg: '2.25rem',     // var(--space-6)
+        DEFAULT: 'var(--space-4)',
+        sm: 'var(--space-5)',
+        lg: 'var(--space-6)',
       },
     },
     spacing: {
@@ -27,11 +27,16 @@ const config: Config = {
       '6': 'var(--space-6)',
       '7': 'var(--space-7)',
       '8': 'var(--space-8)',
+      '9': 'var(--space-9)',
+      '10': 'var(--space-10)',
     },
     borderRadius: {
       sm: 'var(--radius-2)',
       DEFAULT: 'var(--radius-3)',
+      md: 'var(--radius-3)',
       lg: 'var(--radius-4)',
+      xl: 'var(--radius-5)',
+      '2xl': 'var(--radius-6)',
       full: 'var(--radius-full)',
     },
     fontSize: {
@@ -48,8 +53,7 @@ const config: Config = {
     },
     extend: {
       fontFamily: {
-        sans: ['var(--font-sans)', 'sans-serif'],
-        headline: ['var(--font-sans)', 'sans-serif'],
+        sans: ['var(--font-primary)', 'sans-serif'],
         mono: 'var(--font-mono)',
       },
       fontWeight: {
@@ -71,7 +75,7 @@ const config: Config = {
           foreground: 'var(--text-primary)',
         },
         secondary: {
-          DEFAULT: 'var(--bg-secondary)',
+          DEFAULT: 'var(--bg-tertiary)',
           foreground: 'var(--text-primary)',
         },
         destructive: {
@@ -97,11 +101,11 @@ const config: Config = {
         'market-up': 'var(--market-up)',
         'market-down': 'var(--market-down)',
         chart: {
-          '1': 'var(--chart-1)',
-          '2': 'var(--chart-2)',
-          '3': 'var(--chart-3)',
-          '4': 'var(--chart-4)',
-          '5': 'var(--chart-5)',
+          '1': 'var(--chart-color-1)',
+          '2': 'var(--chart-color-2)',
+          '3': 'var(--chart-color-3)',
+          '4': 'var(--chart-color-4)',
+          '5': 'var(--chart-color-5)',
         },
       },
       keyframes: {
@@ -135,7 +139,7 @@ const config: Config = {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
-        'fadeInUp': 'fadeInUp 0.5s var(--ease-out-quart)',
+        'fadeInUp': 'fadeInUp 0.5s cubic-bezier(0.25, 1, 0.5, 1)',
         'skeleton': 'skeleton 1.5s ease-in-out infinite',
         'pricePulse': 'pricePulse 0.6s ease-in-out',
         'marquee': 'marquee 60s linear infinite',

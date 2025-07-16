@@ -10,7 +10,7 @@ import { GlobalNewsTicker } from '@/components/organisms/global-news-ticker';
 const fontSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-sans',
+  variable: '--font-primary',
 });
 
 export const metadata: Metadata = {
@@ -25,7 +25,7 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="id" className={`${fontSans.variable} dark`} suppressHydrationWarning>
-      <body className={`font-sans antialiased`}>
+      <body className={`font-primary antialiased`}>
         <AppLayout>
           {children}
         </AppLayout>

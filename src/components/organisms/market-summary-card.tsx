@@ -167,12 +167,12 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
 
   return (
     <Card>
-      <CardContent className="space-y-6 p-6">
-        <div className="bg-primary/5 border border-primary/20 rounded-lg overflow-hidden">
-          <div className="flex flex-col md:flex-row justify-between items-center p-6">
-            <div className="space-y-3 text-center md:text-left mb-6 md:mb-0">
+      <CardHeader className="p-0">
+        <div className="bg-primary/5 border-primary/20 rounded-lg overflow-hidden">
+          <div className="flex flex-col md:flex-row justify-between items-center p-6 gap-6">
+            <div className="space-y-3 text-center md:text-left">
               <CardTitle className="text-3xl font-headline">Gambaran Umum Pasar</CardTitle>
-              <CardDescription className="text-lg max-w-md">
+              <CardDescription className="text-base text-muted-foreground max-w-md">
                 Mengukur kondisi pasar crypto secara keseluruhan menggunakan indikator gabungan utama.
               </CardDescription>
               <Badge variant="secondary" className="cursor-help flex-shrink-0 mx-auto md:mx-0">
@@ -186,7 +186,8 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
             </div>
           </div>
         </div>
-
+      </CardHeader>
+      <CardContent className="p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <TooltipProvider>
             {indicators.map((indicator, index) => (
@@ -212,7 +213,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                 </TooltipContent>
               </Tooltip>
             ))}
-            <Link href="/learn/market-indicators" className="group block h-full">
+             <Link href="/learn/market-indicators" className="group block h-full">
                <Card className="hover:bg-muted/50 transition-colors h-full">
                     <CardContent className="p-4 flex flex-1 items-center justify-between gap-4 h-full">
                         <div className="space-y-1 flex-grow">

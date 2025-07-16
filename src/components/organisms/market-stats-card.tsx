@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -127,9 +128,9 @@ export function MarketStatsCard({ marketStats }: MarketStatsCardProps) {
     return (
         <Card className="h-full">
             <CardHeader>
-                <CardTitle>Market Dominance</CardTitle>
+                <CardTitle>Dominasi Pasar</CardTitle>
                 <CardDescription>
-                    Dominasi Pasar (Cap: {formatCurrency(totalMarketCap)}) Bitcoin mendominasi {formatPercentage(btcDominance)} dari total market cap, diikuti oleh Ethereum ({formatPercentage(ethDominance)}) dan lainnya.
+                    Total Kap. Pasar: {formatCurrency(totalMarketCap)}. Bitcoin menyumbang {formatPercentage(btcDominance)}, diikuti oleh aset lainnya.
                 </CardDescription>
             </CardHeader>
             <CardContent>

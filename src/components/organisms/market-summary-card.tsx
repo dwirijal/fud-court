@@ -48,36 +48,32 @@ interface IndicatorCardProps {
 function IndicatorCard({ name, score, formula, rawData }: IndicatorCardProps) {
   return (
     <Card className="flex flex-col h-full">
-      <CardContent className="p-4 flex flex-col flex-grow justify-between relative">
-        <div>
-          <p className="text-sm font-semibold text-muted-foreground">{name}</p>
-          <p className="text-4xl font-mono font-bold">{score}</p>
-        </div>
-        <div className="absolute top-2 right-2">
-            <TooltipProvider>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:bg-muted/50">
-                            <Info className="h-4 w-4" />
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent className="w-64 p-3">
-                        <div className="space-y-2 text-xs w-full">
-                            {Object.entries(rawData).map(([key, value]) => (
-                                <div key={key} className="flex justify-between items-baseline">
-                                <span className="text-muted-foreground truncate" title={key}>{key}</span>
-                                <span className="font-mono text-foreground font-semibold">{value}</span>
-                                </div>
-                            ))}
-                        </div>
-                        <Separator className="my-2 bg-border/50"/>
-                        <p className="text-xs text-center font-mono text-primary/80" title={formula}>
-                            {formula}
-                        </p>
-                    </TooltipContent>
-                </Tooltip>
-            </TooltipProvider>
-        </div>
+      <CardContent className="p-4 flex flex-col flex-grow justify-between">
+        <p className="text-sm font-semibold text-muted-foreground">{name}</p>
+        
+        <TooltipProvider>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <div className="text-4xl font-mono font-bold hover:text-primary transition-colors cursor-help -mx-2 px-2 py-1 rounded-md">
+                        {score}
+                    </div>
+                </TooltipTrigger>
+                <TooltipContent className="w-64 p-3">
+                    <div className="space-y-2 text-xs w-full">
+                        {Object.entries(rawData).map(([key, value]) => (
+                            <div key={key} className="flex justify-between items-baseline">
+                            <span className="text-muted-foreground truncate" title={key}>{key}</span>
+                            <span className="font-mono text-foreground font-semibold">{value}</span>
+                            </div>
+                        ))}
+                    </div>
+                    <Separator className="my-2 bg-border/50"/>
+                    <p className="text-xs text-center font-mono text-primary/80" title={formula}>
+                        {formula}
+                    </p>
+                </TooltipContent>
+            </Tooltip>
+        </TooltipProvider>
       </CardContent>
     </Card>
   );
@@ -203,7 +199,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
 
         <CardFooter className="flex-col items-start p-6 pt-0">
             <Separator className="mb-4" />
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 w-full">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 w-full">
                 {indicators.map((indicator, index) => (
                     <IndicatorCard
                         key={indicator.name}

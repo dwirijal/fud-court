@@ -1,3 +1,4 @@
+
 import type {Config} from 'tailwindcss';
 
 const config: Config = {
@@ -95,6 +96,13 @@ const config: Config = {
         },
         'market-up': 'var(--market-up)',
         'market-down': 'var(--market-down)',
+        chart: {
+          '1': 'var(--chart-color-1)',
+          '2': 'var(--chart-color-2)',
+          '3': 'var(--chart-color-3)',
+          '4': 'var(--chart-color-4)',
+          '5': 'var(--chart-color-5)',
+        },
       },
       keyframes: {
         'accordion-down': {
@@ -134,7 +142,22 @@ const config: Config = {
       },
     },
   },
-  plugins: [require('tailwindcss-animate'), require('@tailwindcss/typography')],
+  plugins: [require('tailwindcss-animate'), require('@tailwindcss/typography'),
+    function ({ addUtilities }: { addUtilities: any }) {
+      addUtilities({
+        '.perspective-1000': {
+          perspective: '1000px',
+        },
+        '.preserve-3d': {
+          transformStyle: 'preserve-3d',
+        },
+        '.backface-hidden': {
+          backfaceVisibility: 'hidden',
+          '-webkit-backface-visibility': 'hidden',
+        },
+      });
+    },
+  ],
 };
 
 export default config;

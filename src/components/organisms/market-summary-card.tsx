@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { AlertTriangle, CheckCircle, BookOpen, Scale, Zap, TrendingUp, Package, ArrowRight } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { cn } from '@/lib/utils';
-
+import { FlippableIndicatorCard } from '@/components/molecules/flippable-indicator-card';
 import anime from 'animejs';
 import type { CombinedMarketData } from '@/types';
 
@@ -103,7 +103,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
     );
   }
 
-  if (error || !analysisResult) {
+  if (error || !analysisResult || !marketData) {
     return (
       <Card className="flex flex-col items-center justify-center p-6 bg-destructive/10 border-destructive">
           <AlertTriangle className="h-12 w-12 text-destructive mb-4" />
@@ -116,11 +116,38 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
   }
   
   const indicators = [
-      { name: "Kapitalisasi Pasar", value: analysisResult.components.marketCapScore, id: "market-cap-explanation", icon: Scale },
-      { name: "Volume", value: analysisResult.components.volumeScore, id: "volume-explanation", icon: Zap },
-      { name: "Fear & Greed", value: analysisResult.components.fearGreedScore, id: "fear-greed-explanation", icon: AlertTriangle },
-      { name: "Jarak ATH", value: analysisResult.components.athScore, id: "ath-explanation", icon: TrendingUp },
-      { name: "Sebaran Pasar", value: analysisResult.components.marketBreadthScore, id: "market-breadth-explanation", icon: Package },
+      { name: "Kapitalisasi Pasar", value: analysisResult.components.marketCapScore, icon: Scale,
+        rawData: {
+            "Kap. Pasar Saat Ini": marketData.totalMarketCap,
+            "Kap. Pasar Puncak": marketData.maxHistoricalMarketCap,
+        },
+        formula: "(Saat Ini / Puncak) * 100"
+      },
+      { name: "Volume", value: analysisResult.components.volumeScore, icon: Zap,
+        rawData: {
+            "Volume 24j": marketData.totalVolume24h,
+            "Rata-rata Volume 30h": marketData.avg30DayVolume,
+        },
+        formula: "(Saat Ini / Rata-rata) * 50"
+       },
+      { name: "Fear & Greed", value: analysisResult.components.fearGreedScore, icon: AlertTriangle,
+        rawData: {
+            "Nilai Indeks": marketData.fearAndGreedIndex
+        },
+        formula: "Nilai indeks langsung"
+       },
+      { name: "Jarak ATH", value: analysisResult.components.athScore, icon: TrendingUp,
+        rawData: {
+             "Koin Teratas": `${marketData.topCoinsForAnalysis.length} aset`,
+        },
+        formula: "100 - Rata-rata jarak dari ATH"
+       },
+      { name: "Sebaran Pasar", value: analysisResult.components.marketBreadthScore, icon: Package,
+         rawData: {
+            "Aset Naik": `${marketData.topCoinsForAnalysis.filter(c => (c.price_change_percentage_24h || 0) > 0).length} / ${marketData.topCoinsForAnalysis.length}`,
+        },
+        formula: "(Naik / Total) * 100"
+       },
   ];
   
   const activeColorClass = getActiveColorClass(analysisResult.marketCondition);
@@ -129,7 +156,9 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
     <Card className="bg-primary/5 border-primary/20 overflow-hidden">
         <div className="flex flex-col md:flex-row justify-between items-center p-6 gap-6">
             <div className="space-y-3 text-center md:text-left">
-              <CardTitle className="text-2xl font-headline">Gambaran Umum Pasar</CardTitle>
+              <CardTitle className="text-2xl font-headline">
+                Gambaran Umum Pasar
+              </CardTitle>
               <CardDescription className="text-base text-muted-foreground max-w-md">
                 Mengukur kondisi pasar crypto secara keseluruhan menggunakan indikator gabungan utama.
               </CardDescription>
@@ -146,22 +175,18 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
       <CardContent className="p-6 pt-0">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {indicators.map((indicator, index) => (
-                <Card key={indicator.id} className="hover:bg-muted/50 transition-colors">
-                    <CardContent className="p-4 flex flex-1 items-center justify-between gap-4">
-                      <div className="space-y-1 flex-grow">
-                        <p className="text-sm font-semibold flex items-center gap-2">
-                          {indicator.icon && <indicator.icon className="h-4 w-4 text-muted-foreground" />}
-                          {indicator.name}
-                        </p>
-                      </div>
-                      <div className="text-right flex-shrink-0 pl-2">
-                        <AnimatedNumber to={indicator.value} className="text-2xl font-mono font-bold" delay={200 + index * 100} />
-                      </div>
-                    </CardContent>
-                </Card>
+                <FlippableIndicatorCard
+                    key={indicator.name}
+                    index={index}
+                    icon={indicator.icon}
+                    name={indicator.name}
+                    score={indicator.value}
+                    rawData={indicator.rawData}
+                    formula={indicator.formula}
+                />
             ))}
              <Link href="/learn/market-indicators" className="group block h-full">
-               <Card className="hover:bg-muted/50 transition-colors h-full">
+               <Card className="h-full hover:bg-muted/50 transition-colors">
                     <CardContent className="p-4 flex flex-1 items-center justify-between gap-4 h-full">
                         <div className="space-y-1 flex-grow">
                             <p className="text-sm font-semibold flex items-center gap-2">

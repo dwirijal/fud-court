@@ -22,12 +22,6 @@ import {
 import anime from 'animejs';
 import type { CombinedMarketData } from '@/types';
 
-const getProgressColorClass = (score: number) => {
-    if (score < 40) return 'bg-destructive';
-    if (score > 60) return 'bg-chart-2';
-    return 'bg-muted-foreground';
-}
-
 const getActiveColorClass = (interpretation: string) => {
     const lowerCaseInterpretation = interpretation.toLowerCase();
     if (lowerCaseInterpretation.includes("bearish") || lowerCaseInterpretation.includes("capitulation")) {
@@ -76,13 +70,12 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Define indicator details for tooltips and linking
   const indicatorDetails = [
-    { id: "market-cap-explanation", name: "Skor Kapitalisasi Pasar", summary: "Seberapa Dekat Pasar dengan Puncaknya?" },
-    { id: "volume-explanation", name: "Skor Volume", summary: "Seberapa Aktif Pasar Hari Ini?" },
-    { id: "fear-greed-explanation", name: "Skor Fear & Greed", summary: "Mengukur Rasa Takut atau Serakah Investor" },
-    { id: "ath-explanation", name: "Skor ATH", summary: "Seberapa Jauh dari Puncak?" },
-    { id: "market-breadth-explanation", name: "Skor Sebaran Pasar", summary: "Apakah Pasar Bergerak Secara Luas?" },
+    { id: "market-cap-explanation", name: "Kapitalisasi Pasar", summary: "Seberapa Dekat Pasar dengan Puncaknya?" },
+    { id: "volume-explanation", name: "Volume", summary: "Seberapa Aktif Pasar Hari Ini?" },
+    { id: "fear-greed-explanation", name: "Fear & Greed", summary: "Mengukur Rasa Takut atau Serakah Investor" },
+    { id: "ath-explanation", name: "Jarak ATH", summary: "Seberapa Jauh dari Puncak?" },
+    { id: "market-breadth-explanation", name: "Sebaran Pasar", summary: "Apakah Pasar Bergerak Secara Luas?" },
   ];
 
   useEffect(() => {
@@ -162,7 +155,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                             <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
                             Akurasi Model: {analysisResult.confidenceScore}%
                         </Badge>
-                        <Button variant="link" asChild className="text-muted-foreground">
+                        <Button variant="link" asChild className="text-muted-foreground p-0 h-auto">
                             <Link href="/markets">
                                 Pelajari cara kerja skor ini <ArrowRight className="h-4 w-4 ml-1" />
                             </Link>
@@ -184,18 +177,17 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                                 <TooltipTrigger asChild>
                                     <Link href={`/markets#${indicator.id}`} className="group block h-full">
                                         <Card className="flex flex-col h-full">
-                                            <CardContent className="p-4 flex flex-col flex-grow justify-between gap-4">
-                                                <div className="flex items-center gap-3">
+                                            <CardContent className="p-3 flex flex-1 items-center justify-between gap-2">
+                                                <div className="flex items-center gap-2 min-w-0">
                                                     {indicator.icon && 
                                                         <div className="bg-muted p-2 rounded-full">
                                                             <indicator.icon className="h-4 w-4 text-muted-foreground" />
                                                         </div>
                                                     }
-                                                    <p className="text-sm font-semibold text-muted-foreground">{indicator.name}</p>
+                                                    <p className="text-sm font-medium text-muted-foreground truncate">{indicator.name}</p>
                                                 </div>
-                                                <div className="text-right">
-                                                    <AnimatedNumber to={indicator.value} className="text-3xl font-mono font-bold" delay={200 + index * 100} />
-                                                     <Progress value={indicator.value} className={cn("h-1.5 w-full mt-2", getProgressColorClass(indicator.value))}  />
+                                                <div className="text-right flex-shrink-0">
+                                                    <AnimatedNumber to={indicator.value} className="text-2xl font-mono font-bold" delay={200 + index * 100} />
                                                 </div>
                                             </CardContent>
                                         </Card>

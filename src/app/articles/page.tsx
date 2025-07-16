@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import Image from "next/image";
 import { getPosts } from "@/lib/ghost";
@@ -29,7 +30,7 @@ export default async function ArticlesPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-16">
+    <div className="container mx-auto px-4 py-16 md:py-24">
       <Breadcrumb className="mb-8">
         <BreadcrumbList>
           <BreadcrumbItem>

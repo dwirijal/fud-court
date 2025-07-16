@@ -110,7 +110,7 @@ export default function StablecoinMetricsPage() {
   const stablecoinsToDisplay = stablecoins.slice(0, displayedCount);
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-16">
+    <div className="container mx-auto px-4 py-16 md:py-24">
       <Breadcrumb className="mb-8">
         <BreadcrumbList>
           <BreadcrumbItem>

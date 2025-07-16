@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { getDefiLlamaProtocols } from "@/lib/defillama";
@@ -38,7 +39,7 @@ export default async function DefiTvlMetricsPage() {
   const protocols = await getDefiLlamaProtocols();
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-16">
+    <div className="container mx-auto px-4 py-16 md:py-24">
       <Breadcrumb className="mb-8">
         <BreadcrumbList>
           <BreadcrumbItem>

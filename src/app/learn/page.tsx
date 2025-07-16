@@ -8,7 +8,7 @@ export default async function LearnPage() {
   const posts = await getPosts({ tag: 'learn' });
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-16">
+    <div className="container mx-auto px-4 py-16 md:py-24">
       <header className="mb-12">
         <div className="flex items-center gap-4 mb-2">
             <div className="bg-primary/10 text-primary p-2 rounded-lg">

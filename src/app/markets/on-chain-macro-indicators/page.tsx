@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { getDefiLlamaHistoricalTvl } from "@/lib/defillama";
 import { format } from "date-fns";
@@ -44,7 +45,7 @@ export default async function OnChainMacroIndicatorsPage() {
   })).reverse(); // Reverse to show oldest data first
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-16">
+    <div className="container mx-auto px-4 py-16 md:py-24">
       <Breadcrumb className="mb-8">
         <BreadcrumbList>
           <BreadcrumbItem>

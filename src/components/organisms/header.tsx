@@ -95,10 +95,9 @@ const readingComponents: { title: string; href: string; description: string }[] 
 // For mobile, we flatten the structure into a single list and ensure "Home" is present.
 const mobileNavLinks = [
     { href: "/", label: "Beranda" },
-    ...mainNavLinks, 
     ...marketComponents.map(item => ({ href: item.href, label: item.title })),
     ...readingComponents.map(item => ({ href: item.href, label: item.title }))
-];
+].filter((v,i,a)=>a.findIndex(t=>(t.href === v.href))===i); // Remove duplicates
 
 
 export function Header() {
@@ -108,6 +107,7 @@ export function Header() {
 
   const isIslandExpanded = isHovered || activeMenu !== "";
   const isReadingPage = readingComponents.some(c => pathname.startsWith(c.href));
+  const isMarketPage = marketComponents.some(c => pathname.startsWith(c.href)) || pathname === '/markets';
 
   return (
     <>
@@ -126,7 +126,7 @@ export function Header() {
               <span className="sr-only">Buka Menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="right" className="p-0">
+          <SheetContent side="right" className="w-full max-w-sm p-0">
              <SheetHeader className="p-6 pb-0">
                <SheetTitle className="sr-only">Menu Navigasi</SheetTitle>
             </SheetHeader>
@@ -140,7 +140,7 @@ export function Header() {
               <nav className="grid gap-4 text-lg font-medium">
                 {mobileNavLinks.map((item) => (
                   <Link
-                    key={item.label}
+                    key={item.href}
                     href={item.href}
                     className={cn(
                       "transition-colors hover:text-primary",
@@ -166,7 +166,7 @@ export function Header() {
       >
         <div
           className={cn(
-            "flex items-center justify-center rounded-full bg-background/60 border border-border shadow-lg backdrop-blur-md transition-all duration-200 ease-in-out pointer-events-auto",
+            "flex items-center justify-center rounded-full bg-background/60 border border-border shadow-lg backdrop-blur-md transition-all duration-300 ease-in-out pointer-events-auto",
             isIslandExpanded ? "px-4 py-2 gap-2" : "p-2.5 gap-0"
           )}
         >
@@ -176,7 +176,7 @@ export function Header() {
 
           <div
             className={cn(
-              "flex items-center transition-all duration-200 ease-in-out",
+              "flex items-center transition-all duration-300 ease-in-out overflow-hidden",
               isIslandExpanded
                 ? "max-w-screen-lg opacity-100"
                 : "max-w-0 opacity-0"
@@ -202,30 +202,24 @@ export function Header() {
                       </NavigationMenuLink>
                     </NavigationMenuItem>
                 ))}
-
-                <NavigationMenuItem value="market">
-                    <NavigationMenuTrigger 
-                      className={cn(
-                        "bg-transparent hover:bg-accent text-sm font-medium data-[state=open]:bg-accent/50",
-                        marketComponents.some(c => pathname.startsWith(c.href)) ? "text-primary" : "text-foreground/70"
-                      )}
-                    >
+                
+                <NavigationMenuItem value="markets">
+                    <NavigationMenuLink asChild>
+                      <Link
+                        href="/markets"
+                        className={cn(
+                          navigationMenuTriggerStyle(),
+                          "bg-transparent hover:bg-accent text-sm font-medium",
+                          isMarketPage
+                            ? "text-primary"
+                            : "text-foreground/70"
+                        )}
+                      >
                         Pasar
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                        <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-                            {marketComponents.map((component) => (
-                                <ListItem
-                                    key={component.title}
-                                    href={component.href}
-                                    title={component.title}
-                                >
-                                    {component.description}
-                                </ListItem>
-                            ))}
-                        </ul>
-                    </NavigationMenuContent>
-                </NavigationMenuItem>
+                      </Link>
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+
 
                 <NavigationMenuItem value="reading">
                     <NavigationMenuTrigger 

@@ -139,7 +139,7 @@ const LineAnimation = () => {
 
 export function HeroSection() {
   return (
-    <section className="relative flex items-center justify-center min-h-screen overflow-hidden">
+    <section className="relative flex items-center justify-center min-h-[calc(100vh-4rem)] overflow-hidden">
       <LineAnimation />
       <div className="container relative z-10 mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-16 items-center">
@@ -149,17 +149,17 @@ export function HeroSection() {
           <div className="lg:col-span-3 text-center lg:text-left">
             <AnimatedText
               text="Kejelasan di Tengah Kekacauan."
-              className="text-4xl md:text-6xl font-extrabold font-headline tracking-tighter mb-6 [&_.letter]:inline-block"
+              className="text-4xl md:text-5xl lg:text-6xl font-extrabold font-headline tracking-tighter mb-6 [&_.letter]:inline-block"
             />
             <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 mb-10">
               Fud Court membelah kebisingan pasar dengan analisis berbasis data dan berita yang tidak bias, memberdayakan Anda untuk membuat keputusan investasi kripto yang lebih cerdas.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
               <Button size="lg" asChild>
-                <Link href="#" target="_blank" rel="noopener noreferrer">Gabung Komunitas</Link>
+                <Link href="/markets">Jelajahi Pasar</Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
-                 <Link href="/news">Baca Berita Terbaru</Link>
+                 <Link href="/news">Baca Berita</Link>
               </Button>
             </div>
           </div>

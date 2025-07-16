@@ -1,3 +1,4 @@
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Suspense } from "react";
 import { MarketDataTable, TableSkeleton } from "./market-data-table";
@@ -6,7 +7,7 @@ import { CurrencySwitcherClient } from "@/components/molecules/currency-switcher
 export default async function MarketsPage({ searchParams }: { searchParams?: { currency?: string } }) {
   const currency = searchParams?.currency?.toLowerCase() || 'usd';
   return (
-    <div className="container mx-auto px-4 py-12 md:py-16">
+    <div className="container mx-auto px-4 py-16 md:py-24">
       <header className="mb-12">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="text-center sm:text-left">
@@ -17,7 +18,7 @@ export default async function MarketsPage({ searchParams }: { searchParams?: { c
               Jelajahi harga mata uang kripto, kapitalisasi pasar, dan volume perdagangan secara real-time.
             </p>
           </div>
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense fallback={<div className="h-10 w-[120px] bg-muted rounded-md" />}>
             <CurrencySwitcherClient />
           </Suspense>
         </div>

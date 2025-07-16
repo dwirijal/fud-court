@@ -15,10 +15,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import type { Metadata, ResolvingMetadata } from 'next';
-
-
-
-
+import { SanitizedHtml } from "@/components/atoms/sanitized-html";
 
 export async function generateMetadata(
   { params }: { params: { slug: string } },
@@ -96,7 +93,7 @@ export default async function PostPage({ params }: { params: { slug: string } })
 
 
   return (
-    <article className="container mx-auto px-4 py-12 md:py-16 max-w-4xl">
+    <article className="container mx-auto px-4 py-16 md:py-24 max-w-4xl">
       <Breadcrumb className="mb-8">
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -140,27 +137,28 @@ export default async function PostPage({ params }: { params: { slug: string } })
       </header>
 
       {post.feature_image && (
-        <div className="relative h-96 w-full mb-8 rounded-lg overflow-hidden">
+        <div className="relative aspect-video w-full mb-8 rounded-lg overflow-hidden">
           <Image
             src={post.feature_image}
             alt={post.title}
             fill
             className="object-cover"
             data-ai-hint="crypto abstract"
-            sizes="100vw"
+            sizes="(max-width: 768px) 100vw, 896px"
+            priority
           />
         </div>
       )}
       
       {post.html && (
-        <div
+        <SanitizedHtml
           className="prose prose-invert prose-lg max-w-none 
                      prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl
                      prose-headings:font-headline prose-headings:text-foreground
                      prose-a:text-primary hover:prose-a:text-primary/90
                      prose-strong:text-foreground
                      prose-blockquote:border-primary"
-          dangerouslySetInnerHTML={{ __html: post.html }}
+          html={post.html}
         />
       )}
     </article>

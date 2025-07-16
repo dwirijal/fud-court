@@ -51,25 +51,33 @@ interface IndicatorCardProps {
     name: string;
     score: number;
     formula: string;
+    interpretation: string;
     rawData: Record<string, string | number>;
     weight: number;
     weightedScore: number;
 }
 
-function IndicatorCard({ name, score, formula, rawData, weight, weightedScore }: IndicatorCardProps) {
+function IndicatorCard({ name, score, formula, interpretation, rawData, weight, weightedScore }: IndicatorCardProps) {
   return (
     <Card className="flex flex-col h-full">
       <CardContent className="p-4 flex flex-col flex-grow justify-between relative">
-          <p className="text-sm font-semibold text-muted-foreground">{name}</p>
-          <TooltipProvider>
-            <Tooltip>
-                <TooltipTrigger asChild>
-                    <div className="my-auto text-4xl font-mono font-bold py-2 cursor-help text-center">
-                        {score}
-                    </div>
-                </TooltipTrigger>
-                <TooltipContent side="top" align="center" className="max-w-xs text-center">
-                    <div className="space-y-3 p-2">
+        <div className="flex justify-between items-center">
+            <p className="text-sm font-semibold text-muted-foreground">{name}</p>
+            <Sheet>
+                <SheetTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-6 w-6 -mr-2 -mt-2">
+                        <Info className="h-4 w-4" />
+                        <span className="sr-only">Detail untuk {name}</span>
+                    </Button>
+                </SheetTrigger>
+                <SheetContent>
+                    <SheetHeader>
+                        <SheetTitle>{name}</SheetTitle>
+                        <SheetDescription>
+                            {interpretation}
+                        </SheetDescription>
+                    </SheetHeader>
+                    <div className="mt-6 space-y-6">
                         <div>
                             <h4 className="font-semibold text-sm mb-2 text-muted-foreground uppercase tracking-wider">Data Mentah</h4>
                             <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm bg-muted p-3 rounded-md">
@@ -81,14 +89,17 @@ function IndicatorCard({ name, score, formula, rawData, weight, weightedScore }:
                                 ))}
                             </div>
                         </div>
-                        <div>
-                            <h4 className="font-semibold text-sm mb-2 text-muted-foreground uppercase tracking-wider">Formula</h4>
+                         <div>
+                            <h4 className="font-semibold text-sm mb-2 text-muted-foreground uppercase tracking-wider">Rumus</h4>
                             <p className="font-mono text-xs bg-muted p-3 rounded-md">{formula}</p>
                         </div>
                     </div>
-                </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+                </SheetContent>
+            </Sheet>
+        </div>
+          <div className="my-auto py-2 text-center">
+             <p className="text-5xl font-mono font-bold">{score}</p>
+          </div>
             <div>
                 <Separator className="mb-2" />
                 <div className="flex justify-between text-xs text-muted-foreground">
@@ -202,7 +213,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
         weight: weights.fearAndGreed,
         weightedScore: analysisResult.components.fearGreedScore * weights.fearAndGreed,
        },
-      { name: "Jarak ATH", score: analysisResult.components.athScore,
+      { name: "Skor ATH", score: analysisResult.components.athScore,
         formula: "100 - (Rata-rata % Jarak dari ATH Koin Teratas)",
         interpretation: "Mengukur seberapa jauh, rata-rata, mata uang kripto teratas dari harga tertinggi sepanjang masa (ATH).",
         rawData: { "Koin Teratas": `${marketData.topCoins.length} aset` },
@@ -222,9 +233,9 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
 
   return (
     <Card className="bg-primary/5 border-primary/20 overflow-hidden">
-        <CardHeader className="p-6 pb-0">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-                <div className="space-y-3 text-center md:text-left">
+        <CardHeader className="p-6">
+            <div className="flex flex-col md:flex-row justify-between items-start gap-6">
+                <div className="space-y-3 text-center md:text-left flex-grow">
                   <CardTitle className="text-2xl font-headline">
                     Gambaran Umum Pasar
                   </CardTitle>
@@ -236,20 +247,17 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                     Akurasi Model: {analysisResult.confidenceScore}%
                   </Badge>
                 </div>
-                <div className="text-center md:text-right flex-shrink-0 md:pl-4 flex flex-col items-center md:items-end">
-                  <AnimatedNumber to={analysisResult.macroScore} className={cn("text-6xl font-bold font-mono tracking-tighter", activeColorClass)} />
+                <div className="text-center md:text-right flex-shrink-0 md:pl-4 flex flex-col items-center md:items-end w-full md:w-auto">
+                  <AnimatedNumber to={analysisResult.macroScore} className={cn("text-7xl font-bold font-mono tracking-tighter", activeColorClass)} />
                   <p className={cn("font-semibold text-2xl mb-2", activeColorClass)}>{analysisResult.marketCondition}</p>
+                   <Button variant="link" asChild className="text-muted-foreground hover:text-primary h-auto p-0">
+                      <Link href="/learn/market-indicators" className="flex items-center gap-1">
+                          Pelajari Skor Ini <ArrowRight className="h-4 w-4" />
+                      </Link>
+                  </Button>
                 </div>
             </div>
         </CardHeader>
-
-        <CardContent className="p-6">
-            <Button variant="link" asChild className="text-muted-foreground hover:text-primary h-auto p-0 -mt-4">
-                <Link href="/learn/market-indicators" className="flex items-center gap-1">
-                    Pelajari Skor Ini <ArrowRight className="h-4 w-4" />
-                </Link>
-            </Button>
-        </CardContent>
 
         <CardFooter className="flex-col items-start p-6 pt-0">
             <Separator className="mb-6" />
@@ -271,3 +279,4 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
     </Card>
   );
 }
+

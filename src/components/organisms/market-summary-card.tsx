@@ -61,6 +61,44 @@ const AnimatedNumber = ({ to, className, delay = 0 }: { to: number, className?: 
     return <p className={className}>{value}</p>;
 }
 
+const indicatorDetails = [
+    { name: "Kapitalisasi Pasar", valueKey: "marketCapScore", summary: "Seberapa Dekat Pasar dengan Puncaknya?", icon: Scale },
+    { name: "Volume", valueKey: "volumeScore", summary: "Seberapa Aktif Pasar Hari Ini?", icon: Zap },
+    { name: "Fear & Greed", valueKey: "fearGreedScore", summary: "Mengukur Rasa Takut atau Serakah Investor", icon: AlertTriangle },
+    { name: "Jarak ATH", valueKey: "athScore", summary: "Seberapa Jauh dari Puncak?", icon: TrendingUp },
+    { name: "Sebaran Pasar", valueKey: "marketBreadthScore", summary: "Apakah Pasar Bergerak Secara Luas?", icon: Package },
+] as const;
+
+function IndicatorCard({ detail, value }: { detail: typeof indicatorDetails[number], value: number }) {
+    return (
+        <TooltipProvider>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Link href={`/markets#${detail.valueKey}`} className="group block h-full">
+                        <Card className="flex flex-col h-full hover:bg-muted/50 transition-colors">
+                            <CardContent className="p-3 flex flex-col flex-grow justify-between gap-2">
+                               <div className="flex items-center gap-2 text-muted-foreground">
+                                    <div className="bg-muted p-1.5 rounded-full">
+                                        <detail.icon className="h-4 w-4" />
+                                    </div>
+                                    <p className="text-xs font-medium">{detail.name}</p>
+                                </div>
+                                <div className="text-left w-full mt-auto">
+                                    <AnimatedNumber to={value} className="text-5xl font-bold tracking-tighter" />
+                                    <Progress value={value} className="h-1.5 w-full mt-2" />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </Link>
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p>{detail.summary}</p>
+                </TooltipContent>
+            </Tooltip>
+        </TooltipProvider>
+    );
+}
+
 interface MarketSummaryCardProps {
     marketData: CombinedMarketData | null;
 }
@@ -69,15 +107,6 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
   const [analysisResult, setAnalysisResult] = useState<MarketAnalysisOutput | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const indicatorDetails = [
-    { name: "Kapitalisasi Pasar", valueKey: "marketCapScore", summary: "Seberapa Dekat Pasar dengan Puncaknya?", icon: Scale, colorClass: "bg-chart-1" },
-    { name: "Volume", valueKey: "volumeScore", summary: "Seberapa Aktif Pasar Hari Ini?", icon: Zap, colorClass: "bg-chart-2" },
-    { name: "Fear & Greed", valueKey: "fearGreedScore", summary: "Mengukur Rasa Takut atau Serakah Investor", icon: AlertTriangle, colorClass: "bg-chart-3" },
-    { name: "Jarak ATH", valueKey: "athScore", summary: "Seberapa Jauh dari Puncak?", icon: TrendingUp, colorClass: "bg-chart-4" },
-    { name: "Sebaran Pasar", valueKey: "marketBreadthScore", summary: "Apakah Pasar Bergerak Secara Luas?", icon: Package, colorClass: "bg-chart-5" },
-  ] as const;
-
 
   useEffect(() => {
     const getMarketAnalysis = async () => {
@@ -154,7 +183,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                             <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
                             Akurasi Model: {analysisResult.confidenceScore}%
                         </Badge>
-                        <Button variant="link" asChild className="text-muted-foreground p-0 h-auto flex">
+                        <Button variant="link" asChild className="text-muted-foreground p-0 h-auto flex text-sm">
                             <Link href="/markets">
                                 Pelajari cara kerja skor ini <ArrowRight className="h-4 w-4 ml-1" />
                             </Link>
@@ -168,38 +197,13 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
             </Card>
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                <TooltipProvider>
-                    {indicatorDetails.map((detail, index) => {
-                         const indicatorValue = analysisResult.components[detail.valueKey];
-                        return (
-                            <Tooltip key={detail.name}>
-                                <TooltipTrigger asChild>
-                                    <Link href={`/markets#${detail.valueKey}`} className="group block h-full">
-                                        <Card className="flex flex-col h-full hover:bg-muted/50 transition-colors">
-                                            <CardContent className="p-4 flex flex-col flex-grow justify-between gap-4">
-                                                <div className="flex items-start flex-col gap-2">
-                                                    <div className="bg-muted p-2 rounded-full flex-shrink-0">
-                                                        <detail.icon className="h-4 w-4 text-muted-foreground" />
-                                                    </div>
-                                                    <p className="text-xs font-medium text-muted-foreground">{detail.name}</p>
-                                                </div>
-                                                <div className="text-left w-full">
-                                                     <AnimatedNumber to={indicatorValue} className="text-3xl font-mono font-bold" delay={200 + index * 100} />
-                                                     <Progress value={indicatorValue} className="h-1.5 w-full mt-2" />
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-                                    </Link>
-                                </TooltipTrigger>
-                                {detail && (
-                                    <TooltipContent>
-                                        <p>{detail.summary}</p>
-                                    </TooltipContent>
-                                )}
-                            </Tooltip>
-                        );
-                    })}
-                </TooltipProvider>
+                {indicatorDetails.map((detail) => (
+                    <IndicatorCard
+                        key={detail.name}
+                        detail={detail}
+                        value={analysisResult.components[detail.valueKey]}
+                    />
+                ))}
             </div>
         </CardContent>
     </Card>

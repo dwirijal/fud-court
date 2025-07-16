@@ -17,6 +17,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Progress } from "@/components/ui/progress";
 
 import anime from 'animejs';
 import type { CombinedMarketData } from '@/types';
@@ -70,12 +71,13 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
   const [error, setError] = useState<string | null>(null);
 
   const indicatorDetails = [
-    { name: "Kapitalisasi Pasar", summary: "Seberapa Dekat Pasar dengan Puncaknya?", icon: Scale },
-    { name: "Volume", summary: "Seberapa Aktif Pasar Hari Ini?", icon: Zap },
-    { name: "Fear & Greed", summary: "Mengukur Rasa Takut atau Serakah Investor", icon: AlertTriangle },
-    { name: "Jarak ATH", summary: "Seberapa Jauh dari Puncak?", icon: TrendingUp },
-    { name: "Sebaran Pasar", summary: "Apakah Pasar Bergerak Secara Luas?", icon: Package },
-  ];
+    { name: "Kapitalisasi Pasar", valueKey: "marketCapScore", summary: "Seberapa Dekat Pasar dengan Puncaknya?", icon: Scale, colorClass: "bg-chart-1" },
+    { name: "Volume", valueKey: "volumeScore", summary: "Seberapa Aktif Pasar Hari Ini?", icon: Zap, colorClass: "bg-chart-2" },
+    { name: "Fear & Greed", valueKey: "fearGreedScore", summary: "Mengukur Rasa Takut atau Serakah Investor", icon: AlertTriangle, colorClass: "bg-chart-3" },
+    { name: "Jarak ATH", valueKey: "athScore", summary: "Seberapa Jauh dari Puncak?", icon: TrendingUp, colorClass: "bg-chart-4" },
+    { name: "Sebaran Pasar", valueKey: "marketBreadthScore", summary: "Apakah Pasar Bergerak Secara Luas?", icon: Package, colorClass: "bg-chart-5" },
+  ] as const;
+
 
   useEffect(() => {
     const getMarketAnalysis = async () => {
@@ -106,10 +108,14 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
   if (isLoading) {
     return (
         <Card>
+            <CardHeader>
+                <Skeleton className="h-8 w-3/4 mb-2" />
+                <Skeleton className="h-6 w-1/2" />
+            </CardHeader>
             <CardContent className="p-6">
                 <Skeleton className="h-[120px] w-full mb-4" />
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {Array.from({ length: 6 }).map((_, i) => (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                    {Array.from({ length: 5 }).map((_, i) => (
                         <Skeleton key={i} className="h-24 w-full" />
                     ))}
                 </div>
@@ -130,22 +136,14 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
     );
   }
   
-  const indicators = [
-      { name: "Kapitalisasi Pasar", value: analysisResult.components.marketCapScore, id: "market-cap-explanation" },
-      { name: "Volume", value: analysisResult.components.volumeScore, id: "volume-explanation" },
-      { name: "Fear & Greed", value: analysisResult.components.fearGreedScore, id: "fear-greed-explanation" },
-      { name: "Jarak ATH", value: analysisResult.components.athScore, id: "ath-explanation" },
-      { name: "Sebaran Pasar", value: analysisResult.components.marketBreadthScore, id: "market-breadth-explanation" },
-  ];
-  
   const activeColorClass = getActiveColorClass(analysisResult.marketCondition);
 
   return (
     <Card>
         <CardHeader>
             <CardTitle className="text-3xl md:text-4xl font-headline">Gambaran Umum Pasar Saat Ini</CardTitle>
-            <CardDescription className="text-lg md:text-xl max-w-md">
-                Mengukur kondisi pasar crypto secara keseluruhan menggunakan indikator gabungan utama.
+            <CardDescription className="text-lg md:text-xl max-w-2xl">
+                Mengukur kondisi pasar crypto secara keseluruhan menggunakan 5 indikator gabungan utama.
             </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -171,24 +169,23 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 <TooltipProvider>
-                    {indicators.map((indicator, index) => {
-                        const detail = indicatorDetails.find(d => d.name === indicator.name);
+                    {indicatorDetails.map((detail, index) => {
+                         const indicatorValue = analysisResult.components[detail.valueKey];
                         return (
-                            <Tooltip key={indicator.id}>
+                            <Tooltip key={detail.name}>
                                 <TooltipTrigger asChild>
-                                    <Link href={`/markets#${indicator.id}`} className="group block h-full">
+                                    <Link href={`/markets#${detail.valueKey}`} className="group block h-full">
                                         <Card className="flex flex-col h-full hover:bg-muted/50 transition-colors">
                                             <CardContent className="p-4 flex flex-col flex-grow justify-between gap-4">
-                                                <div className="flex items-center gap-3">
-                                                    {detail?.icon && (
-                                                        <div className="bg-muted p-2 rounded-full">
-                                                            <detail.icon className="h-4 w-4 text-muted-foreground" />
-                                                        </div>
-                                                    )}
-                                                    <p className="text-sm font-medium text-muted-foreground">{indicator.name}</p>
+                                                <div className="flex items-start flex-col gap-2">
+                                                    <div className="bg-muted p-2 rounded-full flex-shrink-0">
+                                                        <detail.icon className="h-4 w-4 text-muted-foreground" />
+                                                    </div>
+                                                    <p className="text-xs font-medium text-muted-foreground">{detail.name}</p>
                                                 </div>
-                                                <div className="text-right">
-                                                    <AnimatedNumber to={indicator.value} className="text-3xl font-mono font-bold" delay={200 + index * 100} />
+                                                <div className="text-left w-full">
+                                                     <AnimatedNumber to={indicatorValue} className="text-3xl font-mono font-bold" delay={200 + index * 100} />
+                                                     <Progress value={indicatorValue} className="h-1.5 w-full mt-2" />
                                                 </div>
                                             </CardContent>
                                         </Card>

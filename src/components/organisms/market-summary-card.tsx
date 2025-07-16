@@ -66,7 +66,6 @@ const IndicatorCard = ({ index, icon: Icon, name, score, formula }: { index: num
   useEffect(() => {
     if (!scoreRef.current || !formulaRef.current) return;
     
-    // Set initial states
     anime.set(scoreRef.current, { opacity: 1, translateY: 0 });
     anime.set(formulaRef.current, { opacity: 0, translateY: 10 });
 
@@ -86,33 +85,19 @@ const IndicatorCard = ({ index, icon: Icon, name, score, formula }: { index: num
         targets: formulaRef.current,
         opacity: 1,
         translateY: 0,
-      }, '-=200'); // Start formula animation slightly before score finishes
+      }, '-=200');
 
   }, []);
 
-  const handleMouseEnter = () => {
-    if (animation.current) {
-      animation.current.play();
-    }
-  };
-
-  const handleMouseLeave = () => {
-     if (animation.current) {
-      animation.current.reverse();
-      animation.current.play();
-    }
-  };
+  const handleMouseEnter = () => animation.current?.play();
+  const handleMouseLeave = () => animation.current?.reverse();
 
   const cardVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
         opacity: 1,
         y: 0,
-        transition: {
-            delay: index * 0.1,
-            duration: 0.5,
-            ease: "easeOut"
-        }
+        transition: { delay: index * 0.1, duration: 0.5, ease: "easeOut" }
     }
   };
 

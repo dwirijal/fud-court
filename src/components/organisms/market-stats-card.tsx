@@ -126,14 +126,14 @@ export function MarketStatsCard({ marketStats }: MarketStatsCardProps) {
     ];
 
     return (
-        <Card className="h-full">
-            <CardHeader>
-                <CardTitle>Dominasi Pasar</CardTitle>
+        <Card className="h-full bg-primary/5 border-primary/20">
+            <CardHeader className="p-6">
+                <CardTitle className="text-2xl font-headline">Dominasi Pasar</CardTitle>
                 <CardDescription>
                     Total Kap. Pasar: {formatCurrency(totalMarketCap)}. Bitcoin menyumbang {formatPercentage(btcDominance)}, diikuti oleh aset lainnya.
                 </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-6 pt-0">
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     {stats.map((stat, index) => (
                         <StatCard key={stat.label} {...stat} index={index} />

@@ -162,7 +162,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                             <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
                             Akurasi Model: {analysisResult.confidenceScore}%
                         </Badge>
-                        <Button variant="link" asChild className="text-muted-foreground mt-2">
+                        <Button variant="link" asChild className="text-muted-foreground">
                             <Link href="/markets">
                                 Pelajari cara kerja skor ini <ArrowRight className="h-4 w-4 ml-1" />
                             </Link>

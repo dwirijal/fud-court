@@ -5,7 +5,6 @@ import { MarketCarousel } from "@/components/molecules/market-carousel";
 import { HeroSection } from "@/components/organisms/hero-section";
 import { MarketSummaryCard } from "@/components/organisms/market-summary-card";
 import { MarketStatsCard } from "@/components/organisms/market-stats-card";
-import { NewsCard } from "@/components/molecules/news-card";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
@@ -22,7 +21,7 @@ export default async function Home() {
       <HeroSection />
 
       <section className="py-12 md:py-16 border-y bg-background/50">
-        <div className="container space-y-12">
+        <div className="container space-y-8">
           <div className="text-center max-w-3xl mx-auto">
             <h2 className="text-4xl font-bold tracking-tight mb-4">
               Gambaran Pasar
@@ -32,14 +31,9 @@ export default async function Home() {
             </p>
           </div>
           
-          <div className="space-y-6">
-            <MarketSummaryCard marketData={marketData} />
-            <MarketStatsCard marketStats={marketData} />
-          </div>
-
-          <div>
-            <MarketCarousel data={cryptoData || []} />
-          </div>
+          <MarketSummaryCard marketData={marketData} />
+          <MarketStatsCard marketStats={marketData} />
+          <MarketCarousel data={cryptoData || []} />
         </div>
       </section>
     </>

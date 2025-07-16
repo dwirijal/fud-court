@@ -6,13 +6,14 @@ import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { MarketAnalysisOutput } from '@/types';
 import { analyzeMarketSentiment } from '@/ai/flows/market-analysis-flow';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { AlertTriangle, CheckCircle, BookOpen, Scale, Zap, TrendingUp, Package, ArrowRight } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { cn } from '@/lib/utils';
 import { FlippableIndicatorCard } from '@/components/molecules/flippable-indicator-card';
 import anime from 'animejs';
 import type { CombinedMarketData } from '@/types';
+import { Separator } from '../ui/separator';
 
 const getActiveColorClass = (interpretation: string) => {
     const lowerCaseInterpretation = interpretation.toLowerCase();
@@ -154,54 +155,58 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
 
   return (
     <Card className="bg-primary/5 border-primary/20 overflow-hidden">
-        <div className="flex flex-col md:flex-row justify-between items-center p-6 gap-6">
-            <div className="space-y-3 text-center md:text-left">
-              <CardTitle className="text-2xl font-headline">
-                Gambaran Umum Pasar
-              </CardTitle>
-              <CardDescription className="text-base text-muted-foreground max-w-md">
-                Mengukur kondisi pasar crypto secara keseluruhan menggunakan indikator gabungan utama.
-              </CardDescription>
-              <Badge variant="secondary" className="cursor-help flex-shrink-0 mx-auto md:mx-0">
-                <CheckCircle className="h-4 w-4 mr-1.5" />
-                Akurasi Model: {analysisResult.confidenceScore}%
-              </Badge>
+        <CardContent className="p-6">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div className="space-y-3 text-center md:text-left">
+                  <CardTitle className="text-2xl font-headline">
+                    Gambaran Umum Pasar
+                  </CardTitle>
+                  <CardDescription className="text-base text-muted-foreground max-w-md">
+                    Mengukur kondisi pasar crypto secara keseluruhan menggunakan indikator gabungan utama.
+                  </CardDescription>
+                  <Badge variant="secondary" className="cursor-help flex-shrink-0 mx-auto md:mx-0">
+                    <CheckCircle className="h-4 w-4 mr-1.5" />
+                    Akurasi Model: {analysisResult.confidenceScore}%
+                  </Badge>
+                </div>
+                <div className="text-center md:text-right flex-shrink-0 md:pl-4">
+                  <AnimatedNumber to={analysisResult.macroScore} className={cn("text-6xl font-bold font-mono tracking-tighter", activeColorClass)} />
+                  <p className={cn("font-semibold text-2xl", activeColorClass)}>{analysisResult.marketCondition}</p>
+                </div>
             </div>
-            <div className="text-center md:text-right flex-shrink-0 pl-4">
-              <AnimatedNumber to={analysisResult.macroScore} className={cn("text-6xl font-bold font-mono tracking-tighter", activeColorClass)} />
-              <p className={cn("font-semibold text-2xl", activeColorClass)}>{analysisResult.marketCondition}</p>
+        </CardContent>
+
+        <CardFooter className="flex-col items-start p-6 pt-0">
+            <Separator className="mb-4" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+                {indicators.map((indicator, index) => (
+                    <FlippableIndicatorCard
+                        key={indicator.name}
+                        index={index}
+                        icon={indicator.icon}
+                        name={indicator.name}
+                        score={indicator.value}
+                        rawData={indicator.rawData}
+                        formula={indicator.formula}
+                    />
+                ))}
+                 <Link href="/learn/market-indicators" className="group block h-full">
+                   <Card className="h-full hover:bg-muted/50 transition-colors">
+                        <CardContent className="p-4 flex flex-1 items-center justify-between gap-4 h-full">
+                            <div className="space-y-1 flex-grow">
+                                <p className="text-sm font-semibold flex items-center gap-2">
+                                    <BookOpen className="h-4 w-4 text-muted-foreground" />
+                                    Pelajari Skor Ini
+                                </p>
+                            </div>
+                            <div className="text-right flex-shrink-0 pl-2 text-muted-foreground group-hover:text-primary transition-colors">
+                                <ArrowRight className="h-5 w-5" />
+                            </div>
+                        </CardContent>
+                    </Card>
+                </Link>
             </div>
-        </div>
-      <CardContent className="p-6 pt-0">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {indicators.map((indicator, index) => (
-                <FlippableIndicatorCard
-                    key={indicator.name}
-                    index={index}
-                    icon={indicator.icon}
-                    name={indicator.name}
-                    score={indicator.value}
-                    rawData={indicator.rawData}
-                    formula={indicator.formula}
-                />
-            ))}
-             <Link href="/learn/market-indicators" className="group block h-full">
-               <Card className="h-full hover:bg-muted/50 transition-colors">
-                    <CardContent className="p-4 flex flex-1 items-center justify-between gap-4 h-full">
-                        <div className="space-y-1 flex-grow">
-                            <p className="text-sm font-semibold flex items-center gap-2">
-                                <BookOpen className="h-4 w-4 text-muted-foreground" />
-                                Pelajari Skor Ini
-                            </p>
-                        </div>
-                        <div className="text-right flex-shrink-0 pl-2 text-muted-foreground group-hover:text-primary transition-colors">
-                            <ArrowRight className="h-5 w-5" />
-                        </div>
-                    </CardContent>
-                </Card>
-            </Link>
-        </div>
-      </CardContent>
+        </CardFooter>
     </Card>
   );
 }

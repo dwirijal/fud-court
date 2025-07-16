@@ -167,71 +167,69 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
 
   return (
     <Card>
-        <CardContent className="space-y-6 p-6">
-            <Card className="bg-primary/5 border-primary/20 overflow-hidden">
-               <div className="flex flex-col md:flex-row justify-between items-center p-6">
-                    <div className="space-y-2 text-center md:text-left mb-6 md:mb-0">
-                       <CardTitle className="text-3xl font-headline">Gambaran Umum Pasar</CardTitle>
-                        <CardDescription className="text-lg max-w-md">
-                            Mengukur kondisi pasar crypto secara keseluruhan menggunakan indikator gabungan utama.
-                        </CardDescription>
-                         <Badge variant="secondary" className="cursor-help flex-shrink-0 mx-auto md:mx-0">
-                            <CheckCircle className="h-4 w-4 mr-1.5" />
-                            Akurasi Model: {analysisResult.confidenceScore}%
-                        </Badge>
-                    </div>
-                    <div className="text-center md:text-right flex-shrink-0 pl-4">
-                        <AnimatedNumber to={analysisResult.macroScore} className={cn("text-6xl font-bold tracking-tighter", activeColorClass)} />
-                        <p className={cn("font-semibold text-2xl", activeColorClass)}>{analysisResult.marketCondition}</p>
-                    </div>
-                </div>
-            </Card>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <TooltipProvider>
-                    {indicators.map((indicator, index) => (
-                        <Tooltip key={indicator.id}>
-                            <TooltipTrigger asChild>
-                                <Link href={`/learn/market-indicators#${indicator.id}`} className="group block h-full">
-                                    <Card className="flex flex-col h-full hover:bg-muted/50 transition-colors">
-                                        <CardContent className="p-4 flex flex-1 items-center justify-between gap-4">
-                                            <div className="space-y-1 flex-grow">
-                                                <p className="text-sm font-semibold flex items-center gap-2">
-                                                    {indicator.icon && <indicator.icon className="h-4 w-4 text-muted-foreground" />}
-                                                    {indicator.name}
-                                                </p>
-                                            </div>
-                                            <div className="text-right flex-shrink-0 pl-2">
-                                                <AnimatedNumber to={indicator.value} className="text-2xl font-mono font-bold" delay={200 + index * 100} />
-                                                <AnimatedProgress value={indicator.value} className="h-1 w-12 mt-1" indicatorClassName={cn(getProgressColorClass(indicator.value))} />
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                </Link>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>Klik untuk melihat detail perhitungan.</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    ))}
-                     <Link href="/learn/market-indicators" className="group block h-full">
-                        <Card className="flex flex-col h-full hover:bg-muted/50 transition-colors">
-                            <CardContent className="p-4 flex flex-1 items-center justify-between gap-4">
-                                <div className="space-y-1 flex-grow">
-                                    <p className="text-sm font-semibold flex items-center gap-2">
-                                        <BookOpen className="h-4 w-4 text-muted-foreground" />
-                                        Pelajari Skor Ini
-                                    </p>
-                                </div>
-                                <div className="text-right flex-shrink-0 pl-2 text-muted-foreground group-hover:text-primary transition-colors">
-                                    <ArrowRight className="h-5 w-5" />
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </Link>
-                </TooltipProvider>
+      <CardContent className="space-y-6 p-6">
+        <div className="bg-primary/5 border border-primary/20 rounded-lg overflow-hidden">
+          <div className="flex flex-col md:flex-row justify-between items-center p-6">
+            <div className="space-y-3 text-center md:text-left mb-6 md:mb-0">
+              <CardTitle className="text-3xl font-headline">Gambaran Umum Pasar</CardTitle>
+              <CardDescription className="text-lg max-w-md">
+                Mengukur kondisi pasar crypto secara keseluruhan menggunakan indikator gabungan utama.
+              </CardDescription>
+              <Badge variant="secondary" className="cursor-help flex-shrink-0 mx-auto md:mx-0">
+                <CheckCircle className="h-4 w-4 mr-1.5" />
+                Akurasi Model: {analysisResult.confidenceScore}%
+              </Badge>
             </div>
-        </CardContent>
+            <div className="text-center md:text-right flex-shrink-0 pl-4">
+              <AnimatedNumber to={analysisResult.macroScore} className={cn("text-6xl font-bold font-mono tracking-tighter", activeColorClass)} />
+              <p className={cn("font-semibold text-2xl", activeColorClass)}>{analysisResult.marketCondition}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <TooltipProvider>
+            {indicators.map((indicator, index) => (
+              <Tooltip key={indicator.id}>
+                <TooltipTrigger asChild>
+                  <Card className="hover:bg-muted/50 transition-colors">
+                    <CardContent className="p-4 flex flex-1 items-center justify-between gap-4">
+                      <div className="space-y-1 flex-grow">
+                        <p className="text-sm font-semibold flex items-center gap-2">
+                          {indicator.icon && <indicator.icon className="h-4 w-4 text-muted-foreground" />}
+                          {indicator.name}
+                        </p>
+                      </div>
+                      <div className="text-right flex-shrink-0 pl-2">
+                        <AnimatedNumber to={indicator.value} className="text-2xl font-mono font-bold" delay={200 + index * 100} />
+                        <AnimatedProgress value={indicator.value} className="h-1 w-12 mt-1" indicatorClassName={cn(getProgressColorClass(indicator.value))} />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Klik untuk melihat detail perhitungan.</p>
+                </TooltipContent>
+              </Tooltip>
+            ))}
+            <Link href="/learn/market-indicators" className="group block h-full">
+               <Card className="hover:bg-muted/50 transition-colors h-full">
+                    <CardContent className="p-4 flex flex-1 items-center justify-between gap-4 h-full">
+                        <div className="space-y-1 flex-grow">
+                            <p className="text-sm font-semibold flex items-center gap-2">
+                                <BookOpen className="h-4 w-4 text-muted-foreground" />
+                                Pelajari Skor Ini
+                            </p>
+                        </div>
+                        <div className="text-right flex-shrink-0 pl-2 text-muted-foreground group-hover:text-primary transition-colors">
+                            <ArrowRight className="h-5 w-5" />
+                        </div>
+                    </CardContent>
+                </Card>
+            </Link>
+          </TooltipProvider>
+        </div>
+      </CardContent>
     </Card>
   );
 }

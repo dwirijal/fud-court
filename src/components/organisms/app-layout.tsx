@@ -6,6 +6,7 @@ import { Header } from '@/components/organisms/header';
 import { Footer } from '@/components/organisms/footer';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
+import { GlobalNewsTicker } from './global-news-ticker';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -28,7 +29,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         ) : (
           <>
             <Header />
-            <main className="flex-1 pt-16">{children}</main>
+            <main className="flex-1">{children}</main>
             <Footer />
           </>
         )}

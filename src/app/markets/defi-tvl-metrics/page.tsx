@@ -62,7 +62,7 @@ export default async function DefiTvlMetricsPage() {
       <header className="mb-12">
         <div className="flex items-center gap-4 mb-2">
             <div className="bg-primary/10 text-primary p-2 rounded-lg">
-                <Zap className="h-[2rem] w-[2rem]" />
+                <Zap className="h-8 w-8" />
             </div>
             <h1 className="text-4xl md:text-5xl font-semibold font-headline tracking-tight">
                 DeFi TVL Metrics

@@ -141,8 +141,8 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
     return (
         <Card>
             <CardContent className="p-6">
-                <Skeleton className="h-[120px] w-full mb-4" />
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <Skeleton className="h-[120px] w-full mb-6" />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {Array.from({ length: 6 }).map((_, i) => (
                         <Skeleton key={i} className="h-24 w-full" />
                     ))}
@@ -176,11 +176,11 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
 
   return (
     <Card>
-        <CardContent className="space-y-4 p-6">
+        <CardContent className="space-y-8 p-6">
             <Card className="bg-primary/5 border-primary/20 overflow-hidden">
                <div className="flex flex-col md:flex-row justify-between items-center p-6">
-                    <div className="space-y-2 text-center md:text-left mb-4 md:mb-0">
-                       <CardTitle className="text-3xl md:text-4xl font-headline">Gambaran Umum Pasar Saat Ini</CardTitle>
+                    <div className="space-y-2 text-center md:text-left mb-6 md:mb-0">
+                       <CardTitle className="text-3xl md:text-4xl font-headline">Gambaran Umum Pasar</CardTitle>
                         <CardDescription className="text-lg md:text-xl max-w-md">
                             Mengukur kondisi pasar crypto secara keseluruhan menggunakan indikator gabungan utama.
                         </CardDescription>
@@ -196,7 +196,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                 </div>
             </Card>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <TooltipProvider>
                     {indicators.map((indicator, index) => {
                         const detail = indicatorDetails.find(d => d.id === indicator.id);
@@ -204,7 +204,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                             <Tooltip key={indicator.id}>
                                 <TooltipTrigger asChild>
                                     <Link href={`/markets/dashboard#${indicator.id}`} className="group block">
-                                        <Card className="flex flex-col h-full">
+                                        <Card className="flex flex-col h-full hover:bg-muted/50 transition-colors">
                                             <CardContent className="p-4 flex flex-1 items-center justify-between gap-4">
                                                 <div className="space-y-1 flex-grow">
                                                     <p className="text-sm font-semibold flex items-center gap-2">
@@ -233,7 +233,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                    <Card className="h-full flex flex-col items-center justify-center text-center p-4 bg-muted/50 hover:bg-muted transition-colors">
                        <BookOpen className="h-8 w-8 text-muted-foreground group-hover:text-primary transition-colors" />
                        <p className="text-sm font-semibold mt-2 text-muted-foreground group-hover:text-primary transition-colors">Ingin tahu cara kerja skor ini?</p>
-                       <p className="text-xs text-muted-foreground">Lihat detail metode dan interpretasi indikator ➜</p>
+                       <p className="text-xs text-muted-foreground">Lihat detail metode dan interpretasi ➜</p>
                    </Card>
                 </Link>
             </div>

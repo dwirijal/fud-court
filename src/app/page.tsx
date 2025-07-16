@@ -10,7 +10,7 @@ export default async function Home() {
   // Fetch all data concurrently for better performance
   // News fetching is now handled in RootLayout for the global ticker
   const [cryptoData, marketData] = await Promise.all([
-    getTopCoins(10),
+    getTopCoins(1, 10),
     fetchMarketData(),
   ]);
 
@@ -19,12 +19,12 @@ export default async function Home() {
       <HeroSection />
 
       <section className="py-16 md:py-24 bg-card/20 border-t border-b border-border">
-        <div className="container mx-auto px-4">
-          <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
+        <div className="container mx-auto px-4 space-y-16">
+          <div className="text-center max-w-3xl mx-auto">
             <h2 className="text-4xl font-extrabold tracking-tight font-headline mb-4">
               Gambaran Pasar
             </h2>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground text-lg">
               Tampilan komprehensif dari indikator pasar utama dan aset berkinerja terbaik.
             </p>
           </div>
@@ -34,7 +34,7 @@ export default async function Home() {
             <MarketStatsCard marketStats={marketData} />
           </div>
 
-          <div className="mt-16">
+          <div>
             <MarketCarousel data={cryptoData || []} />
           </div>
         </div>

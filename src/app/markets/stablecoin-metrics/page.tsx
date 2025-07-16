@@ -134,7 +134,7 @@ export default function StablecoinMetricsPage() {
       <header className="mb-12">
         <div className="flex items-center gap-4 mb-2">
             <div className="bg-primary/10 text-primary p-2 rounded-lg">
-                <Scale className="h-[2rem] w-[2rem]" />
+                <Scale className="h-8 w-8" />
             </div>
             <h1 className="text-4xl md:text-5xl font-semibold font-headline tracking-tight">
                 Stablecoin Metrics
@@ -148,7 +148,7 @@ export default function StablecoinMetricsPage() {
       <div>
         {error && <p className="text-center text-destructive">Error: {error}</p>}
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {loading ? (
              Array.from({ length: ITEMS_PER_LOAD }).map((_, i) => <StablecoinCardSkeleton key={i} />)
           ) : stablecoinsToDisplay.length > 0 ? (

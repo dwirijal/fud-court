@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 export function Footer() {
   return (
     <footer className="border-t border-border/50 bg-background">
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-1 gap-12 md:grid-cols-12">
           {/* Logo and Description */}
           <div className="md:col-span-4">
@@ -25,7 +25,7 @@ export function Footer() {
           {/* Navigation Links */}
           <div className="md:col-span-2">
             <h3 className="font-semibold mb-4 text-foreground">Jelajahi</h3>
-            <nav className="flex flex-col space-y-2">
+            <nav className="flex flex-col space-y-3">
               <Link href="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">Beranda</Link>
               <Link href="/markets" className="text-sm text-muted-foreground hover:text-primary transition-colors">Pasar</Link>
             </nav>
@@ -33,7 +33,7 @@ export function Footer() {
 
           <div className="md:col-span-2">
             <h3 className="font-semibold mb-4 text-foreground">Konten</h3>
-            <nav className="flex flex-col space-y-2">
+            <nav className="flex flex-col space-y-3">
                 <Link href="/news" className="text-sm text-muted-foreground hover:text-primary transition-colors">Berita</Link>
                 <Link href="/articles" className="text-sm text-muted-foreground hover:text-primary transition-colors">Artikel</Link>
                 <Link href="/learn" className="text-sm text-muted-foreground hover:text-primary transition-colors">Belajar</Link>
@@ -43,7 +43,7 @@ export function Footer() {
           {/* Social Links */}
           <div className="md:col-span-4 text-left md:text-right">
             <h3 className="font-semibold mb-4 text-foreground">Hubungi Kami</h3>
-            <div className="flex md:justify-end space-x-2">
+            <div className="flex md:justify-end space-x-1">
               <Button variant="ghost" size="icon" asChild>
                 <a href="#" aria-label="Twitter">
                   <Twitter className="h-5 w-5" />
@@ -64,7 +64,7 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-border/50 text-center">
+        <div className="mt-16 pt-8 border-t border-border/50 text-center">
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} Fud Court. Hak Cipta Dilindungi.
           </p>

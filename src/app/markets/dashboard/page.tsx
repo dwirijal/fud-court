@@ -116,50 +116,54 @@ export default async function MarketDashboardPage() {
   ];
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-16">
-      <h1 className="text-4xl md:text-5xl font-semibold font-headline tracking-tight mb-8">Market Overview</h1>
-
-      <section className="mb-12">
+    <div className="container mx-auto px-4 py-12 md:py-16 space-y-12">
+      <header>
+        <h1 className="text-4xl md:text-5xl font-semibold font-headline tracking-tight mb-2">Market Overview</h1>
+        <p className="text-lg text-muted-foreground">Tampilan komprehensif dari metrik utama pasar kripto.</p>
+      </header>
+      
+      <section>
         <DetailedMarketSummarySection marketData={marketData} />
       </section>
 
-      <section className="mb-12">
+      <section>
         <DetailedMarketStatsSection marketStats={marketData} />
       </section>
 
-      <h2 className="text-3xl font-semibold font-headline tracking-tight mb-6 mt-12">Detailed Indicator Explanations</h2>
-
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {explanationCards.map((card) => (
-          <Card key={card.id} className="flex flex-col">
-            <CardHeader className="flex-grow">
-              <CardTitle className="text-xl font-headline">{card.title}</CardTitle>
-              <CardDescription className="line-clamp-2">{card.description}</CardDescription>
-            </CardHeader>
-            <CardContent className="flex justify-end">
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    Lihat Detail
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle>{card.title}</DialogTitle>
-                    <DialogDescription>{card.description}</DialogDescription>
-                  </DialogHeader>
-                  <div className="py-4">
-                    {card.component}
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </CardContent>
-          </Card>
-        ))}
+      <section>
+        <h2 className="text-3xl font-semibold font-headline tracking-tight mb-6">Detailed Indicator Explanations</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {explanationCards.map((card) => (
+            <Card key={card.id} className="flex flex-col">
+              <CardHeader className="flex-grow">
+                <CardTitle className="text-xl font-headline">{card.title}</CardTitle>
+                <CardDescription className="line-clamp-2">{card.description}</CardDescription>
+              </CardHeader>
+              <CardContent className="flex justify-end">
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      Lihat Detail
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>{card.title}</DialogTitle>
+                      <DialogDescription>{card.description}</DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4">
+                      {card.component}
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </section>
 
-      <h2 className="text-3xl font-semibold font-headline tracking-tight mb-6 mt-12">Top Cryptocurrencies</h2>
       <section>
+        <h2 className="text-3xl font-semibold font-headline tracking-tight mb-6">Top Cryptocurrencies</h2>
         <Card>
           <CardContent className="p-0">
             <MarketDataTable currency="usd" />

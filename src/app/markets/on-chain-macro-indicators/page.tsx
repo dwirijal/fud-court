@@ -44,7 +44,7 @@ export default async function OnChainMacroIndicatorsPage() {
   })).reverse(); // Reverse to show oldest data first
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-24">
+    <div className="container mx-auto px-4 py-12 md:py-16">
       <Breadcrumb className="mb-8">
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -70,11 +70,11 @@ export default async function OnChainMacroIndicatorsPage() {
             <div className="bg-primary/10 text-primary p-2 rounded-lg">
                 <TrendingUp className="h-8 w-8" />
             </div>
-            <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight">
+            <h1 className="text-4xl md:text-5xl font-semibold font-headline tracking-tight">
                 On-Chain Macro Indicators
             </h1>
         </div>
-        <p className="text-xl text-muted-foreground mt-2">
+        <p className="text-lg text-muted-foreground mt-2">
             Jelajahi data historis Total Value Locked (TVL) di seluruh ekosistem DeFi.
         </p>
       </header>

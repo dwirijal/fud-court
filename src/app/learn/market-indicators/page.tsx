@@ -32,7 +32,7 @@ export default async function MarketIndicatorsPage() {
   const marketData = await fetchMarketData();
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-24">
+    <div className="container mx-auto px-4 py-12 md:py-16">
        <Breadcrumb className="mb-8">
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -58,11 +58,11 @@ export default async function MarketIndicatorsPage() {
             <div className="bg-primary/10 text-primary p-2 rounded-lg">
                 <BookOpen className="h-8 w-8" />
             </div>
-            <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight">
+            <h1 className="text-4xl md:text-5xl font-semibold font-headline tracking-tight">
                 Indikator Skor Pasar
             </h1>
         </div>
-        <p className="text-xl text-muted-foreground mt-2">
+        <p className="text-lg text-muted-foreground mt-2">
             Rincian mendalam tentang komponen yang digunakan untuk menghitung Skor Sentimen Makro.
         </p>
       </header>

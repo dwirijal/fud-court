@@ -148,11 +148,11 @@ export default async function CoinPage({ params }: CoinPageProps) {
         </div>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-base font-medium">Harga Saat Ini</CardTitle>
-            <DollarSign className="h-[1.25rem] w-[1.25rem] text-muted-foreground" />
+            <DollarSign className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{formatCurrency(current_price)}</div>
@@ -164,7 +164,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-base font-medium">Kapitalisasi Pasar</CardTitle>
-            <Scale className="h-[1.25rem] w-[1.25rem] text-muted-foreground" />
+            <Scale className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(market_cap, 'usd', true)}</div>
@@ -176,7 +176,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-base font-medium">Total Value Locked (TVL)</CardTitle>
-            <Zap className="h-[1.25rem] w-[1.25rem] text-muted-foreground" />
+            <Zap className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <Suspense fallback={<Skeleton className="h-8 w-3/4" />}>
@@ -189,7 +189,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
         <Card>
           <CardHeader>
             <CardTitle className="text-xl">Statistik Harga</CardTitle>
@@ -223,7 +223,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
                         Level Support
                         <TooltipProvider>
                             <Tooltip>
-                                <TooltipTrigger><Info className="h-[1rem] w-[1rem] text-muted-foreground" /></TooltipTrigger>
+                                <TooltipTrigger><Info className="h-4 w-4 text-muted-foreground" /></TooltipTrigger>
                                 <TooltipContent>
                                     <p className="max-w-xs">Estimasi level support berdasarkan Fibonacci retracement dari ATH.</p>
                                 </TooltipContent>
@@ -239,7 +239,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
                         Level Resistance
                         <TooltipProvider>
                             <Tooltip>
-                                <TooltipTrigger><Info className="h-[1rem] w-[1rem] text-muted-foreground" /></TooltipTrigger>
+                                <TooltipTrigger><Info className="h-4 w-4 text-muted-foreground" /></TooltipTrigger>
                                 <TooltipContent>
                                     <p className="max-w-xs">Estimasi level resistance berdasarkan faktor pemulihan dari ATL.</p>
                                 </TooltipContent>
@@ -284,7 +284,8 @@ export default async function CoinPage({ params }: CoinPageProps) {
       </div>
 
       <TradingViewWidget symbol={symbol || ''} />
-      <Card className="mb-12">
+      
+      <Card className="mb-8">
         <CardHeader>
           <CardTitle className="text-xl">Perubahan Harga (%)</CardTitle>
         </CardHeader>
@@ -321,7 +322,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
       </Card>
 
       {description?.en && (
-        <Card className="mb-12">
+        <Card className="mb-8">
           <CardHeader>
             <CardTitle className="text-xl">Tentang {name ?? 'koin ini'}</CardTitle>
           </CardHeader>
@@ -335,7 +336,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
       )}
 
       {links && (
-        <Card className="mb-12">
+        <Card className="mb-8">
           <CardHeader>
             <CardTitle className="text-xl">Tautan Resmi</CardTitle>
           </CardHeader>
@@ -382,7 +383,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
       )}
 
       {protocols && protocols.length > 0 && (
-        <Card>
+        <Card className="mb-8">
           <CardHeader>
             <CardTitle className="text-xl">Protokol DeFi Terkait</CardTitle>
           </CardHeader>
@@ -402,7 +403,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
       {relatedArticles.length > 0 && (
         <section className="mt-12">
           <h2 className="text-3xl font-semibold font-headline tracking-tight mb-6 flex items-center gap-3">
-            <Newspaper className="h-[1.75rem] w-[1.75rem] text-muted-foreground" /> Artikel Terkait
+            <Newspaper className="h-6 w-6 text-muted-foreground" /> Artikel Terkait
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {relatedArticles.map((article) => (

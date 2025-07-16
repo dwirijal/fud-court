@@ -50,7 +50,7 @@ export default async function ArticlesPage() {
       <header className="mb-12">
         <div className="flex items-center gap-4 mb-2">
             <div className="bg-primary/10 text-primary p-2 rounded-lg">
-                <BookOpen className="h-[2rem] w-[2rem]" />
+                <BookOpen className="h-8 w-8" />
             </div>
             <h1 className="text-4xl md:text-5xl font-semibold font-headline tracking-tight">
                 Artikel

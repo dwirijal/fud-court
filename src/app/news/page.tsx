@@ -2,17 +2,23 @@
 import { getPosts } from "@/lib/ghost";
 import { NewsTable } from "./news-table";
 import Link from "next/link";
+import { Newspaper } from "lucide-react";
 
 export default async function NewsPage() {
   const posts = await getPosts({ tag: 'news' });
 
   return (
     <div className="container mx-auto px-4 py-12 md:py-16">
-      <header className="mb-12 text-center">
-        <h1 className="text-4xl md:text-5xl font-semibold font-headline tracking-tight mb-2">
-          Berita Fud Court
-        </h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+      <header className="mb-12">
+        <div className="flex items-center gap-4 mb-2">
+          <div className="bg-primary/10 text-primary p-2 rounded-lg">
+            <Newspaper className="h-8 w-8" />
+          </div>
+          <h1 className="text-4xl md:text-5xl font-semibold font-headline tracking-tight">
+            Berita Fud Court
+          </h1>
+        </div>
+        <p className="text-lg text-muted-foreground max-w-2xl mt-2">
           Sumber Anda untuk berita kripto yang tidak bias dan wawasan berbasis data.
         </p>
       </header>

@@ -10,17 +10,17 @@ export default async function MarketDashboardPage() {
 
   if (!marketData) {
     return (
-      <div className="container mx-auto px-4 py-12 md:py-16 text-center">
-        <h1 className="text-4xl font-semibold mb-8">Market Overview</h1>
+      <div className="container mx-auto px-4 py-7 md:py-8 text-center">
+        <h1 className="text-4xl font-semibold mb-6">Market Overview</h1>
         <p className="text-red-500">Failed to load market data. Please try again later.</p>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-16 md:py-24 space-y-12">
+    <div className="container mx-auto px-4 py-7 md:py-8 space-y-7">
       <header>
-        <h1 className="text-4xl md:text-5xl font-semibold font-headline tracking-tight mb-2">Market Dashboard</h1>
+        <h1 className="text-4xl font-semibold font-headline tracking-tight mb-2">Market Dashboard</h1>
         <p className="text-lg text-muted-foreground">Tampilan komprehensif dari metrik utama pasar kripto.</p>
       </header>
       

@@ -7,11 +7,11 @@ import { CurrencySwitcherClient } from "@/components/molecules/currency-switcher
 export default async function MarketsPage({ searchParams }: { searchParams?: { currency?: string } }) {
   const currency = searchParams?.currency?.toLowerCase() || 'usd';
   return (
-    <div className="container mx-auto px-4 py-16 md:py-24">
-      <header className="mb-12">
+    <div className="container mx-auto px-4 py-7 md:py-8">
+      <header className="mb-7">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="text-center sm:text-left">
-            <h1 className="text-4xl md:text-5xl font-semibold font-headline tracking-tight mb-2">
+            <h1 className="text-4xl font-semibold font-headline tracking-tight mb-2">
               Pasar Kripto
             </h1>
             <p className="text-lg text-muted-foreground max-w-3xl">

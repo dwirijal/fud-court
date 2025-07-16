@@ -32,8 +32,8 @@ export default async function MarketIndicatorsPage() {
   const marketData = await fetchMarketData();
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-16">
-       <Breadcrumb className="mb-8">
+    <div className="container mx-auto px-4 py-7 md:py-8">
+       <Breadcrumb className="mb-6">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink href="/" asChild>
@@ -53,12 +53,12 @@ export default async function MarketIndicatorsPage() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <header className="mb-12">
+      <header className="mb-7">
         <div className="flex items-center gap-4 mb-2">
             <div className="bg-primary/10 text-primary p-2 rounded-lg">
                 <BookOpen className="h-8 w-8" />
             </div>
-            <h1 className="text-4xl md:text-5xl font-semibold font-headline tracking-tight">
+            <h1 className="text-4xl font-semibold font-headline tracking-tight">
                 Indikator Skor Pasar
             </h1>
         </div>

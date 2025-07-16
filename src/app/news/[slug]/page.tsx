@@ -93,8 +93,8 @@ export default async function PostPage({ params }: { params: { slug: string } })
 
 
   return (
-    <article className="container mx-auto px-4 py-16 md:py-24 max-w-4xl">
-      <Breadcrumb className="mb-8">
+    <article className="container mx-auto px-4 py-7 md:py-8 max-w-4xl">
+      <Breadcrumb className="mb-6">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink href="/" asChild>
@@ -117,13 +117,13 @@ export default async function PostPage({ params }: { params: { slug: string } })
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <header className="mb-8">
+      <header className="mb-6">
         {post.primary_tag && (
           <Badge variant="secondary" className="mb-4">
             {post.primary_tag.name}
           </Badge>
         )}
-        <h1 className="text-4xl md:text-5xl font-semibold font-headline tracking-tight mb-4 leading-tight">
+        <h1 className="text-4xl font-semibold font-headline tracking-tight mb-4 leading-tight">
           {post.title}
         </h1>
         {post.primary_tag?.name?.toLowerCase() !== 'news' && (
@@ -137,7 +137,7 @@ export default async function PostPage({ params }: { params: { slug: string } })
       </header>
 
       {post.feature_image && (
-        <div className="relative aspect-video w-full mb-8 rounded-lg overflow-hidden">
+        <div className="relative aspect-video w-full mb-6 rounded-lg overflow-hidden">
           <Image
             src={post.feature_image}
             alt={post.title}

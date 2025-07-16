@@ -110,8 +110,8 @@ export default function StablecoinMetricsPage() {
   const stablecoinsToDisplay = stablecoins.slice(0, displayedCount);
 
   return (
-    <div className="container mx-auto px-4 py-16 md:py-24">
-      <Breadcrumb className="mb-8">
+    <div className="container mx-auto px-4 py-7 md:py-8">
+      <Breadcrumb className="mb-6">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink href="/" asChild>
@@ -131,12 +131,12 @@ export default function StablecoinMetricsPage() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <header className="mb-12">
+      <header className="mb-7">
         <div className="flex items-center gap-4 mb-2">
             <div className="bg-primary/10 text-primary p-2 rounded-lg">
                 <Scale className="h-8 w-8" />
             </div>
-            <h1 className="text-4xl md:text-5xl font-semibold font-headline tracking-tight">
+            <h1 className="text-4xl font-semibold font-headline tracking-tight">
                 Stablecoin Metrics
             </h1>
         </div>
@@ -148,7 +148,7 @@ export default function StablecoinMetricsPage() {
       <div>
         {error && <p className="text-center text-destructive">Error: {error}</p>}
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {loading ? (
              Array.from({ length: ITEMS_PER_LOAD }).map((_, i) => <StablecoinCardSkeleton key={i} />)
           ) : stablecoinsToDisplay.length > 0 ? (
@@ -212,7 +212,7 @@ export default function StablecoinMetricsPage() {
         </div>
         
         {!loading && !error && displayedCount < stablecoins.length && (
-          <div className="flex justify-center mt-8">
+          <div className="flex justify-center mt-6">
             <Button onClick={handleLoadMore} variant="outline">
               Muat Lebih Banyak ({stablecoins.length - displayedCount} tersisa)
             </Button>

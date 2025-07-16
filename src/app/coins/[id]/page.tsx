@@ -107,8 +107,8 @@ export default async function CoinPage({ params }: CoinPageProps) {
   const relatedArticles = await getPosts({ tag: symbol?.toLowerCase(), limit: 3 });
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-16">
-      <Breadcrumb className="mb-8">
+    <div className="container mx-auto px-4 py-7 md:py-8">
+      <Breadcrumb className="mb-6">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink href="/" asChild>
@@ -128,7 +128,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <header className="mb-12 flex flex-col md:flex-row items-center gap-6">
+      <header className="mb-7 flex flex-col md:flex-row items-center gap-6">
         {image?.large && (
           <Image
             src={image.large}
@@ -139,8 +139,8 @@ export default async function CoinPage({ params }: CoinPageProps) {
           />
         )}
         <div className="text-center md:text-left">
-          <h1 className="text-4xl md:text-5xl font-semibold font-headline tracking-tight mb-2">
-            {name ?? 'N/A'} <span className="text-muted-foreground text-2xl md:text-3xl">({symbol?.toUpperCase() ?? 'N/A'})</span>
+          <h1 className="text-4xl font-semibold font-headline tracking-tight mb-2">
+            {name ?? 'N/A'} <span className="text-muted-foreground text-2xl">({symbol?.toUpperCase() ?? 'N/A'})</span>
           </h1>
           <p className="text-lg text-muted-foreground max-w-3xl">
             Data harga, kapitalisasi pasar, dan informasi detail untuk {name ?? 'koin ini'}.
@@ -148,14 +148,14 @@ export default async function CoinPage({ params }: CoinPageProps) {
         </div>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-base font-medium">Harga Saat Ini</CardTitle>
             <DollarSign className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{formatCurrency(current_price)}</div>
+            <div className="text-2xl font-bold">{formatCurrency(current_price)}</div>
             <p className="text-xs text-muted-foreground">
               Perubahan 24j: {price_change_percentage_24h?.toFixed(2) ?? 'N/A'}%
             </p>
@@ -167,7 +167,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
             <Scale className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(market_cap, 'usd', true)}</div>
+            <div className="text-xl font-bold">{formatCurrency(market_cap, 'usd', true)}</div>
             <p className="text-xs text-muted-foreground">
               Volume 24j: {formatCurrency(total_volume, 'usd', true)}
             </p>
@@ -180,7 +180,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
           </CardHeader>
           <CardContent>
             <Suspense fallback={<Skeleton className="h-8 w-3/4" />}>
-              <div className="text-2xl font-bold">{tvl ? formatCurrency(tvl, 'usd', true) : 'N/A'}</div>
+              <div className="text-xl font-bold">{tvl ? formatCurrency(tvl, 'usd', true) : 'N/A'}</div>
               <p className="text-xs text-muted-foreground">
                 {chains && chains.length > 0 ? `Jaringan: ${chains.join(', ')}` : 'Tidak ada data jaringan'}
               </p>
@@ -189,7 +189,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <Card>
           <CardHeader>
             <CardTitle className="text-xl">Statistik Harga</CardTitle>
@@ -285,7 +285,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
 
       <TradingViewWidget symbol={symbol || ''} />
       
-      <Card className="mb-8">
+      <Card className="mb-6">
         <CardHeader>
           <CardTitle className="text-xl">Perubahan Harga (%)</CardTitle>
         </CardHeader>
@@ -322,7 +322,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
       </Card>
 
       {description?.en && (
-        <Card className="mb-8">
+        <Card className="mb-6">
           <CardHeader>
             <CardTitle className="text-xl">Tentang {name ?? 'koin ini'}</CardTitle>
           </CardHeader>
@@ -336,7 +336,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
       )}
 
       {links && (
-        <Card className="mb-8">
+        <Card className="mb-6">
           <CardHeader>
             <CardTitle className="text-xl">Tautan Resmi</CardTitle>
           </CardHeader>
@@ -383,7 +383,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
       )}
 
       {protocols && protocols.length > 0 && (
-        <Card className="mb-8">
+        <Card className="mb-6">
           <CardHeader>
             <CardTitle className="text-xl">Protokol DeFi Terkait</CardTitle>
           </CardHeader>
@@ -401,11 +401,11 @@ export default async function CoinPage({ params }: CoinPageProps) {
       )}
 
       {relatedArticles.length > 0 && (
-        <section className="mt-12">
-          <h2 className="text-3xl font-semibold font-headline tracking-tight mb-6 flex items-center gap-3">
+        <section className="mt-7">
+          <h2 className="text-3xl font-semibold font-headline tracking-tight mb-5 flex items-center gap-3">
             <Newspaper className="h-6 w-6 text-muted-foreground" /> Artikel Terkait
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {relatedArticles.map((article) => (
               <Card key={article.id} className="flex flex-col overflow-hidden">
                 {article.feature_image && (
@@ -425,7 +425,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
                       {article.primary_tag.name}
                     </Badge>
                   )}
-                  <CardTitle className="text-xl font-headline leading-tight">
+                  <CardTitle className="text-lg font-headline leading-tight">
                     <Link href={`/news/${article.slug}`} className="hover:underline">
                       {article.title}
                     </Link>

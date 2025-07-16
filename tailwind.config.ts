@@ -1,4 +1,3 @@
-
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -9,6 +8,30 @@ export default {
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
+    spacing: {
+      0: '0px',
+      1: '4px',
+      2: '8px',
+      3: '12px',
+      4: '16px',
+      5: '24px',
+      6: '32px',
+      7: '40px',
+      8: '64px',
+    },
+    borderRadius: {
+      sm: '4px',
+      DEFAULT: '8px',
+      lg: '12px',
+    },
+    fontSize: {
+      base: ['1rem', '1.5'],      // 16px
+      lg: ['1.25rem', '1.6'],     // 20px
+      xl: ['1.563rem', '1.6'],    // 25px
+      '2xl': ['1.953rem', '1.4'], // 31.25px
+      '3xl': ['2.441rem', '1.3'], // 39px
+      '4xl': ['3.052rem', '1.2'], // 48.8px
+    },
     extend: {
       fontFamily: {
         body: ['var(--font-plus-jakarta-sans)', 'sans-serif'],
@@ -56,11 +79,6 @@ export default {
           '4': 'var(--chart-4)',
           '5': 'var(--chart-5)',
         },
-      },
-      borderRadius: {
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
       },
       keyframes: {
         'accordion-down': {

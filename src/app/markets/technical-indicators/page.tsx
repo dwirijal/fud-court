@@ -17,8 +17,8 @@ export const metadata = {
 
 export default function TechnicalIndicatorsPage() {
   return (
-    <div className="container mx-auto px-4 py-12 md:py-24">
-      <Breadcrumb className="mb-8">
+    <div className="container mx-auto px-4 py-7 md:py-8">
+      <Breadcrumb className="mb-6">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink href="/" asChild>
@@ -38,16 +38,16 @@ export default function TechnicalIndicatorsPage() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <header className="mb-12">
+      <header className="mb-7">
         <div className="flex items-center gap-4 mb-2">
             <div className="bg-primary/10 text-primary p-2 rounded-lg">
                 <Calculator className="h-8 w-8" />
             </div>
-            <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight">
+            <h1 className="text-4xl font-semibold font-headline tracking-tight">
                 Technical Indicators
             </h1>
         </div>
-        <p className="text-xl text-muted-foreground mt-2">
+        <p className="text-lg text-muted-foreground mt-2">
             Halaman ini akan menampilkan berbagai indikator teknis untuk analisis pasar kripto.
         </p>
       </header>

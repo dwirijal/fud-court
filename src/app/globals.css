@@ -4,7 +4,6 @@
 
 @layer base {
 :root {
-  --radius: 0.8rem;
   /* Sakura Theme - Light */
   --background: oklch(0.99 0.005 340); /* Very light pink */
   --foreground: oklch(0.2 0.03 340); /* Dark, desaturated pink */
@@ -104,7 +103,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground text-base;
     background-image: linear-gradient(to bottom, oklch(0.99 0.005 340), oklch(0.98 0.015 350));
   }
   .dark body {

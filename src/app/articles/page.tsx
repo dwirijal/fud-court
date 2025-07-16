@@ -30,8 +30,8 @@ export default async function ArticlesPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-16 md:py-24">
-      <Breadcrumb className="mb-8">
+    <div className="container mx-auto px-4 py-7 md:py-8">
+      <Breadcrumb className="mb-6">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink href="/" asChild>
@@ -48,12 +48,12 @@ export default async function ArticlesPage() {
       {/* HERO SLIDER */}
       <ArticleHeroSlider posts={featuredPosts} />
 
-      <header className="mb-12">
+      <header className="mb-7">
         <div className="flex items-center gap-4 mb-2">
             <div className="bg-primary/10 text-primary p-2 rounded-lg">
                 <BookOpen className="h-8 w-8" />
             </div>
-            <h1 className="text-4xl md:text-5xl font-semibold font-headline tracking-tight">
+            <h1 className="text-4xl font-semibold font-headline tracking-tight">
                 Artikel
             </h1>
         </div>
@@ -62,7 +62,7 @@ export default async function ArticlesPage() {
         </p>
       </header>
 
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {articles.length > 0 ? (
           articles.map((article) => (
             <Card key={article.id} className="flex flex-col overflow-hidden">
@@ -83,7 +83,7 @@ export default async function ArticlesPage() {
                     {article.primary_tag.name}
                   </Badge>
                 )}
-                <CardTitle className="text-xl font-headline leading-tight">
+                <CardTitle className="text-lg font-headline leading-tight">
                   <Link href={`/news/${article.slug}`} className="hover:underline">
                     {article.title}
                   </Link>

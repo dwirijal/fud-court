@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { MarketAnalysisOutput } from '@/types';
 import { analyzeMarketSentiment } from '@/ai/flows/market-analysis-flow';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { AlertTriangle, CheckCircle, BookOpen, Scale, Zap, TrendingUp, Package, ArrowRight } from 'lucide-react';
+import { AlertTriangle, CheckCircle, ArrowRight, Scale, Zap, TrendingUp, Package } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
@@ -166,11 +166,11 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
   }
   
   const indicators = [
-      { name: "Skor Kapitalisasi Pasar", value: analysisResult.components.marketCapScore, id: "market-cap-explanation", icon: Scale },
-      { name: "Skor Volume", value: analysisResult.components.volumeScore, id: "volume-explanation", icon: Zap },
-      { name: "Skor Fear & Greed", value: analysisResult.components.fearGreedScore, id: "fear-greed-explanation", icon: AlertTriangle },
-      { name: "Skor ATH", value: analysisResult.components.athScore, id: "ath-explanation", icon: TrendingUp },
-      { name: "Skor Sebaran Pasar", value: analysisResult.components.marketBreadthScore, id: "market-breadth-explanation", icon: Package },
+      { name: "Kapitalisasi Pasar", value: analysisResult.components.marketCapScore, id: "market-cap-explanation", icon: Scale },
+      { name: "Volume", value: analysisResult.components.volumeScore, id: "volume-explanation", icon: Zap },
+      { name: "Fear & Greed", value: analysisResult.components.fearGreedScore, id: "fear-greed-explanation", icon: AlertTriangle },
+      { name: "Jarak ATH", value: analysisResult.components.athScore, id: "ath-explanation", icon: TrendingUp },
+      { name: "Sebaran Pasar", value: analysisResult.components.marketBreadthScore, id: "market-breadth-explanation", icon: Package },
   ];
   
   const activeColorClass = getActiveColorClass(analysisResult.marketCondition);
@@ -211,16 +211,18 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                                 <TooltipTrigger asChild>
                                     <Link href={`/markets#${indicator.id}`} className="group block h-full">
                                         <Card className="flex flex-col h-full">
-                                            <CardContent className="p-4 flex flex-col flex-grow justify-between gap-2">
-                                                <div>
-                                                    <p className="text-sm font-semibold flex items-center gap-2 text-muted-foreground">
-                                                        {indicator.icon && <indicator.icon className="h-4 w-4 flex-shrink-0" />}
-                                                        <span>{indicator.name}</span>
-                                                    </p>
+                                            <CardContent className="p-4 flex flex-col flex-grow justify-between gap-4">
+                                                <div className="flex items-center gap-3">
+                                                    {indicator.icon && 
+                                                        <div className="bg-muted p-2 rounded-full">
+                                                            <indicator.icon className="h-4 w-4 text-muted-foreground" />
+                                                        </div>
+                                                    }
+                                                    <p className="text-sm font-semibold text-muted-foreground">{indicator.name}</p>
                                                 </div>
                                                 <div className="text-right">
-                                                    <AnimatedNumber to={indicator.value} className="text-2xl font-mono font-bold" delay={200 + index * 100} />
-                                                    <AnimatedProgress value={indicator.value} className="h-1.5 w-[50px] mt-1 ml-auto" indicatorClassName={cn(getProgressColorClass(indicator.value))} />
+                                                    <AnimatedNumber to={indicator.value} className="text-3xl font-mono font-bold" delay={200 + index * 100} />
+                                                    <AnimatedProgress value={indicator.value} className="h-1.5 w-full mt-2" indicatorClassName={cn(getProgressColorClass(indicator.value))} />
                                                 </div>
                                             </CardContent>
                                         </Card>

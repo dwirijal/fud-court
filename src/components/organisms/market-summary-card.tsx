@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -6,10 +7,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { MarketAnalysisOutput } from '@/types';
 import { analyzeMarketSentiment } from '@/ai/flows/market-analysis-flow';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { AlertTriangle, CheckCircle, BookOpen, Scale, Zap, TrendingUp, Package } from 'lucide-react';
+import { AlertTriangle, CheckCircle, BookOpen, Scale, Zap, TrendingUp, Package, ArrowRight } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
 import {
   Tooltip,
   TooltipContent,
@@ -191,18 +193,23 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                     <div className="text-center md:text-right flex-shrink-0 pl-4">
                         <AnimatedNumber to={analysisResult.macroScore} className={cn("text-7xl md:text-8xl font-bold tracking-tighter", activeColorClass)} />
                         <p className={cn("font-semibold text-2xl md:text-3xl", activeColorClass)}>{analysisResult.marketCondition}</p>
+                        <Button variant="link" asChild className="text-muted-foreground mt-2">
+                            <Link href="/markets">
+                                Pelajari cara kerja skor ini <ArrowRight className="h-4 w-4 ml-1" />
+                            </Link>
+                        </Button>
                     </div>
                 </div>
             </Card>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 <TooltipProvider>
                     {indicators.map((indicator, index) => {
                         const detail = indicatorDetails.find(d => d.id === indicator.id);
                         return (
                             <Tooltip key={indicator.id}>
                                 <TooltipTrigger asChild>
-                                    <Link href={`/markets/dashboard#${indicator.id}`} className="group block">
+                                    <Link href={`/markets#${indicator.id}`} className="group block">
                                         <Card className="flex flex-col h-full">
                                             <CardContent className="p-4 flex flex-1 items-center justify-between gap-4">
                                                 <div className="space-y-1 flex-grow">
@@ -228,13 +235,6 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                         );
                     })}
                 </TooltipProvider>
-                <Link href="/learn/market-indicators" className="group block">
-                   <Card className="h-full flex flex-col items-center justify-center text-center p-4 bg-muted/50 hover:bg-muted transition-colors">
-                       <BookOpen className="h-8 w-8 text-muted-foreground group-hover:text-primary transition-colors" />
-                       <p className="text-sm font-semibold mt-2 text-muted-foreground group-hover:text-primary transition-colors">Ingin tahu cara kerja skor ini?</p>
-                       <p className="text-xs text-muted-foreground">Lihat detail metode dan interpretasi indikator ➜</p>
-                   </Card>
-                </Link>
             </div>
         </CardContent>
     </Card>

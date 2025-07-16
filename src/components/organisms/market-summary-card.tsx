@@ -76,15 +76,15 @@ function IndicatorCard({ detail, value }: { detail: typeof indicatorDetails[numb
                 <TooltipTrigger asChild>
                     <Link href={`/markets#${detail.valueKey}`} className="group block h-full">
                         <Card className="flex flex-col h-full hover:bg-muted/50 transition-colors aspect-square justify-between p-3">
-                            <div className="flex items-center justify-between">
+                           <div className="flex items-center justify-between">
                                 <div className="bg-muted p-1 rounded-full w-fit">
                                     <detail.icon className="h-4 w-4 text-muted-foreground" />
                                 </div>
-                                <p className="text-xs font-medium text-muted-foreground">{detail.name}</p>
                             </div>
-                            <div className="w-full text-right">
+                            <div className="w-full text-left">
                                 <AnimatedNumber to={value} className="text-5xl font-bold tracking-tighter" />
-                                <Progress value={value} className="h-1.5 w-full mt-1" />
+                                <p className="text-xs font-medium text-muted-foreground mt-1">{detail.name}</p>
+                                <Progress value={value} className="h-1.5 w-full mt-2" />
                             </div>
                         </Card>
                     </Link>
@@ -166,40 +166,41 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
 
   return (
     <div className="space-y-6">
-        <div>
-            <h2 className="text-3xl md:text-4xl font-headline">Gambaran Umum Pasar Saat Ini</h2>
-            <p className="text-lg md:text-xl max-w-2xl text-muted-foreground">
-                Mengukur kondisi pasar crypto secara keseluruhan menggunakan 5 indikator gabungan utama.
-            </p>
-        </div>
-        
         <Card className="bg-primary/5 border-primary/20 overflow-hidden">
-            <div className="flex flex-col md:flex-row justify-between items-center p-6">
-                <div className="space-y-2 text-center md:text-left mb-6 md:mb-0">
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Badge variant="secondary" className="cursor-help flex-shrink-0 mx-auto md:mx-0">
-                                    <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
-                                    Akurasi Model: {analysisResult.confidenceScore}%
-                                </Badge>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p className="max-w-xs text-center">Skor kepercayaan berdasarkan kelengkapan dan validitas data input.</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
-                    <Button asChild variant="link" className="text-muted-foreground p-0 h-auto flex text-sm">
-                        <Link href="/markets">
-                            Pelajari cara kerja skor ini <ArrowRight className="h-4 w-4 ml-1" />
-                        </Link>
-                    </Button>
+             <CardHeader>
+                <CardTitle className="text-3xl md:text-4xl font-headline">Gambaran Umum Pasar Saat Ini</CardTitle>
+                <CardDescription className="text-lg md:text-xl max-w-2xl text-muted-foreground">
+                    Mengukur kondisi pasar crypto secara keseluruhan menggunakan 5 indikator gabungan utama.
+                </CardDescription>
+            </CardHeader>
+            <CardContent className="p-6 pt-0">
+                <div className="flex flex-col md:flex-row justify-between items-center">
+                    <div className="space-y-2 text-center md:text-left mb-6 md:mb-0">
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Badge variant="secondary" className="cursor-help flex-shrink-0 mx-auto md:mx-0">
+                                        <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
+                                        Akurasi Model: {analysisResult.confidenceScore}%
+                                    </Badge>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p className="max-w-xs text-center">Skor kepercayaan berdasarkan kelengkapan dan validitas data input.</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                        <Button asChild variant="link" className="text-muted-foreground p-0 h-auto flex text-sm">
+                            <Link href="/markets">
+                                Pelajari cara kerja skor ini <ArrowRight className="h-4 w-4 ml-1" />
+                            </Link>
+                        </Button>
+                    </div>
+                    <div className="text-center md:text-right flex-shrink-0 pl-4">
+                        <AnimatedNumber to={analysisResult.macroScore} className={cn("text-7xl md:text-8xl font-bold tracking-tighter", activeColorClass)} />
+                        <p className={cn("font-semibold text-2xl md:text-3xl", activeColorClass)}>{analysisResult.marketCondition}</p>
+                    </div>
                 </div>
-                <div className="text-center md:text-right flex-shrink-0 pl-4">
-                    <AnimatedNumber to={analysisResult.macroScore} className={cn("text-7xl md:text-8xl font-bold tracking-tighter", activeColorClass)} />
-                    <p className={cn("font-semibold text-2xl md:text-3xl", activeColorClass)}>{analysisResult.marketCondition}</p>
-                </div>
-            </div>
+            </CardContent>
         </Card>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">

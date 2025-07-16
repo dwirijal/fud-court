@@ -129,7 +129,7 @@ function MarketIndicatorsClient({ marketData }: { marketData: any }) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 md:py-10">
+    <div className="container mx-auto px-4 py-3 md:py-4">
       <Breadcrumb className="mb-8">
         <BreadcrumbList>
           <BreadcrumbItem>

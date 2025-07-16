@@ -88,7 +88,7 @@ function StatCard({ label, value, marketCap, colorClass, index }: { label: strin
                     <AnimatedStatNumber
                         to={marketCap}
                         formatter={formatCurrency}
-                        className="text-xs text-muted-foreground font-mono"
+                        className="text-xs text-muted-foreground"
                         delay={index * 100}
                     />
                 </div>

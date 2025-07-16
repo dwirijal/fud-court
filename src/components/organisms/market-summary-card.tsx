@@ -74,30 +74,32 @@ const IndicatorCard = ({ index, icon: Icon, name, score, formula }: { index: num
       easing: 'easeOutExpo',
       duration: 300,
       autoplay: false,
-    })
-    .add({
-      targets: scoreRef.current,
-      opacity: 0,
-      translateY: -10,
-    })
-    .add({
-      targets: formulaRef.current,
-      opacity: 1,
-      translateY: 0,
-    }, '-=200'); // Start formula animation slightly before score finishes
+    });
+    
+    animation.current
+      .add({
+        targets: scoreRef.current,
+        opacity: 0,
+        translateY: -10,
+      })
+      .add({
+        targets: formulaRef.current,
+        opacity: 1,
+        translateY: 0,
+      }, '-=200'); // Start formula animation slightly before score finishes
 
   }, []);
 
   const handleMouseEnter = () => {
     if (animation.current) {
       animation.current.play();
-      animation.current.reverse();
     }
   };
 
   const handleMouseLeave = () => {
      if (animation.current) {
       animation.current.reverse();
+      animation.current.play();
     }
   };
 

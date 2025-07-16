@@ -155,7 +155,7 @@ export function MarketIndicatorsClient({ marketData }: MarketIndicatorsClientPro
       finalScore = Math.round((scores.s1 * 0.25) + (scores.s2 * 0.20) + (scores.s3 * 0.20) + (scores.s4 * 0.25) + (scores.s5 * 0.10));
   }
   return (
-    <div className="space-y-12">
+    <div className="space-y-8">
         {marketData ? (
              <Card>
                 <CardHeader>

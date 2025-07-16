@@ -165,45 +165,45 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
   }
   
   const indicators = [
-      { name: "Skor Kapitalisasi Pasar", value: analysisResult.components.marketCapScore, id: "market-cap-explanation", icon: Scale },
-      { name: "Skor Volume", value: analysisResult.components.volumeScore, id: "volume-explanation", icon: Zap },
-      { name: "Skor Fear & Greed", value: analysisResult.components.fearGreedScore, id: "fear-greed-explanation", icon: AlertTriangle },
-      { name: "Skor ATH", value: analysisResult.components.athScore, id: "ath-explanation", icon: TrendingUp },
-      { name: "Skor Sebaran Pasar", value: analysisResult.components.marketBreadthScore, id: "market-breadth-explanation", icon: Package },
+      { name: "Kapitalisasi Pasar", value: analysisResult.components.marketCapScore, id: "market-cap-explanation", icon: Scale },
+      { name: "Volume", value: analysisResult.components.volumeScore, id: "volume-explanation", icon: Zap },
+      { name: "Fear & Greed", value: analysisResult.components.fearGreedScore, id: "fear-greed-explanation", icon: AlertTriangle },
+      { name: "Jarak ATH", value: analysisResult.components.athScore, id: "ath-explanation", icon: TrendingUp },
+      { name: "Sebaran Pasar", value: analysisResult.components.marketBreadthScore, id: "market-breadth-explanation", icon: Package },
   ];
   
   const activeColorClass = getActiveColorClass(analysisResult.marketCondition);
 
   return (
     <Card>
-        <CardContent className="space-y-8 p-6">
+        <CardContent className="space-y-6 p-6">
             <Card className="bg-primary/5 border-primary/20 overflow-hidden">
                <div className="flex flex-col md:flex-row justify-between items-center p-6">
                     <div className="space-y-2 text-center md:text-left mb-6 md:mb-0">
-                       <CardTitle className="text-3xl md:text-4xl font-headline">Gambaran Umum Pasar</CardTitle>
-                        <CardDescription className="text-lg md:text-xl max-w-md">
-                            Mengukur kondisi pasar crypto secara keseluruhan menggunakan indikator gabungan utama.
+                       <CardTitle className="text-3xl font-headline">Gambaran Umum Pasar</CardTitle>
+                        <CardDescription className="text-lg max-w-md">
+                            Kondisi pasar crypto menggunakan indikator gabungan utama.
                         </CardDescription>
                          <Badge variant="secondary" className="cursor-help flex-shrink-0 mx-auto md:mx-0">
-                            <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
+                            <CheckCircle className="h-4 w-4 mr-1.5" />
                             Akurasi Model: {analysisResult.confidenceScore}%
                         </Badge>
                     </div>
                     <div className="text-center md:text-right flex-shrink-0 pl-4">
-                        <AnimatedNumber to={analysisResult.macroScore} className={cn("text-7xl md:text-8xl font-bold tracking-tighter", activeColorClass)} />
-                        <p className={cn("font-semibold text-2xl md:text-3xl", activeColorClass)}>{analysisResult.marketCondition}</p>
+                        <AnimatedNumber to={analysisResult.macroScore} className={cn("text-7xl font-bold tracking-tighter", activeColorClass)} />
+                        <p className={cn("font-semibold text-2xl", activeColorClass)}>{analysisResult.marketCondition}</p>
                     </div>
                 </div>
             </Card>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <TooltipProvider>
                     {indicators.map((indicator, index) => {
                         const detail = indicatorDetails.find(d => d.id === indicator.id);
                         return (
                             <Tooltip key={indicator.id}>
                                 <TooltipTrigger asChild>
-                                    <Link href={`/markets/dashboard#${indicator.id}`} className="group block">
+                                    <Link href={`/learn/market-indicators#${indicator.id}`} className="group block">
                                         <Card className="flex flex-col h-full hover:bg-muted/50 transition-colors">
                                             <CardContent className="p-4 flex flex-1 items-center justify-between gap-4">
                                                 <div className="space-y-1 flex-grow">
@@ -213,8 +213,8 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                                                     </p>
                                                 </div>
                                                 <div className="text-right flex-shrink-0 pl-2">
-                                                    <AnimatedNumber to={indicator.value} className="text-3xl font-mono font-bold" delay={200 + index * 100} />
-                                                    <AnimatedProgress value={indicator.value} className="h-1.5 w-[60px] mt-1" indicatorClassName={cn(getProgressColorClass(indicator.value))} />
+                                                    <AnimatedNumber to={indicator.value} className="text-2xl font-mono font-bold" delay={200 + index * 100} />
+                                                    <AnimatedProgress value={indicator.value} className="h-1 w-12 mt-1" indicatorClassName={cn(getProgressColorClass(indicator.value))} />
                                                 </div>
                                             </CardContent>
                                         </Card>
@@ -232,8 +232,8 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                 <Link href="/learn/market-indicators" className="group block">
                    <Card className="h-full flex flex-col items-center justify-center text-center p-4 bg-muted/50 hover:bg-muted transition-colors">
                        <BookOpen className="h-8 w-8 text-muted-foreground group-hover:text-primary transition-colors" />
-                       <p className="text-sm font-semibold mt-2 text-muted-foreground group-hover:text-primary transition-colors">Ingin tahu cara kerja skor ini?</p>
-                       <p className="text-xs text-muted-foreground">Lihat detail metode dan interpretasi ➜</p>
+                       <p className="text-sm font-semibold mt-2 text-muted-foreground group-hover:text-primary transition-colors">Pelajari Skor Ini</p>
+                       <p className="text-xs text-muted-foreground">Lihat rincian metode & interpretasi ➜</p>
                    </Card>
                 </Link>
             </div>

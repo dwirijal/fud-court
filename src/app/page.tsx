@@ -17,7 +17,7 @@ export default async function Home() {
     <>
       <HeroSection />
 
-      <section className="py-7 md:py-8 border-t border-b">
+      <section className="py-8 border-t border-b">
         <div className="container mx-auto px-4 space-y-7">
           <div className="text-center max-w-3xl mx-auto">
             <h2 className="text-3xl font-bold tracking-tight font-headline mb-4">

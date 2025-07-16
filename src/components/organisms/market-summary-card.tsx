@@ -169,7 +169,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                     Mengukur kondisi pasar crypto secara keseluruhan menggunakan 5 indikator gabungan utama.
                 </CardDescription>
             </CardHeader>
-            <CardContent className="p-6 pt-0">
+            <CardContent>
                 <div className="flex flex-col md:flex-row justify-between items-center">
                     <div className="space-y-2 text-center md:text-left mb-6 md:mb-0">
                         <TooltipProvider>

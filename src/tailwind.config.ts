@@ -11,7 +11,7 @@ export default {
   theme: {
     container: {
       center: true,
-      padding: "1rem", // Default padding 16px
+      padding: "var(--space-4)",
       screens: {
         "2xl": "1400px",
       },
@@ -26,14 +26,17 @@ export default {
         code: ['var(--font-mono)', 'monospace'],
       },
       spacing: {
-        '1': 'var(--space-1)', // 8px
-        '2': 'var(--space-2)', // 16px
-        '3': 'var(--space-3)', // 24px
-        '4': 'var(--space-4)', // 32px
-        '5': 'var(--space-5)', // 40px
-        '6': 'var(--space-6)', // 48px
-        '8': 'var(--space-8)', // 64px
-        '10': 'var(--space-10)', // 80px
+        'px': 'var(--space-px)',
+        '1': 'var(--space-1)',
+        '2': 'var(--space-2)',
+        '3': 'var(--space-3)',
+        '4': 'var(--space-4)',
+        '5': 'var(--space-5)',
+        '6': 'var(--space-6)',
+        '7': 'var(--space-7)',
+        '8': 'var(--space-8)',
+        '9': 'var(--space-9)',
+        '10': 'var(--space-10)',
       },
       colors: {
         // Background colors

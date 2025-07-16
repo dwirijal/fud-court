@@ -60,7 +60,7 @@ export function Header() {
         className={cn(
           "flex items-center justify-center rounded-full bg-bg-glass border border-border backdrop-blur-lg shadow-lg transition-all duration-300 ease-in-out pointer-events-auto",
            "shadow-[0_0_20px_hsl(var(--accent-glow)),_0_0_0_1px_hsl(var(--border-color))]",
-          isIslandExpanded ? "px-4 py-2 gap-2" : "p-2.5 gap-0"
+          isIslandExpanded ? "px-3 py-1.5 gap-2" : "p-2 gap-0"
         )}
       >
         <Link href="/" className="flex-shrink-0">

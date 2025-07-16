@@ -18,16 +18,18 @@
     --radius-full: 9999px;
     --radius: var(--radius-2);
 
-    /* Spacing Scale (8-Point Grid) */
-    --space-1: 0.5rem;   /* 8px */
-    --space-2: 1rem;     /* 16px */
-    --space-3: 1.5rem;   /* 24px */
-    --space-4: 2rem;     /* 32px */
-    --space-5: 2.5rem;   /* 40px */
-    --space-6: 3rem;     /* 48px */
-    --space-8: 4rem;     /* 64px */
-    --space-10: 5rem;    /* 80px */
-
+    /* Spacing Scale (Perfect Fifth Ratio: 1.5) - Base: 4px */
+    --space-px: 1px;
+    --space-1: 0.25rem;  /* 4px */
+    --space-2: 0.5rem;   /* 8px */
+    --space-3: 0.75rem;  /* 12px */
+    --space-4: 1rem;     /* 16px */
+    --space-5: 1.5rem;   /* 24px */
+    --space-6: 2.25rem;  /* 36px */
+    --space-7: 3.375rem; /* 54px */
+    --space-8: 5.063rem; /* 81px */
+    --space-9: 7.594rem; /* 121.5px */
+    --space-10: 11.391rem;/* 182.25px */
 
     /* Font Families */
     --font-primary: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
@@ -48,8 +50,8 @@
     --border-accent: 0 100% 55%;  /* Neon Red for borders #FF1A1A */
 
     --text-primary: 0 0% 98%;      /* Almost white #FAFAFA */
-    --text-secondary: 0 0% 60%;     /* Muted gray #999999 */
-    --text-tertiary: 0 0% 40%;      /* Subtle gray #666666 */
+    --text-secondary: 0 0% 70%;     /* Muted gray (brighter for contrast) */
+    --text-tertiary: 0 0% 45%;      /* Subtle gray */
 
     --accent-primary: 0 100% 55%;   /* Neon Red #FF1A1A */
     --accent-glow: 0 100% 55% / 0.4; /* Glow effect for Neon Red */

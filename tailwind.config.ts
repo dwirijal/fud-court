@@ -48,9 +48,9 @@ const config: Config = {
     },
     extend: {
       fontFamily: {
-        primary: 'var(--font-primary)',
+        body: 'var(--font-body)',
+        headline: 'var(--font-headline)',
         mono: 'var(--font-mono)',
-        headline: 'var(--font-primary)',
       },
       fontWeight: {
         light: '300',

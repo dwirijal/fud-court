@@ -17,13 +17,13 @@ export default async function Home() {
     <>
       <HeroSection />
 
-      <section className="py-8 border-t border-b">
-        <div className="container mx-auto px-4 space-y-7">
+      <section className="py-8 border-y">
+        <div className="container space-y-8">
           <div className="text-center max-w-3xl mx-auto">
-            <h2 className="text-3xl font-bold tracking-tight font-headline mb-4">
+            <h2 className="text-4xl font-bold tracking-tight font-headline mb-4">
               Gambaran Pasar
             </h2>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-lg text-muted-foreground">
               Tampilan komprehensif dari indikator pasar utama dan aset berkinerja terbaik.
             </p>
           </div>

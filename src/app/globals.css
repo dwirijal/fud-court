@@ -4,7 +4,8 @@
 
 @layer base {
   :root {
-    /* Color System */
+    /* 🎨 Color System */
+    /* Primary Colors */
     --bg-primary: #000000;
     --bg-secondary: #1c1c1e;
     --bg-tertiary: #2c2c2e;
@@ -13,6 +14,8 @@
     --text-secondary: #98989a;
     --text-tertiary: #636366;
     --text-quaternary: #48484a;
+
+    /* Accent Colors */
     --accent-primary: #ff6b6b;
     --accent-secondary: #ff8e8e;
     --accent-tertiary: #ffb3b3;
@@ -22,6 +25,8 @@
     --tertiary-primary: #c77dff;
     --tertiary-secondary: #ff9f43;
     --tertiary-tertiary: #54a0ff;
+
+    /* Semantic Colors */
     --market-up: #30d158;
     --market-down: #ff453a;
     --market-neutral: #98989a;
@@ -29,10 +34,29 @@
     --status-warning: #ff9f0a;
     --status-error: #ff453a;
     --status-info: #007aff;
-    --border: var(--bg-tertiary);
+    
+    /* ShadCN UI Compatibility */
+    --border: var(--bg-quaternary);
     --input: var(--bg-quaternary);
     --ring: var(--accent-primary);
-    
+    --background: var(--bg-primary);
+    --foreground: var(--text-primary);
+    --primary: var(--accent-primary);
+    --primary-foreground: var(--text-primary);
+    --secondary: var(--bg-tertiary);
+    --secondary-foreground: var(--text-primary);
+    --destructive: var(--status-error);
+    --destructive-foreground: var(--text-primary);
+    --muted: var(--bg-tertiary);
+    --muted-foreground: var(--text-secondary);
+    --accent: var(--bg-quaternary);
+    --accent-foreground: var(--text-primary);
+    --popover: var(--bg-secondary);
+    --popover-foreground: var(--text-primary);
+    --card: var(--bg-secondary);
+    --card-foreground: var(--text-primary);
+
+    /* 📐 Modular Scale */
     /* Typography Scale */
     --text-xs: 0.64rem;
     --text-sm: 0.8rem;
@@ -66,43 +90,24 @@
     --radius-6: 1.5rem;
     --radius-full: 9999px;
 
-    /* Font Family & Weights */
+    /* 🔤 Typography */
     --font-primary: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     --font-mono: "SF Mono", Monaco, "Roboto Mono", monospace;
-    --font-light: 300;
-    --font-regular: 400;
-    --font-medium: 500;
-    --font-semibold: 600;
-    --font-bold: 700;
-    --font-extrabold: 800;
-
-    /* Animation Tokens */
-    --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
-    --ease-out-circ: cubic-bezier(0.075, 0.82, 0.165, 1);
-    --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
-    --ease-in-out-quart: cubic-bezier(0.77, 0, 0.175, 1);
-    --duration-fast: 0.15s;
-    --duration-normal: 0.3s;
-    --duration-slow: 0.5s;
-    --duration-slower: 0.75s;
-
-    /* Chart colors are now separate from accent colors */
+    
+    /* Chart Colors */
     --chart-1: #ff6b6b;
     --chart-2: #4ecdc4;
     --chart-3: #45b7d1;
     --chart-4: #f9ca24;
     --chart-5: #f0932b;
   }
-  
-  .dark {
-    /* The design system is dark-first, so no changes needed here for now. */
-  }
 
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-primary);
+  }
+  
   * {
     @apply border-border;
-  }
-  body {
-    @apply bg-bg-primary text-text-primary;
-    font-family: var(--font-primary);
   }
 }

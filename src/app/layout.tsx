@@ -25,8 +25,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" suppressHydrationWarning>
-      <body className={`${plusJakartaSans.variable} font-primary antialiased`}>
+    <html lang="id" className={`${plusJakartaSans.variable} dark`} suppressHydrationWarning>
+      <body className={`font-primary antialiased`}>
         <AppLayout>
           {children}
         </AppLayout>

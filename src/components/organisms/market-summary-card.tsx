@@ -14,6 +14,7 @@ import { motion } from 'framer-motion';
 import anime from 'animejs';
 import type { CombinedMarketData } from '@/types';
 import { Separator } from '../ui/separator';
+import { FlippableIndicatorCard } from '../molecules/flippable-indicator-card';
 
 const getActiveColorClass = (interpretation: string) => {
     const lowerCaseInterpretation = interpretation.toLowerCase();
@@ -56,81 +57,16 @@ const AnimatedNumber = ({ to, className, delay = 0 }: { to: number, className?: 
     return <p className={className}>{value}</p>;
 }
 
-const IndicatorCard = ({ index, icon: Icon, name, score, formula }: { index: number; icon: LucideIcon; name: string; score: number; formula: string; }) => {
-  const cardRef = useRef(null);
-  const scoreRef = useRef(null);
-  const formulaRef = useRef(null);
-
-  const animation = useRef<anime.AnimeInstance | null>(null);
-
-  useEffect(() => {
-    if (!scoreRef.current || !formulaRef.current) return;
-    
-    anime.set(scoreRef.current, { opacity: 1, translateY: 0 });
-    anime.set(formulaRef.current, { opacity: 0, translateY: 10 });
-
-    animation.current = anime.timeline({
-      easing: 'easeOutExpo',
-      duration: 300,
-      autoplay: false,
-    });
-    
-    animation.current
-      .add({
-        targets: scoreRef.current,
-        opacity: 0,
-        translateY: -10,
-      })
-      .add({
-        targets: formulaRef.current,
-        opacity: 1,
-        translateY: 0,
-      }, '-=200');
-
-  }, []);
-
-  const handleMouseEnter = () => animation.current?.play();
-  const handleMouseLeave = () => animation.current?.reverse();
-
-  const cardVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: { delay: index * 0.1, duration: 0.5, ease: "easeOut" }
-    }
-  };
-
-  return (
-    <motion.div
-      ref={cardRef}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.5 }}
-      variants={cardVariants}
-      className="group relative h-24 overflow-hidden rounded-lg"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      <Card className="h-full w-full bg-card/80 transition-colors duration-300 group-hover:bg-muted/50">
-        <CardContent className="p-4 flex flex-col justify-between h-full">
-            <div className="flex items-center gap-2">
-                <Icon className="h-4 w-4 text-muted-foreground" />
-                <p className="text-sm font-semibold text-foreground">{name}</p>
-            </div>
-            <div className="relative text-right h-8">
-              <div ref={scoreRef} className="absolute bottom-0 right-0">
-                <p className="text-2xl font-mono font-bold">{score}</p>
-              </div>
-              <div ref={formulaRef} className="absolute bottom-0 right-0">
-                <p className="text-xs text-center font-mono text-primary">{formula}</p>
-              </div>
-            </div>
-        </CardContent>
-      </Card>
-    </motion.div>
-  )
-}
+const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    notation: 'compact',
+    compactDisplay: 'short',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+};
 
 interface MarketSummaryCardProps {
     marketData: CombinedMarketData | null;
@@ -194,21 +130,28 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
     );
   }
   
+  const risingTokens = marketData.topCoins.filter(c => (c.price_change_percentage_24h || 0) > 0).length;
+
   const indicators = [
       { name: "Kapitalisasi Pasar", value: analysisResult.components.marketCapScore, icon: Scale,
-        formula: "(Cap / Peak) * 100"
+        formula: "(Cap / Peak) * 100",
+        rawData: { "Kap. Pasar Saat Ini": formatCurrency(marketData.totalMarketCap), "Kap. Pasar Puncak": formatCurrency(marketData.maxHistoricalMarketCap) },
       },
       { name: "Volume", value: analysisResult.components.volumeScore, icon: Zap,
-        formula: "(Vol / Avg) * 50"
+        formula: "(Vol / Avg) * 50",
+        rawData: { "Volume 24j": formatCurrency(marketData.totalVolume24h), "Rata-rata Volume 30h": formatCurrency(marketData.avg30DayVolume) },
        },
       { name: "Fear & Greed", value: analysisResult.components.fearGreedScore, icon: AlertTriangle,
-        formula: "Indeks Fear & Greed"
+        formula: "Nilai indeks langsung",
+        rawData: { "Nilai Indeks": marketData.fearAndGreedIndex },
        },
       { name: "Jarak ATH", value: analysisResult.components.athScore, icon: TrendingUp,
-        formula: "100 - Avg. ATH Distance"
+        formula: "100 - Rata-rata jarak dari ATH",
+        rawData: { "Koin Teratas": `${marketData.topCoins.length} aset` },
        },
       { name: "Sebaran Pasar", value: analysisResult.components.marketBreadthScore, icon: Package,
-        formula: "(Aset Naik / Total) * 100"
+        formula: "(Naik / Total) * 100",
+        rawData: { "Aset Naik": `${risingTokens} / ${marketData.topCoins.length}` },
        },
   ];
   
@@ -241,13 +184,14 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
             <Separator className="mb-4" />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
                 {indicators.map((indicator, index) => (
-                    <IndicatorCard
+                    <FlippableIndicatorCard
                         key={indicator.name}
                         index={index}
                         icon={indicator.icon}
                         name={indicator.name}
                         score={indicator.value}
                         formula={indicator.formula}
+                        rawData={indicator.rawData}
                     />
                 ))}
                  <Link href="/learn/market-indicators" className="group block h-full">

@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { LucideIcon } from 'lucide-react';
 import { AnimatedNumber } from './animated-number';
+import { Separator } from '../ui/separator';
 
 interface FlippableIndicatorCardProps {
     index: number;
@@ -13,6 +14,7 @@ interface FlippableIndicatorCardProps {
     name: string;
     score: number;
     formula: string;
+    rawData: Record<string, string | number>;
 }
 
 export function FlippableIndicatorCard({
@@ -21,6 +23,7 @@ export function FlippableIndicatorCard({
     name,
     score,
     formula,
+    rawData,
 }: FlippableIndicatorCardProps) {
     const [isFlipped, setIsFlipped] = useState(false);
 
@@ -71,7 +74,16 @@ export function FlippableIndicatorCard({
 
                 {/* Card Back */}
                 <div className="absolute w-full h-full backface-hidden [transform:rotateX(180deg)]">
-                     <Card className="h-full bg-muted/80 border-primary/20 flex flex-col justify-center items-center p-3 cursor-pointer">
+                     <Card className="h-full bg-muted/80 border-primary/20 flex flex-col justify-center p-3 cursor-pointer">
+                        <div className="space-y-2 text-xs w-full">
+                          {Object.entries(rawData).map(([key, value]) => (
+                            <div key={key} className="flex justify-between items-center text-muted-foreground">
+                              <span className="truncate" title={key}>{key}</span>
+                              <span className="font-mono text-foreground font-semibold">{value}</span>
+                            </div>
+                          ))}
+                        </div>
+                        <Separator className="my-1.5 bg-primary/20"/>
                         <p className="text-xs text-center font-mono text-primary/80" title={formula}>
                             {formula}
                         </p>

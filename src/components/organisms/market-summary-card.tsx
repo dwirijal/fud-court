@@ -75,17 +75,17 @@ function IndicatorCard({ detail, value }: { detail: typeof indicatorDetails[numb
             <Tooltip>
                 <TooltipTrigger asChild>
                     <Link href={`/markets#${detail.valueKey}`} className="group block h-full">
-                        <Card className="flex flex-col h-full hover:bg-muted/50 transition-colors">
-                            <CardContent className="p-3 flex flex-col flex-grow justify-between gap-2">
-                               <div className="flex items-center gap-2 text-muted-foreground">
-                                    <div className="bg-muted p-1.5 rounded-full">
-                                        <detail.icon className="h-4 w-4" />
-                                    </div>
-                                    <p className="text-xs font-medium">{detail.name}</p>
+                        <Card className="flex flex-col aspect-square hover:bg-muted/50 transition-colors">
+                             <CardContent className="p-4 flex flex-col flex-grow justify-between gap-4">
+                                <div className="bg-muted p-1.5 rounded-full w-fit">
+                                    <detail.icon className="h-4 w-4 text-muted-foreground" />
                                 </div>
-                                <div className="text-left w-full mt-auto">
-                                    <AnimatedNumber to={value} className="text-5xl font-bold tracking-tighter" />
-                                    <Progress value={value} className="h-1.5 w-full mt-2" />
+                                
+                                <AnimatedNumber to={value} className="text-5xl font-bold tracking-tighter" />
+
+                                <div>
+                                    <p className="text-xs font-medium text-muted-foreground">{detail.name}</p>
+                                    <Progress value={value} className="h-1 w-full mt-1" />
                                 </div>
                             </CardContent>
                         </Card>
@@ -183,7 +183,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                             <CheckCircle className="h-3.5 w-3.5 mr-1.5 text-chart-2" />
                             Akurasi Model: {analysisResult.confidenceScore}%
                         </Badge>
-                        <Button variant="link" asChild className="text-muted-foreground p-0 h-auto flex text-sm">
+                         <Button asChild variant="link" className="text-muted-foreground p-0 h-auto flex text-sm">
                             <Link href="/markets">
                                 Pelajari cara kerja skor ini <ArrowRight className="h-4 w-4 ml-1" />
                             </Link>

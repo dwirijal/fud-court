@@ -43,7 +43,7 @@ export function CryptoCard({ data, className }: { data: CryptoData, className?: 
               <div
                 className={cn(
                   "flex items-center gap-0.5 text-xs font-medium",
-                  isPositive ? "text-[hsl(var(--chart-2))]" : "text-destructive"
+                  isPositive ? "text-chart-2" : "text-destructive"
                 )}
               >
                 {isPositive ? (

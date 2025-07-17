@@ -1,3 +1,4 @@
+
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
@@ -104,12 +105,12 @@ const config: Config = {
         mono: 'var(--font-mono)',
       },
       fontWeight: {
-        light: 'var(--font-light)',
-        regular: 'var(--font-regular)',
-        medium: 'var(--font-medium)',
-        semibold: 'var(--font-semibold)',
-        bold: 'var(--font-bold)',
-        extrabold: 'var(--font-extrabold)',
+        light: '300',
+        normal: '400',
+        medium: '500',
+        semibold: '600',
+        bold: '700',
+        extrabold: '800',
       },
       transitionTimingFunction: {
         'out-expo': 'var(--ease-out-expo)',
@@ -146,6 +147,10 @@ const config: Config = {
           '50%': { transform: 'scale(1.05)' },
           '100%': { transform: 'scale(1)' },
         },
+        marquee: {
+          'from': { transform: 'translateX(0)' },
+          'to': { transform: 'translateX(-50%)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -153,6 +158,7 @@ const config: Config = {
         fadeInUp: 'fadeInUp var(--duration-slow) var(--ease-out-quart)',
         skeleton: 'skeleton 1.5s ease-in-out infinite',
         pricePulse: 'pricePulse var(--duration-normal) ease-in-out',
+        marquee: 'marquee 60s linear infinite',
       },
     },
   },

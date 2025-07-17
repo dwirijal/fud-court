@@ -19,9 +19,10 @@ export function NewsTicker({ posts, className }: NewsTickerProps) {
 
   return (
     <div className={cn(
-      "fixed left-0 w-full z-50 group overflow-hidden",
-      "h-7 border-b border-border bg-background/60 backdrop-blur-md",
-      "top-0", // Positioned at the very top
+      "fixed left-0 w-full z-30 group overflow-hidden",
+      "h-7 border-border bg-background/60 backdrop-blur-md",
+      // Mobile: at top, Desktop: at bottom
+      "top-0 border-b md:top-auto md:bottom-0 md:border-t md:border-b-0",
       className,
     )}>
       <div className="absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-background to-transparent pointer-events-none" />

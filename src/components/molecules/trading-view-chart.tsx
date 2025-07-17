@@ -2,7 +2,6 @@
 
 import React, { useEffect, useRef, memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ResizablePanelGroup, ResizablePanel } from "@/components/ui/resizable";
 import { rgbToHex } from "@/lib/utils";
 
 interface TradingViewWidgetProps {
@@ -11,19 +10,21 @@ interface TradingViewWidgetProps {
 
 function TradingViewWidget({ symbol }: TradingViewWidgetProps) {
   const container = useRef<HTMLDivElement>(null);
+  const scriptExists = useRef(false);
 
   useEffect(() => {
-    if (!container.current) return;
+    if (!container.current || scriptExists.current) return;
 
     // Get computed CSS variable values
     const rootStyles = getComputedStyle(document.documentElement);
-    const backgroundColor = rgbToHex(rootStyles.getPropertyValue('--background').trim());
+    const backgroundColor = rgbToHex(rootStyles.getPropertyValue('--bg-primary').trim());
     const gridColor = rgbToHex(rootStyles.getPropertyValue('--border').trim());
 
     const script = document.createElement("script");
     script.src = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
     script.type = "text/javascript";
     script.async = true;
+    script.id = `tradingview-widget-script-${symbol}`;
     
     const chartSymbol = symbol ? `BINANCE:${symbol.toUpperCase()}USDT` : 'BINANCE:BTCUSDT';
 
@@ -59,16 +60,12 @@ function TradingViewWidget({ symbol }: TradingViewWidgetProps) {
         ],
         "studies": []
       }`;
+      
+    container.current.innerHTML = ''; // Clear previous widget
     container.current.appendChild(script);
+    scriptExists.current = true;
 
-    // Clean up script on component unmount
-    const currentContainer = container.current;
-    return () => {
-      if (currentContainer && script.parentNode === currentContainer) {
-        currentContainer.removeChild(script);
-      }
-    };
-  }, [symbol]); // Dependency on symbol
+  }, [symbol]);
 
   return (
     <Card className="mb-12">
@@ -76,14 +73,16 @@ function TradingViewWidget({ symbol }: TradingViewWidgetProps) {
         <CardTitle>Grafik Harga ({symbol?.toUpperCase()}/USDT)</CardTitle>
       </CardHeader>
       <CardContent>
-        <ResizablePanelGroup direction="horizontal" className="min-h-[400px] items-stretch rounded-lg border">
-          <ResizablePanel defaultSize={100}>
+          <div className="h-[450px] w-full">
             <div className="tradingview-widget-container" ref={container} style={{ height: "100%", width: "100%" }}>
               <div className="tradingview-widget-container__widget" style={{ height: "calc(100% - 32px)", width: "100%" }}></div>
-              <div className="tradingview-widget-copyright"><a href="https://www.tradingview.com/markets/cryptocurrencies/prices-all/" rel="noopener nofollow" target="_blank"><span className="blue-text">Crypto Markets</span></a> by TradingView</div>
+              <div className="tradingview-widget-copyright">
+                <a href="https://www.tradingview.com" rel="noopener nofollow" target="_blank">
+                    <span className="blue-text">Lacak semua pasar di TradingView</span>
+                </a>
+              </div>
             </div>
-          </ResizablePanel>
-        </ResizablePanelGroup>
+          </div>
       </CardContent>
     </Card>
   );

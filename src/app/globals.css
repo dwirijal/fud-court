@@ -203,13 +203,13 @@
   }
 
   .prose-invert p {
-    @apply text-base;
+    @apply text-base text-text-secondary;
   }
 
-  .prose-invert h1 { @apply text-5xl font-bold; }
-  .prose-invert h2 { @apply text-4xl font-semibold; }
-  .prose-invert h3 { @apply text-3xl font-semibold; }
-  .prose-invert h4 { @apply text-2xl font-semibold; }
+  .prose-invert h1 { @apply text-4xl font-bold tracking-tight; }
+  .prose-invert h2 { @apply text-3xl font-semibold tracking-tight; }
+  .prose-invert h3 { @apply text-2xl font-semibold; }
+  .prose-invert h4 { @apply text-xl font-semibold; }
 }
 
 @layer utilities {

@@ -9,13 +9,11 @@ export async function MarketDataTable({ currency }: { currency: string }) {
   let error: string | null = null;
   
   try {
-    // Always fetch in USD, then convert
     const usdData = await getTopCoins(1, 20); 
     if (usdData === null) {
       error = "Gagal memuat data market. API tidak merespons.";
     }
 
-    // Fetch exchange rate if currency is not USD
     let exchangeRate = 1;
     if (currency.toLowerCase() !== 'usd') {
       const rate = await getExchangeRate(currency);
@@ -26,7 +24,6 @@ export async function MarketDataTable({ currency }: { currency: string }) {
       }
     }
 
-    // Apply exchange rate to all relevant fields
     if (usdData) {
       data = usdData.map(coin => ({
         ...coin,
@@ -57,10 +54,9 @@ export async function MarketDataTable({ currency }: { currency: string }) {
     );
   }
 
-  // Sort data by market_cap_rank before passing to client component
   const sortedData = (data || []).sort((a, b) => a.market_cap_rank - b.market_cap_rank);
 
-  return <MarketDataTableClient data={sortedData} currency={currency} />;
+  return <MarketDataTableClient initialData={sortedData} currency={currency} />;
 }
 
 export function TableSkeleton() {

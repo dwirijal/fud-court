@@ -1,56 +1,52 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { type ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, useReactTable, getFilteredRowModel } from '@tanstack/react-table'
+import { getCoreRowModel, getSortedRowModel, useReactTable, getFilteredRowModel, flexRender } from '@tanstack/react-table'
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
 import { getColumns } from './columns'
-import { CryptoData } from '@/types'
+import type { CryptoData } from '@/types'
 import { Skeleton } from "@/components/ui/skeleton";
-import { getTopCoins, getExchangeRate } from "@/lib/coingecko"; // Import getTopCoins and getExchangeRate
+import { getTopCoins, getExchangeRate } from "@/lib/coingecko";
+
+const ITEMS_PER_LOAD = 50; // Fetch more items per scroll
 
 interface MarketDataTableClientProps {
-  data: CryptoData[]
+  initialData: CryptoData[]
   currency: string
 }
 
-const ITEMS_PER_LOAD = 20; // Number of items to load at a time
-
-export function MarketDataTableClient({ data: initialData, currency }: MarketDataTableClientProps) {
-  const columns = getColumns(currency);
-  const [sorting, setSorting] = useState<any>([])
-  const [columnFilters, setColumnFilters] = useState<any>([])
+export function MarketDataTableClient({ initialData, currency }: MarketDataTableClientProps) {
   const [displayedData, setDisplayedData] = useState<CryptoData[]>(initialData);
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
+  const [hasMore, setHasMore] = useState(initialData.length === 20); // Initial load is 20
   const [loadingMore, setLoadingMore] = useState(false);
+  const [sorting, setSorting] = useState<any>([]);
+  const [columnFilters, setColumnFilters] = useState<any>([]);
+  
   const observerTarget = useRef<HTMLDivElement>(null);
+  const columns = getColumns(currency);
 
-  // Re-initialize displayed data and reset on initialData or currency change
   useEffect(() => {
     setDisplayedData(initialData);
     setPage(1);
-    setHasMore(true); // Assume more data initially
-  }, [initialData, currency]); // Add currency to dependency array
+    setHasMore(initialData.length === 20);
+  }, [initialData, currency]);
 
   const loadMore = useCallback(async () => {
     if (loadingMore || !hasMore) return;
 
     setLoadingMore(true);
-    const nextPage = page + 1;
+    const nextPageToFetch = page + 1;
     try {
-      const newData = await getTopCoins(nextPage, ITEMS_PER_LOAD); // Fetch in USD
+      const newData = await getTopCoins(nextPageToFetch, ITEMS_PER_LOAD);
+      
       if (newData && newData.length > 0) {
-        // Apply exchange rate to new data
         let exchangeRate = 1;
         if (currency.toLowerCase() !== 'usd') {
           const rate = await getExchangeRate(currency);
-          if (rate) {
-            exchangeRate = rate;
-          } else {
-            console.warn(`Failed to fetch exchange rate for ${currency}. Displaying new data in USD.`);
-          }
+          if (rate) exchangeRate = rate;
         }
 
         const convertedNewData = newData.map(coin => ({
@@ -65,13 +61,13 @@ export function MarketDataTableClient({ data: initialData, currency }: MarketDat
         }));
 
         setDisplayedData(prevData => [...prevData, ...convertedNewData]);
-        setPage(nextPage);
-        setHasMore(newData.length === ITEMS_PER_LOAD); // If less than ITEMS_PER_LOAD, no more data
+        setPage(nextPageToFetch);
+        setHasMore(newData.length === ITEMS_PER_LOAD);
       } else {
         setHasMore(false);
       }
     } catch (error) {
-      console.error("Failed to load more data:", error);
+      console.error("Gagal memuat data tambahan:", error);
       setHasMore(false);
     } finally {
       setLoadingMore(false);
@@ -81,41 +77,43 @@ export function MarketDataTableClient({ data: initialData, currency }: MarketDat
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loadingMore) {
+        if (entries[0]?.isIntersecting && !loadingMore && hasMore) {
           loadMore();
         }
       },
-      { threshold: 1.0 } // Trigger when 100% of the target is visible
+      { threshold: 1.0 }
     );
 
-    if (observerTarget.current) {
-      observer.observe(observerTarget.current);
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
     }
 
     return () => {
-      if (observerTarget.current) {
-        observer.unobserve(observerTarget.current);
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
       }
     };
-  }, [hasMore, loadingMore, loadMore, observerTarget]);
+  }, [loadMore, loadingMore, hasMore]);
+
 
   const table = useReactTable({
-    data: displayedData, // Use displayedData for the table
+    data: displayedData,
     columns,
-    getCoreRowModel: getCoreRowModel(),
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
     state: {
       sorting,
       columnFilters,
     },
-  })
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
+  });
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
+      <div className="flex items-center p-4">
         <Input
           placeholder="Cari koin..."
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
@@ -125,23 +123,21 @@ export function MarketDataTableClient({ data: initialData, currency }: MarketDat
           className="max-w-sm"
         />
       </div>
-      <div className="rounded-md border">
+      <div className="rounded-b-lg">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  )
-                })}
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
@@ -169,15 +165,17 @@ export function MarketDataTableClient({ data: initialData, currency }: MarketDat
           </TableBody>
         </Table>
       </div>
-      {hasMore && (
-        <div ref={observerTarget} className="flex justify-center py-4">
-          {loadingMore ? (
-            <Skeleton className="h-10 w-full max-w-sm" />
-          ) : (
-            <span className="text-muted-foreground">Memuat lebih banyak...</span>
+       <div ref={observerTarget} className="flex justify-center p-4">
+          {loadingMore && (
+            <div className="w-full space-y-2">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+            </div>
           )}
-        </div>
-      )}
+          {!loadingMore && !hasMore && displayedData.length > 0 && (
+             <p className="text-sm text-muted-foreground">Anda telah mencapai akhir daftar.</p>
+          )}
+      </div>
     </div>
   )
 }

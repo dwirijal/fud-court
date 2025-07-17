@@ -147,9 +147,9 @@
   .number-small { @apply font-mono text-sm font-medium; }
 
   /* Card Components */
-  .card-primary { @apply bg-bg-secondary border border-border rounded-3 p-5; }
+  .card-primary { @apply bg-bg-secondary border border-border rounded-3; }
   .card-elevated { 
-    @apply bg-bg-tertiary border border-border rounded-3 p-5 shadow-lg; 
+    @apply bg-bg-tertiary border border-border rounded-3 shadow-lg; 
   }
   .card-news { @apply bg-bg-secondary border border-border rounded-3 transition-all duration-normal ease-out-quart; }
   .card-news:hover { @apply border-accent-primary -translate-y-px shadow-lg; }
@@ -265,5 +265,3 @@
     }
   }
 }
-
-    

@@ -57,7 +57,7 @@ export function NftCard() {
         <CardContent className="p-4">
           <motion.div
             style={{ transform: 'translateZ(20px)' }}
-            className="aspect-[1/1.618] relative w-full overflow-hidden rounded-lg"
+            className="aspect-[3/4] relative w-full overflow-hidden rounded-lg"
           >
             <Image
               src="https://images.unsplash.com/photo-1719433203940-a9329d15d3e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxGRU5ORUMlMjBGT1h8ZW58MHx8fHwxNzUyNjg3OTA5fDA&ixlib=rb-4.1.0&q=80&w=1080"

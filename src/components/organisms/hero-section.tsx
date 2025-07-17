@@ -62,11 +62,11 @@ export function HeroSection() {
     <section className="relative flex items-center justify-center min-h-screen overflow-hidden">
       <GridPatternAnimation />
       <div className="container relative z-10 mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-16 items-center">
-          <div className="lg:col-span-2 flex justify-center items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="flex justify-center items-center">
             <NftCard />
           </div>
-          <div className="lg:col-span-3 text-center lg:text-left">
+          <div className="text-center lg:text-left">
             <AnimatedText
               text="Kejelasan di Tengah Kekacauan."
               className="text-4xl md:text-5xl lg:text-[3.3rem] font-extrabold leading-tight tracking-tighter mb-6 [&_.letter]:inline-block text-glow"

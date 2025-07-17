@@ -175,7 +175,7 @@
   .btn-ghost:hover { @apply bg-bg-tertiary text-text-primary; }
   
   /* Table Components */
-  .table-container { @apply bg-bg-secondary border border-bg-tertiary rounded-3 overflow-hidden; }
+  .table-container { @apply bg-bg-secondary border-bg-tertiary rounded-3 overflow-hidden; }
   .table-header { @apply bg-bg-tertiary px-4 py-3 font-semibold text-text-secondary text-sm uppercase tracking-wider; }
   .table-row { @apply flex justify-between items-center px-4 py-3 border-b border-bg-tertiary transition-colors duration-fast ease-out-quart; }
   .table-row:hover { @apply bg-bg-tertiary; }
@@ -184,7 +184,7 @@
   .table-cell-negative { @apply text-market-down; }
   
   /* News Components */
-  .news-item { @apply bg-bg-secondary border border-bg-tertiary rounded-3 p-4 mb-4 transition-all duration-normal ease-out-quart; }
+  .news-item { @apply bg-bg-secondary border border-border rounded-3 p-4 mb-4 transition-all duration-normal ease-out-quart; }
   .news-item:hover { @apply border-accent-primary -translate-y-px; }
   .news-item-title { @apply headline-6 text-text-primary mb-2; }
   .news-item-excerpt { @apply body-regular text-text-secondary mb-3; }
@@ -198,7 +198,7 @@
   .price-change.neutral { @apply text-market-neutral; }
 
   /* Chart Container */
-  .chart-container { @apply bg-bg-secondary border border-bg-tertiary rounded-3 p-5 relative; }
+  .chart-container { @apply bg-bg-secondary border border-border rounded-3 p-5 relative; }
   .chart-header { @apply flex justify-between items-center mb-4; }
   .chart-title { @apply headline-5 text-text-primary; }
   .chart-controls { @apply flex gap-2; }
@@ -265,3 +265,5 @@
     }
   }
 }
+
+    

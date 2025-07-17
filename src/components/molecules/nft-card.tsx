@@ -53,13 +53,13 @@ export function NftCard() {
       initial={{ opacity: 0, y: 50, rotateX: -15 }}
       animate={{ opacity: 1, y: 0, rotateX: 0 }}
       transition={{ duration: 1, ease: 'easeOut' }}
-      className="group relative w-full max-w-xs cursor-pointer"
+      className="group relative w-full max-w-[300px] sm:max-w-xs"
     >
-      <Card className="relative overflow-hidden rounded-5 bg-background/80 backdrop-blur-sm transition-shadow duration-300 group-hover:shadow-2xl">
-        <CardContent className="p-5">
+      <Card className="relative overflow-hidden rounded-4 bg-background/80 backdrop-blur-sm transition-shadow duration-300 group-hover:shadow-2xl">
+        <CardContent className="p-4">
           <motion.div
             style={{ transform: 'translateZ(20px)' }}
-            className="aspect-[3/4] relative w-full overflow-hidden rounded-4"
+            className="aspect-[3/4] relative w-full overflow-hidden rounded-3"
           >
             <Image
               src="https://placehold.co/600x600.png"
@@ -82,10 +82,10 @@ export function NftCard() {
             className="mt-4 flex items-start justify-between"
           >
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <p className="caption-regular uppercase tracking-wider text-text-secondary">
                 Fud Court
               </p>
-              <h3 className="text-lg font-bold font-headline text-foreground">
+              <h3 className="headline-6 text-text-primary">
                 Genesis #001
               </h3>
             </div>

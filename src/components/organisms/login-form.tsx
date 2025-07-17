@@ -107,10 +107,10 @@ export function LoginForm() {
               <CardHeader>
                 <CardTitle>Welcome Back</CardTitle>
                 <CardDescription>
-                  Enter your email below to receive a magic link to sign in to your account.
+                  Enter your email to receive a magic link to sign in.
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
                 <FormField
                   control={form.control}
                   name="email"
@@ -138,10 +138,10 @@ export function LoginForm() {
               <CardHeader>
                 <CardTitle>Create an Account</CardTitle>
                 <CardDescription>
-                  Enter your email to create an account. No password required!
+                  Enter your email to create an account. No password needed!
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
                 <FormField
                   control={form.control}
                   name="email"
@@ -168,3 +168,5 @@ export function LoginForm() {
     </Form>
   );
 }
+
+    

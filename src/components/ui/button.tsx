@@ -18,10 +18,10 @@ const buttonVariants = cva(
         link: "text-accent-primary underline-offset-4 hover:underline focus-ring p-0",
       },
       size: {
-        default: "h-10 px-5",
-        sm: "h-9 px-4 text-xs",
-        lg: "h-12 px-6 text-base",
-        icon: "h-10 w-10 rounded-full",
+        default: "h-10 px-4 py-2",
+        sm: "h-9 px-3",
+        lg: "h-11 px-8",
+        icon: "h-10 w-10",
       },
     },
     defaultVariants: {
@@ -52,3 +52,5 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = "Button"
 
 export { Button, buttonVariants }
+
+    

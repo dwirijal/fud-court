@@ -1,3 +1,4 @@
+
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
@@ -17,7 +18,7 @@ const config: Config = {
     },
     spacing: {
         '0': '0px',
-        'px': '1px',
+        px: '1px',
         '1': 'var(--space-1)', // 4px
         '2': 'var(--space-2)', // 8px
         '3': 'var(--space-3)', // 12px
@@ -26,16 +27,19 @@ const config: Config = {
         '6': 'var(--space-6)', // 32px
         '7': 'var(--space-7)', // 48px
         '8': 'var(--space-8)', // 64px
+        '9': 'var(--space-9)', // 80px
+        '10': 'var(--space-10)', // 96px
     },
     borderRadius: {
       '1': 'var(--radius-1)',
       '2': 'var(--radius-2)',
       '3': 'var(--radius-3)',
       '4': 'var(--radius-4)',
-      'full': 'var(--radius-full)',
-      'lg': 'var(--radius-3)',
-      'md': 'var(--radius-2)',
-      'sm': 'var(--radius-1)',
+      full: 'var(--radius-full)',
+      // ShadCN compatibility
+      lg: 'var(--radius-3)',
+      md: 'var(--radius-2)',
+      sm: 'var(--radius-1)',
     },
     fontSize: {
       xs: ['var(--text-xs)', { lineHeight: '1.4' }],
@@ -199,7 +203,26 @@ const config: Config = {
       }),
     },
   },
-  plugins: [require('tailwindcss-animate'), require('@tailwindcss/typography')],
+  plugins: [
+    require('tailwindcss-animate'), 
+    require('@tailwindcss/typography'),
+    function ({ addUtilities }: { addUtilities: any }) {
+      addUtilities({
+        '.perspective-1000': {
+          perspective: '1000px',
+        },
+        '.preserve-3d': {
+          transformStyle: 'preserve-3d',
+        },
+        '.backface-hidden': {
+          backfaceVisibility: 'hidden',
+          '-webkit-backface-visibility': 'hidden',
+        },
+      });
+    },
+  ],
 };
 
 export default config;
+
+    

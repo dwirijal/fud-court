@@ -1,3 +1,4 @@
+
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
@@ -48,7 +49,7 @@ const config: Config = {
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
         background: 'hsl(var(--background))',
-        foreground: 'hsl(var(--text-primary))',
+        foreground: 'hsl(var(--foreground))',
         primary: {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
@@ -89,11 +90,10 @@ const config: Config = {
         '2': 'var(--radius-2)', 
         '3': 'var(--radius-3)',
         '4': 'var(--radius-4)', 
-        '5': 'var(--radius-5)', 
         'full': 'var(--radius-full)',
-        lg: 'var(--radius-2)', // Default large radius
-        md: 'var(--radius-2)', // Default medium radius
-        sm: 'var(--radius-1)', // Default small radius
+        lg: 'var(--radius-3)',
+        md: 'var(--radius-2)',
+        sm: 'var(--radius-1)',
       },
       fontSize: {
         xs: ['var(--text-xs)', { lineHeight: '1.4' }],
@@ -168,6 +168,38 @@ const config: Config = {
         pricePulse: 'pricePulse var(--duration-normal) ease-in-out',
         marquee: 'marquee 60s linear infinite',
       },
+      typography: (theme: (path: string) => any) => ({
+        DEFAULT: {
+          css: {
+            h1: { fontFamily: theme('fontFamily.primary') },
+            h2: { fontFamily: theme('fontFamily.primary') },
+            h3: { fontFamily: theme('fontFamily.primary') },
+            h4: { fontFamily: theme('fontFamily.primary') },
+            h5: { fontFamily: theme('fontFamily.primary') },
+            h6: { fontFamily: theme('fontFamily.primary') },
+          }
+        },
+        invert: {
+          css: {
+            '--tw-prose-body': 'hsl(var(--text-secondary))',
+            '--tw-prose-headings': 'hsl(var(--text-primary))',
+            '--tw-prose-lead': 'hsl(var(--text-secondary))',
+            '--tw-prose-links': 'hsl(var(--accent-primary))',
+            '--tw-prose-bold': 'hsl(var(--text-primary))',
+            '--tw-prose-counters': 'hsl(var(--text-tertiary))',
+            '--tw-prose-bullets': 'hsl(var(--text-tertiary))',
+            '--tw-prose-hr': 'hsl(var(--border))',
+            '--tw-prose-quotes': 'hsl(var(--text-primary))',
+            '--tw-prose-quote-borders': 'hsl(var(--accent-primary))',
+            '--tw-prose-captions': 'hsl(var(--text-tertiary))',
+            '--tw-prose-code': 'hsl(var(--text-primary))',
+            '--tw-prose-pre-code': 'hsl(var(--text-primary))',
+            '--tw-prose-pre-bg': 'hsl(var(--bg-tertiary))',
+            '--tw-prose-th-borders': 'hsl(var(--border))',
+            '--tw-prose-td-borders': 'hsl(var(--border))',
+          },
+        },
+      }),
     },
   },
   plugins: [require('tailwindcss-animate'), require('@tailwindcss/typography')],

@@ -83,7 +83,7 @@ export function Header() {
                         href={item.href}
                         className={cn(
                           navigationMenuTriggerStyle(),
-                          "bg-transparent hover:bg-bg-tertiary text-sm font-semibold",
+                          "bg-transparent hover:bg-bg-tertiary font-semibold",
                           pathname.startsWith(item.href)
                             ? "text-accent-primary"
                             : "text-text-primary"
@@ -97,7 +97,7 @@ export function Header() {
               ))}
 
               <NavigationMenuItem value="reading">
-                  <NavigationMenuTrigger className="bg-transparent hover:bg-bg-tertiary text-sm font-semibold data-[state=open]:bg-bg-tertiary text-text-primary">
+                  <NavigationMenuTrigger className="bg-transparent hover:bg-bg-tertiary font-semibold data-[state=open]:bg-bg-tertiary text-text-primary">
                       Bacaan
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>

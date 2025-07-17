@@ -122,7 +122,7 @@ export default async function PostPage({ params }: { params: { slug: string } })
             {post.primary_tag.name}
           </Badge>
         )}
-        <h1 className="headline-3 mb-4">
+        <h1 className="headline-2 mb-4">
           {post.title}
         </h1>
         {post.primary_tag?.name?.toLowerCase() !== 'news' && (
@@ -136,7 +136,7 @@ export default async function PostPage({ params }: { params: { slug: string } })
       </header>
 
       {post.feature_image && (
-        <div className="relative aspect-video w-full mb-6 rounded-lg overflow-hidden">
+        <div className="relative aspect-video w-full mb-6 rounded-4 overflow-hidden">
           <Image
             src={post.feature_image}
             alt={post.title}
@@ -151,13 +151,7 @@ export default async function PostPage({ params }: { params: { slug: string } })
       
       {post.html && (
         <SanitizedHtml
-          className="prose prose-invert max-w-none 
-                     prose-h1:headline-3 prose-h2:headline-4 prose-h3:headline-5
-                     prose-headings:text-text-primary
-                     prose-p:body-regular
-                     prose-a:text-accent-primary hover:prose-a:text-accent-secondary
-                     prose-strong:text-text-primary
-                     prose-blockquote:border-accent-primary"
+          className="prose prose-invert max-w-none"
           html={post.html}
         />
       )}

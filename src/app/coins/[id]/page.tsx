@@ -24,7 +24,6 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import TradingViewWidget from "@/components/molecules/trading-view-chart";
 import { SanitizedHtml } from "@/components/atoms/sanitized-html";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface CoinPageProps {
   params: {
@@ -45,19 +44,6 @@ const formatCurrency = (value: number | null | undefined, currency: string = 'us
     options.maximumFractionDigits = 2;
   } else if (value < 1) {
     options.maximumFractionDigits = 6;
-  }
-  return new Intl.NumberFormat('en-US', options).format(value);
-};
-
-const formatNumber = (value: number | null | undefined, compact: boolean = false) => {
-  if (value === null || value === undefined || isNaN(value)) return 'N/A';
-  const options: Intl.NumberFormatOptions = {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  };
-  if (compact) {
-    options.notation = 'compact';
-    options.maximumFractionDigits = 2;
   }
   return new Intl.NumberFormat('en-US', options).format(value);
 };
@@ -113,6 +99,34 @@ const PriceStatsTable = ({ data, support, resistance }: { data: any, support: nu
     </div>
 );
 
+const CoinLinks = ({ links }: { links: any }) => (
+    <div className="card-primary">
+        <h3 className="headline-6 mb-4">Tautan Resmi</h3>
+        <div className="grid grid-cols-2 gap-4">
+            {links.homepage?.[0] && (
+                <Link href={links.homepage[0]} target="_blank" rel="noopener noreferrer" className="btn-ghost text-sm justify-start">
+                  <LinkIcon className="h-4 w-4" /> Situs Web Resmi
+                </Link>
+            )}
+            {links.blockchain_site?.[0] && (
+                 <Link href={links.blockchain_site[0]} target="_blank" rel="noopener noreferrer" className="btn-ghost text-sm justify-start">
+                  <LinkIcon className="h-4 w-4" /> Penjelajah Blok
+                </Link>
+            )}
+            {links.subreddit_url && (
+                <Link href={links.subreddit_url} target="_blank" rel="noopener noreferrer" className="btn-ghost text-sm justify-start">
+                  <LinkIcon className="h-4 w-4" /> Subreddit
+                </Link>
+            )}
+            {links.repos_url?.github?.[0] && (
+                <Link href={links.repos_url.github[0]} target="_blank" rel="noopener noreferrer" className="btn-ghost text-sm justify-start">
+                  <LinkIcon className="h-4 w-4" /> GitHub
+                </Link>
+            )}
+        </div>
+    </div>
+)
+
 
 export default async function CoinPage({ params }: CoinPageProps) {
   const coinData = await getDetailedCoinData(params.id);
@@ -159,7 +173,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
           />
         )}
         <div className="text-center md:text-left">
-          <h1 className="headline-3 mb-2">
+          <h1 className="headline-2 mb-2">
             {name ?? 'N/A'} <span className="text-text-secondary">({symbol?.toUpperCase() ?? 'N/A'})</span>
           </h1>
           <p className="body-large text-text-secondary max-w-3xl">
@@ -193,33 +207,18 @@ export default async function CoinPage({ params }: CoinPageProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <PriceStatsTable data={coinData} support={supportLevel} resistance={resistanceLevel} />
-        {/* Further components can be extracted similarly */}
+        {links && <CoinLinks links={links} />}
       </div>
 
       <TradingViewWidget symbol={symbol || ''} />
       
       {description?.en && (
-        <div className="card-primary mb-6">
+        <div className="card-primary my-6">
           <h3 className="headline-6 mb-4">Tentang {name ?? 'koin ini'}</h3>
           <SanitizedHtml
             className="prose prose-invert max-w-none prose-p:body-regular prose-headings:text-text-primary prose-a:text-accent-primary"
             html={description.en}
           />
-        </div>
-      )}
-
-      {links && (
-         <div className="card-primary mb-6">
-          <h3 className="headline-6 mb-4">Tautan Resmi</h3>
-          <ul className="space-y-2">
-            {links.homepage?.[0] && (
-              <li>
-                <Link href={links.homepage[0]} target="_blank" rel="noopener noreferrer" className="text-accent-primary hover:underline flex items-center gap-2">
-                  <LinkIcon className="h-4 w-4" /> Situs Web Resmi
-                </Link>
-              </li>
-            )}
-          </ul>
         </div>
       )}
 

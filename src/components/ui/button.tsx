@@ -15,12 +15,12 @@ const buttonVariants = cva(
         outline: "btn-secondary focus-ring",
         secondary: "btn-secondary focus-ring", // Alias for outline
         ghost: "btn-ghost focus-ring",
-        link: "text-accent-primary underline-offset-4 hover:underline focus-ring",
+        link: "text-accent-primary underline-offset-4 hover:underline focus-ring p-0",
       },
       size: {
-        default: "h-10 px-5 py-3",
-        sm: "h-9 px-4",
-        lg: "h-11 px-6 text-base",
+        default: "h-11 px-6",
+        sm: "h-9 px-4 text-xs",
+        lg: "h-12 px-8 text-base",
         icon: "h-10 w-10 rounded-full",
       },
     },

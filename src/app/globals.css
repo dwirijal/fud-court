@@ -97,7 +97,6 @@
     --radius-2: 0.5rem;    /* 8px - Buttons, inputs */
     --radius-3: 0.75rem;   /* 12px - Cards, containers */
     --radius-4: 1rem;      /* 16px - Large containers, page sections */
-    --radius-5: 1.5rem;    /* 24px - Very large containers, modals */
     --radius-full: 9999px; /* Pills, circles */
     --radius: var(--radius-2); /* Default radius for shadcn */
 
@@ -148,19 +147,27 @@
   .number-small { @apply font-mono text-sm font-medium; }
 
   /* Card Components */
-  .card-primary { @apply bg-bg-secondary border border-bg-tertiary rounded-3 p-5; }
-  .card-elevated { @apply bg-bg-tertiary border border-[hsl(var(--bg-quaternary))] rounded-3 p-5 shadow-lg; }
-  .card-news { @apply bg-bg-secondary border border-bg-tertiary rounded-3 p-4 transition-all duration-normal ease-out-quart; }
-  .card-news:hover { @apply border-accent-primary -translate-y-px; }
+  .card-primary { @apply bg-bg-secondary border border-border rounded-3 p-5; }
+  .card-elevated { @apply bg-bg-tertiary border border-border rounded-3 p-5 shadow-lg; }
+  .card-news { @apply bg-bg-secondary border border-border rounded-3 transition-all duration-normal ease-out-quart; }
+  .card-news:hover { @apply border-accent-primary -translate-y-px shadow-lg; }
   
   /* Button Components */
-  .btn-primary { @apply bg-accent-primary text-primary-foreground rounded-2 px-5 py-3 font-semibold transition-all duration-fast ease-out-quart; }
-  .btn-primary:hover { @apply bg-[hsl(var(--accent-secondary))] -translate-y-px; }
+  .btn-primary { 
+    @apply bg-accent-primary text-primary-foreground font-semibold transition-all duration-fast ease-out-quart;
+  }
+  .btn-primary:hover {
+    background-color: hsl(var(--accent-secondary));
+    transform: translateY(-1px);
+  }
   
-  .btn-secondary { @apply bg-bg-tertiary text-text-primary border border-[hsl(var(--bg-quaternary))] rounded-2 px-5 py-3 font-medium transition-all duration-fast ease-out-quart; }
-  .btn-secondary:hover { @apply bg-[hsl(var(--bg-quaternary))] border-accent-primary; }
+  .btn-secondary { @apply bg-bg-tertiary text-text-primary border border-border font-medium transition-all duration-fast ease-out-quart; }
+  .btn-secondary:hover {
+    background-color: hsl(var(--bg-quaternary));
+    border-color: hsl(var(--accent-primary));
+  }
 
-  .btn-ghost { @apply bg-transparent text-text-secondary border border-transparent rounded-2 px-5 py-3 font-medium transition-all duration-fast ease-out-quart; }
+  .btn-ghost { @apply bg-transparent text-text-secondary border border-transparent font-medium transition-all duration-fast ease-out-quart; }
   .btn-ghost:hover { @apply bg-bg-tertiary text-text-primary; }
   
   /* Table Components */
@@ -193,7 +200,7 @@
   .chart-controls { @apply flex gap-2; }
   
   /* Accessibility */
-  .focus-ring:focus { @apply outline-none ring-2 ring-accent-primary ring-offset-2 ring-offset-bg-primary; }
+  .focus-ring:focus-visible { @apply outline-none ring-2 ring-accent-primary ring-offset-2 ring-offset-bg-primary; }
   .sr-only { @apply absolute w-px h-px p-0 -m-px overflow-hidden; clip: rect(0, 0, 0, 0); border: 0; }
   
   .skip-link { @apply absolute -top-10 left-2 bg-accent-primary text-primary-foreground px-2 py-2 no-underline z-50 rounded-2; }
@@ -202,6 +209,26 @@
   /* Layout */
   .container-full { @apply w-full mx-auto px-4 sm:px-5 lg:px-6; }
   .section-spacing { @apply py-8 md:py-9; }
+
+  /* Prose Overrides */
+  .prose-invert {
+    --tw-prose-body: hsl(var(--text-secondary));
+    --tw-prose-headings: hsl(var(--text-primary));
+    --tw-prose-lead: hsl(var(--text-secondary));
+    --tw-prose-links: hsl(var(--accent-primary));
+    --tw-prose-bold: hsl(var(--text-primary));
+    --tw-prose-counters: hsl(var(--text-tertiary));
+    --tw-prose-bullets: hsl(var(--text-tertiary));
+    --tw-prose-hr: hsl(var(--border));
+    --tw-prose-quotes: hsl(var(--text-primary));
+    --tw-prose-quote-borders: hsl(var(--accent-primary));
+    --tw-prose-captions: hsl(var(--text-tertiary));
+    --tw-prose-code: hsl(var(--text-primary));
+    --tw-prose-pre-code: hsl(var(--text-primary));
+    --tw-prose-pre-bg: hsl(var(--bg-tertiary));
+    --tw-prose-th-borders: hsl(var(--border));
+    --tw-prose-td-borders: hsl(var(--border));
+  }
 }
 
 @layer utilities {

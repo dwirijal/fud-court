@@ -42,7 +42,7 @@ export default async function Home() {
             <div className="mt-16">
               <MarketCarousel data={topCoins || []} />
               <div className="flex justify-center mt-8">
-                <Button asChild variant="secondary">
+                <Button asChild>
                     <Link href="/markets">
                         Lihat Semua Pasar
                     </Link>

@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
 const navItems = [
-  { href: '/', label: 'Beranda', icon: Home },
+  { href: '/', label: 'Beranda', icon: Home, exact: true },
   { href: '/markets', label: 'Pasar', icon: LineChart },
   { href: '/news', label: 'Berita', icon: Newspaper },
   { href: '/articles', label: 'Artikel', icon: BookOpen },
@@ -18,10 +18,10 @@ export function MobileBottomNav() {
   const pathname = usePathname();
 
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 h-16 border-t border-border bg-bg-glass backdrop-blur-lg">
+    <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 h-16 border-t border-bg-tertiary bg-bg-secondary/80 backdrop-blur-lg">
       <nav className="grid h-full grid-cols-4">
         {navItems.map((item) => {
-          const isActive = (pathname === '/' && item.href === '/') || (pathname !== '/' && pathname.startsWith(item.href));
+          const isActive = item.exact ? pathname === item.href : pathname.startsWith(item.href);
           return (
             <Link
               key={item.href}

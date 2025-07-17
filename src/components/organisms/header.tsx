@@ -58,8 +58,8 @@ export function Header() {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={cn(
-          "flex items-center justify-center rounded-full bg-bg-glass border border-border backdrop-blur-lg shadow-lg transition-all duration-300 ease-in-out pointer-events-auto",
-           "shadow-[0_0_20px_hsl(var(--accent-glow)),_0_0_0_1px_hsl(var(--border-color))]",
+          "flex items-center justify-center rounded-full bg-bg-secondary/50 border border-bg-tertiary backdrop-blur-lg shadow-lg transition-all duration-300 ease-in-out pointer-events-auto",
+          "shadow-[0_0_20px_hsl(var(--accent-primary)/0.1),_0_0_0_1px_hsl(var(--bg-tertiary))]",
           isIslandExpanded ? "px-3 py-1.5 gap-2" : "p-2 gap-0"
         )}
       >
@@ -84,8 +84,8 @@ export function Header() {
                         href={item.href}
                         className={cn(
                           navigationMenuTriggerStyle(),
-                          "bg-transparent hover:bg-accent/50 text-sm font-semibold",
-                          pathname === item.href
+                          "bg-transparent hover:bg-bg-tertiary text-sm font-semibold",
+                          pathname.startsWith(item.href)
                             ? "text-accent-primary"
                             : "text-text-primary"
                         )}
@@ -98,7 +98,7 @@ export function Header() {
               ))}
 
               <NavigationMenuItem value="reading">
-                  <NavigationMenuTrigger className="bg-transparent hover:bg-accent/50 text-sm font-semibold data-[state=open]:bg-accent/50 text-text-primary">
+                  <NavigationMenuTrigger className="bg-transparent hover:bg-bg-tertiary text-sm font-semibold data-[state=open]:bg-bg-tertiary text-text-primary">
                       Bacaan
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
@@ -134,7 +134,7 @@ const ListItem = React.forwardRef<
         <Link
           ref={ref}
           className={cn(
-            "flex select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-4 no-underline outline-none h-full focus:shadow-md futuristic-card",
+            "flex select-none flex-col justify-end rounded-md bg-gradient-to-b from-bg-tertiary/50 to-bg-tertiary p-4 no-underline outline-none h-full focus:shadow-md hover:bg-bg-quaternary",
             className
           )}
           {...props}

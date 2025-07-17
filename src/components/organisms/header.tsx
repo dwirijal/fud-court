@@ -16,27 +16,11 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-<<<<<<< HEAD
 import { BookOpen, LineChart, Newspaper } from "lucide-react";
 
 // Define navigation structure
 const mainNavLinks = [
   { href: "/markets", label: "Pasar", icon: LineChart },
-=======
-
-// Define navigation structure
-const marketComponents: { title: string; href: string; description: string }[] = [
-  {
-    title: "Daftar Koin",
-    href: "/coins",
-    description: "Lihat daftar lengkap mata uang kripto.",
-  },
-  {
-    title: "Indikator & Formula Pasar",
-    href: "/markets",
-    description: "Pahami metrik dan formula pasar yang kompleks.",
-  },
->>>>>>> b058873b045abf5277ae8797dcaa268e60af95fe
 ];
 
 const readingComponents: { title: string; href: string; description: string, icon: React.ElementType }[] = [
@@ -60,16 +44,6 @@ const readingComponents: { title: string; href: string; description: string, ico
     },
 ];
 
-<<<<<<< HEAD
-=======
-// For mobile, we flatten the structure into a single list and ensure "Home" is present.
-const mobileNavLinks = [
-    { href: "/", label: "Beranda" },
-    ...marketComponents.map(item => ({ href: item.href, label: item.title })),
-    ...readingComponents.map(item => ({ href: item.href, label: item.title }))
-].filter((v,i,a)=>a.findIndex(t=>(t.href === v.href))===i); // Remove duplicates
-
->>>>>>> b058873b045abf5277ae8797dcaa268e60af95fe
 export function Header() {
   const pathname = usePathname();
   const [isHovered, setIsHovered] = useState(false);
@@ -160,25 +134,16 @@ const ListItem = React.forwardRef<
         <Link
           ref={ref}
           className={cn(
-<<<<<<< HEAD
             "flex select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-4 no-underline outline-none h-full focus:shadow-md futuristic-card",
-=======
-            "group block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
->>>>>>> b058873b045abf5277ae8797dcaa268e60af95fe
             className
           )}
           {...props}
         >
-<<<<<<< HEAD
           <Icon className="h-6 w-6 text-accent-primary mb-2" />
           <div className="mb-1 mt-auto text-lg font-bold text-text-primary">
             {title}
           </div>
           <p className="text-sm leading-tight text-text-secondary">
-=======
-          <div className="text-sm font-medium leading-none">{title}</div>
-          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground group-hover:text-accent-foreground/80">
->>>>>>> b058873b045abf5277ae8797dcaa268e60af95fe
             {children}
           </p>
         </Link>

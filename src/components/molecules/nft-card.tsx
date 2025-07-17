@@ -22,7 +22,7 @@ export function NftCard() {
   
   const glowX = useTransform(mouseXSpring, [-0.5, 0.5], ['0%', '100%']);
   const glowY = useTransform(mouseYSpring, [-0.5, 0.5], ['0%', '100%']);
-  const glowOpacity = useTransform(mouseYSpring, [-0.5, 0.5], [0, 0.4]);
+  const glowOpacity = useTransform(mouseYSpring, [-0.5, 0, 0.5], [0, 0.4, 0]);
 
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -90,7 +90,7 @@ export function NftCard() {
               </h3>
             </div>
             <div className="shrink-0">
-              <Logo className="h-10 w-10" />
+              <Logo className="h-8 w-8" />
             </div>
           </motion.div>
         </CardContent>

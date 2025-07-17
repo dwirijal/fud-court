@@ -9,7 +9,7 @@ export default async function LearnPage() {
 
   return (
     <div className="container-full section-spacing">
-      <header className="mb-7">
+      <header className="mb-8">
         <div className="flex items-center gap-4 mb-2">
             <div className="bg-accent-primary/10 text-accent-primary p-2 rounded-3">
                 <BookOpen className="h-8 w-8" />

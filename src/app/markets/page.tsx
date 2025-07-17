@@ -57,7 +57,7 @@ export default async function MarketsPage({ searchParams }: { searchParams?: { c
                   Pasar Kripto
                 </h1>
             </div>
-            <p className="text-lg text-text-secondary max-w-3xl">
+            <p className="text-lg text-text-secondary max-w-3xl mt-2">
               Jelajahi harga mata uang kripto, kapitalisasi pasar, dan volume perdagangan secara real-time.
             </p>
           </div>

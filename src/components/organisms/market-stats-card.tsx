@@ -62,7 +62,7 @@ const AnimatedStatNumber = ({ to, formatter, className, delay = 0 }: { to: numbe
     return <p className={className}>{formatter(value)}</p>;
 };
 
-function StatCard({ label, value, marketCap, colorClass, index }: { label: string, value: number, marketCap: number, colorClass: string, index: number }) {
+function StatCard({ label, value, underlyingValue, colorClass, index, valueIsTvl = false }: { label: string, value: number, underlyingValue: number, colorClass: string, index: number, valueIsTvl?: boolean }) {
     return (
         <motion.div
             className="h-full"
@@ -85,11 +85,12 @@ function StatCard({ label, value, marketCap, colorClass, index }: { label: strin
                         delay={index * 100}
                     />
                     <AnimatedStatNumber
-                        to={marketCap}
+                        to={underlyingValue}
                         formatter={formatCurrency}
                         className="text-xs text-muted-foreground font-mono"
                         delay={index * 100}
                     />
+                    {valueIsTvl && <p className="text-xs text-muted-foreground/80 font-mono -mt-1">TVL</p>}
                 </div>
             </div>
         </motion.div>
@@ -113,15 +114,15 @@ export function MarketStatsCard({ marketStats }: MarketStatsCardProps) {
         stablecoinDominance,
         btcMarketCap,
         ethMarketCap,
-        solMarketCap,
+        solanaTvl,
         stablecoinMarketCap,
     } = marketStats;
 
     const stats = [
-        { label: "Bitcoin Dominance", value: btcDominance, marketCap: btcMarketCap, colorClass: "bg-chart-1" },
-        { label: "Ethereum Dominance", value: ethDominance, marketCap: ethMarketCap, colorClass: "bg-chart-2" },
-        { label: "Solana Dominance", value: solDominance, marketCap: solMarketCap, colorClass: "bg-chart-3" },
-        { label: "Stablecoin Dominance", value: stablecoinDominance, marketCap: stablecoinMarketCap, colorClass: "bg-chart-4" },
+        { label: "Bitcoin Dominance", value: btcDominance, underlyingValue: btcMarketCap, colorClass: "bg-chart-1" },
+        { label: "Ethereum Dominance", value: ethDominance, underlyingValue: ethMarketCap, colorClass: "bg-chart-2" },
+        { label: "Solana Ecosystem", value: solDominance, underlyingValue: solanaTvl, colorClass: "bg-chart-3", valueIsTvl: true },
+        { label: "Stablecoin Dominance", value: stablecoinDominance, underlyingValue: stablecoinMarketCap, colorClass: "bg-chart-4" },
     ];
 
     return (

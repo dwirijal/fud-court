@@ -278,7 +278,7 @@ export interface MarketStats {
     totalMarketCap: number;
     btcMarketCap: number;
     ethMarketCap: number;
-    solMarketCap: number;
+    solanaTvl: number; // Changed from solMarketCap to reflect TVL
     stablecoinMarketCap: number;
     btcDominance: number;
     ethDominance: number;

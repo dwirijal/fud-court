@@ -1,8 +1,9 @@
 'use server';
 
-import type { CryptoData, FearGreedData, DetailedCoinData, CombinedMarketData, TopCoinForAnalysis } from '@/types';
+import type { CryptoData, FearGreedData, DetailedCoinData, CombinedMarketData, TopCoinForAnalysis, DefiLlamaProtocol, DefiLlamaStablecoin } from '@/types';
 import { supabase } from './supabase'; // Import Supabase client
 import { getFearAndGreedIndex } from './fear-greed'; // Import Fear & Greed API function
+import { getDefiLlamaProtocols, getDefiLlamaStablecoins } from './defillama';
 
 const COINGECKO_API_BASE_URL = 'https://api.coingecko.com/api/v3';
 
@@ -196,35 +197,40 @@ export async function updateCryptoExchangeRates(): Promise<void> {
  */
 export async function fetchMarketData(): Promise<CombinedMarketData | null> {
     try {
-        const globalData = await getGlobalMarketData();
-        if (!globalData) {
-            console.error('Failed to fetch global market data.');
+        const [globalData, fearAndGreed, topCoinsData, defiProtocols, stablecoinsData] = await Promise.all([
+            getGlobalMarketData(),
+            getFearAndGreedIndex(),
+            supabase.from('crypto_data').select('*').order('market_cap_rank', { ascending: true }).limit(20),
+            getDefiLlamaProtocols(),
+            getDefiLlamaStablecoins()
+        ]);
+
+        if (!globalData || !fearAndGreed || topCoinsData.error) {
+            console.error('Failed to fetch one or more core data sources.', { globalData: !!globalData, fearAndGreed: !!fearAndGreed, topCoinsError: topCoinsData.error });
             return null;
         }
 
-        const fearAndGreed = await getFearAndGreedIndex();
-        if (!fearAndGreed) {
-            console.error('Failed to fetch Fear & Greed data.');
-            return null;
-        }
-
-        const { data: topCoinsData, error: topCoinsError } = await supabase
-            .from('crypto_data')
-            .select('*')
-            .order('market_cap_rank', { ascending: true })
-            .limit(20);
-        if (topCoinsError) {
-            console.error('Error fetching top coins from Supabase:', topCoinsError);
-            return null;
-        }
-        const topCoins = topCoinsData;
-
+        const topCoins = topCoinsData.data || [];
+        const totalMarketCap = globalData.total_market_cap?.usd ?? 0;
+        
+        // Calculate Dominances
+        const btcMarketCap = totalMarketCap * (globalData.market_cap_percentage.btc / 100);
+        const ethMarketCap = totalMarketCap * (globalData.market_cap_percentage.eth / 100);
+        
+        const solanaTvl = defiProtocols?.find(p => p.name === "Solana")?.tvl ?? 0;
+        const stablecoinMarketCap = stablecoinsData?.reduce((sum, coin) => sum + coin.circulating.peggedUSD, 0) ?? 0;
+        
+        const btcDominance = globalData.market_cap_percentage?.btc ?? 0;
+        const ethDominance = globalData.market_cap_percentage?.eth ?? 0;
+        const solDominance = solanaTvl > 0 && totalMarketCap > 0 ? (solanaTvl / totalMarketCap) * 100 : 0;
+        const stablecoinDominance = stablecoinMarketCap > 0 && totalMarketCap > 0 ? (stablecoinMarketCap / totalMarketCap) * 100 : 0;
+        
         const result: CombinedMarketData = {
-            totalMarketCap: globalData.total_market_cap?.usd ?? 0,
+            totalMarketCap,
             maxHistoricalMarketCap: 0, // Not available from CoinGecko /global endpoint
             totalVolume24h: globalData.total_volume?.usd ?? 0,
             avg30DayVolume: 0, // Not available from CoinGecko /global endpoint
-            btcDominance: globalData.market_cap_percentage?.btc ?? 0,
+            btcDominance,
             fearAndGreedIndex: parseInt(fearAndGreed.value),
             topCoins: topCoins.map(coin => ({
                 name: coin.name,
@@ -233,13 +239,13 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
                 ath: coin.ath,
                 price_change_percentage_24h: coin.price_change_percentage_24h_in_currency,
             })),
-            btcMarketCap: globalData.total_market_cap?.btc ?? 0, // Assuming this is available
-            ethMarketCap: globalData.total_market_cap?.eth ?? 0, // Assuming this is available
-            solMarketCap: 0, // Not available from CoinGecko /global endpoint
-            stablecoinMarketCap: 0, // Not available from CoinGecko /global endpoint
-            ethDominance: globalData.market_cap_percentage?.eth ?? 0, // Assuming this is available
-            solDominance: 0, // Not available from CoinGecko /global endpoint
-            stablecoinDominance: 0, // Not available from CoinGecko /global endpoint
+            btcMarketCap,
+            ethMarketCap,
+            solanaTvl, // Changed from solMarketCap to reflect TVL
+            stablecoinMarketCap,
+            ethDominance,
+            solDominance,
+            stablecoinDominance,
             maxHistoricalMarketCapDate: '', // Not available from CoinGecko /global endpoint
             topCoinsForAnalysis: topCoins.map(coin => ({
                 name: coin.name,

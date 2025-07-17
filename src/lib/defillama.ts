@@ -85,22 +85,25 @@ async function syncDefiLlamaChains(): Promise<void> {
     if (!response.ok) throw new Error(`DefiLlama Chains API error: ${response.status}`);
     
     const chainsData: any[] = await response.json();
-    const chainsToUpsert = chainsData.map(c => ({
-        id: c.name, // Use name as the primary key
-        name: c.name,
-        gecko_id: c.gecko_id,
-        tvl: c.tvl,
-        token_symbol: c.tokenSymbol,
-        cmc_id: c.cmcId,
-        chain_id: c.chainId,
-    }));
+    // Filter out invalid entries and map to the correct schema
+    const chainsToUpsert = chainsData
+        .filter(c => c.name && typeof c.tvl === 'number' && c.tvl >= 0)
+        .map(c => ({
+            id: c.name, // Use name as the primary key
+            name: c.name,
+            gecko_id: c.gecko_id,
+            tvl: c.tvl,
+            token_symbol: c.tokenSymbol,
+            cmc_id: c.cmcId,
+            chain_id: c.chainId,
+        }));
 
     const { error } = await supabase.from('defillama_chains').upsert(chainsToUpsert, { onConflict: 'id' });
     if (error) {
         console.error('Error upserting DefiLlama chains into cache:', error.message);
         throw error;
     }
-    console.log("Sync finished: DefiLlama Chains TVL");
+    console.log(`Sync finished: DefiLlama Chains TVL. Upserted ${chainsToUpsert.length} chains.`);
 }
 
 export async function getDefiLlamaProtocols(): Promise<DefiLlamaProtocol[]> {

@@ -74,15 +74,15 @@ export function LoginForm() {
     return (
         <Card className="w-full">
             <CardHeader className="text-center p-5">
-                <CardTitle className="text-2xl font-semibold">Check Your Inbox</CardTitle>
+                <CardTitle className="text-2xl font-semibold">Periksa Inbox Anda</CardTitle>
                 <CardDescription>
-                    We've sent a secure magic link to{' '}
+                    Kami telah mengirimkan tautan ajaib ke{' '}
                     <span className="font-semibold text-text-primary">{submittedEmail}</span>.
                 </CardDescription>
             </CardHeader>
             <CardContent className="p-5 pt-0">
                 <Button onClick={handleReset} className="w-full" variant="outline">
-                    Use a different email
+                    Gunakan email lain
                 </Button>
             </CardContent>
         </Card>
@@ -98,16 +98,16 @@ export function LoginForm() {
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <Tabs defaultValue="signin" className="w-full" onValueChange={handleTabChange}>
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="signin">Sign In</TabsTrigger>
-            <TabsTrigger value="signup">Sign Up</TabsTrigger>
+            <TabsTrigger value="signin">Masuk</TabsTrigger>
+            <TabsTrigger value="signup">Daftar</TabsTrigger>
           </TabsList>
           
           <TabsContent value="signin">
             <Card>
               <CardHeader className="p-5">
-                <CardTitle>Welcome Back</CardTitle>
+                <CardTitle className="text-xl font-semibold">Selamat Datang Kembali</CardTitle>
                 <CardDescription>
-                  Enter your email to receive a magic link to sign in.
+                  Masukkan email Anda untuk menerima tautan ajaib untuk masuk.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4 p-5 pt-0">
@@ -116,9 +116,9 @@ export function LoginForm() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email Address</FormLabel>
+                      <FormLabel>Alamat Email</FormLabel>
                       <FormControl>
-                        <Input type="email" placeholder="you@example.com" {...field} />
+                        <Input type="email" placeholder="anda@contoh.com" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -127,7 +127,7 @@ export function LoginForm() {
               </CardContent>
               <CardFooter className="p-5">
                 <Button type="submit" disabled={isSubmitting} className="w-full">
-                  {isSubmitting ? "Sending..." : "Send Sign In Link"}
+                  {isSubmitting ? "Mengirim..." : "Kirim Tautan Masuk"}
                 </Button>
               </CardFooter>
             </Card>
@@ -136,9 +136,9 @@ export function LoginForm() {
           <TabsContent value="signup">
             <Card>
               <CardHeader className="p-5">
-                <CardTitle>Create an Account</CardTitle>
+                <CardTitle className="text-xl font-semibold">Buat Akun</CardTitle>
                 <CardDescription>
-                  Enter your email to create an account. No password needed!
+                  Masukkan email Anda untuk membuat akun. Tidak perlu kata sandi!
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4 p-5 pt-0">
@@ -147,9 +147,9 @@ export function LoginForm() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email Address</FormLabel>
+                      <FormLabel>Alamat Email</FormLabel>
                       <FormControl>
-                        <Input type="email" placeholder="you@example.com" {...field} />
+                        <Input type="email" placeholder="anda@contoh.com" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -158,7 +158,7 @@ export function LoginForm() {
               </CardContent>
               <CardFooter className="p-5">
                 <Button type="submit" disabled={isSubmitting} className="w-full">
-                  {isSubmitting ? "Sending..." : "Send Sign Up Link"}
+                  {isSubmitting ? "Mengirim..." : "Kirim Tautan Daftar"}
                 </Button>
               </CardFooter>
             </Card>

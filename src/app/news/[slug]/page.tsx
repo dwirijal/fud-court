@@ -122,15 +122,15 @@ export default async function PostPage({ params }: { params: { slug: string } })
             {post.primary_tag.name}
           </Badge>
         )}
-        <h1 className="headline-2 mb-4">
+        <h1 className="text-4xl font-bold tracking-tight text-text-primary mb-4">
           {post.title}
         </h1>
         {post.primary_tag?.name?.toLowerCase() !== 'news' && (
-          <p className="body-large text-text-secondary">
+          <p className="text-lg text-text-secondary">
             {post.excerpt}
           </p>
         )}
-        <time dateTime={post.published_at} className="caption-regular text-text-tertiary mt-4 block">
+        <time dateTime={post.published_at} className="text-sm text-text-tertiary mt-4 block">
           Diterbitkan pada {format(new Date(post.published_at), "d MMMM yyyy")}
         </time>
       </header>

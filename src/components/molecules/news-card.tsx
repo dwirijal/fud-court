@@ -55,8 +55,8 @@ export function NewsCard({ post }: { post: Post }) {
       variants={cardVariants}
       className="h-full"
     >
-      <Link href={`/news/${post.slug}`} className="group block h-full focus-ring rounded-3">
-        <Card className="card-news h-full flex flex-col">
+      <Card asChild className="card-news h-full flex flex-col">
+        <Link href={`/news/${post.slug}`} className="group block focus-ring rounded-3">
             <CardHeader className="p-0">
               <div className="relative aspect-[16/10] w-full overflow-hidden rounded-t-3">
                 <Image
@@ -85,8 +85,8 @@ export function NewsCard({ post }: { post: Post }) {
               {publicationDate || '...'}
             </time>
           </CardFooter>
-        </Card>
-      </Link>
+        </Link>
+      </Card>
     </motion.div>
   );
 }

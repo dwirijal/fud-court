@@ -37,18 +37,16 @@ export function FlippableIndicatorCard({
             >
                 {/* Card Front */}
                 <div className="absolute w-full h-full backface-hidden">
-                    <Card className="h-full hover:bg-muted/50 transition-colors cursor-pointer flex flex-col">
-                        <CardContent className="p-4 flex-1 flex items-center justify-between gap-4">
-                            <div className="space-y-1 flex-grow">
-                                <p className="body-small font-semibold flex items-center gap-2">
-                                    <Icon className="h-4 w-4 text-text-tertiary" />
-                                    {name}
-                                </p>
-                            </div>
-                            <div className="text-right flex-shrink-0 pl-2">
-                                <p className="text-2xl font-mono font-bold">{score}</p>
-                            </div>
-                        </CardContent>
+                    <Card className="h-full hover:bg-bg-tertiary transition-colors cursor-pointer flex flex-col p-4">
+                        <div className="flex items-center justify-between gap-4">
+                           <p className="body-small font-semibold flex items-center gap-2">
+                                <Icon className="h-4 w-4 text-text-tertiary" />
+                                {name}
+                            </p>
+                        </div>
+                        <div className="flex-grow flex items-end justify-end">
+                            <p className="text-3xl font-mono font-bold">{score}</p>
+                        </div>
                     </Card>
                 </div>
 

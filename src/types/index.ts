@@ -285,19 +285,11 @@ export interface CombinedMarketData extends MarketStats {
 export interface DefiLlamaProtocol {
   id: string;
   name: string;
-<<<<<<< HEAD
   symbol: string | null;
   category: string | null;
   chains: string[] | null;
   tvl: number | null;
   chain_tvls: any | null; // jsonb
-=======
-  symbol: string;
-  category: string;
-  chains: string[];
-  tvl: number;
-  chainTvls: Record<string, number>;
->>>>>>> b058873b045abf5277ae8797dcaa268e60af95fe
   change_1d: number | null;
   change_7d: number | null;
 }
@@ -305,7 +297,6 @@ export interface DefiLlamaProtocol {
 export interface DefiLlamaStablecoin {
   id: string;
   name: string;
-<<<<<<< HEAD
   symbol: string | null;
   peg_type: string | null;
   peg_mechanism: string | null;
@@ -323,18 +314,9 @@ export interface DefiLlamaChain {
   token_symbol: string | null;
   cmc_id: string | null;
   chain_id: number | null;
-=======
-  symbol: string;
-  pegType: string;
-  pegMechanism: string;
-  circulating: { peggedUSD: number | null };
-  chains: string[];
-  chainCirculating: Record<string, { current: { peggedUSD: number } }>;
-  price: number | null;
 }
 
 export interface DefiLlamaHistoricalTvl {
   date: number; // Unix timestamp
   tvl: number; // Total Value Locked in USD
->>>>>>> b058873b045abf5277ae8797dcaa268e60af95fe
 }

@@ -214,16 +214,19 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
         const topCoins = topCoinsData.data || [];
         const totalMarketCap = globalData.total_market_cap?.usd ?? 0;
         
-        // Calculate Dominances
+        // Calculate Dominances & TVLs
         const btcMarketCap = totalMarketCap * (globalData.market_cap_percentage.btc / 100);
         const ethMarketCap = totalMarketCap * (globalData.market_cap_percentage.eth / 100);
+        const solMarketCap = topCoins.find(c => c.symbol === 'sol')?.market_cap ?? 0;
+
+        const ethTvl = defiProtocols?.find(p => p.name === "Ethereum")?.tvl ?? 0;
+        const solTvl = defiProtocols?.find(p => p.name === "Solana")?.tvl ?? 0;
         
-        const solanaTvl = defiProtocols?.find(p => p.name === "Solana")?.tvl ?? 0;
         const stablecoinMarketCap = stablecoinsData?.reduce((sum, coin) => sum + (coin.circulating?.peggedUSD ?? 0), 0) ?? 0;
         
         const btcDominance = globalData.market_cap_percentage?.btc ?? 0;
         const ethDominance = globalData.market_cap_percentage?.eth ?? 0;
-        const solDominance = solanaTvl > 0 && totalMarketCap > 0 ? (solanaTvl / totalMarketCap) * 100 : 0;
+        const solDominance = solMarketCap > 0 && totalMarketCap > 0 ? (solMarketCap / totalMarketCap) * 100 : 0;
         const stablecoinDominance = stablecoinMarketCap > 0 && totalMarketCap > 0 ? (stablecoinMarketCap / totalMarketCap) * 100 : 0;
         
         const result: CombinedMarketData = {
@@ -242,7 +245,9 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
             })),
             btcMarketCap,
             ethMarketCap,
-            solanaTvl, // Changed from solMarketCap to reflect TVL
+            solMarketCap,
+            ethTvl,
+            solTvl,
             stablecoinMarketCap,
             ethDominance,
             solDominance,
@@ -415,4 +420,3 @@ export async function rateLimitedCalculation<T, R>(calculation: (data: T) => R, 
         executeNext(); // Try to execute immediately if possible
     });
 }
-

@@ -278,7 +278,9 @@ export interface MarketStats {
     totalMarketCap: number;
     btcMarketCap: number;
     ethMarketCap: number;
-    solanaTvl: number; // Changed from solMarketCap to reflect TVL
+    solMarketCap: number;
+    ethTvl: number;
+    solTvl: number;
     stablecoinMarketCap: number;
     btcDominance: number;
     ethDominance: number;
@@ -322,7 +324,7 @@ export interface DefiLlamaStablecoin {
   symbol: string;
   pegType: string;
   pegMechanism: string;
-  circulating: { peggedUSD: number };
+  circulating: { peggedUSD: number } | null;
   chains: string[];
   chainCirculating: Record<string, { current: { peggedUSD: number } }>;
   price: number;

@@ -35,29 +35,34 @@ const cardVariants = {
   }
 };
 
-const AnimatedStatNumber = ({ to, formatter, className, delay = 0 }: { to: number, formatter: (val: number) => string, className?: string, delay?: number }) => {
+const AnimatedStatNumber = ({ to, formatter, className, delay = 0, isPercentage = false }: { to: number, formatter: (val: number) => string, className?: string, delay?: number, isPercentage?: boolean }) => {
     const [value, setValue] = useState(0);
     const hasAnimated = useRef(false);
-    const target = useRef({ value: 0 }).current;
+    const targetRef = useRef({ value: 0 });
 
     useEffect(() => {
         if (hasAnimated.current) {
             setValue(to);
             return;
         }
-        hasAnimated.current = true;
         
-        anime({
-            targets: target,
+        const animation = anime({
+            targets: targetRef.current,
             value: to,
             duration: 1200,
             delay: delay,
             easing: 'easeOutCubic',
             update: () => {
-                setValue(target.value);
+                setValue(targetRef.current.value);
             }
         });
-    }, [to, delay, target]);
+
+        hasAnimated.current = true;
+
+        return () => {
+          animation.pause();
+        }
+    }, [to, delay]);
 
     return <p className={className}>{formatter(value)}</p>;
 };
@@ -83,6 +88,7 @@ function StatCard({ label, value, underlyingValue, colorClass, index, valueIsTvl
                         formatter={formatPercentage}
                         className="text-2xl font-bold"
                         delay={index * 100}
+                        isPercentage
                     />
                     <AnimatedStatNumber
                         to={underlyingValue}
@@ -114,15 +120,19 @@ export function MarketStatsCard({ marketStats }: MarketStatsCardProps) {
         stablecoinDominance,
         btcMarketCap,
         ethMarketCap,
-        solanaTvl,
+        solMarketCap,
+        ethTvl,
+        solTvl,
         stablecoinMarketCap,
     } = marketStats;
 
     const stats = [
-        { label: "Bitcoin Dominance", value: btcDominance, underlyingValue: btcMarketCap, colorClass: "bg-chart-1" },
-        { label: "Ethereum Dominance", value: ethDominance, underlyingValue: ethMarketCap, colorClass: "bg-chart-2" },
-        { label: "Solana Ecosystem", value: solDominance, underlyingValue: solanaTvl, colorClass: "bg-chart-3", valueIsTvl: true },
-        { label: "Stablecoin Dominance", value: stablecoinDominance, underlyingValue: stablecoinMarketCap, colorClass: "bg-chart-4" },
+        { label: "Bitcoin Dominance", value: btcDominance, underlyingValue: btcMarketCap, colorClass: "bg-orange-400" },
+        { label: "ETH Dominance", value: ethDominance, underlyingValue: ethMarketCap, colorClass: "bg-gray-400" },
+        { label: "ETH Ecosystem", value: (ethTvl / totalMarketCap) * 100, underlyingValue: ethTvl, colorClass: "bg-indigo-400", valueIsTvl: true },
+        { label: "SOL Dominance", value: solDominance, underlyingValue: solMarketCap, colorClass: "bg-purple-400" },
+        { label: "SOL Ecosystem", value: (solTvl / totalMarketCap) * 100, underlyingValue: solTvl, colorClass: "bg-fuchsia-400", valueIsTvl: true },
+        { label: "Stablecoin Dominance", value: stablecoinDominance, underlyingValue: stablecoinMarketCap, colorClass: "bg-green-400" },
     ];
 
     return (
@@ -130,11 +140,11 @@ export function MarketStatsCard({ marketStats }: MarketStatsCardProps) {
             <CardHeader>
                 <CardTitle>Market Dominance</CardTitle>
                 <CardDescription>
-                    Dominasi Pasar (Cap: {formatCurrency(totalMarketCap)}) Bitcoin mendominasi {formatPercentage(btcDominance)} dari total market cap, diikuti oleh Ethereum ({formatPercentage(ethDominance)}) dan lainnya.
+                    Perbandingan kapitalisasi pasar dan nilai terkunci (TVL) berbagai ekosistem terhadap total pasar kripto (Cap: {formatCurrency(totalMarketCap)}).
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                     {stats.map((stat, index) => (
                         <StatCard key={stat.label} {...stat} index={index} />
                     ))}

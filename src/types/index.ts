@@ -1,4 +1,5 @@
 
+
 import { z } from 'zod';
 
 
@@ -262,10 +263,32 @@ export interface TopCoinForAnalysis {
 
 
 // A combined type for the resilient fetchMarketData function
-export type CombinedMarketData = import('@/types/ai').MarketAnalysisInput & MarketStats & {
-    topCoinsForAnalysis: TopCoinForAnalysis[];
+export interface CombinedMarketData {
+    totalMarketCap: number;
+    maxHistoricalMarketCap: number;
+    totalVolume24h: number;
+    avg30DayVolume: number;
+    btcDominance: number;
+    fearAndGreedIndex: number;
+    topCoins: {
+        price_change_percentage_24h: number | null;
+        ath: number;
+        current_price: number;
+        name: string;
+        symbol: string;
+    }[];
+    btcMarketCap: number;
+    ethMarketCap: number;
+    solMarketCap: number;
+    ethTvl: number;
+    solTvl: number;
+    stablecoinMarketCap: number;
+    ethDominance: number;
+    solDominance: number;
+    stablecoinDominance: number;
     maxHistoricalMarketCapDate: string;
-};
+    topCoinsForAnalysis: TopCoinForAnalysis[];
+}
 
 // DefiLlama Types matching the new schema
 export interface DefiLlamaProtocol {

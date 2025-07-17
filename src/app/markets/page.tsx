@@ -9,17 +9,94 @@ import { fetchMarketData } from "@/lib/coingecko";
 import { TrendChange } from "@/components/ui/TrendChange";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { analyzeMarketSentiment } from "@/ai/flows/market-analysis-flow";
 import type { CombinedMarketData } from "@/types";
-import type { MarketAnalysisOutput } from "@/types/ai";
 
-// Client component to handle rendering and client-side interactions
+// Directly integrate the analysis logic here.
+const weights = {
+  marketCap: 0.25,
+  volume: 0.20,
+  fearAndGreed: 0.20,
+  ath: 0.25,
+  marketBreadth: 0.10
+};
+
+function analyzeMarketData(input: CombinedMarketData) {
+    // 1. Confidence Score
+    let confidence = 100;
+    if (input.totalMarketCap <= 0) confidence -= 25;
+    if (input.totalVolume24h <= 0) confidence -= 25;
+    if (input.fearAndGreedIndex < 0 || input.fearAndGreedIndex > 100) confidence -= 15;
+    const expectedCoins = 20;
+    if (input.topCoins.length < expectedCoins) {
+        const missingPercentage = (expectedCoins - input.topCoins.length) / expectedCoins;
+        confidence -= missingPercentage * 35;
+    }
+    const confidenceScore = Math.max(0, Math.round(confidence));
+
+    // 2. Component Scores
+    const s1_marketCap = (input.totalMarketCap / input.maxHistoricalMarketCap) * 100;
+    const raw_volume_score = (input.totalVolume24h / input.avg30DayVolume) * 100;
+    const capped_volume_score = Math.min(raw_volume_score, 200);
+    const s2_volume = capped_volume_score / 2;
+    const s3_fearAndGreed = input.fearAndGreedIndex;
+
+    const n_ath = input.topCoins.length;
+    const distanceFromAthSum = input.topCoins.reduce((sum, coin) => {
+        const distance = ((coin.ath - coin.current_price) / coin.ath) * 100;
+        return sum + (distance > 0 ? distance : 0);
+    }, 0);
+    const avgDistanceFromAth = n_ath > 0 ? (distanceFromAthSum / n_ath) : 0;
+    const s4_ath = 100 - avgDistanceFromAth;
+
+    const risingTokens = input.topCoins.filter(c => (c.price_change_percentage_24h || 0) > 0).length;
+    const n_breadth = input.topCoins.length;
+    const s5_marketBreadth = n_breadth > 0 ? (risingTokens / n_breadth) * 100 : 0;
+
+    const normalize = (value: number) => Math.max(0, Math.min(100, value));
+    const finalScores = {
+        marketCap: normalize(s1_marketCap),
+        volume: normalize(s2_volume),
+        fearAndGreed: normalize(s3_fearAndGreed),
+        ath: normalize(s4_ath),
+        marketBreadth: normalize(s5_marketBreadth),
+    };
+    
+    // 3. Final Macro Score
+    const macroScore = 
+        finalScores.marketCap * weights.marketCap +
+        finalScores.volume * weights.volume +
+        finalScores.fearAndGreed * weights.fearAndGreed +
+        finalScores.ath * weights.ath +
+        finalScores.marketBreadth * weights.marketBreadth;
+    
+    let marketCondition: string;
+    if (macroScore >= 80) marketCondition = 'Bullish ekstrem / Euforia';
+    else if (macroScore >= 60) marketCondition = 'Bullish sehat';
+    else if (macroScore >= 40) marketCondition = 'Netral / Sideways';
+    else if (macroScore >= 20) marketCondition = 'Bearish / Distribusi';
+    else marketCondition = 'Capitulation / Fear ekstrem';
+
+    return {
+      macroScore: Math.round(macroScore),
+      marketCondition,
+      components: {
+        marketCapScore: Math.round(finalScores.marketCap),
+        volumeScore: Math.round(finalScores.volume),
+        fearGreedScore: Math.round(finalScores.fearAndGreed),
+        athScore: Math.round(finalScores.ath),
+        marketBreadthScore: Math.round(finalScores.marketBreadth),
+      },
+      confidenceScore,
+    };
+}
+
+
 function MarketIndicatorsClient({ 
   marketData, 
   analysisResult 
 }: { 
   marketData: CombinedMarketData | null, 
-  analysisResult: MarketAnalysisOutput | null 
+  analysisResult: ReturnType<typeof analyzeMarketData> | null 
 }) {
   const indicators = [
     {
@@ -348,7 +425,7 @@ function MarketIndicatorsClient({
 
 export default async function MarketIndicatorsPage() {
   const marketData = await fetchMarketData();
-  const analysisResult = marketData ? await analyzeMarketSentiment(marketData) : null;
+  const analysisResult = marketData ? analyzeMarketData(marketData) : null;
 
   return <MarketIndicatorsClient marketData={marketData} analysisResult={analysisResult} />;
 }

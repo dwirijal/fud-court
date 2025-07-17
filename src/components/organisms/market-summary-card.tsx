@@ -4,7 +4,6 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
-import { analyzeMarketSentiment } from '@/ai/flows/market-analysis-flow';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { AlertTriangle, CheckCircle, ArrowRight, Scale, Zap, TrendingUp, Package } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
@@ -20,7 +19,86 @@ import { Progress } from "@/components/ui/progress";
 
 import anime from 'animejs';
 import type { CombinedMarketData } from '@/types';
-import type { MarketAnalysisOutput } from '@/types/ai';
+
+// Directly integrate the analysis logic here.
+const weights = {
+  marketCap: 0.25,
+  volume: 0.20,
+  fearAndGreed: 0.20,
+  ath: 0.25,
+  marketBreadth: 0.10
+};
+
+function analyzeMarketData(input: CombinedMarketData) {
+    // 1. Confidence Score
+    let confidence = 100;
+    if (input.totalMarketCap <= 0) confidence -= 25;
+    if (input.totalVolume24h <= 0) confidence -= 25;
+    if (input.fearAndGreedIndex < 0 || input.fearAndGreedIndex > 100) confidence -= 15;
+    const expectedCoins = 20;
+    if (input.topCoins.length < expectedCoins) {
+        const missingPercentage = (expectedCoins - input.topCoins.length) / expectedCoins;
+        confidence -= missingPercentage * 35;
+    }
+    const confidenceScore = Math.max(0, Math.round(confidence));
+
+    // 2. Component Scores
+    const s1_marketCap = (input.totalMarketCap / input.maxHistoricalMarketCap) * 100;
+    const raw_volume_score = (input.totalVolume24h / input.avg30DayVolume) * 100;
+    const capped_volume_score = Math.min(raw_volume_score, 200);
+    const s2_volume = capped_volume_score / 2;
+    const s3_fearAndGreed = input.fearAndGreedIndex;
+
+    const n_ath = input.topCoins.length;
+    const distanceFromAthSum = input.topCoins.reduce((sum, coin) => {
+        const distance = ((coin.ath - coin.current_price) / coin.ath) * 100;
+        return sum + (distance > 0 ? distance : 0);
+    }, 0);
+    const avgDistanceFromAth = n_ath > 0 ? (distanceFromAthSum / n_ath) : 0;
+    const s4_ath = 100 - avgDistanceFromAth;
+
+    const risingTokens = input.topCoins.filter(c => (c.price_change_percentage_24h || 0) > 0).length;
+    const n_breadth = input.topCoins.length;
+    const s5_marketBreadth = n_breadth > 0 ? (risingTokens / n_breadth) * 100 : 0;
+
+    const normalize = (value: number) => Math.max(0, Math.min(100, value));
+    const finalScores = {
+        marketCap: normalize(s1_marketCap),
+        volume: normalize(s2_volume),
+        fearAndGreed: normalize(s3_fearAndGreed),
+        ath: normalize(s4_ath),
+        marketBreadth: normalize(s5_marketBreadth),
+    };
+    
+    // 3. Final Macro Score
+    const macroScore = 
+        finalScores.marketCap * weights.marketCap +
+        finalScores.volume * weights.volume +
+        finalScores.fearAndGreed * weights.fearAndGreed +
+        finalScores.ath * weights.ath +
+        finalScores.marketBreadth * weights.marketBreadth;
+    
+    let marketCondition: string;
+    if (macroScore >= 80) marketCondition = 'Bullish ekstrem / Euforia';
+    else if (macroScore >= 60) marketCondition = 'Bullish sehat';
+    else if (macroScore >= 40) marketCondition = 'Netral / Sideways';
+    else if (macroScore >= 20) marketCondition = 'Bearish / Distribusi';
+    else marketCondition = 'Capitulation / Fear ekstrem';
+
+    return {
+      macroScore: Math.round(macroScore),
+      marketCondition,
+      components: {
+        marketCapScore: Math.round(finalScores.marketCap),
+        volumeScore: Math.round(finalScores.volume),
+        fearGreedScore: Math.round(finalScores.fearAndGreed),
+        athScore: Math.round(finalScores.ath),
+        marketBreadthScore: Math.round(finalScores.marketBreadth),
+      },
+      confidenceScore,
+    };
+}
+
 
 const getActiveColorClass = (interpretation: string) => {
     const lowerCaseInterpretation = interpretation.toLowerCase();
@@ -103,37 +181,18 @@ interface MarketSummaryCardProps {
 }
 
 export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
-  const [analysisResult, setAnalysisResult] = useState<MarketAnalysisOutput | null>(null);
+  const [analysisResult, setAnalysisResult] = useState<ReturnType<typeof analyzeMarketData> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const getMarketAnalysis = async () => {
-      if (!marketData) {
-        setError("Gagal mengambil data pasar.");
-        setIsLoading(false);
-        return;
-      }
-      
-      setIsLoading(true);
-      setError(null);
-      try {
-        const result = await analyzeMarketSentiment(marketData);
-        setAnalysisResult(result);
-      } catch (e) {
-        console.error("Analisis pasar gagal:", e);
-        const message = e instanceof Error ? e.message : "Terjadi kesalahan yang tidak diketahui.";
-        setError(message);
-        setAnalysisResult(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    getMarketAnalysis();
+    if (marketData) {
+      const result = analyzeMarketData(marketData);
+      setAnalysisResult(result);
+    }
+    setIsLoading(false);
   }, [marketData]);
 
-  if (isLoading) {
+  if (!marketData || isLoading) {
     return (
       <div className="space-y-6">
           <Skeleton className="h-[220px] w-full mb-4" />
@@ -146,13 +205,13 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
     );
   }
 
-  if (error || !analysisResult) {
+  if (!analysisResult) {
     return (
       <Card className="flex flex-col items-center justify-center p-6 bg-destructive/10 border-destructive">
           <AlertTriangle className="h-12 w-12 text-destructive mb-4" />
           <CardTitle className="text-2xl font-headline text-destructive">Analisis Gagal</CardTitle>
           <CardDescription className="text-destructive/80 mt-2 text-center max-w-md">
-            {error || "Terjadi kesalahan yang tidak diketahui saat menganalisis sentimen pasar."}
+            Tidak dapat menghitung sentimen pasar karena data tidak lengkap.
           </CardDescription>
       </Card>
     );

@@ -251,6 +251,8 @@ export interface MarketStats {
     solDominance: number;
     stablecoinDominance: number;
     maxHistoricalMarketCap: number;
+    arbTvl: number;
+    polygonTvl: number;
 }
 
 // Type for displaying the list of coins used in analysis
@@ -264,12 +266,9 @@ export interface TopCoinForAnalysis {
 
 
 // A combined type for the resilient fetchMarketData function
-export interface CombinedMarketData {
-    totalMarketCap: number;
-    maxHistoricalMarketCap: number;
+export interface CombinedMarketData extends MarketStats {
     totalVolume24h: number;
     avg30DayVolume: number;
-    btcDominance: number;
     fearAndGreedIndex: number;
     topCoins: {
         price_change_percentage_24h: number | null;
@@ -278,18 +277,8 @@ export interface CombinedMarketData {
         name: string;
         symbol: string;
     }[];
-    btcMarketCap: number;
-    ethMarketCap: number;
-    solMarketCap: number;
-    ethTvl: number;
-    solTvl: number;
-    stablecoinMarketCap: number;
-    ethDominance: number;
-    solDominance: number;
-    stablecoinDominance: number;
     maxHistoricalMarketCapDate: string;
     topCoinsForAnalysis: TopCoinForAnalysis[];
-    defiTotalTvl: number;
 }
 
 // DefiLlama Types matching the new schema
@@ -303,15 +292,6 @@ export interface DefiLlamaProtocol {
   chain_tvls: any | null; // jsonb
   change_1d: number | null;
   change_7d: number | null;
-}
-
-export interface DefiLlamaChain {
-  gecko_id: string | null;
-  tvl: number | null;
-  tokenSymbol: string | null;
-  cmcId: string | null;
-  name: string;
-  chainId: number | null;
 }
 
 export interface DefiLlamaStablecoin {

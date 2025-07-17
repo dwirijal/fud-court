@@ -2,7 +2,7 @@
 
 'use server';
 
-import type { CryptoData, DetailedCoinData, CombinedMarketData, TopCoinForAnalysis, DefiLlamaProtocol, DefiLlamaStablecoin, CGMarket } from '@/types';
+import type { CryptoData, DetailedCoinData, CombinedMarketData, TopCoinForAnalysis, CGMarket } from '@/types';
 import { supabase } from './supabase';
 import { getFearAndGreedIndexFromCache } from './fear-greed';
 import { getDefiLlamaHistoricalTvl, getDefiLlamaProtocols, getDefiLlamaStablecoins, syncDefiLlamaData } from './defillama';
@@ -305,6 +305,8 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
         // Calculate TVL by summing from protocols data
         const ethTvl = defiProtocols.reduce((sum, p) => sum + (p.chain_tvls?.Ethereum ?? 0), 0);
         const solTvl = defiProtocols.reduce((sum, p) => sum + (p.chain_tvls?.Solana ?? 0), 0);
+        const arbTvl = defiProtocols.reduce((sum, p) => sum + (p.chain_tvls?.Arbitrum ?? 0), 0);
+        const polygonTvl = defiProtocols.reduce((sum, p) => sum + (p.chain_tvls?.Polygon ?? 0), 0);
         
         const stablecoinMarketCap = stablecoinsData?.reduce((sum, coin) => sum + (coin.circulating_pegged_usd ?? 0), 0) ?? 0;
         
@@ -332,6 +334,8 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
             solMarketCap,
             ethTvl,
             solTvl,
+            arbTvl,
+            polygonTvl,
             stablecoinMarketCap,
             ethDominance,
             solDominance,

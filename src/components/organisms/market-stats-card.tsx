@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -127,7 +128,7 @@ export function MarketStatsCard({ marketStats }: MarketStatsCardProps) {
         ethTvl,
         solTvl,
         arbTvl,
-        polygonTvl
+        btcTvl
     } = marketStats;
 
     const marketCapStats = [
@@ -143,7 +144,7 @@ export function MarketStatsCard({ marketStats }: MarketStatsCardProps) {
         { label: "Ethereum TVL", value: ethTvl, colorClass: "bg-gray-400" },
         { label: "Solana TVL", value: solTvl, colorClass: "bg-purple-400" },
         { label: "Arbitrum TVL", value: arbTvl, colorClass: "bg-blue-400" },
-        { label: "Polygon TVL", value: polygonTvl, colorClass: "bg-violet-400" },
+        { label: "Bitcoin TVL", value: btcTvl, colorClass: "bg-orange-400" },
     ];
 
     return (

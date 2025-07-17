@@ -252,7 +252,7 @@ export interface MarketStats {
     stablecoinDominance: number;
     maxHistoricalMarketCap: number;
     arbTvl: number;
-    polygonTvl: number;
+    btcTvl: number;
 }
 
 // Type for displaying the list of coins used in analysis

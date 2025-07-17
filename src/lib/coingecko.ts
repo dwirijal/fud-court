@@ -303,10 +303,10 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
         const solMarketCap = topCoins.find(c => c.symbol === 'sol')?.market_cap ?? 0;
         
         // Calculate TVL by summing from protocols data
+        const btcTvl = defiProtocols.reduce((sum, p) => sum + (p.chain_tvls?.Bitcoin ?? 0), 0);
         const ethTvl = defiProtocols.reduce((sum, p) => sum + (p.chain_tvls?.Ethereum ?? 0), 0);
         const solTvl = defiProtocols.reduce((sum, p) => sum + (p.chain_tvls?.Solana ?? 0), 0);
         const arbTvl = defiProtocols.reduce((sum, p) => sum + (p.chain_tvls?.Arbitrum ?? 0), 0);
-        const polygonTvl = defiProtocols.reduce((sum, p) => sum + (p.chain_tvls?.Polygon ?? 0), 0);
         
         const stablecoinMarketCap = stablecoinsData?.reduce((sum, coin) => sum + (coin.circulating_pegged_usd ?? 0), 0) ?? 0;
         
@@ -335,7 +335,7 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
             ethTvl,
             solTvl,
             arbTvl,
-            polygonTvl,
+            btcTvl,
             stablecoinMarketCap,
             ethDominance,
             solDominance,

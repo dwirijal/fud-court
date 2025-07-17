@@ -131,19 +131,20 @@ export function MarketStatsCard({ marketStats }: MarketStatsCardProps) {
         btcTvl
     } = marketStats;
 
-    const marketCapStats = [
+    const marketDominanceStats = [
         { label: "Total Market Cap", value: totalMarketCap, colorClass: "bg-sky-400" },
-        { label: "Total DeFi TVL", value: defiTotalTvl, colorClass: "bg-indigo-400" },
         { label: "Bitcoin Dominance", value: btcDominance, underlyingValue: btcMarketCap, colorClass: "bg-orange-400", valueIsPercentage: true },
         { label: "ETH Dominance", value: ethDominance, underlyingValue: ethMarketCap, colorClass: "bg-gray-400", valueIsPercentage: true },
+        { label: "SOL Dominance", value: solDominance, underlyingValue: solMarketCap, colorClass: "bg-purple-400", valueIsPercentage: true },
         { label: "Stablecoin Dominance", value: stablecoinDominance, underlyingValue: stablecoinMarketCap, colorClass: "bg-green-400", valueIsPercentage: true },
     ];
     
     const tvlStats = [
+        { label: "Total DeFi TVL", value: defiTotalTvl, colorClass: "bg-indigo-400" },
+        { label: "Bitcoin TVL", value: btcTvl, colorClass: "bg-orange-400" },
         { label: "Ethereum TVL", value: ethTvl, colorClass: "bg-gray-400" },
         { label: "Solana TVL", value: solTvl, colorClass: "bg-purple-400" },
         { label: "Arbitrum TVL", value: arbTvl, colorClass: "bg-blue-400" },
-        { label: "Bitcoin TVL", value: btcTvl, colorClass: "bg-orange-400" },
     ];
 
     return (
@@ -156,13 +157,13 @@ export function MarketStatsCard({ marketStats }: MarketStatsCardProps) {
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                    {marketCapStats.map((stat, index) => (
+                    {marketDominanceStats.map((stat, index) => (
                         <StatCard key={stat.label} {...stat} index={index} />
                     ))}
                 </div>
                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                     {tvlStats.map((stat, index) => (
-                        <StatCard key={stat.label} {...stat} index={index + marketCapStats.length} />
+                        <StatCard key={stat.label} {...stat} index={index + marketDominanceStats.length} />
                     ))}
                 </div>
             </CardContent>

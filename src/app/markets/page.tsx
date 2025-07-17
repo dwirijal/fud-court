@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
@@ -8,9 +9,17 @@ import { fetchMarketData } from "@/lib/coingecko";
 import { TrendChange } from "@/components/ui/TrendChange";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { analyzeMarketSentiment } from "@/ai/flows/market-analysis-flow";
+import type { CombinedMarketData, MarketAnalysisOutput } from "@/types";
 
 // Client component to handle rendering and client-side interactions
-function MarketIndicatorsClient({ marketData }: { marketData: any }) {
+function MarketIndicatorsClient({ 
+  marketData, 
+  analysisResult 
+}: { 
+  marketData: CombinedMarketData | null, 
+  analysisResult: MarketAnalysisOutput | null 
+}) {
   const indicators = [
     {
       id: "marketCapScore",
@@ -68,65 +77,36 @@ function MarketIndicatorsClient({ marketData }: { marketData: any }) {
     }
     return new Intl.NumberFormat('en-US', options).format(value);
   };
+  
+  const indicatorRawData = marketData ? {
+    marketCapScore: {
+      "Kapitalisasi Pasar Saat Ini": formatCurrency(marketData.totalMarketCap),
+      "Kapitalisasi Puncak": formatCurrency(marketData.maxHistoricalMarketCap),
+    },
+    volumeScore: {
+      "Volume Saat Ini": formatCurrency(marketData.totalVolume24h),
+      "Rata-rata Volume 30h": formatCurrency(marketData.avg30DayVolume),
+    },
+    fearGreedScore: {
+      "Nilai Indeks": marketData.fearAndGreedIndex,
+    },
+    athScore: {
+      "Rata-rata % Jarak dari ATH": `${(100 - (analysisResult?.components.athScore ?? 0)).toFixed(2)}%`,
+    },
+    marketBreadthScore: {
+      "Token Naik": marketData.topCoins.filter((c: any) => (c.price_change_percentage_24h || 0) > 0).length,
+      "Total Koin Teratas": marketData.topCoins.length,
+    },
+  } : null;
 
-  let indicatorScores: Record<string, { raw: Record<string, any>; score: number }> | null = null;
-  let finalScore: number | null = null;
-  if (marketData) {
-    const { totalMarketCap, maxHistoricalMarketCap, totalVolume24h, avg30DayVolume, fearAndGreedIndex, topCoins } = marketData;
+  const weights = {
+      marketCapScore: 0.25,
+      volumeScore: 0.20,
+      fearGreedScore: 0.20,
+      athScore: 0.25,
+      marketBreadthScore: 0.10,
+  };
 
-    const s1_marketCap = (totalMarketCap / maxHistoricalMarketCap) * 100;
-
-    const raw_volume_score = (totalVolume24h / avg30DayVolume) * 100;
-    const capped_volume_score = Math.min(raw_volume_score, 200);
-    const s2_volume = capped_volume_score / 2;
-
-    const s3_fearAndGreed = fearAndGreedIndex;
-
-    const n_ath = topCoins.length;
-    const distanceFromAthSum = topCoins.reduce((sum: number, coin: any) => {
-      const distance = ((coin.ath - coin.current_price) / coin.ath) * 100;
-      return sum + (distance > 0 ? distance : 0);
-    }, 0);
-    const avgDistanceFromAth = n_ath > 0 ? (distanceFromAthSum / n_ath) : 0;
-    const s4_ath = 100 - avgDistanceFromAth;
-
-    const risingTokens = topCoins.filter((c: any) => (c.price_change_percentage_24h || 0) > 0).length;
-    const n_breadth = topCoins.length;
-    const s5_marketBreadth = n_breadth > 0 ? (risingTokens / n_breadth) * 100 : 0;
-
-    const scores = {
-      s1: Math.round(s1_marketCap),
-      s2: Math.round(s2_volume),
-      s3: Math.round(s3_fearAndGreed),
-      s4: Math.round(s4_ath),
-      s5: Math.round(s5_marketBreadth)
-    }
-
-    indicatorScores = {
-      marketCapScore: {
-        raw: { "Kapitalisasi Pasar Saat Ini": formatCurrency(totalMarketCap), "Kapitalisasi Puncak": formatCurrency(maxHistoricalMarketCap) },
-        score: scores.s1
-      },
-      volumeScore: {
-        raw: { "Volume Saat Ini": formatCurrency(totalVolume24h), "Rata-rata Volume 30h": formatCurrency(avg30DayVolume) },
-        score: scores.s2
-      },
-      fearGreedScore: {
-        raw: { "Nilai Indeks": fearAndGreedIndex },
-        score: scores.s3
-      },
-      athScore: {
-        raw: { "Rata-rata % Jarak dari ATH": `${avgDistanceFromAth.toFixed(2)}%` },
-        score: scores.s4
-      },
-      marketBreadthScore: {
-        raw: { "Token Naik": risingTokens, "Total Koin Teratas": n_breadth },
-        score: scores.s5
-      },
-    }
-
-    finalScore = Math.round((scores.s1 * 0.25) + (scores.s2 * 0.20) + (scores.s3 * 0.20) + (scores.s4 * 0.25) + (scores.s5 * 0.10));
-  }
 
   return (
     <div className="container mx-auto px-4 py-3 md:py-4">
@@ -263,9 +243,9 @@ function MarketIndicatorsClient({ marketData }: { marketData: any }) {
                 </CardHeader>
                 <CardContent className="flex justify-between items-center">
                   <div className="flex items-center gap-2 text-lg font-bold text-primary">
-                    {indicatorScores && indicatorScores[indicator.id] ? (
+                    {analysisResult?.components ? (
                       <>
-                        {indicatorScores[indicator.id].score} <span className="text-sm text-muted-foreground">/ 100</span>
+                        {analysisResult.components[indicator.id as keyof typeof analysisResult.components]} <span className="text-sm text-muted-foreground">/ 100</span>
                       </>
                     ) : (
                       <span className="text-muted-foreground">N/A</span>
@@ -289,11 +269,11 @@ function MarketIndicatorsClient({ marketData }: { marketData: any }) {
                           <h4 className="font-semibold text-sm mb-2 text-muted-foreground uppercase tracking-wider">Rumus</h4>
                           <p className="font-mono text-xs bg-muted p-3 rounded-md">{indicator.formula}</p>
                         </div>
-                        {indicatorScores && indicatorScores[indicator.id] && (
+                        {indicatorRawData && (
                           <div>
                             <h4 className="font-semibold text-sm mb-2 text-muted-foreground uppercase tracking-wider">Input Data</h4>
                             <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm bg-muted p-3 rounded-md">
-                              {Object.entries(indicatorScores[indicator.id].raw).map(([key, value]) => (
+                              {Object.entries(indicatorRawData[indicator.id as keyof typeof indicatorRawData] || {}).map(([key, value]) => (
                                 <div key={key} className="flex justify-between items-baseline border-b border-border/50 pb-1">
                                   <span>{key}</span>
                                   <span className="font-mono font-medium">{value}</span>
@@ -302,11 +282,11 @@ function MarketIndicatorsClient({ marketData }: { marketData: any }) {
                             </div>
                           </div>
                         )}
-                        {indicatorScores && indicatorScores[indicator.id] && (
+                        {analysisResult?.components && (
                           <div className="flex items-center justify-between bg-primary/10 p-3 rounded-md">
                             <h4 className="font-semibold text-sm text-primary uppercase tracking-wider">Skor Dihitung</h4>
                             <div className="flex items-center gap-2">
-                              <span className="font-mono font-bold text-xl text-primary">{indicatorScores[indicator.id].score}</span>
+                              <span className="font-mono font-bold text-xl text-primary">{analysisResult.components[indicator.id as keyof typeof analysisResult.components]}</span>
                               <span className="text-sm text-primary/80">/ 100</span>
                             </div>
                           </div>
@@ -336,20 +316,21 @@ function MarketIndicatorsClient({ marketData }: { marketData: any }) {
                   <h4 className="font-semibold text-sm mb-1 text-muted-foreground uppercase tracking-wider">Rumus</h4>
                   <p className="font-mono text-xs bg-background p-3 rounded-md">M = (S₁ × 0.25) + (S₂ × 0.20) + (S₃ × 0.20) + (S₄ × 0.25) + (S₅ × 0.10)</p>
                 </div>
-                {indicatorScores && finalScore !== null && (
+                {analysisResult && (
                   <div>
                     <h4 className="font-semibold text-sm mb-2 text-muted-foreground uppercase tracking-wider">Hasil</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 text-sm font-mono p-3 bg-background rounded-md">
-                      <div className="flex justify-between"><span>(S₁: {indicatorScores.marketCapScore.score} × 0.25)</span><span>= {(indicatorScores.marketCapScore.score * 0.25).toFixed(2)}</span></div>
-                      <div className="flex justify-between"><span>(S₂: {indicatorScores.volumeScore.score} × 0.20)</span><span>= {(indicatorScores.volumeScore.score * 0.20).toFixed(2)}</span></div>
-                      <div className="flex justify-between"><span>(S₃: {indicatorScores.fearGreedScore.score} × 0.20)</span><span>= {(indicatorScores.fearGreedScore.score * 0.20).toFixed(2)}</span></div>
-                      <div className="flex justify-between"><span>(S₄: {indicatorScores.athScore.score} × 0.25)</span><span>= {(indicatorScores.athScore.score * 0.25).toFixed(2)}</span></div>
-                      <div className="flex justify-between"><span>(S₅: {indicatorScores.marketBreadthScore.score} × 0.10)</span><span>= {(indicatorScores.marketBreadthScore.score * 0.10).toFixed(2)}</span></div>
+                      {Object.entries(analysisResult.components).map(([key, value]) => (
+                        <div key={key} className="flex justify-between">
+                          <span>({(key as string).replace('Score', ' S')}: {value} × {weights[key as keyof typeof weights]})</span>
+                          <span>= {(value * weights[key as keyof typeof weights]).toFixed(2)}</span>
+                        </div>
+                      ))}
                     </div>
                     <div className="flex items-center justify-between bg-primary/10 p-3 rounded-md mt-2">
                       <h4 className="font-semibold text-sm text-primary uppercase tracking-wider">Skor Akhir</h4>
                       <div className="flex items-center gap-2">
-                        <span className="font-mono font-bold text-xl text-primary">{finalScore}</span>
+                        <span className="font-mono font-bold text-xl text-primary">{analysisResult.macroScore}</span>
                         <span className="text-sm text-primary/80">/ 100</span>
                       </div>
                     </div>
@@ -366,6 +347,7 @@ function MarketIndicatorsClient({ marketData }: { marketData: any }) {
 
 export default async function MarketIndicatorsPage() {
   const marketData = await fetchMarketData();
+  const analysisResult = marketData ? await analyzeMarketSentiment(marketData) : null;
 
-  return <MarketIndicatorsClient marketData={marketData} />;
+  return <MarketIndicatorsClient marketData={marketData} analysisResult={analysisResult} />;
 }

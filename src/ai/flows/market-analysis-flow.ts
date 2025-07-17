@@ -8,7 +8,7 @@
  * - MarketAnalysisOutput - The return type for the analysis function.
  */
 
-import type { MarketAnalysisInput, MarketAnalysisOutput } from '@/types';
+import type { MarketAnalysisInput, MarketAnalysisOutput } from '@/types/ai';
 
 // Updated weights based on the new 5-component model
 const weights = {

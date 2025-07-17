@@ -102,21 +102,47 @@ async function syncDefiLlamaHistoricalTvl(): Promise<void> {
 
 
 // --- Functions to get data from cache ---
+// These functions are now primarily for use by coingecko.ts to assemble combined data.
+// They will attempt a sync if the cache is empty.
 
-export async function getDefiLlamaProtocols(): Promise<DefiLlamaProtocol[] | null> {
+export async function getDefiLlamaProtocols(): Promise<DefiLlamaProtocol[]> {
     const { data, error } = await supabase.from('defillama_protocols').select('*');
-    if (error) {
-        console.error('Error fetching protocols from cache:', error);
-        return null;
+    
+    if (error || !data || data.length === 0) {
+        console.warn('Cache for DefiLlama protocols is empty or failed to load. Fetching from API.');
+        try {
+            await syncDefiLlamaProtocols();
+            const { data: newData, error: newError } = await supabase.from('defillama_protocols').select('*');
+            if (newError) {
+                console.error('Failed to fetch from cache after sync:', newError);
+                return [];
+            }
+            return newData || [];
+        } catch (syncError) {
+            console.error('Failed to sync and fetch DefiLlama protocols:', syncError);
+            return [];
+        }
     }
     return data;
 }
 
-export async function getDefiLlamaStablecoins(): Promise<DefiLlamaStablecoin[] | null> {
+export async function getDefiLlamaStablecoins(): Promise<DefiLlamaStablecoin[]> {
     const { data, error } = await supabase.from('defillama_stablecoins').select('*');
-    if (error) {
-        console.error('Error fetching stablecoins from cache:', error);
-        return null;
+
+    if (error || !data || data.length === 0) {
+        console.warn('Cache for DefiLlama stablecoins is empty or failed to load. Fetching from API.');
+        try {
+            await syncDefiLlamaStablecoins();
+            const { data: newData, error: newError } = await supabase.from('defillama_stablecoins').select('*');
+            if (newError) {
+                console.error('Failed to fetch stablecoins from cache after sync:', newError);
+                return [];
+            }
+            return newData || [];
+        } catch (syncError) {
+            console.error('Failed to sync and fetch DefiLlama stablecoins:', syncError);
+            return [];
+        }
     }
     return data;
 }
@@ -129,5 +155,3 @@ export async function getDefiLlamaHistoricalTvl(): Promise<DefiLlamaHistoricalTv
     }
     return data as DefiLlamaHistoricalTvl[];
 }
-
-

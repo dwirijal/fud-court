@@ -4,7 +4,6 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { MarketAnalysisOutput } from '@/types';
 import { analyzeMarketSentiment } from '@/ai/flows/market-analysis-flow';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { AlertTriangle, CheckCircle, ArrowRight, Scale, Zap, TrendingUp, Package } from 'lucide-react';
@@ -21,6 +20,7 @@ import { Progress } from "@/components/ui/progress";
 
 import anime from 'animejs';
 import type { CombinedMarketData } from '@/types';
+import type { MarketAnalysisOutput } from '@/types/ai';
 
 const getActiveColorClass = (interpretation: string) => {
     const lowerCaseInterpretation = interpretation.toLowerCase();

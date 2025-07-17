@@ -10,7 +10,8 @@ import { TrendChange } from "@/components/ui/TrendChange";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { analyzeMarketSentiment } from "@/ai/flows/market-analysis-flow";
-import type { CombinedMarketData, MarketAnalysisOutput } from "@/types";
+import type { CombinedMarketData } from "@/types";
+import type { MarketAnalysisOutput } from "@/types/ai";
 
 // Client component to handle rendering and client-side interactions
 function MarketIndicatorsClient({ 

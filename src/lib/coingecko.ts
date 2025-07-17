@@ -1,9 +1,9 @@
 
 'use server';
 
-import type { CryptoData, FearGreedData, DetailedCoinData, CombinedMarketData, TopCoinForAnalysis, DefiLlamaProtocol, DefiLlamaStablecoin, CGMarket } from '@/types';
-import { supabase } from './supabase'; // Import Supabase client
-import { getFearAndGreedIndexFromCache } from './fear-greed'; // Import Fear & Greed API function
+import type { CryptoData, DetailedCoinData, CombinedMarketData, TopCoinForAnalysis, DefiLlamaProtocol, DefiLlamaStablecoin, CGMarket } from '@/types';
+import { supabase } from './supabase';
+import { getFearAndGreedIndexFromCache } from './fear-greed';
 import { getDefiLlamaProtocols, getDefiLlamaStablecoins } from './defillama';
 
 const COINGECKO_API_BASE_URL = 'https://api.coingecko.com/api/v3';
@@ -324,5 +324,3 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
         return null;
     }
 }
-
-

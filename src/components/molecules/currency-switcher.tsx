@@ -13,9 +13,9 @@ import {
 import { cn } from "@/lib/utils"
 
 const currencies = [
-  { value: "usd", label: "USD" },
-  { value: "idr", label: "IDR" },
-  { value: "eur", label: "EUR" },
+  { value: "usd", label: "USD ($)" },
+  { value: "idr", label: "IDR (Rp)" },
+  { value: "eur", label: "EUR (€)" },
   { value: "xau", label: "XAU (Emas)" },
 ]
 
@@ -34,12 +34,13 @@ export function CurrencySwitcher({ defaultValue, className }: CurrencySwitcherPr
     current.set('currency', value);
     const search = current.toString();
     const query = search ? `?${search}` : "";
-    router.push(`${pathname}${query}`);
+    // Use router.replace to avoid adding to history stack for a simple filter change
+    router.replace(`${pathname}${query}`);
   };
 
   return (
     <Select onValueChange={handleValueChange} defaultValue={defaultValue}>
-      <SelectTrigger className={cn("w-[120px]", className)}>
+      <SelectTrigger className={cn("w-[140px]", className)} aria-label="Pilih Mata Uang">
         <SelectValue placeholder="Pilih Mata Uang" />
       </SelectTrigger>
       <SelectContent>

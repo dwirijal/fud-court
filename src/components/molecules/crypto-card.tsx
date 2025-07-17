@@ -7,14 +7,14 @@ import {
 } from "@/components/ui/card";
 import type { CryptoData } from "@/types";
 import { cn } from "@/lib/utils";
-import { TrendingDown, TrendingUp } from "lucide-react";
 import Image from "next/image";
+import { TrendChange } from "../ui/TrendChange";
 
 export function CryptoCard({ data, className }: { data: CryptoData, className?: string }) {
-  const isPositive = (data.price_change_percentage_24h_in_currency ?? 0) >= 0;
+  const priceChange = data.price_change_percentage_24h_in_currency ?? 0;
 
   return (
-    <Card className={cn("relative flex flex-col justify-between h-full overflow-hidden transition-all duration-normal hover:-translate-y-px hover:shadow-lg", className)}>
+    <Card className={cn("relative flex flex-col justify-between h-full overflow-hidden transition-all duration-normal hover:-translate-y-px hover:shadow-lg focus-ring", className)}>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 pb-0">
           <div className="flex items-center gap-2">
             <Image src={data.image} alt={`${data.name} logo`} width={24} height={24} className="rounded-full" />
@@ -33,19 +33,7 @@ export function CryptoCard({ data, className }: { data: CryptoData, className?: 
                   maximumFractionDigits: data.current_price < 1 ? 6 : 2,
                 })}
               </div>
-              <div
-                className={cn(
-                  "flex items-center gap-1 caption-regular",
-                  isPositive ? "text-market-up" : "text-market-down"
-                )}
-              >
-                {isPositive ? (
-                  <TrendingUp className="h-3 w-3" />
-                ) : (
-                  <TrendingDown className="h-3 w-3" />
-                )}
-                <span>{(data.price_change_percentage_24h_in_currency ?? 0).toFixed(2)}%</span>
-              </div>
+              <TrendChange change={priceChange} isPercentage={true} />
           </div>
         </CardContent>
     </Card>

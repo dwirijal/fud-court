@@ -26,22 +26,22 @@ export function FlippableIndicatorCard({
 
     return (
         <div
-            className="perspective-1000 h-full"
+            className="perspective-1000 h-full w-full"
             onMouseEnter={() => setIsFlipped(true)}
             onMouseLeave={() => setIsFlipped(false)}
         >
             <motion.div
                 className="relative h-full w-full preserve-3d"
-                animate={{ rotateX: isFlipped ? 180 : 0 }}
-                transition={{ duration: 0.6, ease: 'easeInOut' }}
+                animate={{ rotateY: isFlipped ? 180 : 0 }}
+                transition={{ duration: 0.5, ease: 'easeInOut' }}
             >
                 {/* Card Front */}
                 <div className="absolute w-full h-full backface-hidden">
                     <Card className="h-full hover:bg-muted/50 transition-colors cursor-pointer flex flex-col">
                         <CardContent className="p-4 flex-1 flex items-center justify-between gap-4">
                             <div className="space-y-1 flex-grow">
-                                <p className="text-sm font-semibold flex items-center gap-2">
-                                    <Icon className="h-4 w-4 text-muted-foreground" />
+                                <p className="body-small font-semibold flex items-center gap-2">
+                                    <Icon className="h-4 w-4 text-text-tertiary" />
                                     {name}
                                 </p>
                             </div>
@@ -53,18 +53,18 @@ export function FlippableIndicatorCard({
                 </div>
 
                 {/* Card Back */}
-                 <div className="absolute w-full h-full backface-hidden [transform:rotateX(180deg)]">
-                     <Card className="h-full bg-muted/80 border-primary/20 flex flex-col justify-center p-3 cursor-pointer">
-                        <div className="space-y-2 text-xs w-full">
+                 <div className="absolute w-full h-full backface-hidden [transform:rotateY(180deg)]">
+                     <Card className="h-full bg-bg-tertiary border-accent-primary/20 flex flex-col justify-center p-3 cursor-pointer">
+                        <div className="space-y-1 text-xs w-full">
                           {Object.entries(rawData).map(([key, value]) => (
-                            <div key={key} className="flex justify-between items-baseline">
-                              <span className="text-muted-foreground truncate" title={key}>{key}</span>
-                              <span className="font-mono text-foreground font-semibold">{value}</span>
+                            <div key={key} className="flex justify-between items-baseline gap-2">
+                              <span className="text-text-secondary truncate" title={key}>{key}</span>
+                              <span className="font-mono text-text-primary font-semibold">{value}</span>
                             </div>
                           ))}
                         </div>
-                        <Separator className="my-1.5 bg-primary/20"/>
-                        <p className="text-xs text-center font-mono text-primary/80" title={formula}>
+                        <Separator className="my-1.5 bg-accent-primary/20"/>
+                        <p className="text-xs text-center font-mono text-accent-primary/80" title={formula}>
                             {formula}
                         </p>
                     </Card>

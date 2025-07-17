@@ -14,7 +14,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import type { Post } from "@/types";
 import { motion } from "framer-motion";
-import { format } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
+import { id } from 'date-fns/locale';
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -33,7 +34,17 @@ export function NewsCard({ post }: { post: Post }) {
 
   useEffect(() => {
     // Format the date only on the client side to avoid hydration mismatch
-    setPublicationDate(format(new Date(post.published_at), 'd MMMM yyyy, HH:mm'));
+    // and show relative time for recent posts.
+    const postDate = new Date(post.published_at);
+    const now = new Date();
+    const diffInHours = (now.getTime() - postDate.getTime()) / (1000 * 60 * 60);
+
+    if (diffInHours < 24) {
+      setPublicationDate(formatDistanceToNow(postDate, { addSuffix: true, locale: id }));
+    } else {
+      setPublicationDate(format(postDate, 'd MMMM yyyy', { locale: id }));
+    }
+
   }, [post.published_at]);
   
   return (
@@ -44,15 +55,15 @@ export function NewsCard({ post }: { post: Post }) {
       variants={cardVariants}
       className="h-full"
     >
-      <Link href={`/news/${post.slug}`} className="group block h-full">
+      <Link href={`/news/${post.slug}`} className="group block h-full focus-ring rounded-3">
         <Card className="card-news h-full flex flex-col">
             <CardHeader className="p-0">
               <div className="relative aspect-[16/10] w-full overflow-hidden rounded-t-3">
                 <Image
-                  src={post.feature_image || "https://placehold.co/600x400"}
+                  src={post.feature_image || "https://placehold.co/600x400.png"}
                   alt={post.title}
                   fill
-                  className="object-cover transition-transform duration-normal group-hover:scale-105"
+                  className="object-cover transition-transform duration-slow group-hover:scale-105"
                   data-ai-hint="crypto abstract"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />

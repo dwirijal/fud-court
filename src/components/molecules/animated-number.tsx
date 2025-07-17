@@ -8,26 +8,21 @@ interface AnimatedNumberProps {
     to: number;
     className?: string;
     delay?: number;
+    formatter?: (value: number) => string;
 }
 
-export function AnimatedNumber({ to, className, delay = 0 }: AnimatedNumberProps) {
+const defaultFormatter = (value: number) => Math.round(value).toLocaleString();
+
+export function AnimatedNumber({ to, className, delay = 0, formatter = defaultFormatter }: AnimatedNumberProps) {
     const [value, setValue] = useState(0);
-    const hasAnimated = useRef(false);
-    const target = useRef({ value: 0 }).current;
+    const targetRef = useRef({ value: 0 });
 
     useEffect(() => {
-        if (hasAnimated.current && value === to) {
-            return;
-        }
-
-        // To handle dynamic changes in 'to' prop
-        if(hasAnimated.current) {
-             target.value = value;
-        }
-
-        hasAnimated.current = true;
+        const target = targetRef.current;
         
-        anime({
+        anime.remove(target); // Remove previous animations on this target
+
+        const animation = anime({
             targets: target,
             value: to,
             round: 1,
@@ -38,7 +33,12 @@ export function AnimatedNumber({ to, className, delay = 0 }: AnimatedNumberProps
                 setValue(target.value);
             }
         });
-    }, [to, delay, target, value]);
+        
+        return () => {
+          animation.pause();
+        }
 
-    return <p className={className}>{value}</p>;
+    }, [to, delay]);
+
+    return <p className={className}>{formatter(value)}</p>;
 }

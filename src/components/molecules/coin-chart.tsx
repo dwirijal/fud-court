@@ -1,49 +1,76 @@
+
 'use client';
 
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { KlineData } from "@/types";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 
 interface CoinChartProps {
   symbol: string;
   klinesData: KlineData[] | null;
 }
 
-const formatCurrency = (value: number, currency: string = 'usd', compact: boolean = false) => {
-  if (value === null || isNaN(value)) return 'N/A';
-  const options: Intl.NumberFormatOptions = {
+const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: currency.toUpperCase(),
+    currency: 'USD',
     minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  };
-  if (compact) {
-    options.notation = 'compact';
-    options.maximumFractionDigits = 2;
-  }
-  return new Intl.NumberFormat('en-US', options).format(value);
+    maximumFractionDigits: value < 1 ? 6 : 2,
+  }).format(value);
 };
 
 export function CoinChart({ symbol, klinesData }: CoinChartProps) {
+  const chartData = klinesData?.map(k => ({
+    date: format(new Date(k.openTime), 'dd MMM'),
+    fullDate: format(new Date(k.openTime), 'dd MMMM yyyy'),
+    close: parseFloat(k.close),
+  }));
+
   return (
-    <Card className="mb-12">
+    <Card className="card-primary">
       <CardHeader>
         <CardTitle>Grafik Harga ({symbol?.toUpperCase()}/USDT)</CardTitle>
+        <CardDescription>Grafik harga harian dari Binance</CardDescription>
       </CardHeader>
       <CardContent>
-        {klinesData && klinesData.length > 0 ? (
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={klinesData.map(k => ({ ...k, close: parseFloat(k.close) }))}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="openTime" tickFormatter={(time) => format(new Date(time), 'dd MMM')} />
-              <YAxis domain={['dataMin', 'dataMax']} />
-              <Tooltip formatter={(value: number) => formatCurrency(value)} labelFormatter={(label) => format(new Date(label), 'dd MMM yyyy')} />
-              <Line type="monotone" dataKey="close" stroke="#8884d8" dot={false} />
+        {chartData && chartData.length > 0 ? (
+          <ChartContainer
+            config={{ close: { label: "Close", color: "hsl(var(--chart-color-1))" } }}
+            className="aspect-video h-[300px] w-full"
+          >
+            <LineChart data={chartData}>
+              <CartesianGrid vertical={false} />
+              <XAxis dataKey="date" tickLine={false} axisLine={false} tickMargin={8} minTickGap={30} />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                tickFormatter={(value) =>
+                  `$${Number(value).toLocaleString('en-US', {
+                    notation: 'compact',
+                    compactDisplay: 'short',
+                  })}`
+                }
+              />
+              <ChartTooltip
+                cursor={false}
+                content={
+                  <ChartTooltipContent
+                    labelFormatter={(label, payload) => payload?.[0]?.payload.fullDate || label}
+                    formatter={(value) => formatCurrency(Number(value))}
+                    indicator="dot"
+                  />
+                }
+              />
+              <Line dataKey="close" type="monotone" stroke="var(--color-close)" strokeWidth={2} dot={false} />
             </LineChart>
-          </ResponsiveContainer>
+          </ChartContainer>
         ) : (
-          <div className="text-muted-foreground text-center py-8">Tidak ada data grafik yang tersedia.</div>
+          <div className="flex items-center justify-center h-[300px] text-text-tertiary body-regular">
+            Tidak ada data grafik yang tersedia.
+          </div>
         )}
       </CardContent>
     </Card>

@@ -1,21 +1,29 @@
 
+'use client'
+
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Badge } from "@/components/ui/badge";
-import { Post } from "@/types";
+import type { Post } from "@/types";
+import Autoplay from "embla-carousel-autoplay";
 
 interface ArticleHeroSliderProps {
   posts: Post[];
 }
 
 export function ArticleHeroSlider({ posts }: ArticleHeroSliderProps) {
+  const plugin = React.useRef(
+    Autoplay({ delay: 4000, stopOnInteraction: true, stopOnMouseEnter: true })
+  );
+
   if (!posts || posts.length === 0) return null;
 
   return (
     <section className="mb-12">
       <Carousel 
+        plugins={[plugin.current]}
         className="w-full"
         opts={{
           align: "start",
@@ -28,16 +36,16 @@ export function ArticleHeroSlider({ posts }: ArticleHeroSliderProps) {
               key={post.id}
               className="pl-4 md:basis-1/2 lg:basis-1/3"
             >
-              <Link href={`/news/${post.slug}`} className="group block">
-                <div className="relative h-80 rounded-4 overflow-hidden shadow-lg transition-transform duration-normal group-hover:scale-[1.02]">
+              <Link href={`/news/${post.slug}`} className="group block h-full">
+                <div className="relative h-80 rounded-4 overflow-hidden shadow-lg transition-all duration-normal group-hover:scale-[1.02] group-focus-visible:ring-2 group-focus-visible:ring-ring group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-background">
                   {post.feature_image && (
                     <Image
                       src={post.feature_image}
                       alt={post.title}
                       fill
-                      className="object-cover"
+                      className="object-cover transition-transform duration-slow group-hover:scale-105"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      priority
+                      priority={posts.indexOf(post) < 3}
                     />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex flex-col justify-end p-5">
@@ -58,8 +66,8 @@ export function ArticleHeroSlider({ posts }: ArticleHeroSliderProps) {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className="left-2" />
-        <CarouselNext className="right-2"/>
+        <CarouselPrevious className="left-2 hidden sm:flex" />
+        <CarouselNext className="right-2 hidden sm:flex"/>
       </Carousel>
     </section>
   );

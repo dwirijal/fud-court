@@ -35,7 +35,7 @@ export async function syncTopCoins() {
     if (!response.ok) throw new Error(`CoinGecko Market API error: ${response.status}`);
     const data: CGMarket[] = await response.json();
 
-    const mappedData: Omit<CryptoData, 'last_updated'>[] = data.map(coin => ({
+    const mappedData = data.map(coin => ({
       id: coin.id,
       symbol: coin.symbol,
       name: coin.name,
@@ -51,7 +51,7 @@ export async function syncTopCoins() {
       price_change_percentage_7d_in_currency: coin.price_change_percentage_7d_in_currency,
       sparkline_in_7d: coin.sparkline_in_7d,
       ath: coin.ath,
-      ath_market_cap: null, // This specific field is not available in the markets endpoint
+      ath_market_cap: coin.ath_market_cap,
     }));
 
     const { error } = await supabase.from('crypto_data').upsert(mappedData, { onConflict: 'id' });
@@ -324,3 +324,5 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
         return null;
     }
 }
+
+

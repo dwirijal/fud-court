@@ -118,7 +118,7 @@ export async function getDefiLlamaStablecoins(): Promise<DefiLlamaStablecoin[] |
         console.error('Error fetching stablecoins from cache:', error);
         return null;
     }
-    return data as any[]; // Cast as any to bypass build-time type check issue with chain_circulating
+    return data;
 }
 
 export async function getDefiLlamaHistoricalTvl(): Promise<DefiLlamaHistoricalTvl[] | null> {
@@ -129,3 +129,5 @@ export async function getDefiLlamaHistoricalTvl(): Promise<DefiLlamaHistoricalTv
     }
     return data as DefiLlamaHistoricalTvl[];
 }
+
+

@@ -52,7 +52,7 @@ export async function getDefiLlamaProtocols(): Promise<DefiLlamaProtocol[] | nul
     }
 
     if (cachedData && cachedData.length > 0) {
-      cachedProtocols = cachedData[0].data as DefiLlamaProtocol[];
+      cachedProtocols = cachedData[0].protocols_data as DefiLlamaProtocol[];
       const lastUpdated = new Date(cachedData[0].last_updated).getTime();
       const now = new Date().getTime();
       if ((now - lastUpdated) / 1000 < CACHE_DURATION_SECONDS) {
@@ -81,7 +81,7 @@ export async function getDefiLlamaProtocols(): Promise<DefiLlamaProtocol[] | nul
 
     const { error: upsertError } = await supabase.from('defillama_protocols').upsert({
         id: 1, // Use a fixed ID for this singleton-like table
-        data: protocolsData,
+        protocols_data: protocolsData,
         last_updated: new Date().toISOString(),
     }, { onConflict: 'id' });
 

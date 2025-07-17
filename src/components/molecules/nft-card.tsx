@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useRef } from 'react';
@@ -22,7 +23,7 @@ export function NftCard() {
   
   const glowX = useTransform(mouseXSpring, [-0.5, 0.5], ['0%', '100%']);
   const glowY = useTransform(mouseYSpring, [-0.5, 0.5], ['0%', '100%']);
-  const glowOpacity = useTransform(mouseYSpring, [-0.5, 0.5], [0.3, 0]);
+  const glowOpacity = useTransform(mouseYSpring, [-0.5, 0, 0.5], [0, 0.3, 0]);
 
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {

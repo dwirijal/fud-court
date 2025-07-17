@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -37,7 +36,7 @@ export function FlippableIndicatorCard({
             >
                 {/* Card Front */}
                 <div className="absolute w-full h-full backface-hidden">
-                    <Card className="h-full hover:bg-bg-tertiary transition-colors cursor-pointer flex flex-col p-4">
+                    <Card className="h-full bg-bg-secondary hover:bg-bg-tertiary transition-colors cursor-pointer flex flex-col p-4">
                         <div className="flex items-center justify-between gap-4">
                            <p className="body-small font-semibold flex items-center gap-2">
                                 <Icon className="h-4 w-4 text-text-tertiary" />

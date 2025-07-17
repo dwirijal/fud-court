@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -16,6 +15,7 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { BookOpen, LineChart, Newspaper } from "lucide-react";
+import { motion } from "framer-motion";
 
 // Define navigation structure
 const mainNavLinks = [
@@ -52,27 +52,31 @@ export function Header() {
 
   // This header is now only for desktop. Mobile has its own bottom nav.
   return (
-    <header className="hidden md:flex items-center justify-center fixed top-4 left-0 right-0 z-50 pointer-events-none">
-      <div
+    <header 
+        className="hidden md:flex items-center justify-center fixed top-4 left-0 right-0 z-50 pointer-events-none"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+    >
+      <motion.div
+        layout
+        transition={{ type: "spring", stiffness: 400, damping: 30 }}
         className={cn(
-          "flex items-center justify-center rounded-full bg-bg-secondary/50 border border-bg-tertiary backdrop-blur-lg shadow-lg transition-all duration-300 ease-in-out pointer-events-auto",
+          "flex items-center justify-center rounded-full bg-bg-secondary/50 border border-bg-tertiary backdrop-blur-lg shadow-lg pointer-events-auto",
           "shadow-[0_0_20px_hsl(var(--accent-primary)/0.1),_0_0_0_1px_hsl(var(--bg-tertiary))]",
-          isIslandExpanded ? "px-3 py-1.5 gap-2" : "p-2 gap-0"
         )}
       >
-        <Link href="/" className="flex-shrink-0">
+        <Link href="/" className="flex-shrink-0 p-2">
           <Logo />
         </Link>
 
-        <div
-          className={cn(
-            "flex items-center transition-all duration-300 ease-in-out overflow-hidden",
-            isIslandExpanded
-              ? "max-w-screen-lg opacity-100"
-              : "max-w-0 opacity-0"
-          )}
+        <motion.div
+            initial={{ opacity: 0, width: 0 }}
+            animate={{ 
+                opacity: isIslandExpanded ? 1 : 0, 
+                width: isIslandExpanded ? 'auto' : 0,
+            }}
+            transition={{ type: "spring", stiffness: 400, damping: 30, delay: isIslandExpanded ? 0.1 : 0 }}
+            className="flex items-center overflow-hidden pr-2"
         >
           <NavigationMenu onValueChange={setActiveMenu} >
             <NavigationMenuList>
@@ -117,8 +121,8 @@ export function Header() {
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </header>
   );
 }

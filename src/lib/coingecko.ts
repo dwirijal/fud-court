@@ -231,7 +231,7 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
         
         const result: CombinedMarketData = {
             totalMarketCap,
-            maxHistoricalMarketCap: 0, // Not available from CoinGecko /global endpoint
+            maxHistoricalMarketCap: totalMarketCap,
             totalVolume24h: globalData.total_volume?.usd ?? 0,
             avg30DayVolume: 0, // Not available from CoinGecko /global endpoint
             btcDominance,
@@ -420,3 +420,5 @@ export async function rateLimitedCalculation<T, R>(calculation: (data: T) => R, 
         executeNext(); // Try to execute immediately if possible
     });
 }
+
+    

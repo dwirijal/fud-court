@@ -97,7 +97,7 @@ export function MarketDataTableClient({ data: initialData, currency }: MarketDat
         observer.unobserve(observerTarget.current);
       }
     };
-  }, [hasMore, loadingMore, loadMore]);
+  }, [hasMore, loadingMore, loadMore, observerTarget]);
 
   const table = useReactTable({
     data: displayedData, // Use displayedData for the table

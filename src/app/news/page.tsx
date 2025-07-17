@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Newspaper } from "lucide-react";
 
 export default async function NewsPage() {
-  const posts = await getPosts({ tag: 'news' });
+  const posts = await getPosts({ tag: 'realtime-news' });
 
   return (
     <div className="container mx-auto px-4 py-7 md:py-8">

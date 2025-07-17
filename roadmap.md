@@ -16,16 +16,16 @@ This document outlines the development roadmap for Fud Court, a dashboard for ad
 
 ## v0.2.0: CMS Integration & Content Display
 
-- [x] **Feature**: Connect to a live Ghost CMS instance (Headless).
-- [x] **Feature**: Create dynamic routes for individual news articles (`/news/[slug]`).
+- [ ] **Feature**: Connect to a live Ghost CMS instance (Headless).
+- [ ] **Feature**: Create dynamic routes for individual news articles (`/news/[slug]`).
 - [ ] **Feature**: Implement a dedicated news feed page with pagination.
 - [ ] **Enhancement**: Add search functionality for news articles.
 - [ ] **Task**: Write unit and integration tests for CMS fetching logic.
 
 ## v0.3.0: Real-time Crypto Data
 
-- [x] **Feature**: Integrate a third-party API (e.g., CoinGecko, CryptoCompare) for live cryptocurrency data.
-- [x] **Feature**: Replace mock crypto data on the dashboard with real-time data.
+- [x] **Feature**: Integrate a third-party API (e.g., CoinGecko, CryptoCompare) for live cryptocurrency data.  **(Data now fetched from Supabase)**
+- [x] **Feature**: Replace mock crypto data on the dashboard with real-time data. **(Data now fetched from Supabase)**
 - [x] **Feature**: Create dynamic pages for individual cryptocurrencies (`/token/[id]`).
 - [x] **Feature**: Implement detailed charts and historical data views on token pages.
 - [x] **Enhancement**: Implement robust currency conversion for market data.

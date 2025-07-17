@@ -1,14 +1,24 @@
+<<<<<<< HEAD
 
+=======
+import { getPosts } from "@/lib/ghost";
+>>>>>>> d32eafdf79fc1270a0712b11f562506629d2d989
 import { fetchMarketData, getTopCoins } from "@/lib/coingecko";
 import { MarketCarousel } from "@/components/molecules/market-carousel";
 import { HeroSection } from "@/components/organisms/hero-section";
 import { MarketSummaryCard } from "@/components/organisms/market-summary-card";
 import { MarketStatsCard } from "@/components/organisms/market-stats-card";
+import Link from "next/link";
 
 export default async function Home() {
   // Fetch all data concurrently for better performance
+<<<<<<< HEAD
   const [cryptoData, marketData] = await Promise.all([
     getTopCoins(1, 10),
+=======
+  const [topCoins, marketData] = await Promise.all([
+    getTopCoins(1, 50),
+>>>>>>> d32eafdf79fc1270a0712b11f562506629d2d989
     fetchMarketData(),
   ]);
 
@@ -27,9 +37,25 @@ export default async function Home() {
             </p>
           </div>
           
+<<<<<<< HEAD
           <MarketSummaryCard marketData={marketData} />
           <MarketStatsCard marketStats={marketData} />
           <MarketCarousel data={cryptoData || []} />
+=======
+          <div className="space-y-8">
+            <MarketSummaryCard marketData={marketData} />
+            <MarketStatsCard marketStats={marketData} />
+          </div>
+
+          <div className="mt-16">
+            <MarketCarousel data={topCoins || []} />
+            <div className="flex justify-center mt-4">
+              <Link href="/markets" className="text-primary hover:underline">
+                Lihat Semua
+              </Link>
+            </div>
+          </div>
+>>>>>>> d32eafdf79fc1270a0712b11f562506629d2d989
         </div>
       </section>
     </>

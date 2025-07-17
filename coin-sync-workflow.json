@@ -1,0 +1,299 @@
+{
+  "name": "Coin List & Price Sync",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "value": "0 2 * * *"
+            }
+          ]
+        }
+      },
+      "id": "cron-coins",
+      "name": "Every Day at 2 AM",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [100, 100]
+    },
+    {
+      "parameters": {
+        "url": "https://api.coingecko.com/api/v3/coins/list",
+        "options": {
+          "timeout": 30000,
+          "retry": {
+            "enabled": true,
+            "maxRetries": 3
+          }
+        }
+      },
+      "id": "http-coins",
+      "name": "CoinGecko - Get Coins List",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [300, 100]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Debug: log output\nconsole.log('Output dari node sebelumnya:', JSON.stringify(items[0].json));\n\n// Cek jika output adalah array\nlet coins = items[0].json;\nif (Array.isArray(coins)) {\n  // Sudah array, lanjutkan\n} else if (typeof coins === 'object' && coins !== null) {\n  // Jika objek tunggal, jadikan array satu elemen\n  coins = [coins];\n}\nelse {\n  throw new Error(\"Output dari node sebelumnya tidak valid. Output: \" + JSON.stringify(coins));\n}\n\n// Batasi hanya 500 koin pertama\ncoins = coins.slice(0, 500);\n\nconst transformedData = [];\nfor (const coin of coins) {\n  transformedData.push({\n    coingecko_id: coin.id,\n    symbol: coin.symbol ? coin.symbol.toUpperCase() : \"\",\n    name: coin.name || \"\",\n    last_updated: new Date().toISOString(),\n    is_active: true\n  });\n}\nreturn transformedData.map(item => ({ json: item }));"
+      },
+      "id": "js-transform-coins",
+      "name": "Transform Coins Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [500, 100]
+    },
+    {
+      "parameters": {
+        "batchSize": 100
+      },
+      "id": "split-batch-coins",
+      "name": "SplitInBatches Coins",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 1,
+      "position": [600, 100]
+    },
+    {
+      "parameters": {
+        "url": "https://ncqfxuvwysaxyapmezdn.supabase.co/rest/v1/coins?on_conflict=coingecko_id",
+        "method": "POST",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "body",
+              "value": "={{ JSON.stringify(items.map(i => i.json)) }}"
+            }
+          ]
+        },
+        "options": {
+          "headers": {
+            "apikey": "={{ $env.SUPABASE_API_KEY }}",
+            "Authorization": "Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}",
+            "Content-Type": "application/json"
+          },
+          "timeout": 30000,
+          "retry": {
+            "enabled": true,
+            "maxRetries": 3
+          }
+        }
+      },
+      "id": "http-upsert-coins",
+      "name": "Upsert Coins (Supabase REST)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [700, 100]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Success notification\nreturn [{json: {text: `✅ Coin List Sync Completed at ${new Date().toISOString()}`}}];"
+      },
+      "id": "js-success-coins",
+      "name": "Success Handler",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 100]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "value": "*/5 * * * *"
+            }
+          ]
+        }
+      },
+      "id": "cron-prices",
+      "name": "Every 5 Minutes",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "operation": "getMany",
+        "table": "coins",
+        "columns": "coingecko_id",
+        "conditions": "is_active = true"
+      },
+      "id": "supabase-get-coins",
+      "name": "Get Active Coins",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [300, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build comma-separated coin IDs for CoinGecko API\nconst coinIds = items.map(item => item.json.coingecko_id).slice(0, 250).join(',');\nreturn [{ json: { coin_ids: coinIds } }];"
+      },
+      "id": "js-build-ids",
+      "name": "Build Coin IDs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.coingecko.com/api/v3/simple/price",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {"name": "ids", "value": "={{ $json.coin_ids }}"},
+            {"name": "vs_currencies", "value": "usd,idr"},
+            {"name": "include_market_cap", "value": "true"},
+            {"name": "include_24hr_vol", "value": "true"},
+            {"name": "include_24hr_change", "value": "true"},
+            {"name": "include_last_updated_at", "value": "true"}
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "retry": {
+            "enabled": true,
+            "maxRetries": 3
+          }
+        }
+      },
+      "id": "http-prices",
+      "name": "CoinGecko - Get Prices",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [700, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Transform prices data untuk Supabase\nconst pricesData = items[0].json;\nconst transformedPrices = [];\nfor (const [coinId, data] of Object.entries(pricesData)) {\n  if (data && typeof data === 'object') {\n    transformedPrices.push({\n      coingecko_id: coinId,\n      price_usd: data.usd || 0,\n      price_idr: data.idr || 0,\n      market_cap_usd: data.usd_market_cap || 0,\n      volume_24h_usd: data.usd_24h_vol || 0,\n      price_change_24h: data.usd_24h_change || 0,\n      last_updated: data.last_updated_at ? new Date(data.last_updated_at * 1000).toISOString() : new Date().toISOString()\n    });\n  }\n}\nreturn transformedPrices.map(item => ({ json: item }));"
+      },
+      "id": "js-transform-prices",
+      "name": "Transform Prices Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://ncqfxuvwysaxyapmezdn.supabase.co/rest/v1/prices?on_conflict=coingecko_id",
+        "method": "POST",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "body",
+              "value": "={{ JSON.stringify($json) }}"
+            }
+          ]
+        },
+        "options": {
+          "headers": {
+            "apikey": "={{ $env.SUPABASE_API_KEY }}",
+            "Authorization": "Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}",
+            "Content-Type": "application/json"
+          },
+          "timeout": 30000,
+          "retry": {
+            "enabled": true,
+            "maxRetries": 3
+          }
+        }
+      },
+      "id": "http-upsert-prices",
+      "name": "Upsert Prices (Supabase REST)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1100, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Success notification\nreturn [{json: {text: `✅ Price Sync Completed at ${new Date().toISOString()}`}}];"
+      },
+      "id": "js-success-prices",
+      "name": "Success Handler",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1300, 300]
+    }
+  ],
+  "connections": {
+    "Every Day at 2 AM": {
+      "main": [
+        [
+          {"node": "CoinGecko - Get Coins List", "type": "main", "index": 0}
+        ]
+      ]
+    },
+    "CoinGecko - Get Coins List": {
+      "main": [
+        [
+          {"node": "Transform Coins Data", "type": "main", "index": 0}
+        ]
+      ]
+    },
+    "Transform Coins Data": {
+      "main": [
+        [
+          {"node": "SplitInBatches Coins", "type": "main", "index": 0}
+        ]
+      ]
+    },
+    "SplitInBatches Coins": {
+      "main": [
+        [
+          {"node": "Upsert Coins (Supabase REST)", "type": "main", "index": 0}
+        ]
+      ]
+    },
+    "Upsert Coins (Supabase REST)": {
+      "main": [
+        [
+          {"node": "Success Handler", "type": "main", "index": 0}
+        ]
+      ]
+    },
+    "Every 5 Minutes": {
+      "main": [
+        [
+          {"node": "Get Active Coins", "type": "main", "index": 0}
+        ]
+      ]
+    },
+    "Get Active Coins": {
+      "main": [
+        [
+          {"node": "Build Coin IDs", "type": "main", "index": 0}
+        ]
+      ]
+    },
+    "Build Coin IDs": {
+      "main": [
+        [
+          {"node": "CoinGecko - Get Prices", "type": "main", "index": 0}
+        ]
+      ]
+    },
+    "CoinGecko - Get Prices": {
+      "main": [
+        [
+          {"node": "Transform Prices Data", "type": "main", "index": 0}
+        ]
+      ]
+    },
+    "Transform Prices Data": {
+      "main": [
+        [
+          {"node": "Upsert Prices (Supabase REST)", "type": "main", "index": 0}
+        ]
+      ]
+    },
+    "Upsert Prices (Supabase REST)": {
+      "main": [
+        [
+          {"node": "Success Handler", "type": "main", "index": 0}
+        ]
+      ]
+    }
+  }
+} 

@@ -17,5 +17,5 @@ export async function GlobalNewsTicker() {
     // On error, newsPosts remains an empty array, so the ticker simply won't render.
   }
 
-  return <NewsTicker posts={newsPosts} />;
+  return <NewsTicker posts={newsPosts} className="h-7 text-xs px-2 bg-background/40" />;
 }

@@ -80,22 +80,22 @@ function StatCard({ label, value, underlyingValue, colorClass, index, valueIsPer
             transition={{ delay: index * 0.1 }}
             variants={cardVariants}
         >
-            <div className="card-primary h-full flex flex-col justify-between">
+            <div className="card-primary h-full flex flex-col justify-between p-4">
                 <div className="flex items-center gap-2">
                     <span className={cn("h-2.5 w-2.5 rounded-full", colorClass)} />
-                    <p className="caption-regular text-text-secondary">{label}</p>
+                    <p className="text-xs font-medium text-text-secondary">{label}</p>
                 </div>
                 <div>
                      <AnimatedStatNumber
                         to={value}
                         formatter={valueIsPercentage ? formatPercentage : formatCurrency}
-                        className="number-large"
+                        className="text-2xl font-semibold font-mono"
                         delay={index * 100}
                     />
                     {underlyingValue !== undefined && <AnimatedStatNumber
                         to={underlyingValue}
                         formatter={formatCurrency}
-                        className="caption-regular text-text-secondary"
+                        className="text-xs font-medium text-text-secondary"
                         delay={index * 100}
                     />}
                 </div>
@@ -147,10 +147,10 @@ export function MarketStatsCard({ marketStats }: MarketStatsCardProps) {
     ];
 
     return (
-        <Card className="card-primary">
+        <Card className="card-primary p-5">
             <CardHeader className="p-0 mb-4">
-                <CardTitle className="headline-5">Dominasi & TVL</CardTitle>
-                <CardDescription className="body-regular text-text-secondary">
+                <CardTitle className="text-2xl font-semibold">Dominasi & TVL</CardTitle>
+                <CardDescription className="text-base text-text-secondary">
                     Perbandingan kapitalisasi pasar (MC) dan nilai terkunci (TVL) berbagai ekosistem terhadap total pasar kripto.
                 </CardDescription>
             </CardHeader>

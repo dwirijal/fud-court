@@ -14,11 +14,11 @@ export default async function NewsPage() {
           <div className="bg-accent-primary/10 text-accent-primary p-2 rounded-lg">
             <Newspaper className="h-8 w-8" />
           </div>
-          <h1 className="headline-2">
+          <h1 className="text-5xl font-bold tracking-tight">
             Berita Fud Court
           </h1>
         </div>
-        <p className="body-large text-text-secondary max-w-2xl mt-2">
+        <p className="text-lg text-text-secondary max-w-2xl mt-2">
           Sumber Anda untuk berita kripto yang tidak bias dan wawasan berbasis data.
         </p>
       </header>

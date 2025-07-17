@@ -49,21 +49,21 @@ const formatCurrency = (value: number | null | undefined, currency: string = 'us
 };
 
 const StatCard = ({ icon: Icon, title, value, description }: { icon: React.ElementType, title: string, value: React.ReactNode, description?: React.ReactNode }) => (
-    <Card className="card-primary">
+    <Card className="card-primary p-4">
       <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <h3 className="body-regular font-semibold">{title}</h3>
+          <h3 className="text-base font-semibold">{title}</h3>
           <Icon className="h-5 w-5 text-text-tertiary" />
       </div>
       <div>
-          <div className="number-large">{value}</div>
-          {description && <p className="caption-regular text-text-secondary">{description}</p>}
+          <div className="text-2xl font-semibold font-mono">{value}</div>
+          {description && <p className="text-xs font-medium text-text-secondary">{description}</p>}
       </div>
     </Card>
 );
 
 const PriceStatsTable = ({ data, support, resistance }: { data: any, support: number | null, resistance: number | null }) => (
     <Card className="card-primary p-0">
-        <h3 className="headline-6 p-5">Statistik Harga</h3>
+        <h3 className="text-xl font-semibold p-4">Statistik Harga</h3>
         <Table>
             <TableBody>
                 <TableRow>
@@ -100,8 +100,8 @@ const PriceStatsTable = ({ data, support, resistance }: { data: any, support: nu
 );
 
 const CoinLinks = ({ links }: { links: any }) => (
-    <Card className="card-primary p-5">
-        <h3 className="headline-6 mb-4">Tautan Resmi</h3>
+    <Card className="card-primary p-4">
+        <h3 className="text-xl font-semibold mb-4">Tautan Resmi</h3>
         <div className="grid grid-cols-2 gap-4">
             {links.homepage?.[0] && (
                 <a href={links.homepage[0]} target="_blank" rel="noopener noreferrer" className="btn-ghost justify-start gap-2">
@@ -174,12 +174,12 @@ export default async function CoinPage({ params }: CoinPageProps) {
         )}
         <div className="text-center md:text-left">
           <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
-            <h1 className="headline-2">
+            <h1 className="text-5xl font-bold tracking-tight">
               {name ?? 'N/A'}
             </h1>
-            <span className="body-large text-text-secondary">({symbol?.toUpperCase() ?? 'N/A'})</span>
+            <span className="text-lg text-text-secondary">({symbol?.toUpperCase() ?? 'N/A'})</span>
           </div>
-          <p className="body-large text-text-secondary max-w-3xl">
+          <p className="text-lg text-text-secondary max-w-3xl">
             Data harga, kapitalisasi pasar, dan informasi detail untuk {name ?? 'koin ini'}.
           </p>
         </div>
@@ -224,10 +224,10 @@ export default async function CoinPage({ params }: CoinPageProps) {
       </div>
       
       {description?.en && (
-        <Card className="card-primary my-6">
-          <h3 className="headline-6 mb-4">Tentang {name ?? 'koin ini'}</h3>
+        <Card className="card-primary my-6 p-4">
+          <h3 className="text-xl font-semibold mb-4">Tentang {name ?? 'koin ini'}</h3>
           <SanitizedHtml
-            className="prose prose-invert max-w-none prose-p:body-regular prose-headings:text-text-primary prose-a:text-accent-primary"
+            className="prose prose-invert max-w-none"
             html={description.en}
           />
         </Card>
@@ -235,7 +235,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
 
       {relatedArticles.length > 0 && (
         <section className="mt-8">
-          <h2 className="headline-4 mb-5 flex items-center gap-3">
+          <h2 className="text-3xl font-semibold mb-5 flex items-center gap-3">
             <Newspaper className="h-6 w-6 text-text-secondary" /> Artikel Terkait
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -258,16 +258,16 @@ export default async function CoinPage({ params }: CoinPageProps) {
                       {article.primary_tag.name}
                     </Badge>
                   )}
-                  <h3 className="headline-6 leading-tight">
+                  <h3 className="text-xl font-semibold leading-tight">
                     <Link href={`/news/${article.slug}`} className="hover:underline">
                       {article.title}
                     </Link>
                   </h3>
-                  <p className="body-small text-text-secondary line-clamp-3">
+                  <p className="text-sm text-text-secondary line-clamp-3">
                     {article.excerpt}
                   </p>
                 </div>
-                <div className="caption-regular text-text-tertiary p-4 pt-0">
+                <div className="text-xs font-medium text-text-tertiary p-4 pt-0">
                   Diterbitkan pada {format(new Date(article.published_at), "d MMMM yyyy")}
                 </div>
               </Card>
@@ -278,4 +278,3 @@ export default async function CoinPage({ params }: CoinPageProps) {
     </div>
   );
 }
-

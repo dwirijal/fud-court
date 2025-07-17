@@ -69,9 +69,9 @@ export function HeroSection() {
           <div className="text-center lg:text-left">
             <AnimatedText
               text="Kejelasan di Tengah Kekacauan."
-              className="headline-1 mb-6 [&_.letter]:inline-block"
+              className="text-6xl font-bold tracking-tighter mb-6 [&_.letter]:inline-block"
             />
-            <p className="body-large text-text-secondary max-w-xl mx-auto lg:mx-0 mb-10">
+            <p className="text-lg text-text-secondary max-w-xl mx-auto lg:mx-0 mb-10">
               Fud Court membelah kebisingan pasar dengan analisis berbasis data dan berita yang tidak bias, memberdayakan Anda untuk membuat keputusan investasi kripto yang lebih cerdas.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-8 lg:mb-0">

@@ -67,18 +67,6 @@
     
     /* 📐 MODULAR SCALE ------------------------- */
 
-    /* Typography Scale (Major Second - 1.125 ratio) */
-    --text-xs: 0.711rem;   /* 11.38px */
-    --text-sm: 0.8rem;     /* 12.8px */
-    --text-base: 0.9rem;   /* 14.4px */
-    --text-lg: 1.012rem;   /* 16.19px */
-    --text-xl: 1.139rem;   /* 18.22px */
-    --text-2xl: 1.281rem;   /* 20.49px */
-    --text-3xl: 1.442rem;   /* 23.07px */
-    --text-4xl: 1.622rem;   /* 25.95px */
-    --text-5xl: 1.825rem;   /* 29.2px */
-    --text-6xl: 2.053rem;   /* 32.85px */
-
     /* Spacing Scale (8px Grid System) */
     --space-1: 0.25rem;   /* 4px */
     --space-2: 0.5rem;    /* 8px */
@@ -126,25 +114,6 @@
 }
 
 @layer components {
-  /* Typography Components */
-  .headline-1 { @apply text-6xl font-bold; line-height: 1.1; }
-  .headline-2 { @apply text-5xl font-bold; line-height: 1.1; }
-  .headline-3 { @apply text-4xl font-semibold; line-height: 1.2; }
-  .headline-4 { @apply text-3xl font-semibold; line-height: 1.2; }
-  .headline-5 { @apply text-2xl font-semibold; line-height: 1.3; }
-  .headline-6 { @apply text-xl font-semibold; line-height: 1.3; }
-
-  .body-large { @apply text-lg font-normal; line-height: 1.6; }
-  .body-regular { @apply text-base font-normal; line-height: 1.6; }
-  .body-small { @apply text-sm font-normal; line-height: 1.5; }
-
-  .caption-large { @apply text-sm font-medium; line-height: 1.4; }
-  .caption-regular { @apply text-xs font-medium; line-height: 1.4; }
-
-  .number-large { @apply font-mono text-2xl font-semibold; }
-  .number-regular { @apply font-mono text-base font-medium; }
-  .number-small { @apply font-mono text-sm font-medium; }
-
   /* Card Components */
   .card-primary { @apply bg-bg-secondary border border-border rounded-3; }
   .card-elevated { 
@@ -185,9 +154,9 @@
   /* News Components */
   .news-item { @apply bg-bg-secondary border border-border rounded-3 p-4 mb-4 transition-all duration-normal ease-out-quart; }
   .news-item:hover { @apply border-accent-primary -translate-y-px; }
-  .news-item-title { @apply headline-6 text-text-primary mb-2; }
-  .news-item-excerpt { @apply body-regular text-text-secondary mb-3; }
-  .news-item-meta { @apply caption-regular text-text-tertiary flex items-center gap-2; }
+  .news-item-title { @apply text-xl font-semibold text-text-primary mb-2; }
+  .news-item-excerpt { @apply text-base text-text-secondary mb-3; }
+  .news-item-meta { @apply text-xs font-medium text-text-tertiary flex items-center gap-2; }
   
   /* Price Display */
   .price-display { @apply font-mono text-2xl font-semibold text-text-primary; }
@@ -199,7 +168,7 @@
   /* Chart Container */
   .chart-container { @apply bg-bg-secondary border border-border rounded-3 p-5 relative; }
   .chart-header { @apply flex justify-between items-center mb-4; }
-  .chart-title { @apply headline-5 text-text-primary; }
+  .chart-title { @apply text-2xl font-semibold text-text-primary; }
   .chart-controls { @apply flex gap-2; }
   
   /* Accessibility */
@@ -234,13 +203,13 @@
   }
 
   .prose-invert p {
-    @apply body-regular;
+    @apply text-base;
   }
 
-  .prose-invert h1 { @apply headline-1; }
-  .prose-invert h2 { @apply headline-2; }
-  .prose-invert h3 { @apply headline-3; }
-  .prose-invert h4 { @apply headline-4; }
+  .prose-invert h1 { @apply text-5xl font-bold; }
+  .prose-invert h2 { @apply text-4xl font-semibold; }
+  .prose-invert h3 { @apply text-3xl font-semibold; }
+  .prose-invert h4 { @apply text-2xl font-semibold; }
 }
 
 @layer utilities {

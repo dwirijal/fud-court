@@ -151,7 +151,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
     return (
       <Card className="card-primary flex flex-col items-center justify-center p-6 bg-destructive/10 border-destructive">
           <AlertTriangle className="h-12 w-12 text-destructive mb-4" />
-          <CardTitle className="headline-5 text-destructive">Analisis Gagal</CardTitle>
+          <CardTitle className="text-2xl font-semibold text-destructive">Analisis Gagal</CardTitle>
           <CardDescription className="text-destructive/80 mt-2 text-center max-w-md">
             Tidak dapat menghitung sentimen pasar karena data tidak lengkap.
           </CardDescription>
@@ -163,10 +163,10 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
 
   return (
     <div className="space-y-6">
-        <Card className="card-primary bg-primary/5 border-primary/20 overflow-hidden">
+        <Card className="card-primary bg-primary/5 border-primary/20 overflow-hidden p-5">
             <CardHeader className="p-0">
-                <CardTitle className="headline-3">Gambaran Umum Pasar Saat Ini</CardTitle>
-                <CardDescription className="body-regular text-text-secondary max-w-2xl">
+                <CardTitle className="text-4xl font-semibold">Gambaran Umum Pasar Saat Ini</CardTitle>
+                <CardDescription className="text-base text-text-secondary max-w-2xl">
                     Mengukur kondisi pasar crypto secara keseluruhan menggunakan 5 indikator gabungan utama.
                 </CardDescription>
             </CardHeader>
@@ -186,7 +186,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
-                        <Button asChild variant="link" className="text-text-secondary p-0 h-auto flex caption-regular">
+                        <Button asChild variant="link" className="text-text-secondary p-0 h-auto flex text-xs font-medium">
                             <Link href="/learn/market-indicators">
                                 Pelajari cara kerja skor ini <ArrowRight className="h-4 w-4 ml-1" />
                             </Link>
@@ -194,7 +194,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                     </div>
                     <div className="text-center md:text-right flex-shrink-0">
                         <AnimatedNumber to={analysisResult.macroScore} className={cn("text-7xl md:text-8xl font-bold tracking-tighter", activeColorClass)} />
-                        <p className={cn("headline-5", activeColorClass)}>{analysisResult.marketCondition}</p>
+                        <p className={cn("text-2xl font-semibold", activeColorClass)}>{analysisResult.marketCondition}</p>
                     </div>
                 </div>
             </CardContent>

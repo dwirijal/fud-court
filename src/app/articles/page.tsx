@@ -51,11 +51,11 @@ export default async function ArticlesPage() {
             <div className="bg-accent-primary/10 text-accent-primary p-2 rounded-3">
                 <BookOpen className="h-8 w-8" />
             </div>
-            <h1 className="headline-2">
+            <h1 className="text-5xl font-bold tracking-tight">
                 Artikel
             </h1>
         </div>
-        <p className="body-large text-text-secondary mt-2">
+        <p className="text-lg text-text-secondary mt-2">
             Analisis mendalam dan konten panjang tentang lanskap kripto.
         </p>
       </header>
@@ -75,28 +75,28 @@ export default async function ArticlesPage() {
                   />
                 </div>
               )}
-              <CardHeader className="flex-grow">
+              <CardHeader className="flex-grow p-4">
                 {article.primary_tag && (
                   <Badge variant="secondary" className="mb-2 w-fit">
                     {article.primary_tag.name}
                   </Badge>
                 )}
-                <CardTitle className="headline-6 leading-tight">
+                <CardTitle className="text-xl font-semibold leading-tight">
                   <Link href={`/news/${article.slug}`} className="hover:underline">
                     {article.title}
                   </Link>
                 </CardTitle>
-                <CardDescription className="body-small text-text-secondary line-clamp-3">
+                <CardDescription className="text-sm text-text-secondary line-clamp-3">
                   {article.excerpt}
                 </CardDescription>
               </CardHeader>
-              <CardFooter className="caption-regular text-text-tertiary">
+              <CardFooter className="p-4 pt-0 text-xs font-medium text-text-tertiary">
                 Diterbitkan pada {format(new Date(article.published_at), "d MMMM yyyy")}
               </CardFooter>
             </Card>
           ))
         ) : (
-          <p className="col-span-full text-center body-regular text-text-secondary">Tidak ada artikel yang ditemukan.</p>
+          <p className="col-span-full text-center text-base text-text-secondary">Tidak ada artikel yang ditemukan.</p>
         )}
       </section>
     </div>

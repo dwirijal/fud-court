@@ -29,10 +29,10 @@ export default function LoginPage() {
         <div className="w-full max-w-md space-y-6">
             <div className="flex flex-col items-center text-center">
                 <Logo />
-                <h1 className="headline-4 mt-4">
+                <h1 className="text-3xl font-semibold mt-4">
                     Welcome to Fud Court
                 </h1>
-                <p className="body-regular text-text-secondary">
+                <p className="text-base text-text-secondary">
                     Your journey to clarity in the crypto world starts here.
                 </p>
             </div>

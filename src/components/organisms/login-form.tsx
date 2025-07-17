@@ -73,14 +73,14 @@ export function LoginForm() {
   if (isSuccess) {
     return (
         <Card className="w-full">
-            <CardHeader className="text-center">
-                <CardTitle className="headline-5">Check Your Inbox</CardTitle>
+            <CardHeader className="text-center p-5">
+                <CardTitle className="text-2xl font-semibold">Check Your Inbox</CardTitle>
                 <CardDescription>
                     We've sent a secure magic link to{' '}
                     <span className="font-semibold text-text-primary">{submittedEmail}</span>.
                 </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-5 pt-0">
                 <Button onClick={handleReset} className="w-full" variant="outline">
                     Use a different email
                 </Button>
@@ -104,13 +104,13 @@ export function LoginForm() {
           
           <TabsContent value="signin">
             <Card>
-              <CardHeader>
+              <CardHeader className="p-5">
                 <CardTitle>Welcome Back</CardTitle>
                 <CardDescription>
                   Enter your email to receive a magic link to sign in.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 p-5 pt-0">
                 <FormField
                   control={form.control}
                   name="email"
@@ -125,7 +125,7 @@ export function LoginForm() {
                   )}
                 />
               </CardContent>
-              <CardFooter>
+              <CardFooter className="p-5">
                 <Button type="submit" disabled={isSubmitting} className="w-full">
                   {isSubmitting ? "Sending..." : "Send Sign In Link"}
                 </Button>
@@ -135,13 +135,13 @@ export function LoginForm() {
 
           <TabsContent value="signup">
             <Card>
-              <CardHeader>
+              <CardHeader className="p-5">
                 <CardTitle>Create an Account</CardTitle>
                 <CardDescription>
                   Enter your email to create an account. No password needed!
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 p-5 pt-0">
                 <FormField
                   control={form.control}
                   name="email"
@@ -156,7 +156,7 @@ export function LoginForm() {
                   )}
                 />
               </CardContent>
-              <CardFooter>
+              <CardFooter className="p-5">
                 <Button type="submit" disabled={isSubmitting} className="w-full">
                   {isSubmitting ? "Sending..." : "Send Sign Up Link"}
                 </Button>
@@ -168,5 +168,3 @@ export function LoginForm() {
     </Form>
   );
 }
-
-    

@@ -53,11 +53,11 @@ export default async function MarketsPage({ searchParams }: { searchParams?: { c
                 <div className="bg-accent-primary/10 text-accent-primary p-2 rounded-3">
                     <LineChart className="h-8 w-8" />
                 </div>
-                <h1 className="headline-2">
+                <h1 className="text-5xl font-bold tracking-tight">
                   Pasar Kripto
                 </h1>
             </div>
-            <p className="body-large text-text-secondary max-w-3xl">
+            <p className="text-lg text-text-secondary max-w-3xl">
               Jelajahi harga mata uang kripto, kapitalisasi pasar, dan volume perdagangan secara real-time.
             </p>
           </div>
@@ -72,8 +72,8 @@ export default async function MarketsPage({ searchParams }: { searchParams?: { c
             {error ? (
                <div className="flex flex-col items-center justify-center p-12 text-center text-market-down">
                    <AlertTriangle className="h-12 w-12 mb-4" />
-                   <h3 className="headline-5">Gagal Memuat Data Pasar</h3>
-                   <p className="body-small text-market-down/80 mt-2 max-w-md">
+                   <h3 className="text-2xl font-semibold">Gagal Memuat Data Pasar</h3>
+                   <p className="text-sm text-market-down/80 mt-2 max-w-md">
                        {error}
                    </p>
                </div>

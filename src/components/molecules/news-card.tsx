@@ -73,15 +73,15 @@ export function NewsCard({ post }: { post: Post }) {
             {post.primary_tag && (
               <Badge variant="secondary">{post.primary_tag.name}</Badge>
             )}
-            <CardTitle className="headline-6 leading-tight group-hover:text-accent-primary transition-colors">
+            <CardTitle className="text-xl font-semibold leading-tight group-hover:text-accent-primary transition-colors">
               {post.title}
             </CardTitle>
-            <p className="body-small text-text-secondary line-clamp-3">
+            <p className="text-sm text-text-secondary line-clamp-3">
               {post.excerpt}
             </p>
           </CardContent>
           <CardFooter className="p-4 pt-0">
-            <time dateTime={post.published_at} className="caption-regular text-text-tertiary">
+            <time dateTime={post.published_at} className="text-xs font-medium text-text-tertiary">
               {publicationDate || '...'}
             </time>
           </CardFooter>

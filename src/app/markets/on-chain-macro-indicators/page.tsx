@@ -45,8 +45,8 @@ export default async function OnChainMacroIndicatorsPage() {
   })).reverse(); // Reverse to show oldest data first
 
   return (
-    <div className="container mx-auto px-4 py-7 md:py-8">
-      <Breadcrumb className="mb-6">
+    <div className="container-full section-spacing">
+      <Breadcrumb className="mb-8">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink href="/" asChild>
@@ -55,9 +55,7 @@ export default async function OnChainMacroIndicatorsPage() {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink href="/markets" asChild>
-              <Link href="/markets">Pasar</Link>
-            </BreadcrumbLink>
+            <BreadcrumbLink href="/markets">Pasar</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
@@ -68,28 +66,28 @@ export default async function OnChainMacroIndicatorsPage() {
 
       <header className="mb-7">
         <div className="flex items-center gap-4 mb-2">
-            <div className="bg-primary/10 text-primary p-2 rounded-lg">
+            <div className="bg-accent-primary/10 text-accent-primary p-2 rounded-3">
                 <TrendingUp className="h-8 w-8" />
             </div>
-            <h1 className="text-4xl font-semibold font-headline tracking-tight">
+            <h1 className="headline-2">
                 On-Chain Macro Indicators
             </h1>
         </div>
-        <p className="text-lg text-muted-foreground mt-2">
+        <p className="body-large text-text-secondary mt-2">
             Jelajahi data historis Total Value Locked (TVL) di seluruh ekosistem DeFi.
         </p>
       </header>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Total Value Locked (TVL) Historis</CardTitle>
-          <CardDescription>TVL gabungan dari semua protokol DeFi yang dilacak oleh DefiLlama.</CardDescription>
-        </CardHeader>
-        <CardContent>
+      <div className="chart-container p-0">
+        <div className="chart-header p-5">
+            <h3 className="chart-title">Total Value Locked (TVL) Historis</h3>
+            <p className="body-small text-text-secondary">TVL gabungan dari semua protokol DeFi yang dilacak oleh DefiLlama.</p>
+        </div>
+        <div className="px-2">
           {chartData && chartData.length > 0 ? (
             <ChartContainer
               config={{
-                tvl: { label: "TVL", color: "hsl(var(--chart-1))" },
+                tvl: { label: "TVL", color: "hsl(var(--chart-color-1))" },
               }}
               className="aspect-video h-[400px] w-full"
             >
@@ -119,10 +117,10 @@ export default async function OnChainMacroIndicatorsPage() {
               </LineChart>
             </ChartContainer>
           ) : (
-            <p className="text-center text-muted-foreground">Tidak ada data TVL historis yang ditemukan.</p>
+            <p className="text-center text-text-secondary py-16">Tidak ada data TVL historis yang ditemukan.</p>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

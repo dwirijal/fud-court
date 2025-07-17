@@ -21,7 +21,7 @@ export default function LoginPage() {
          <Link
             href="/"
             aria-label="Kembali ke halaman utama"
-            className="absolute left-4 top-4 flex items-center gap-2 rounded-lg bg-black/30 px-3 py-2 text-sm text-background backdrop-blur-sm transition-colors hover:bg-black/50 md:left-8 md:top-8 focus-ring"
+            className="absolute left-4 top-4 flex items-center gap-2 rounded-2 bg-black/30 px-3 py-2 text-sm text-background backdrop-blur-sm transition-colors hover:bg-black/50 md:left-8 md:top-8 focus-ring"
         >
             <ArrowLeft className="h-4 w-4" />
             <span>Kembali ke Beranda</span>

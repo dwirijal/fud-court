@@ -29,7 +29,7 @@ export function ArticleHeroSlider({ posts }: ArticleHeroSliderProps) {
               className="pl-4 md:basis-1/2 lg:basis-1/3"
             >
               <Link href={`/news/${post.slug}`} className="group block">
-                <div className="relative h-80 rounded-3 overflow-hidden shadow-lg transition-transform duration-normal group-hover:scale-[1.02]">
+                <div className="relative h-80 rounded-4 overflow-hidden shadow-lg transition-transform duration-normal group-hover:scale-[1.02]">
                   {post.feature_image && (
                     <Image
                       src={post.feature_image}

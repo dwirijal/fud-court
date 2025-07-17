@@ -48,7 +48,7 @@ export default async function ArticlesPage() {
 
       <header className="mb-7 mt-8">
         <div className="flex items-center gap-4 mb-2">
-            <div className="bg-accent-primary/10 text-accent-primary p-2 rounded-lg">
+            <div className="bg-accent-primary/10 text-accent-primary p-2 rounded-3">
                 <BookOpen className="h-8 w-8" />
             </div>
             <h1 className="headline-2">

@@ -13,7 +13,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
-import { Scale, DollarSign, Server } from "lucide-react";
+import { Scale, Server } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DefiLlamaStablecoin } from "@/types";
 import { Badge } from '@/components/ui/badge';
@@ -28,7 +28,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 const formatCurrency = (value: number | null | undefined, currency: string = 'usd', compact: boolean = false) => {
   if (value === null || value === undefined || isNaN(value)) return 'N/A';
 
-  // Prevent "maximumFractionDigits value is out of range" error for very small numbers.
   if (Math.abs(value) < 1e-6 && !compact) {
     return new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -59,7 +58,7 @@ const ITEMS_PER_LOAD = 9;
 
 function StablecoinCardSkeleton() {
   return (
-    <Card>
+    <Card className="card-primary">
       <CardHeader>
         <Skeleton className="h-5 w-3/4 mb-2" />
         <Skeleton className="h-4 w-1/2" />
@@ -110,8 +109,8 @@ export default function StablecoinMetricsPage() {
   const stablecoinsToDisplay = stablecoins.slice(0, displayedCount);
 
   return (
-    <div className="container mx-auto px-4 py-7 md:py-8">
-      <Breadcrumb className="mb-6">
+    <div className="container-full section-spacing">
+      <Breadcrumb className="mb-8">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink href="/" asChild>
@@ -120,9 +119,7 @@ export default function StablecoinMetricsPage() {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink href="/markets" asChild>
-              <Link href="/markets">Pasar</Link>
-            </BreadcrumbLink>
+            <BreadcrumbLink href="/markets">Pasar</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
@@ -133,20 +130,20 @@ export default function StablecoinMetricsPage() {
 
       <header className="mb-7">
         <div className="flex items-center gap-4 mb-2">
-            <div className="bg-primary/10 text-primary p-2 rounded-lg">
+            <div className="bg-accent-primary/10 text-accent-primary p-2 rounded-3">
                 <Scale className="h-8 w-8" />
             </div>
-            <h1 className="text-4xl font-semibold font-headline tracking-tight">
+            <h1 className="headline-2">
                 Stablecoin Metrics
             </h1>
         </div>
-        <p className="text-lg text-muted-foreground mt-2">
+        <p className="body-large text-text-secondary mt-2">
             Jelajahi metrik penting terkait stablecoin, termasuk kapitalisasi pasar dan sirkulasi di berbagai jaringan.
         </p>
       </header>
 
       <div>
-        {error && <p className="text-center text-destructive">Error: {error}</p>}
+        {error && <p className="text-center text-market-down body-regular">{error}</p>}
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {loading ? (
@@ -154,36 +151,36 @@ export default function StablecoinMetricsPage() {
           ) : stablecoinsToDisplay.length > 0 ? (
             <TooltipProvider>
               {stablecoinsToDisplay.map((sc) => (
-                <Card key={sc.id} className="flex flex-col">
+                <Card key={sc.id} className="card-primary flex flex-col">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-xl font-headline">
-                      {sc.name} <span className="text-muted-foreground font-normal text-lg">({sc.symbol})</span>
+                    <CardTitle className="headline-6 flex items-center gap-2">
+                      {sc.name} <span className="text-text-secondary font-normal text-lg">({sc.symbol})</span>
                     </CardTitle>
-                    <CardDescription>
-                      Harga Saat Ini: <span className="font-semibold text-foreground">{formatCurrency(sc.price)}</span>
+                    <CardDescription className="body-small">
+                      Harga Saat Ini: <span className="font-semibold text-text-primary">{formatCurrency(sc.price)}</span>
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="flex-grow space-y-4">
                     <div>
-                      <p className="text-sm text-muted-foreground">Sirkulasi</p>
-                      <p className="text-2xl font-bold">
-                        {sc.circulating && typeof sc.circulating.peggedUSD === 'number'
-                          ? formatCurrency(sc.circulating.peggedUSD, 'usd', true)
+                      <p className="caption-regular text-text-secondary">Sirkulasi</p>
+                      <p className="number-large">
+                        {sc.circulating_pegged_usd
+                          ? formatCurrency(sc.circulating_pegged_usd, 'usd', true)
                           : 'N/A'
                         }
                       </p>
                     </div>
                     <div className="space-y-2">
-                      <div className="flex justify-between items-center text-sm">
-                        <span className="text-muted-foreground">Tipe Peg</span>
-                        <Badge variant="secondary">{sc.pegType}</Badge>
+                      <div className="flex justify-between items-center body-small">
+                        <span className="text-text-secondary">Tipe Peg</span>
+                        <Badge variant="secondary">{sc.peg_type}</Badge>
                       </div>
-                       <div className="flex justify-between items-center text-sm">
-                        <span className="text-muted-foreground">Mekanisme</span>
-                        <Badge variant="secondary" className="max-w-[150px] truncate">{sc.pegMechanism}</Badge>
+                       <div className="flex justify-between items-center body-small">
+                        <span className="text-text-secondary">Mekanisme</span>
+                        <Badge variant="secondary" className="max-w-[150px] truncate">{sc.peg_mechanism}</Badge>
                       </div>
                     </div>
-                     <div className="flex items-center gap-2 text-sm text-muted-foreground pt-4 mt-2 border-t">
+                     <div className="flex items-center gap-2 body-small text-text-secondary pt-4 mt-2 border-t border-bg-tertiary">
                         <Server className="h-4 w-4" />
                         <span className="font-medium">Jaringan:</span>
                         <div className="flex flex-wrap items-center gap-1">
@@ -207,7 +204,7 @@ export default function StablecoinMetricsPage() {
               ))}
             </TooltipProvider>
           ) : (
-             !error && <p className="col-span-full text-center text-muted-foreground">Tidak ada data stablecoin yang ditemukan.</p>
+             !error && <p className="col-span-full text-center text-text-secondary body-regular">Tidak ada data stablecoin yang ditemukan.</p>
           )}
         </div>
         

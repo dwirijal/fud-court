@@ -5,7 +5,7 @@ import { HeroSection } from "@/components/organisms/hero-section";
 import { MarketSummaryCard } from "@/components/organisms/market-summary-card";
 import { MarketStatsCard } from "@/components/organisms/market-stats-card";
 import Link from "next/link";
-import { CryptoData } from "@/types";
+import { Button } from "@/components/ui/button";
 
 export default async function Home() {
   // Fetch all data concurrently for better performance
@@ -23,13 +23,13 @@ export default async function Home() {
       <HeroSection />
       
       <main>
-        <section className="bg-card/20 border-t border-b border-border py-6 md:py-8">
-          <div className="container mx-auto px-4">
-            <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
-              <h2 className="text-4xl font-extrabold tracking-tight font-headline mb-4">
+        <section className="bg-bg-secondary/50 border-t border-b border-bg-tertiary section-spacing">
+          <div className="container-full">
+            <div className="text-center max-w-3xl mx-auto mb-12">
+              <h2 className="headline-2 mb-4">
                 Gambaran Pasar
               </h2>
-              <p className="text-muted-foreground">
+              <p className="body-large text-text-secondary">
                 Tampilan komprehensif dari indikator pasar utama dan aset berkinerja terbaik.
               </p>
             </div>
@@ -41,10 +41,12 @@ export default async function Home() {
 
             <div className="mt-16">
               <MarketCarousel data={topCoins || []} />
-              <div className="flex justify-center mt-4">
-                <Link href="/markets" className="text-primary hover:underline">
-                  Lihat Semua
-                </Link>
+              <div className="flex justify-center mt-8">
+                <Button asChild variant="secondary">
+                    <Link href="/markets">
+                        Lihat Semua Pasar
+                    </Link>
+                </Button>
               </div>
             </div>
           </div>

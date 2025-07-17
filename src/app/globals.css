@@ -115,7 +115,7 @@
   .card-primary { @apply bg-bg-secondary border border-border rounded-3; }
   .card-elevated { @apply bg-bg-tertiary border border-border rounded-3 shadow-lg; }
   .card-news { @apply bg-bg-secondary border border-border rounded-3 transition-all duration-normal ease-out-quart; }
-  .card-news:hover { @apply border-accent-primary -translate-y-px shadow-lg; }
+  .card-news:hover { @apply border-accent-primary/50 -translate-y-px shadow-lg shadow-accent-primary/5; }
   
   /* Button Component Styles */
   .btn-primary { 
@@ -127,14 +127,14 @@
   }
   
   .btn-secondary { 
-    @apply bg-bg-tertiary text-text-primary border border-border font-medium transition-all duration-fast ease-out-quart; 
+    @apply bg-bg-tertiary text-text-primary border border-border font-medium transition-colors duration-fast ease-out-quart; 
   }
   .btn-secondary:hover {
     background-color: hsl(var(--bg-quaternary));
-    border-color: hsl(var(--accent-primary));
+    border-color: hsl(var(--text-tertiary));
   }
 
-  .btn-ghost { @apply bg-transparent text-text-secondary border border-transparent font-medium transition-all duration-fast ease-out-quart; }
+  .btn-ghost { @apply bg-transparent text-text-secondary border border-transparent font-medium transition-colors duration-fast ease-out-quart; }
   .btn-ghost:hover { @apply bg-bg-tertiary text-text-primary; }
   
   /* Accessibility */

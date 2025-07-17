@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -59,7 +60,7 @@ export function Header() {
     >
       <motion.div
         layout
-        transition={{ type: "spring", stiffness: 400, damping: 30 }}
+        transition={{ type: "spring", stiffness: 500, damping: 30 }}
         className={cn(
           "flex items-center justify-center rounded-full bg-bg-secondary/50 border border-bg-tertiary backdrop-blur-lg shadow-lg pointer-events-auto",
           "shadow-[0_0_20px_hsl(var(--accent-primary)/0.1),_0_0_0_1px_hsl(var(--bg-tertiary))]",
@@ -75,7 +76,7 @@ export function Header() {
                 opacity: isIslandExpanded ? 1 : 0, 
                 width: isIslandExpanded ? 'auto' : 0,
             }}
-            transition={{ type: "spring", stiffness: 400, damping: 30, delay: isIslandExpanded ? 0.1 : 0 }}
+            transition={{ type: "spring", stiffness: 500, damping: 30, delay: isIslandExpanded ? 0.1 : 0 }}
             className="flex items-center overflow-hidden pr-2"
         >
           <NavigationMenu onValueChange={setActiveMenu} >
@@ -137,7 +138,7 @@ const ListItem = React.forwardRef<
         <Link
           ref={ref}
           className={cn(
-            "flex select-none flex-col justify-end rounded-md bg-gradient-to-b from-bg-tertiary/50 to-bg-tertiary p-4 no-underline outline-none h-full focus:shadow-md hover:bg-bg-quaternary",
+            "flex select-none flex-col justify-end rounded-md bg-gradient-to-b from-bg-tertiary/50 to-bg-tertiary p-4 no-underline outline-none h-full transition-colors duration-normal ease-out-quart focus:shadow-md hover:bg-bg-quaternary",
             className
           )}
           {...props}

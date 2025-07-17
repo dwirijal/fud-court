@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
@@ -6,6 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
+<<<<<<< HEAD
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-semibold ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-95",
   {
     variants: {
@@ -19,12 +19,27 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent/50 hover:text-accent-foreground",
         link: "text-accent-primary underline-offset-4 hover:underline",
+=======
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap text-base font-semibold ring-offset-background transition-all duration-200 ease-out-quart focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:translate-y-px",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground hover:bg-accent-secondary",
+        destructive:
+          "bg-status-error text-destructive-foreground hover:bg-status-error/90",
+        outline:
+          "border border-input bg-transparent hover:bg-accent hover:text-accent-foreground",
+        secondary:
+          "bg-secondary text-secondary-foreground hover:bg-accent",
+        ghost: "bg-transparent text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+        link: "text-tertiary-tertiary underline-offset-4 hover:underline",
+>>>>>>> b058873b045abf5277ae8797dcaa268e60af95fe
       },
       size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8 text-base",
-        icon: "h-10 w-10",
+        default: "h-10 px-5 py-3 rounded-md",
+        sm: "h-9 rounded-md px-4",
+        lg: "h-11 rounded-lg px-6 text-lg",
+        icon: "h-10 w-10 rounded-full",
       },
     },
     defaultVariants: {

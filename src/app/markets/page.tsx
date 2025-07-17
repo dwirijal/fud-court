@@ -1,4 +1,14 @@
+<<<<<<< HEAD
 
+=======
+<<<<<<< HEAD
+
+import { Card, CardContent } from "@/components/ui/card";
+import { Suspense } from "react";
+import { MarketDataTable, TableSkeleton } from "./market-data-table";
+import { CurrencySwitcherClient } from "@/components/molecules/currency-switcher-client";
+=======
+>>>>>>> b058873b045abf5277ae8797dcaa268e60af95fe
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
@@ -185,9 +195,85 @@ function MarketIndicatorsClient({
       marketBreadthScore: 0.10,
   };
 
+<<<<<<< HEAD
 
   return (
     <div className="container mx-auto px-4 py-3 md:py-4">
+=======
+    const s1_marketCap = (totalMarketCap / maxHistoricalMarketCap) * 100;
+
+    const raw_volume_score = (totalVolume24h / avg30DayVolume) * 100;
+    const capped_volume_score = Math.min(raw_volume_score, 200);
+    const s2_volume = capped_volume_score / 2;
+
+    const s3_fearAndGreed = fearAndGreedIndex;
+
+    const n_ath = topCoins.length;
+    const distanceFromAthSum = topCoins.reduce((sum: number, coin: any) => {
+      const distance = ((coin.ath - coin.current_price) / coin.ath) * 100;
+      return sum + (distance > 0 ? distance : 0);
+    }, 0);
+    const avgDistanceFromAth = n_ath > 0 ? (distanceFromAthSum / n_ath) : 0;
+    const s4_ath = 100 - avgDistanceFromAth;
+
+    const risingTokens = topCoins.filter((c: any) => (c.price_change_percentage_24h || 0) > 0).length;
+    const n_breadth = topCoins.length;
+    const s5_marketBreadth = n_breadth > 0 ? (risingTokens / n_breadth) * 100 : 0;
+
+    const scores = {
+      s1: Math.round(s1_marketCap),
+      s2: Math.round(s2_volume),
+      s3: Math.round(s3_fearAndGreed),
+      s4: Math.round(s4_ath),
+      s5: Math.round(s5_marketBreadth)
+    }
+
+    indicatorScores = {
+      marketCapScore: {
+        raw: { "Kapitalisasi Pasar Saat Ini": formatCurrency(totalMarketCap), "Kapitalisasi Puncak": formatCurrency(maxHistoricalMarketCap) },
+        score: scores.s1
+      },
+      volumeScore: {
+        raw: { "Volume Saat Ini": formatCurrency(totalVolume24h), "Rata-rata Volume 30h": formatCurrency(avg30DayVolume) },
+        score: scores.s2
+      },
+      fearGreedScore: {
+        raw: { "Nilai Indeks": fearAndGreedIndex },
+        score: scores.s3
+      },
+      athScore: {
+        raw: { "Rata-rata % Jarak dari ATH": `${avgDistanceFromAth.toFixed(2)}%` },
+        score: scores.s4
+      },
+      marketBreadthScore: {
+        raw: { "Token Naik": risingTokens, "Total Koin Teratas": n_breadth },
+        score: scores.s5
+      },
+    }
+
+    finalScore = Math.round((scores.s1 * 0.25) + (scores.s2 * 0.20) + (scores.s3 * 0.20) + (scores.s4 * 0.25) + (scores.s5 * 0.10));
+  }
+>>>>>>> d32eafdf79fc1270a0712b11f562506629d2d989
+
+  return (
+<<<<<<< HEAD
+    <div className="container mx-auto px-4 py-8">
+      <header className="mb-7">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div className="text-center sm:text-left">
+            <h1 className="text-4xl font-semibold font-headline tracking-tight mb-2">
+              Pasar Kripto
+            </h1>
+            <p className="text-lg text-muted-foreground max-w-3xl">
+              Jelajahi harga mata uang kripto, kapitalisasi pasar, dan volume perdagangan secara real-time.
+            </p>
+          </div>
+          <Suspense fallback={<div className="h-10 w-[120px] bg-muted rounded-md" />}>
+            <CurrencySwitcherClient />
+          </Suspense>
+=======
+    <div className="container mx-auto px-4 py-12 md:py-24">
+>>>>>>> b058873b045abf5277ae8797dcaa268e60af95fe
       <Breadcrumb className="mb-8">
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -208,6 +294,7 @@ function MarketIndicatorsClient({
           <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight">
             Indikator & Formula Pasar
           </h1>
+>>>>>>> d32eafdf79fc1270a0712b11f562506629d2d989
         </div>
         <p className="text-xl text-muted-foreground mt-2">
           Rincian mendalam tentang komponen yang digunakan untuk menghitung Skor Sentimen Makro.

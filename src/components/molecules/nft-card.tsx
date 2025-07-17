@@ -57,14 +57,19 @@ export function NftCard() {
       className="group relative w-full max-w-xs cursor-pointer"
     >
       <Card className="relative overflow-hidden rounded-xl bg-background/80 backdrop-blur-sm transition-shadow duration-300 group-hover:shadow-2xl">
-        <CardContent className="p-4">
+        <CardContent className="p-5">
           <motion.div
             style={{ transform: 'translateZ(20px)' }}
             className="aspect-[3/4] relative w-full overflow-hidden rounded-lg"
           >
             <Image
+<<<<<<< HEAD
               src="https://images.unsplash.com/photo-1719433203940-a9329d15d3e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxGRU5ORUMlMjBGT1h8ZW58MHx8fHwxNzUyNjg3OTA5fDA&ixlib=rb-4.1.0&q=80&w=1080"
               alt="CryptoPulse Genesis NFT"
+=======
+              src="https://placehold.co/600x600.png"
+              alt="Fud Court Genesis NFT"
+>>>>>>> b058873b045abf5277ae8797dcaa268e60af95fe
               fill
               className="object-cover"
               data-ai-hint="futuristic cyberpunk animal"

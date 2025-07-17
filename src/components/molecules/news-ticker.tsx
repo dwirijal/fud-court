@@ -30,6 +30,7 @@ export function NewsTicker({ posts, className }: NewsTickerProps) {
 
       <div className="animate-marquee group-hover:[animation-play-state:paused] whitespace-nowrap flex items-center h-full">
         {duplicatedPosts.map((post, index) => (
+<<<<<<< HEAD
           <Fragment key={`${post.id}-${index}`}>
             <Link
               href={`/news/${post.slug}`}
@@ -39,6 +40,15 @@ export function NewsTicker({ posts, className }: NewsTickerProps) {
             </Link>
             <span className="text-muted-foreground text-xs">|</span>
           </Fragment>
+=======
+          <Link
+            key={`${post.id}-${index}`}
+            href={`/news/${post.slug}`}
+            className="mx-6 text-sm text-muted-foreground hover:text-primary transition-colors flex-shrink-0"
+          >
+            {post.title}
+          </Link>
+>>>>>>> b058873b045abf5277ae8797dcaa268e60af95fe
         ))}
       </div>
     </div>

@@ -9,11 +9,11 @@ export default function LoginPage() {
   return (
     <div className="relative min-h-screen w-full">
       <Image
-        src="https://firebasestorage.googleapis.com/v0/b/project-sx-test-and-demo.appspot.com/o/images%2F668bf65499a071f02b54d6be%2Fimage.png?alt=media&token=425d50ae-70c8-4775-8163-f09d57a41926"
-        alt="Taman kripto futuristik dengan karakter hewan lucu dan pemandangan kota neon di latar belakang"
+        src="https://placehold.co/1920x1080.png"
+        alt="Abstract background image"
         fill
         className="object-cover dark:brightness-[0.4]"
-        data-ai-hint="futuristic crypto park"
+        data-ai-hint="abstract geometric background"
         priority
       />
       
@@ -30,10 +30,10 @@ export default function LoginPage() {
             <div className="flex flex-col items-center text-center">
                 <Logo />
                 <h1 className="mt-4 text-2xl font-semibold tracking-tight">
-                    Selamat Datang di Fud Court
+                    Welcome to Fud Court
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                    Perjalanan Anda menuju kejelasan di dunia kripto dimulai di sini.
+                    Your journey to clarity in the crypto world starts here.
                 </p>
             </div>
             <LoginForm />

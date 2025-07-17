@@ -115,7 +115,6 @@ export function MarketStatsCard({ marketStats }: MarketStatsCardProps) {
     
     const { 
         totalMarketCap,
-        defiTotalTvl,
         btcDominance,
         ethDominance,
         solDominance,
@@ -123,30 +122,27 @@ export function MarketStatsCard({ marketStats }: MarketStatsCardProps) {
         btcMarketCap,
         ethMarketCap,
         solMarketCap,
-        ethTvl,
-        solTvl,
         stablecoinMarketCap,
     } = marketStats;
 
     const stats = [
         { label: "Total Market Cap", value: totalMarketCap, colorClass: "bg-blue-400" },
-        { label: "DeFi TVL", value: defiTotalTvl, colorClass: "bg-cyan-400" },
         { label: "Bitcoin Dominance", value: btcDominance, underlyingValue: btcMarketCap, colorClass: "bg-orange-400", valueIsPercentage: true },
-        { label: "ETH Dominance", value: ethDominance, underlyingValue: ethTvl, colorClass: "bg-gray-400", valueIsPercentage: true },
-        { label: "SOL Dominance", value: solDominance, underlyingValue: solTvl, colorClass: "bg-purple-400", valueIsPercentage: true },
+        { label: "ETH Dominance", value: ethDominance, underlyingValue: ethMarketCap, colorClass: "bg-gray-400", valueIsPercentage: true },
+        { label: "SOL Dominance", value: solDominance, underlyingValue: solMarketCap, colorClass: "bg-purple-400", valueIsPercentage: true },
         { label: "Stablecoin Dominance", value: stablecoinDominance, underlyingValue: stablecoinMarketCap, colorClass: "bg-green-400", valueIsPercentage: true },
     ];
 
     return (
         <Card className="h-full">
             <CardHeader>
-                <CardTitle>Dominasi & TVL</CardTitle>
+                <CardTitle>Dominasi Pasar</CardTitle>
                 <CardDescription>
-                    Perbandingan kapitalisasi pasar (MC) dan nilai terkunci (TVL) berbagai ekosistem terhadap total pasar kripto.
+                    Perbandingan kapitalisasi pasar (Market Cap) berbagai ekosistem terhadap total pasar kripto.
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                     {stats.map((stat, index) => (
                         <StatCard key={stat.label} {...stat} index={index} />
                     ))}

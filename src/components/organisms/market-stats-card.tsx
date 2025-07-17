@@ -133,14 +133,13 @@ export function MarketStatsCard({ marketStats }: MarketStatsCardProps) {
 
     const marketCapStats = [
         { label: "Total Market Cap", value: totalMarketCap, colorClass: "bg-sky-400" },
+        { label: "Total DeFi TVL", value: defiTotalTvl, colorClass: "bg-indigo-400" },
         { label: "Bitcoin Dominance", value: btcDominance, underlyingValue: btcMarketCap, colorClass: "bg-orange-400", valueIsPercentage: true },
         { label: "ETH Dominance", value: ethDominance, underlyingValue: ethMarketCap, colorClass: "bg-gray-400", valueIsPercentage: true },
-        { label: "SOL Dominance", value: solDominance, underlyingValue: solMarketCap, colorClass: "bg-purple-400", valueIsPercentage: true },
         { label: "Stablecoin Dominance", value: stablecoinDominance, underlyingValue: stablecoinMarketCap, colorClass: "bg-green-400", valueIsPercentage: true },
     ];
     
     const tvlStats = [
-        { label: "Total DeFi TVL", value: defiTotalTvl, colorClass: "bg-indigo-400" },
         { label: "Ethereum TVL", value: ethTvl, colorClass: "bg-gray-400" },
         { label: "Solana TVL", value: solTvl, colorClass: "bg-purple-400" },
         { label: "Arbitrum TVL", value: arbTvl, colorClass: "bg-blue-400" },

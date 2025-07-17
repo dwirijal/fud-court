@@ -1,3 +1,4 @@
+
 'use server';
 
 import type { DefiLlamaProtocol, DefiLlamaStablecoin, DefiLlamaHistoricalTvl } from '@/types';
@@ -37,34 +38,70 @@ export async function getDefiLlamaCoinData(coinId: string): Promise<DefiLlamaCoi
 }
 
 export async function getDefiLlamaProtocols(): Promise<DefiLlamaProtocol[] | null> {
+  let cachedProtocols: DefiLlamaProtocol[] | null = null;
+  
   try {
-    // 1. Try to fetch from Supabase cache
     const { data: cachedData, error: cacheError } = await supabase
       .from('defillama_protocols')
       .select('*')
       .order('last_updated', { ascending: false })
       .limit(1);
 
+    if (cacheError) {
+      console.error('Supabase DefiLlama protocols cache read error:', cacheError);
+    }
+
     if (cachedData && cachedData.length > 0) {
+      cachedProtocols = cachedData[0].protocols as DefiLlamaProtocol[];
       const lastUpdated = new Date(cachedData[0].last_updated).getTime();
       const now = new Date().getTime();
       if ((now - lastUpdated) / 1000 < CACHE_DURATION_SECONDS) {
         console.log('Serving DefiLlama protocols from fresh Supabase cache.');
-        // Supabase returns an array, but we need to return the actual protocols data.
-        // Assuming the cached data is the array of protocols itself.
-        return cachedData[0].protocols as DefiLlamaProtocol[];
+        return cachedProtocols;
       }
       console.log('Supabase DefiLlama protocols cache is stale. Will fetch from API.');
     }
-
-    if (cacheError) {
-      console.error('Supabase DefiLlama protocols cache read error:', cacheError);
-    }
   } catch (error) {
-    console.error("An error occurred while fetching DefiLlama protocols:", error);
+      console.error("An error occurred during Supabase cache check for DefiLlama protocols:", error);
+  }
+
+  try {
+    console.log('Fetching DefiLlama protocols from API.');
+    const response = await fetch(`${DEFILLAMA_API_BASE_URL}/protocols`, { next: { revalidate: CACHE_DURATION_SECONDS }});
+    if (!response.ok) {
+        console.error(`DefiLlama Protocols API error: ${response.status} ${response.statusText}`);
+        if (cachedProtocols) {
+            console.warn('DefiLlama API failed, serving stale data from Supabase cache.');
+            return cachedProtocols;
+        }
+        return null;
+    }
+
+    const protocolsData: DefiLlamaProtocol[] = await response.json();
+
+    const { error: upsertError } = await supabase.from('defillama_protocols').upsert({
+        id: 1, // Use a fixed ID for this singleton-like table
+        protocols: protocolsData,
+        last_updated: new Date().toISOString(),
+    }, { onConflict: 'id' });
+
+    if (upsertError) {
+        console.error('Error upserting DefiLlama protocols into cache:', upsertError.message);
+    } else {
+        console.log('Successfully updated Supabase cache with new DefiLlama protocols data.');
+    }
+    
+    return protocolsData;
+  } catch (error) {
+    console.error("An error occurred while fetching DefiLlama protocols from API:", error);
+    if (cachedProtocols) {
+      console.warn('DefiLlama API failed, serving stale data from Supabase cache.');
+      return cachedProtocols;
+    }
     return null;
   }
 }
+
 
 export async function getDefiLlamaStablecoins(limit?: number): Promise<DefiLlamaStablecoin[] | null> {
   try {
@@ -111,7 +148,7 @@ export async function getDefiLlamaStablecoins(limit?: number): Promise<DefiLlama
       symbol: sc.symbol,
       peg_type: sc.pegType,
       peg_mechanism: sc.pegMechanism,
-      circulating_pegged_usd: sc.circulating.peggedUSD,
+      circulating_pegged_usd: sc.circulating?.peggedUSD ?? 0,
       chains: sc.chains,
       chain_circulating: sc.chainCirculating, // Ensure this matches JSONB column
       price: sc.price,

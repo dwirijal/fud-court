@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -140,7 +141,7 @@ export function MarketStatsCard({ marketStats }: MarketStatsCardProps) {
             <CardHeader>
                 <CardTitle>Market Dominance</CardTitle>
                 <CardDescription>
-                    Perbandingan kapitalisasi pasar dan nilai terkunci (TVL) berbagai ekosistem terhadap total pasar kripto (Cap: {formatCurrency(totalMarketCap)}).
+                    Perbandingan kapitalisasi pasar (MC) dan nilai terkunci (TVL) berbagai ekosistem terhadap total pasar kripto (Cap: {formatCurrency(totalMarketCap)}).
                 </CardDescription>
             </CardHeader>
             <CardContent>

@@ -6,9 +6,11 @@ import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Logo } from '../atoms/logo';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export function NftCard() {
   const cardRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
   
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -25,7 +27,7 @@ export function NftCard() {
 
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
+    if (isMobile || !cardRef.current) return;
     const { left, top, width, height } = cardRef.current.getBoundingClientRect();
     const mouseX = e.clientX - left;
     const mouseY = e.clientY - top;
@@ -34,6 +36,7 @@ export function NftCard() {
   };
 
   const handleMouseLeave = () => {
+    if (isMobile) return;
     x.set(0);
     y.set(0);
   };
@@ -45,8 +48,8 @@ export function NftCard() {
       onMouseLeave={handleMouseLeave}
       style={{
         transformStyle: 'preserve-3d',
-        rotateX,
-        rotateY,
+        rotateX: isMobile ? 0 : rotateX,
+        rotateY: isMobile ? 0 : rotateY,
       }}
       initial={{ opacity: 0, y: 50, rotateX: -15 }}
       animate={{ opacity: 1, y: 0, rotateX: 0 }}
@@ -70,6 +73,7 @@ export function NftCard() {
             <motion.div 
               style={{
                 background: `radial-gradient(circle at ${glowX.get()} ${glowY.get()}, hsl(var(--primary) / ${glowOpacity.get()}), transparent 50%)`,
+                opacity: isMobile ? 0 : 1,
               }}
               className="pointer-events-none absolute inset-0 transition-opacity duration-500" 
             />

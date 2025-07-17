@@ -57,7 +57,7 @@ function mapGhostPost(post: PostOrPage): Post {
   }
 }
 
-export async function getPosts(options?: { tag?: string, page?: number, limit?: number }): Promise<Post[]> {
+export async function getPosts(options?: { tag?: string, page?: number, limit?: number, since?: Date }): Promise<Post[]> {
   if (!api) return [];
 
   try {
@@ -67,11 +67,22 @@ export async function getPosts(options?: { tag?: string, page?: number, limit?: 
       limit,
       page,
       include: ['tags'],
-      fields: 'id,slug,title,excerpt,feature_image,published_at,primary_tag' // Only fetch necessary fields for list view
+      fields: 'id,slug,title,excerpt,feature_image,published_at,primary_tag', // Only fetch necessary fields for list view
+      order: 'published_at DESC', // Ensure latest posts are first
     };
 
+    let filters = [];
     if (options?.tag) {
-      browseOptions.filter = `primary_tag:${options.tag}`;
+      filters.push(`primary_tag:${options.tag}`);
+    }
+    if (options?.since) {
+      // Format date to 'YYYY-MM-DD HH:MM:SS'
+      const sinceDate = options.since.toISOString().replace('T', ' ').substring(0, 19);
+      filters.push(`published_at:>'${sinceDate}'`);
+    }
+    
+    if (filters.length > 0) {
+        browseOptions.filter = filters.join('+');
     }
     
     const posts = await api.posts.browse(browseOptions);

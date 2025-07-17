@@ -28,10 +28,10 @@ export default async function RootLayout({
   return (
     <html lang="id" className="dark" suppressHydrationWarning>
       <body className={`${fontSans.variable} font-primary`}>
+        <GlobalNewsTicker />
         <AppLayout>
           {children}
         </AppLayout>
-        <GlobalNewsTicker />
         <Analytics />
         <SpeedInsights />
       </body>

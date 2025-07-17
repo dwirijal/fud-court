@@ -24,7 +24,10 @@ export function AppLayout({ children }: AppLayoutProps) {
       enableSystem={false}
       disableTransitionOnChange
     >
-      <div className={cn("flex min-h-screen flex-col", isLoginPage ? "" : "pb-16 md:pb-0")}>
+      <div className={cn(
+        "flex min-h-screen flex-col pt-7", // Add padding-top to prevent content from being hidden by the ticker
+        isLoginPage ? "pt-0" : "pb-16 md:pb-0" // Remove padding-top for login page
+      )}>
         {isLoginPage ? (
           children
         ) : (

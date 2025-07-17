@@ -1,99 +1,122 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  /* Import Space Grotesk font */
-  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
-
   :root {
-    /* ===== NEON GLAM DESIGN SYSTEM ===== */
+    /* ===== Crypto Finance App Design System ===== */
+
+    /* 🎨 COLOR SYSTEM ------------------------- */
+
+    /* Primary Colors (Dark Theme) */
+    --bg-primary: 0 0% 0%;             /* #000000 */
+    --bg-secondary: 0 0% 11%;          /* #1c1c1e */
+    --bg-tertiary: 0 0% 17.3%;         /* #2c2c2e */
+    --bg-quaternary: 0 0% 22.7%;       /* #3a3a3c */
+
+    --text-primary: 0 0% 100%;         /* #ffffff */
+    --text-secondary: 240 1% 60%;      /* #98989a */
+    --text-tertiary: 240 1% 39%;       /* #636366 */
+    --text-quaternary: 240 1% 29%;     /* #48484a */
     
-    /* Radius Scale (Angular Design) */
-    --radius-1: 0.25rem;   /* 4px */
-    --radius-2: 0.5rem;    /* 8px */
-    --radius-3: 0.75rem;   /* 12px */
-    --radius-4: 1rem;      /* 16px */
-    --radius-full: 9999px;
-    --radius: var(--radius-2);
+    /* Accent Colors */
+    --accent-primary: 0 100% 71%;      /* #ff6b6b (Pastel Red) */
+    --accent-secondary: 0 100% 78%;    /* #ff8e8e */
+    --accent-tertiary: 0 100% 85%;     /* #ffb3b3 */
+    
+    /* Semantic Colors */
+    --market-up: 145 58% 55%;          /* #30d158 (Green) */
+    --market-down: 0 100% 61%;         /* #ff453a (Red) */
+    --market-neutral: 240 1% 60%;      /* #98989a (Gray) */
 
-    /* Spacing Scale (Strict 8-Point Grid) - Base: 4px */
-    --space-px: 1px;
-    --space-1: 0.25rem;  /* 4px */
-    --space-2: 0.5rem;   /* 8px */
-    --space-3: 0.75rem;  /* 12px */
-    --space-4: 1rem;     /* 16px */
-    --space-5: 1.25rem;  /* 20px */
-    --space-6: 1.5rem;   /* 24px */
-    --space-7: 1.75rem;  /* 28px */
-    --space-8: 2rem;     /* 32px */
-    --space-9: 2.25rem;  /* 36px */
-    --space-10: 2.5rem;  /* 40px */
-    --space-11: 2.75rem; /* 44px */
-    --space-12: 3rem;    /* 48px */
-    --space-14: 3.5rem;  /* 56px */
-    --space-16: 4rem;    /* 64px */
+    --status-success: 145 58% 55%;
+    --status-warning: 38 100% 61%;
+    --status-error: 3 100% 61%;        /* Same as market-down */
+    --status-info: 210 100% 50%;
 
-    /* Font Families */
-    --font-primary: "Space Grotesk", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-    --font-mono: "SF Mono", Monaco, "Roboto Mono", monospace;
-
-    /* Animation */
-    --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
-    --duration-normal: 0.3s;
-    --duration-fast: 0.15s;
-
-    /* Base Colors (Dark Theme Only) */
-    --bg-primary: 240 6% 4%;      /* Almost black #0A090A */
-    --bg-secondary: 240 6% 8%;     /* Dark gray #141214 */
-    --bg-tertiary: 240 6% 12%;    /* Lighter gray for elevated surfaces */
-    --bg-glass: 240 6% 8% / 0.5;   /* For glassmorphism effect */
-
-    --border-color: 240 4% 18%;   /* #2B2A2B */
-    --border-accent: 0 100% 55%;  /* Neon Red for borders #FF1A1A */
-
-    --text-primary: 0 0% 98%;      /* Almost white #FAFAFA */
-    --text-secondary: 0 0% 70%;     /* Muted gray (brighter for contrast) */
-    --text-tertiary: 0 0% 45%;      /* Subtle gray */
-
-    --accent-primary: 0 100% 55%;   /* Neon Red #FF1A1A */
-    --accent-glow: 0 100% 55% / 0.4; /* Glow effect for Neon Red */
-
-    --market-up: 140 80% 50%;      /* Neon Green */
-    --market-down: 0 100% 55%;     /* Neon Red */
-    --market-neutral: 0 0% 60%;    /* Gray */
-
+    /* Chart Colors */
+    --chart-color-1: 0 100% 71%;       /* Pastel red */
+    --chart-color-2: 174 57% 59%;      /* Teal */
+    --chart-color-3: 191 58% 54%;      /* Blue */
+    --chart-color-4: 48 95% 59%;       /* Yellow */
+    --chart-color-5: 23 99% 60%;       /* Orange */
+    --chart-color-6: 1 82% 64%;        /* Red */
+    --chart-color-7: 257 73% 67%;      /* Purple */
+    --chart-color-8: 244 97% 81%;      /* Light purple */
+    
     /* ShadCN Compatibility Layer */
     --background: var(--bg-primary);
     --foreground: var(--text-primary);
-    
     --card: var(--bg-secondary);
     --card-foreground: var(--text-primary);
-    
-    --popover: var(--bg-secondary);
+    --popover: var(--bg-tertiary);
     --popover-foreground: var(--text-primary);
-    
     --primary: var(--accent-primary);
-    --primary-foreground: var(--text-primary);
-    
+    --primary-foreground: 0 0% 0%; /* Black for high contrast on pastel red */
     --secondary: var(--bg-tertiary);
     --secondary-foreground: var(--text-primary);
-    
     --muted: var(--bg-tertiary);
     --muted-foreground: var(--text-secondary);
-    
-    --accent: var(--bg-tertiary);
+    --accent: var(--bg-quaternary);
     --accent-foreground: var(--text-primary);
-    
-    --destructive: var(--market-down);
+    --destructive: var(--status-error);
     --destructive-foreground: var(--text-primary);
-    
-    --border: var(--border-color);
-    --input: var(--border-color);
+    --border: var(--bg-tertiary);
+    --input: var(--bg-tertiary);
     --ring: var(--accent-primary);
-  }
+    
+    /* 📐 MODULAR SCALE ------------------------- */
 
+    /* Typography Scale (Major Third - 1.25 ratio) */
+    --text-xs: 0.64rem;
+    --text-sm: 0.8rem;
+    --text-base: 1rem;
+    --text-lg: 1.25rem;
+    --text-xl: 1.563rem;
+    --text-2xl: 1.953rem;
+    --text-3xl: 2.441rem;
+    --text-4xl: 3.052rem;
+    --text-5xl: 3.815rem;
+    --text-6xl: 4.768rem;
+
+    /* Spacing Scale (Perfect Fifth - 1.5 ratio) */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.5rem;
+    --space-6: 2.25rem;
+    --space-7: 3.375rem;
+    --space-8: 5.063rem;
+    --space-9: 7.594rem;
+    --space-10: 11.391rem;
+
+    /* Border Radius Scale */
+    --radius-1: 0.125rem;
+    --radius-2: 0.25rem;
+    --radius-3: 0.5rem;
+    --radius-4: 0.75rem;
+    --radius-5: 1rem;
+    --radius-6: 1.5rem;
+    --radius-full: 9999px;
+    --radius: var(--radius-3);
+
+    /* 🔤 TYPOGRAPHY ------------------------- */
+    --font-primary: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --font-mono: "SF Mono", Monaco, "Roboto Mono", monospace;
+    
+    /* 🎬 ANIMATION TOKENS --------------------- */
+    --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+    --ease-out-circ: cubic-bezier(0.075, 0.82, 0.165, 1);
+    --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+    --ease-in-out-quart: cubic-bezier(0.77, 0, 0.175, 1);
+
+    --duration-fast: 0.15s;
+    --duration-normal: 0.3s;
+    --duration-slow: 0.5s;
+    --duration-slower: 0.75s;
+  }
+  
   .dark {
     color-scheme: dark;
   }
@@ -102,60 +125,112 @@
     @apply bg-background text-foreground antialiased;
     font-family: var(--font-primary);
   }
-
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-bold tracking-tight text-text-primary;
-  }
-
-  .headline-1 { @apply text-5xl md:text-6xl; }
-  .headline-2 { @apply text-4xl md:text-5xl; }
-  .headline-3 { @apply text-3xl md:text-4xl; }
-  .headline-4 { @apply text-2xl; }
-  .headline-5 { @apply text-xl; }
-  .headline-6 { @apply text-lg; }
-
-  .body-large { @apply text-lg; }
-  .body-regular { @apply text-base; }
-  .body-small { @apply text-sm; }
-  
-  .caption-regular { @apply text-sm text-text-secondary; }
-  .caption-small { @apply text-xs text-text-tertiary; }
 }
 
 @layer components {
-  /* Futuristic Card Style */
-  .futuristic-card {
-    background-color: hsl(var(--bg-glass));
-    @apply backdrop-blur-md border border-border transition-all duration-300;
-    box-shadow: 0 0 0 1px hsl(var(--border-color) / 0.5), 0 4px 20px hsl(var(--bg-primary) / 0.5);
-  }
-  .futuristic-card:hover {
-    border-color: hsl(var(--accent-primary) / 0.5);
-    box-shadow: 0 0 15px hsl(var(--accent-glow)), 0 0 0 1px hsl(var(--border-accent));
-  }
+  /* Typography Components */
+  .headline-1 { @apply text-6xl font-bold; line-height: 1.1; }
+  .headline-2 { @apply text-5xl font-bold; line-height: 1.1; }
+  .headline-3 { @apply text-4xl font-semibold; line-height: 1.2; }
+  .headline-4 { @apply text-3xl font-semibold; line-height: 1.2; }
+  .headline-5 { @apply text-2xl font-semibold; line-height: 1.3; }
+  .headline-6 { @apply text-xl font-semibold; line-height: 1.3; }
 
-  /* Futuristic Button Style */
-  .futuristic-btn {
-    @apply bg-accent-primary text-primary-foreground font-semibold;
-    box-shadow: 0 0 10px hsl(var(--accent-glow)), inset 0 0 5px hsl(var(--accent-primary) / 0.5);
-  }
-  .futuristic-btn:hover {
-    @apply brightness-110;
-    box-shadow: 0 0 20px hsl(var(--accent-glow)), inset 0 0 10px hsl(var(--accent-primary) / 0.7);
-  }
+  .body-large { @apply text-lg font-normal; line-height: 1.6; }
+  .body-regular { @apply text-base font-normal; line-height: 1.6; }
+  .body-small { @apply text-sm font-normal; line-height: 1.5; }
+
+  .caption-large { @apply text-sm font-medium; line-height: 1.4; }
+  .caption-regular { @apply text-xs font-medium; line-height: 1.4; }
+
+  .number-large { @apply font-mono text-2xl font-semibold; }
+  .number-regular { @apply font-mono text-base font-medium; }
+  .number-small { @apply font-mono text-sm font-medium; }
+
+  /* Card Components */
+  .card-primary { @apply bg-bg-secondary border border-bg-tertiary rounded-4 p-5; }
+  .card-elevated { @apply bg-bg-tertiary border border-[hsl(var(--bg-quaternary))] rounded-4 p-5 shadow-lg; }
+  .card-news { @apply bg-bg-secondary border border-bg-tertiary rounded-3 p-4 transition-all duration-normal ease-out-quart; }
+  .card-news:hover { @apply border-accent-primary -translate-y-px; }
   
-  /* Text Glow Effect */
-  .text-glow {
-    text-shadow: 0 0 8px hsl(var(--accent-glow));
-  }
+  /* Button Components */
+  .btn-primary { @apply bg-accent-primary text-primary-foreground rounded-3 px-5 py-3 font-semibold transition-all duration-fast ease-out-quart; }
+  .btn-primary:hover { @apply bg-[hsl(var(--accent-secondary))] -translate-y-px; }
+  
+  .btn-secondary { @apply bg-bg-tertiary text-text-primary border border-[hsl(var(--bg-quaternary))] rounded-3 px-5 py-3 font-medium transition-all duration-fast ease-out-quart; }
+  .btn-secondary:hover { @apply bg-[hsl(var(--bg-quaternary))] border-accent-primary; }
+
+  .btn-ghost { @apply bg-transparent text-text-secondary border border-transparent rounded-3 px-5 py-3 font-medium transition-all duration-fast ease-out-quart; }
+  .btn-ghost:hover { @apply bg-bg-tertiary text-text-primary; }
+  
+  /* Table Components */
+  .table-container { @apply bg-bg-secondary border border-bg-tertiary rounded-4 overflow-hidden; }
+  .table-header { @apply bg-bg-tertiary px-4 py-4 font-semibold text-text-secondary text-sm uppercase tracking-wider; }
+  .table-row { @apply px-4 py-4 border-b border-bg-tertiary transition-colors duration-fast ease-out-quart; }
+  .table-row:hover { @apply bg-bg-tertiary; }
+  .table-cell-number { @apply font-mono font-medium; }
+  .table-cell-positive { @apply text-market-up; }
+  .table-cell-negative { @apply text-market-down; }
+  
+  /* News Components */
+  .news-item { @apply bg-bg-secondary border border-bg-tertiary rounded-3 p-4 mb-3 transition-all duration-normal ease-out-quart; }
+  .news-item:hover { @apply border-accent-primary -translate-y-px; }
+  .news-item-title { @apply text-lg font-semibold text-text-primary mb-2; line-height: 1.4; }
+  .news-item-excerpt { @apply text-base text-text-secondary mb-3; line-height: 1.6; }
+  .news-item-meta { @apply text-sm text-text-tertiary flex items-center gap-2; }
+  
+  /* Price Display */
+  .price-display { @apply font-mono text-2xl font-semibold text-text-primary; }
+  .price-change { @apply font-mono text-base font-medium flex items-center gap-1; }
+  .price-change.positive { @apply text-market-up; }
+  .price-change.negative { @apply text-market-down; }
+  .price-change.neutral { @apply text-market-neutral; }
+
+  /* Chart Container */
+  .chart-container { @apply bg-bg-secondary border border-bg-tertiary rounded-4 p-5 relative; }
+  .chart-header { @apply flex justify-between items-center mb-4; }
+  .chart-title { @apply text-lg font-semibold text-text-primary; }
+  .chart-controls { @apply flex gap-2; }
+  
+  /* Accessibility */
+  .focus-ring:focus { @apply outline-none ring-2 ring-accent-primary ring-offset-2 ring-offset-bg-primary; }
+  .sr-only { @apply absolute w-px h-px p-0 -m-px overflow-hidden; clip: rect(0, 0, 0, 0); border: 0; }
+  
+  .skip-link { @apply absolute -top-10 left-1.5 bg-accent-primary text-primary-foreground px-2 py-2 no-underline z-50 rounded-2; }
+  .skip-link:focus { @apply top-1.5; }
+  
+  /* Layout */
+  .container-full { @apply w-full mx-auto px-4 sm:px-5 lg:px-6; }
+  .section-spacing { @apply py-8 md:py-9; }
 }
 
 @layer utilities {
-  @keyframes marquee {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
+  /* Animations */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
   }
-  .animate-marquee {
-    animation: marquee 180s linear infinite;
+  @keyframes skeleton {
+    0% { opacity: 1; }
+    50% { opacity: 0.4; }
+    100% { opacity: 1; }
+  }
+  @keyframes pricePulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+  .animate-fadeInUp { animation: fadeInUp var(--duration-slow) var(--ease-out-quart) forwards; }
+  .animate-skeleton { animation: skeleton 1.5s ease-in-out infinite; }
+  .animate-pricePulse { animation: pricePulse var(--duration-normal) ease-in-out; }
+  
+  /* Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }

@@ -47,7 +47,7 @@ All colors are available as CSS variables:
 
 ### Typography Classes
 
-The design system includes semantic typography classes based on a **Major Second (1.125)** modular scale.
+The design system includes semantic typography classes based on a **Major Third (1.25)** modular scale.
 
 ```jsx
 // Headlines
@@ -85,25 +85,28 @@ The design system includes semantic typography classes based on a **Major Second
 
 ## 📏 Spacing System
 
-### 8-Point Grid System
+### Modular Spacing Scale
 
-The system uses an 8-point grid, meaning all spacing values are multiples of 8px.
+The system uses a 1.5 ratio (Perfect Fifth) for spacing:
 
 ```jsx
 // Padding
-<div className="p-1">   {/* 8px */}
-<div className="p-2">   {/* 16px */}
-<div className="p-3">   {/* 24px */}
-<div className="p-4">   {/* 32px */}
-<div className="p-5">   {/* 40px */}
+<div className="p-1">   {/* 4px */}
+<div className="p-2">   {/* 8px */}
+<div className="p-3">   {/* 12px */}
+<div className="p-4">   {/* 16px */}
+<div className="p-5">   {/* 24px */}
+<div className="p-6">   {/* 36px */}
+<div className="p-7">   {/* 54px */}
+<div className="p-8">   {/* 81px */}
 
 // Margin
-<div className="m-2">   {/* 16px */}
-<div className="mb-3">  {/* 24px bottom margin */}
+<div className="m-4">   {/* 16px */}
+<div className="mb-5">  {/* 24px bottom margin */}
 
 // Gap (for flexbox/grid)
-<div className="flex gap-1">  {/* 8px gap */}
-<div className="grid gap-2"> {/* 16px gap */}
+<div className="flex gap-3">  {/* 12px gap */}
+<div className="grid gap-4"> {/* 16px gap */}
 ```
 
 ## 🏗️ Component Patterns
@@ -340,7 +343,7 @@ const chartColors = [
 ### Do's
 
 ✅ **Use semantic classes**: Prefer `headline-3` over `text-3xl font-semibold`
-✅ **Consistent spacing**: Use the 8-point grid scale (p-2, m-3, gap-1)
+✅ **Consistent spacing**: Use the modular scale (p-4, m-5, gap-3)
 ✅ **Market colors**: Use `market-up`, `market-down`, `market-neutral` for financial data
 ✅ **Focus accessibility**: Always add `focus-ring` to interactive elements
 ✅ **Monospace for numbers**: Use `font-mono` for prices and percentages
@@ -451,7 +454,7 @@ All setup is already complete in your project configuration.
 If updating existing components:
 
 1. Replace hardcoded colors with design system variables
-2. Update spacing to use 8-point grid scale
+2. Update spacing to use modular scale
 3. Replace custom typography with semantic classes
 4. Add accessibility features (focus-ring, sr-only)
 5. Use component-specific classes (card-primary, btn-primary, etc.)

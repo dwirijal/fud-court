@@ -5,7 +5,7 @@
 import type { CryptoData, DetailedCoinData, CombinedMarketData, TopCoinForAnalysis, CGMarket } from '@/types';
 import { supabase } from './supabase';
 import { getFearAndGreedIndexFromCache } from './fear-greed';
-import { getDefiLlamaHistoricalTvl, getDefiLlamaProtocols, getDefiLlamaStablecoins, syncDefiLlamaData } from './defillama';
+import { getDefiLlamaProtocols, getDefiLlamaStablecoins, syncDefiLlamaData } from './defillama';
 
 const COINGECKO_API_BASE_URL = 'https://api.coingecko.com/api/v3';
 
@@ -277,17 +277,18 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
             }
         }
 
-        const [fearAndGreed, topCoinsData, defiProtocols, stablecoinsData, avg30DayVolume, historicalTvlData] = await Promise.all([
+        const [fearAndGreed, topCoinsData, defiProtocols, stablecoinsData, avg30DayVolume] = await Promise.all([
             getFearAndGreedIndexFromCache(),
             supabase.from('crypto_data').select('*').order('market_cap_rank', { ascending: true, nullsFirst: false }).limit(20),
             getDefiLlamaProtocols(),
             getDefiLlamaStablecoins(),
             getAvg30DayVolume(),
-            getDefiLlamaHistoricalTvl(),
         ]);
         
         const globalData = globalDataResult.data?.data;
-        const latestTvlEntry = historicalTvlData ? historicalTvlData[historicalTvlData.length - 1] : null;
+        
+        // Use a more reliable way to calculate total DeFi TVL by summing protocols
+        const defiTotalTvl = defiProtocols?.reduce((sum, protocol) => sum + (protocol.tvl ?? 0), 0) ?? 0;
 
         if (!globalData || !fearAndGreed || topCoinsData.error || !defiProtocols || !stablecoinsData) {
             console.error('Failed to fetch one or more core data sources.', { globalData: !!globalData, fearAndGreed: !!fearAndGreed, topCoinsError: topCoinsData.error, defiProtocols: !!defiProtocols, stablecoinsData: !!stablecoinsData });
@@ -348,7 +349,7 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
                 ath: coin.ath,
                 price_change_percentage_24h: coin.price_change_percentage_24h_in_currency,
             })),
-            defiTotalTvl: latestTvlEntry?.tvl ?? 0,
+            defiTotalTvl,
         };
         return result;
     } catch (err) {

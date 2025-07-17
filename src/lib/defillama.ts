@@ -2,7 +2,7 @@
 
 'use server';
 
-import type { DefiLlamaProtocol, DefiLlamaStablecoin, DefiLlamaHistoricalTvl } from '@/types';
+import type { DefiLlamaProtocol, DefiLlamaStablecoin } from '@/types';
 import { supabase } from './supabase';
 
 const DEFILLAMA_API_BASE_URL = 'https://api.llama.fi';
@@ -17,7 +17,6 @@ export async function syncDefiLlamaData() {
         await Promise.all([
             syncDefiLlamaProtocols(),
             syncDefiLlamaStablecoins(),
-            syncDefiLlamaHistoricalTvl(),
         ]);
         console.log("Sync finished: All DefiLlama Data");
     } catch (error) {
@@ -82,25 +81,6 @@ async function syncDefiLlamaStablecoins(): Promise<void> {
     console.log("Sync finished: DefiLlama Stablecoins");
 }
 
-async function syncDefiLlamaHistoricalTvl(): Promise<void> {
-    console.log("Starting sync: DefiLlama Historical TVL");
-    const response = await fetch(`${DEFILLAMA_API_BASE_URL}/v2/historicalChainTvl`);
-    if (!response.ok) throw new Error(`DefiLlama Historical TVL API error: ${response.status}`);
-    
-    const data: DefiLlamaHistoricalTvl[] = await response.json();
-    const historicalTvlToUpsert = data.map(tvl => ({
-      date: tvl.date,
-      tvl: tvl.tvl,
-    }));
-
-    const { error } = await supabase.from('defillama_historical_tvl').upsert(historicalTvlToUpsert, { onConflict: 'date' });
-    if (error) {
-      console.error('Error upserting DefiLlama historical TVL into cache:', error.message);
-      throw error;
-    }
-    console.log("Sync finished: DefiLlama Historical TVL");
-}
-
 
 export async function getDefiLlamaProtocols(): Promise<DefiLlamaProtocol[]> {
     const { data, error } = await supabase.from('defillama_protocols').select('*');
@@ -142,24 +122,4 @@ export async function getDefiLlamaStablecoins(): Promise<DefiLlamaStablecoin[]> 
         }
     }
     return data as DefiLlamaStablecoin[];
-}
-
-export async function getDefiLlamaHistoricalTvl(): Promise<DefiLlamaHistoricalTvl[] | null> {
-    const { data, error } = await supabase.from('defillama_historical_tvl').select('date, tvl');
-    if (error || !data || data.length === 0) {
-        console.warn('Cache for DefiLlama historical TVL is empty. Fetching from API.');
-        try {
-            await syncDefiLlamaHistoricalTvl();
-            const { data: newData, error: newError } = await supabase.from('defillama_historical_tvl').select('*');
-            if (newError) {
-                console.error('Failed to fetch historical TVL from cache after sync:', newError);
-                return null;
-            }
-            return (newData as DefiLlamaHistoricalTvl[]) || null;
-        } catch (syncError) {
-            console.error('Failed to sync and fetch historical TVL:', syncError);
-            return null;
-        }
-    }
-    return data as DefiLlamaHistoricalTvl[];
 }

@@ -1,3 +1,4 @@
+
 'use server';
 
 import type { CryptoData, FearGreedData, DetailedCoinData, CombinedMarketData, TopCoinForAnalysis, DefiLlamaProtocol, DefiLlamaStablecoin } from '@/types';
@@ -218,7 +219,7 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
         const ethMarketCap = totalMarketCap * (globalData.market_cap_percentage.eth / 100);
         
         const solanaTvl = defiProtocols?.find(p => p.name === "Solana")?.tvl ?? 0;
-        const stablecoinMarketCap = stablecoinsData?.reduce((sum, coin) => sum + coin.circulating.peggedUSD, 0) ?? 0;
+        const stablecoinMarketCap = stablecoinsData?.reduce((sum, coin) => sum + (coin.circulating?.peggedUSD ?? 0), 0) ?? 0;
         
         const btcDominance = globalData.market_cap_percentage?.btc ?? 0;
         const ethDominance = globalData.market_cap_percentage?.eth ?? 0;
@@ -414,3 +415,4 @@ export async function rateLimitedCalculation<T, R>(calculation: (data: T) => R, 
         executeNext(); // Try to execute immediately if possible
     });
 }
+

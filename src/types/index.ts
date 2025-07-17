@@ -303,6 +303,15 @@ export interface DefiLlamaProtocol {
   change_7d: number | null;
 }
 
+export interface DefiLlamaChain {
+  gecko_id: string | null;
+  tvl: number | null;
+  tokenSymbol: string | null;
+  cmcId: string | null;
+  name: string;
+  chainId: number | null;
+}
+
 export interface DefiLlamaStablecoin {
   id: string;
   name: string;

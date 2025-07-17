@@ -4,7 +4,7 @@
 import type { CryptoData, DetailedCoinData, CombinedMarketData, TopCoinForAnalysis, DefiLlamaProtocol, DefiLlamaStablecoin, CGMarket } from '@/types';
 import { supabase } from './supabase';
 import { getFearAndGreedIndexFromCache } from './fear-greed';
-import { getDefiLlamaProtocols, getDefiLlamaStablecoins } from './defillama';
+import { getDefiLlamaChains, getDefiLlamaStablecoins } from './defillama';
 
 const COINGECKO_API_BASE_URL = 'https://api.coingecko.com/api/v3';
 
@@ -277,18 +277,18 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
             }
         }
 
-        const [fearAndGreed, topCoinsData, defiProtocols, stablecoinsData, avg30DayVolume] = await Promise.all([
+        const [fearAndGreed, topCoinsData, defiChains, stablecoinsData, avg30DayVolume] = await Promise.all([
             getFearAndGreedIndexFromCache(),
             supabase.from('crypto_data').select('*').order('market_cap_rank', { ascending: true, nullsFirst: false }).limit(20),
-            getDefiLlamaProtocols(),
+            getDefiLlamaChains(),
             getDefiLlamaStablecoins(),
             getAvg30DayVolume(),
         ]);
         
         const globalData = globalDataResult.data?.data;
 
-        if (!globalData || !fearAndGreed || topCoinsData.error || !defiProtocols || !stablecoinsData) {
-            console.error('Failed to fetch one or more core data sources.', { globalData: !!globalData, fearAndGreed: !!fearAndGreed, topCoinsError: topCoinsData.error, defiProtocols: !!defiProtocols, stablecoinsData: !!stablecoinsData });
+        if (!globalData || !fearAndGreed || topCoinsData.error || !defiChains || !stablecoinsData) {
+            console.error('Failed to fetch one or more core data sources.', { globalData: !!globalData, fearAndGreed: !!fearAndGreed, topCoinsError: topCoinsData.error, defiChains: !!defiChains, stablecoinsData: !!stablecoinsData });
             return null;
         }
         
@@ -300,8 +300,8 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
         const ethMarketCap = totalMarketCap * (globalData.market_cap_percentage.eth / 100);
         const solMarketCap = topCoins.find(c => c.symbol === 'sol')?.market_cap ?? 0;
 
-        const ethTvl = defiProtocols?.find(p => p.name === "Ethereum")?.tvl ?? 0;
-        const solTvl = defiProtocols?.find(p => p.name === "Solana")?.tvl ?? 0;
+        const ethTvl = defiChains?.find(p => p.name === "Ethereum")?.tvl ?? 0;
+        const solTvl = defiChains?.find(p => p.name === "Solana")?.tvl ?? 0;
         
         const stablecoinMarketCap = stablecoinsData?.reduce((sum, coin) => sum + (coin.circulating_pegged_usd ?? 0), 0) ?? 0;
         

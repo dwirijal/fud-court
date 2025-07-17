@@ -1,10 +1,11 @@
 
+
 'use server';
 
 import type { CryptoData, DetailedCoinData, CombinedMarketData, TopCoinForAnalysis, DefiLlamaProtocol, DefiLlamaStablecoin, CGMarket } from '@/types';
 import { supabase } from './supabase';
 import { getFearAndGreedIndexFromCache } from './fear-greed';
-import { getDefiLlamaChains, getDefiLlamaStablecoins } from './defillama';
+import { getDefiLlamaProtocols, getDefiLlamaStablecoins, syncDefiLlamaData } from './defillama';
 
 const COINGECKO_API_BASE_URL = 'https://api.coingecko.com/api/v3';
 
@@ -13,7 +14,6 @@ interface CoinGeckoGlobalData {
     active_cryptocurrencies: number;
     upcoming_icos: number;
     ongoing_icos: number;
-    ended_icos: number;
     markets: number;
     total_market_cap: { [key: string]: number };
     total_volume: { [key: string]: number };
@@ -277,18 +277,18 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
             }
         }
 
-        const [fearAndGreed, topCoinsData, defiChains, stablecoinsData, avg30DayVolume] = await Promise.all([
+        const [fearAndGreed, topCoinsData, defiProtocols, stablecoinsData, avg30DayVolume] = await Promise.all([
             getFearAndGreedIndexFromCache(),
             supabase.from('crypto_data').select('*').order('market_cap_rank', { ascending: true, nullsFirst: false }).limit(20),
-            getDefiLlamaChains(),
+            getDefiLlamaProtocols(),
             getDefiLlamaStablecoins(),
             getAvg30DayVolume(),
         ]);
         
         const globalData = globalDataResult.data?.data;
 
-        if (!globalData || !fearAndGreed || topCoinsData.error || !defiChains || !stablecoinsData) {
-            console.error('Failed to fetch one or more core data sources.', { globalData: !!globalData, fearAndGreed: !!fearAndGreed, topCoinsError: topCoinsData.error, defiChains: !!defiChains, stablecoinsData: !!stablecoinsData });
+        if (!globalData || !fearAndGreed || topCoinsData.error || !defiProtocols || !stablecoinsData) {
+            console.error('Failed to fetch one or more core data sources.', { globalData: !!globalData, fearAndGreed: !!fearAndGreed, topCoinsError: topCoinsData.error, defiProtocols: !!defiProtocols, stablecoinsData: !!stablecoinsData });
             return null;
         }
         
@@ -299,9 +299,10 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
         const btcMarketCap = totalMarketCap * (globalData.market_cap_percentage.btc / 100);
         const ethMarketCap = totalMarketCap * (globalData.market_cap_percentage.eth / 100);
         const solMarketCap = topCoins.find(c => c.symbol === 'sol')?.market_cap ?? 0;
-
-        const ethTvl = defiChains?.find(p => p.name === "Ethereum")?.tvl ?? 0;
-        const solTvl = defiChains?.find(p => p.name === "Solana")?.tvl ?? 0;
+        
+        // Calculate TVL by summing from protocols data
+        const ethTvl = defiProtocols.reduce((sum, p) => sum + (p.chain_tvls?.Ethereum ?? 0), 0);
+        const solTvl = defiProtocols.reduce((sum, p) => sum + (p.chain_tvls?.Solana ?? 0), 0);
         
         const stablecoinMarketCap = stablecoinsData?.reduce((sum, coin) => sum + (coin.circulating_pegged_usd ?? 0), 0) ?? 0;
         

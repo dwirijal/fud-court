@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import type { DefiLlamaProtocol, DefiLlamaStablecoin, DefiLlamaHistoricalTvl } from '@/types';
@@ -105,7 +106,7 @@ async function syncDefiLlamaHistoricalTvl(): Promise<void> {
 // These functions are now primarily for use by coingecko.ts to assemble combined data.
 // They will attempt a sync if the cache is empty.
 
-export async function getDefiLlamaProtocols(): Promise<any[]> {
+export async function getDefiLlamaProtocols(): Promise<DefiLlamaProtocol[]> {
     const { data, error } = await supabase.from('defillama_protocols').select('*');
     
     if (error || !data || data.length === 0) {
@@ -117,43 +118,13 @@ export async function getDefiLlamaProtocols(): Promise<any[]> {
                 console.error('Failed to fetch from cache after sync:', newError);
                 return [];
             }
-            return newData || [];
+            return (newData as DefiLlamaProtocol[]) || [];
         } catch (syncError) {
             console.error('Failed to sync and fetch DefiLlama protocols:', syncError);
             return [];
         }
     }
-    return data;
-}
-
-export async function getDefiLlamaChains(): Promise<any[]> {
-    const { data, error } = await supabase.from('defillama_chains').select('*');
-    
-    if (error || !data || data.length === 0) {
-        console.warn('Cache for DefiLlama chains is empty or failed to load. Fetching from API.');
-        try {
-            // Assuming syncDefiLlamaProtocols also syncs chains data if needed, or a new function syncDefiLlamaChains would be created.
-            // For now, let's assume the table is populated by a separate process or syncDefiLlamaProtocols.
-            // Let's add a sync function for chains specifically.
-            const response = await fetch(`${DEFILLAMA_API_BASE_URL}/v2/chains`);
-            if (!response.ok) throw new Error(`DefiLlama Chains API error: ${response.status}`);
-            const chainsData: any[] = await response.json();
-            const chainsToUpsert = chainsData.map(c => ({
-                id: c.chainId ?? c.name, // Use name as fallback id
-                name: c.name,
-                tvl: c.tvl,
-            }));
-            const { error: upsertError } = await supabase.from('defillama_chains').upsert(chainsToUpsert, { onConflict: 'id' });
-            if (upsertError) throw upsertError;
-
-            return chainsData;
-
-        } catch (syncError) {
-            console.error('Failed to sync and fetch DefiLlama chains:', syncError);
-            return [];
-        }
-    }
-    return data;
+    return data as DefiLlamaProtocol[];
 }
 
 export async function getDefiLlamaStablecoins(): Promise<DefiLlamaStablecoin[]> {
@@ -168,13 +139,13 @@ export async function getDefiLlamaStablecoins(): Promise<DefiLlamaStablecoin[]> 
                 console.error('Failed to fetch stablecoins from cache after sync:', newError);
                 return [];
             }
-            return newData || [];
+            return (newData as DefiLlamaStablecoin[]) || [];
         } catch (syncError) {
             console.error('Failed to sync and fetch DefiLlama stablecoins:', syncError);
             return [];
         }
     }
-    return data;
+    return data as DefiLlamaStablecoin[];
 }
 
 export async function getDefiLlamaHistoricalTvl(): Promise<DefiLlamaHistoricalTvl[] | null> {

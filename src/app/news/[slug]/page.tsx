@@ -116,7 +116,7 @@ export default async function PostPage({ params }: { params: { slug: string } })
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <header className="mb-6">
+      <header className="mb-8">
         {post.primary_tag && (
           <Badge variant="secondary" className="mb-4">
             {post.primary_tag.name}
@@ -136,7 +136,7 @@ export default async function PostPage({ params }: { params: { slug: string } })
       </header>
 
       {post.feature_image && (
-        <div className="relative aspect-video w-full mb-6 rounded-4 overflow-hidden">
+        <div className="relative aspect-video w-full mb-8 rounded-4 overflow-hidden">
           <Image
             src={post.feature_image}
             alt={post.title}

@@ -16,7 +16,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { DollarSign, Scale, Zap, Link as LinkIcon, Newspaper, Info } from "lucide-react";
@@ -49,7 +49,7 @@ const formatCurrency = (value: number | null | undefined, currency: string = 'us
 };
 
 const StatCard = ({ icon: Icon, title, value, description }: { icon: React.ElementType, title: string, value: React.ReactNode, description?: React.ReactNode }) => (
-    <div className="card-primary">
+    <Card className="card-primary">
       <div className="flex flex-row items-center justify-between space-y-0 pb-2">
           <h3 className="body-regular font-semibold">{title}</h3>
           <Icon className="h-5 w-5 text-text-tertiary" />
@@ -58,12 +58,12 @@ const StatCard = ({ icon: Icon, title, value, description }: { icon: React.Eleme
           <div className="number-large">{value}</div>
           {description && <p className="caption-regular text-text-secondary">{description}</p>}
       </div>
-    </div>
+    </Card>
 );
 
 const PriceStatsTable = ({ data, support, resistance }: { data: any, support: number | null, resistance: number | null }) => (
-    <div className="card-primary">
-        <h3 className="headline-6 mb-4">Statistik Harga</h3>
+    <Card className="card-primary p-0">
+        <h3 className="headline-6 p-5">Statistik Harga</h3>
         <Table>
             <TableBody>
                 <TableRow>
@@ -96,35 +96,35 @@ const PriceStatsTable = ({ data, support, resistance }: { data: any, support: nu
                 </TableRow>
             </TableBody>
         </Table>
-    </div>
+    </Card>
 );
 
 const CoinLinks = ({ links }: { links: any }) => (
-    <div className="card-primary">
+    <Card className="card-primary">
         <h3 className="headline-6 mb-4">Tautan Resmi</h3>
         <div className="grid grid-cols-2 gap-4">
             {links.homepage?.[0] && (
-                <Link href={links.homepage[0]} target="_blank" rel="noopener noreferrer" className="btn-ghost text-sm justify-start">
-                  <LinkIcon className="h-4 w-4" /> Situs Web Resmi
+                <Link href={links.homepage[0]} target="_blank" rel="noopener noreferrer" className="btn-ghost justify-start">
+                  <LinkIcon className="h-4 w-4" /> Situs Web
                 </Link>
             )}
             {links.blockchain_site?.[0] && (
-                 <Link href={links.blockchain_site[0]} target="_blank" rel="noopener noreferrer" className="btn-ghost text-sm justify-start">
-                  <LinkIcon className="h-4 w-4" /> Penjelajah Blok
+                 <Link href={links.blockchain_site[0]} target="_blank" rel="noopener noreferrer" className="btn-ghost justify-start">
+                  <LinkIcon className="h-4 w-4" /> Explorer
                 </Link>
             )}
             {links.subreddit_url && (
-                <Link href={links.subreddit_url} target="_blank" rel="noopener noreferrer" className="btn-ghost text-sm justify-start">
+                <Link href={links.subreddit_url} target="_blank" rel="noopener noreferrer" className="btn-ghost justify-start">
                   <LinkIcon className="h-4 w-4" /> Subreddit
                 </Link>
             )}
             {links.repos_url?.github?.[0] && (
-                <Link href={links.repos_url.github[0]} target="_blank" rel="noopener noreferrer" className="btn-ghost text-sm justify-start">
+                <Link href={links.repos_url.github[0]} target="_blank" rel="noopener noreferrer" className="btn-ghost justify-start">
                   <LinkIcon className="h-4 w-4" /> GitHub
                 </Link>
             )}
         </div>
-    </div>
+    </Card>
 )
 
 
@@ -151,9 +151,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink href="/markets" asChild>
-              <Link href="/markets">Pasar</Link>
-            </BreadcrumbLink>
+            <BreadcrumbLink href="/markets">Pasar</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
@@ -162,7 +160,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <header className="mb-7 flex flex-col md:flex-row items-center gap-6">
+      <header className="mb-8 flex flex-col md:flex-row items-center gap-6">
         {image?.large && (
           <Image
             src={image.large}
@@ -213,23 +211,23 @@ export default async function CoinPage({ params }: CoinPageProps) {
       <TradingViewWidget symbol={symbol || ''} />
       
       {description?.en && (
-        <div className="card-primary my-6">
+        <Card className="card-primary my-6">
           <h3 className="headline-6 mb-4">Tentang {name ?? 'koin ini'}</h3>
           <SanitizedHtml
             className="prose prose-invert max-w-none prose-p:body-regular prose-headings:text-text-primary prose-a:text-accent-primary"
             html={description.en}
           />
-        </div>
+        </Card>
       )}
 
       {relatedArticles.length > 0 && (
-        <section className="mt-7">
+        <section className="mt-8">
           <h2 className="headline-4 mb-5 flex items-center gap-3">
             <Newspaper className="h-6 w-6 text-text-secondary" /> Artikel Terkait
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {relatedArticles.map((article) => (
-              <div key={article.id} className="card-news flex flex-col overflow-hidden">
+              <Card key={article.id} className="card-news flex flex-col overflow-hidden">
                 {article.feature_image && (
                   <div className="relative h-48 w-full">
                     <Image
@@ -241,9 +239,9 @@ export default async function CoinPage({ params }: CoinPageProps) {
                     />
                   </div>
                 )}
-                <div className="flex-grow p-4">
+                <div className="flex-grow p-4 space-y-2">
                   {article.primary_tag && (
-                    <Badge variant="secondary" className="mb-2 w-fit">
+                    <Badge variant="secondary" className="w-fit">
                       {article.primary_tag.name}
                     </Badge>
                   )}
@@ -252,14 +250,14 @@ export default async function CoinPage({ params }: CoinPageProps) {
                       {article.title}
                     </Link>
                   </h3>
-                  <p className="body-small text-text-secondary line-clamp-3 mt-2">
+                  <p className="body-small text-text-secondary line-clamp-3">
                     {article.excerpt}
                   </p>
                 </div>
                 <div className="caption-regular text-text-tertiary p-4 pt-0">
                   Diterbitkan pada {format(new Date(article.published_at), "d MMMM yyyy")}
                 </div>
-              </div>
+              </Card>
             ))}
           </div>
         </section>

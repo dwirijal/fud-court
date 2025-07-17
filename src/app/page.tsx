@@ -23,7 +23,7 @@ export default async function Home() {
       <HeroSection />
       
       <main>
-        <section className="bg-bg-secondary/50 border-t border-b border-bg-tertiary section-spacing">
+        <section className="bg-bg-secondary/50 border-t border-b border-border section-spacing">
           <div className="container-full">
             <div className="text-center max-w-3xl mx-auto mb-12">
               <h2 className="headline-2 mb-4">
@@ -39,10 +39,10 @@ export default async function Home() {
               <MarketStatsCard marketStats={marketData} />
             </div>
 
-            <div className="mt-16">
+            <div className="mt-12">
               <MarketCarousel data={topCoins || []} />
               <div className="flex justify-center mt-8">
-                <Button asChild>
+                <Button size="lg" asChild>
                     <Link href="/markets">
                         Lihat Semua Pasar
                     </Link>

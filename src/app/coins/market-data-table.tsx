@@ -1,8 +1,10 @@
+
 import { getTopCoins, getExchangeRate } from "@/lib/coingecko";
 import { AlertTriangle } from "lucide-react";
 import { CryptoData } from "@/types";
 import { MarketDataTableClient } from "./market-data-table-client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Card } from "@/components/ui/card";
 
 export async function MarketDataTable({ currency }: { currency: string }) {
   let data: CryptoData[] | null = [];
@@ -44,13 +46,13 @@ export async function MarketDataTable({ currency }: { currency: string }) {
 
   if (error) {
      return (
-        <div className="flex flex-col items-center justify-center p-12 text-center text-destructive">
+        <Card className="flex flex-col items-center justify-center p-12 text-center text-destructive">
             <AlertTriangle className="h-12 w-12 mb-4" />
-            <h3 className="text-xl font-semibold">Gagal Memuat Data Pasar</h3>
-            <p className="text-sm text-destructive/80 mt-2 max-w-md">
+            <h3 className="headline-5">Gagal Memuat Data Pasar</h3>
+            <p className="body-small text-destructive/80 mt-2 max-w-md">
                 {error}
             </p>
-      </div>
+        </Card>
     );
   }
 
@@ -61,7 +63,7 @@ export async function MarketDataTable({ currency }: { currency: string }) {
 
 export function TableSkeleton() {
     return (
-        <div className="p-4 space-y-2">
+        <div className="space-y-2 p-5">
             {Array.from({ length: 15 }).map((_, i) => (
                 <Skeleton key={i} className="h-12 w-full" />
             ))}

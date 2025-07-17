@@ -63,7 +63,7 @@ export function HeroSection() {
       <GridPatternAnimation />
       <div className="container-full relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
-          <div className="flex justify-center items-center mt-8 lg:mt-0">
+          <div className="flex justify-center items-center mt-8 lg:mt-0 lg:order-last">
             <NftCard />
           </div>
           <div className="text-center lg:text-left">
@@ -78,7 +78,7 @@ export function HeroSection() {
               <Button size="lg" asChild>
                 <Link href="/markets">Jelajahi Pasar</Link>
               </Button>
-              <Button size="lg" variant="secondary" asChild>
+              <Button size="lg" variant="outline" asChild>
                  <Link href="/news">Baca Berita</Link>
               </Button>
             </div>

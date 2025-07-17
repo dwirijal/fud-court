@@ -1,5 +1,5 @@
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { getDefiLlamaHistoricalTvl } from "@/lib/defillama";
 import { format } from "date-fns";
 import {
@@ -46,7 +46,7 @@ export default async function OnChainMacroIndicatorsPage() {
 
   return (
     <div className="container-full section-spacing">
-      <Breadcrumb className="mb-8">
+      <Breadcrumb className="mb-6">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink href="/" asChild>
@@ -64,7 +64,7 @@ export default async function OnChainMacroIndicatorsPage() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <header className="mb-7">
+      <header className="mb-8">
         <div className="flex items-center gap-4 mb-2">
             <div className="bg-accent-primary/10 text-accent-primary p-2 rounded-3">
                 <TrendingUp className="h-8 w-8" />
@@ -78,8 +78,8 @@ export default async function OnChainMacroIndicatorsPage() {
         </p>
       </header>
 
-      <div className="chart-container p-0">
-        <div className="chart-header p-5">
+      <Card className="chart-container">
+        <div className="chart-header">
             <h3 className="chart-title">Total Value Locked (TVL) Historis</h3>
             <p className="body-small text-text-secondary">TVL gabungan dari semua protokol DeFi yang dilacak oleh DefiLlama.</p>
         </div>
@@ -117,10 +117,12 @@ export default async function OnChainMacroIndicatorsPage() {
               </LineChart>
             </ChartContainer>
           ) : (
-            <p className="text-center text-text-secondary py-16">Tidak ada data TVL historis yang ditemukan.</p>
+            <div className="flex items-center justify-center h-48">
+                <p className="text-center text-text-secondary py-16">Tidak ada data TVL historis yang ditemukan.</p>
+            </div>
           )}
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

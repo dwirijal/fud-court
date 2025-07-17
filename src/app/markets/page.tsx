@@ -47,7 +47,7 @@ export default async function MarketsPage({ searchParams }: { searchParams?: { c
 
   return (
     <div className="container-full section-spacing">
-      <header className="mb-12">
+      <header className="mb-8">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="text-center sm:text-left">
             <div className="flex items-center justify-center sm:justify-start gap-4 mb-2">
@@ -62,7 +62,7 @@ export default async function MarketsPage({ searchParams }: { searchParams?: { c
               Jelajahi harga mata uang kripto, kapitalisasi pasar, dan volume perdagangan secara real-time.
             </p>
           </div>
-          <Suspense fallback={<div className="h-10 w-[120px] bg-muted rounded-md" />}>
+          <Suspense fallback={<div className="h-10 w-[140px] bg-muted rounded-md" />}>
             <CurrencySwitcher defaultValue={currency} />
           </Suspense>
         </div>

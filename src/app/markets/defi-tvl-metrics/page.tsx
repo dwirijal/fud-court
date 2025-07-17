@@ -1,5 +1,5 @@
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { getDefiLlamaProtocols } from "@/lib/defillama";
 import {
@@ -39,7 +39,7 @@ export default async function DefiTvlMetricsPage() {
 
   return (
     <div className="container-full section-spacing">
-      <Breadcrumb className="mb-8">
+      <Breadcrumb className="mb-6">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink href="/" asChild>
@@ -57,7 +57,7 @@ export default async function DefiTvlMetricsPage() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <header className="mb-7">
+      <header className="mb-8">
         <div className="flex items-center gap-4 mb-2">
             <div className="bg-accent-primary/10 text-accent-primary p-2 rounded-3">
                 <Zap className="h-8 w-8" />
@@ -71,7 +71,7 @@ export default async function DefiTvlMetricsPage() {
         </p>
       </header>
 
-      <div className="card-primary p-0">
+      <Card className="card-primary p-0 overflow-hidden">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
@@ -106,7 +106,7 @@ export default async function DefiTvlMetricsPage() {
               </TableBody>
             </Table>
           </div>
-      </div>
+      </Card>
     </div>
   );
 }

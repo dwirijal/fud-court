@@ -1,6 +1,6 @@
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { MarketDataTable } from "../market-data-table";
+import { Card, CardContent } from "@/components/ui/card";
+import { MarketDataTable } from "@/app/coins/market-data-table";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,7 +12,7 @@ import {
 import Link from "next/link";
 import { DollarSign } from "lucide-react";
 import { Suspense } from "react";
-import { TableSkeleton } from "../market-data-table";
+import { TableSkeleton } from "@/app/coins/market-data-table";
 import { CurrencySwitcherClient } from "@/components/molecules/currency-switcher-client";
 
 export const metadata = {
@@ -24,7 +24,7 @@ export default async function TopCryptoPricesPage({ searchParams }: { searchPara
   const currency = searchParams?.currency?.toLowerCase() || 'usd';
 
   return (
-    <div className="container mx-auto px-4 py-7 md:py-8">
+    <div className="container-full section-spacing">
       <Breadcrumb className="mb-6">
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -34,9 +34,7 @@ export default async function TopCryptoPricesPage({ searchParams }: { searchPara
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink href="/markets" asChild>
-              <Link href="/markets">Pasar</Link>
-            </BreadcrumbLink>
+            <BreadcrumbLink href="/markets">Pasar</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
@@ -45,28 +43,28 @@ export default async function TopCryptoPricesPage({ searchParams }: { searchPara
         </BreadcrumbList>
       </Breadcrumb>
 
-      <header className="mb-7">
+      <header className="mb-8">
         <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
             <div className="flex-grow">
                 <div className="flex items-center gap-4 mb-2">
-                    <div className="bg-primary/10 text-primary p-2 rounded-lg">
+                    <div className="bg-accent-primary/10 text-accent-primary p-2 rounded-3">
                         <DollarSign className="h-8 w-8" />
                     </div>
-                    <h1 className="text-4xl font-semibold font-headline tracking-tight">
+                    <h1 className="headline-2">
                         Top Crypto Prices
                     </h1>
                 </div>
-                <p className="text-lg text-muted-foreground mt-2">
+                <p className="body-large text-text-secondary mt-2">
                     Lihat harga dan volume perdagangan koin kripto teratas secara real-time.
                 </p>
             </div>
-             <Suspense fallback={<div className="h-10 w-[120px] bg-muted rounded-md" />}>
+             <Suspense fallback={<div className="h-10 w-[140px] bg-muted rounded-md" />}>
                 <CurrencySwitcherClient />
             </Suspense>
         </div>
       </header>
 
-      <Card>
+      <Card className="card-primary p-0 overflow-hidden">
         <CardContent className="p-0">
           <Suspense fallback={<TableSkeleton />}>
             <MarketDataTable currency={currency} />

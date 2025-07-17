@@ -1,12 +1,11 @@
-
 # Design System Implementation Summary
 
 ## ✅ What Was Implemented
 
 ### 1. Core Design System (globals.css)
 - **Color System**: Pure black backgrounds with pastel red accents
-- **Typography Scale**: Modular scale (Major Third - 1.25 ratio) with semantic classes
-- **Spacing System**: Perfect Fifth ratio (1.5) for consistent spacing
+- **Typography Scale**: Modular scale (Major Second - 1.125 ratio) with semantic classes
+- **Spacing System**: Perfect fifth ratio (1.5) for consistent spacing
 - **Component Classes**: Pre-built classes for cards, buttons, tables, news, charts
 - **Animation System**: Custom keyframes and timing functions
 - **Accessibility**: Focus management, screen reader support, high contrast support
@@ -126,7 +125,7 @@ src/
 - **Charts**: 8-color accessible palette
 
 ### Typography
-- **Scale**: 10 sizes from xs to 6xl (Major Third - 1.25 ratio)
+- **Scale**: 10 sizes from xs to 6xl (Major Second - 1.125 ratio)
 - **Weights**: Light to extrabold (300-800)
 - **Families**: Plus Jakarta Sans + SF Mono
 

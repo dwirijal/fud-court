@@ -1,4 +1,3 @@
-
 # Crypto Finance App Design System Documentation
 
 ## Overview
@@ -48,7 +47,7 @@ All colors are available as CSS variables:
 
 ### Typography Classes
 
-The design system includes semantic typography classes based on a **Major Third (1.25)** modular scale.
+The design system includes semantic typography classes based on a **Major Second (1.125)** modular scale.
 
 ```jsx
 // Headlines

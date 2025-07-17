@@ -68,17 +68,17 @@
     
     /* 📐 MODULAR SCALE ------------------------- */
 
-    /* Typography Scale (Major Third - 1.25 ratio) */
-    --text-xs: 0.64rem;
+    /* Typography Scale (Major Second - 1.125 ratio) */
+    --text-xs: 0.711rem;
     --text-sm: 0.8rem;
-    --text-base: 1rem;
-    --text-lg: 1.25rem;
-    --text-xl: 1.563rem;
-    --text-2xl: 1.953rem;
-    --text-3xl: 2.441rem;
-    --text-4xl: 3.052rem;
-    --text-5xl: 3.815rem;
-    --text-6xl: 4.768rem;
+    --text-base: 0.9rem;
+    --text-lg: 1.012rem;
+    --text-xl: 1.139rem;
+    --text-2xl: 1.281rem;
+    --text-3xl: 1.442rem;
+    --text-4xl: 1.622rem;
+    --text-5xl: 1.825rem;
+    --text-6xl: 2.053rem;
 
     /* Spacing Scale (Perfect Fifth - 1.5 ratio) */
     --space-1: 0.25rem;

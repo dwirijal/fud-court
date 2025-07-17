@@ -1,4 +1,3 @@
-
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
@@ -49,7 +48,7 @@ const config: Config = {
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
         background: 'hsl(var(--background))',
-        foreground: 'hsl(var(--foreground))',
+        foreground: 'hsl(var(--text-primary))',
         primary: {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
@@ -94,10 +93,16 @@ const config: Config = {
         sm: 'var(--radius-1)',
       },
       fontSize: {
-        xs: 'var(--text-xs)', sm: 'var(--text-sm)', base: 'var(--text-base)',
-        lg: 'var(--text-lg)', xl: 'var(--text-xl)', '2xl': 'var(--text-2xl)',
-        '3xl': 'var(--text-3xl)', '4xl': 'var(--text-4xl)', '5xl': 'var(--text-5xl)',
-        '6xl': 'var(--text-6xl)',
+        xs: ['var(--text-xs)', { lineHeight: '1.4' }],
+        sm: ['var(--text-sm)', { lineHeight: '1.5' }],
+        base: ['var(--text-base)', { lineHeight: '1.6' }],
+        lg: ['var(--text-lg)', { lineHeight: '1.6' }],
+        xl: ['var(--text-xl)', { lineHeight: '1.3' }],
+        '2xl': ['var(--text-2xl)', { lineHeight: '1.3' }],
+        '3xl': ['var(--text-3xl)', { lineHeight: '1.2' }],
+        '4xl': ['var(--text-4xl)', { lineHeight: '1.2' }],
+        '5xl': ['var(--text-5xl)', { lineHeight: '1.1' }],
+        '6xl': ['var(--text-6xl)', { lineHeight: '1.1' }],
       },
       fontFamily: {
         primary: 'var(--font-primary)',

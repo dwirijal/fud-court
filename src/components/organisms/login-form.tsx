@@ -74,10 +74,10 @@ export function LoginForm() {
     return (
         <Card className="w-full">
             <CardHeader className="text-center">
-                <CardTitle className="text-2xl">Check Your Inbox</CardTitle>
+                <CardTitle className="headline-5">Check Your Inbox</CardTitle>
                 <CardDescription>
                     We've sent a secure magic link to{' '}
-                    <span className="font-semibold text-foreground">{submittedEmail}</span>.
+                    <span className="font-semibold text-text-primary">{submittedEmail}</span>.
                 </CardDescription>
             </CardHeader>
             <CardContent>

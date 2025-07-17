@@ -232,6 +232,15 @@
     --tw-prose-th-borders: hsl(var(--border));
     --tw-prose-td-borders: hsl(var(--border));
   }
+
+  .prose-invert p {
+    @apply body-regular;
+  }
+
+  .prose-invert h1 { @apply headline-1; }
+  .prose-invert h2 { @apply headline-2; }
+  .prose-invert h3 { @apply headline-3; }
+  .prose-invert h4 { @apply headline-4; }
 }
 
 @layer utilities {

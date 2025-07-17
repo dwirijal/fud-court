@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -104,11 +104,10 @@ export default async function CoinPage({ params }: CoinPageProps) {
   const chains = defiLlamaData?.chains;
   const protocols = defiLlamaData?.protocols;
   
-  // Fetch related articles based on coin symbol
   const relatedArticles = await getPosts({ tag: symbol?.toLowerCase(), limit: 3 });
 
   return (
-    <div className="container mx-auto px-4 py-7 md:py-8">
+    <div className="container-full section-spacing">
       <Breadcrumb className="mb-6">
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -140,49 +139,49 @@ export default async function CoinPage({ params }: CoinPageProps) {
           />
         )}
         <div className="text-center md:text-left">
-          <h1 className="text-4xl font-semibold font-headline tracking-tight mb-2">
-            {name ?? 'N/A'} <span className="text-muted-foreground text-2xl">({symbol?.toUpperCase() ?? 'N/A'})</span>
+          <h1 className="headline-3 mb-2">
+            {name ?? 'N/A'} <span className="text-text-secondary">({symbol?.toUpperCase() ?? 'N/A'})</span>
           </h1>
-          <p className="text-lg text-muted-foreground max-w-3xl">
+          <p className="body-large text-text-secondary max-w-3xl">
             Data harga, kapitalisasi pasar, dan informasi detail untuk {name ?? 'koin ini'}.
           </p>
         </div>
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        <Card>
+        <Card className="card-primary">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-base font-medium">Harga Saat Ini</CardTitle>
-            <DollarSign className="h-5 w-5 text-muted-foreground" />
+            <CardTitle className="body-regular font-semibold">Harga Saat Ini</CardTitle>
+            <DollarSign className="h-5 w-5 text-text-tertiary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(current_price)}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="number-large">{formatCurrency(current_price)}</div>
+            <p className="caption-regular text-text-secondary">
               Perubahan 24j: {price_change_percentage_24h?.toFixed(2) ?? 'N/A'}%
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="card-primary">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-base font-medium">Kapitalisasi Pasar</CardTitle>
-            <Scale className="h-5 w-5 text-muted-foreground" />
+            <CardTitle className="body-regular font-semibold">Kapitalisasi Pasar</CardTitle>
+            <Scale className="h-5 w-5 text-text-tertiary" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl font-bold">{formatCurrency(market_cap, 'usd', true)}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="number-large">{formatCurrency(market_cap, 'usd', true)}</div>
+            <p className="caption-regular text-text-secondary">
               Volume 24j: {formatCurrency(total_volume, 'usd', true)}
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="card-primary">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-base font-medium">Total Value Locked (TVL)</CardTitle>
-            <Zap className="h-5 w-5 text-muted-foreground" />
+            <CardTitle className="body-regular font-semibold">Total Value Locked (TVL)</CardTitle>
+            <Zap className="h-5 w-5 text-text-tertiary" />
           </CardHeader>
           <CardContent>
             <Suspense fallback={<Skeleton className="h-8 w-3/4" />}>
-              <div className="text-xl font-bold">{tvl ? formatCurrency(tvl, 'usd', true) : 'N/A'}</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="number-large">{tvl ? formatCurrency(tvl, 'usd', true) : 'N/A'}</div>
+              <p className="caption-regular text-text-secondary">
                 {chains && chains.length > 0 ? `Jaringan: ${chains.join(', ')}` : 'Tidak ada data jaringan'}
               </p>
             </Suspense>
@@ -191,9 +190,9 @@ export default async function CoinPage({ params }: CoinPageProps) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <Card>
+        <Card className="card-primary">
           <CardHeader>
-            <CardTitle className="text-xl">Statistik Harga</CardTitle>
+            <CardTitle className="headline-6">Statistik Harga</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
@@ -224,15 +223,15 @@ export default async function CoinPage({ params }: CoinPageProps) {
                         Level Support
                         <TooltipProvider>
                             <Tooltip>
-                                <TooltipTrigger><Info className="h-4 w-4 text-muted-foreground" /></TooltipTrigger>
+                                <TooltipTrigger><Info className="h-4 w-4 text-text-tertiary" /></TooltipTrigger>
                                 <TooltipContent>
-                                    <p className="max-w-xs">Estimasi level support berdasarkan Fibonacci retracement dari ATH.</p>
+                                    <p className="max-w-xs body-small">Estimasi level support berdasarkan Fibonacci retracement dari ATH.</p>
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
                     </div>
                   </TableCell>
-                  <TableCell className="text-right text-chart-2 font-semibold">{formatCurrency(supportLevel)}</TableCell>
+                  <TableCell className="text-right text-market-up font-semibold">{formatCurrency(supportLevel)}</TableCell>
                 </TableRow>
                  <TableRow>
                   <TableCell>
@@ -240,24 +239,24 @@ export default async function CoinPage({ params }: CoinPageProps) {
                         Level Resistance
                         <TooltipProvider>
                             <Tooltip>
-                                <TooltipTrigger><Info className="h-4 w-4 text-muted-foreground" /></TooltipTrigger>
+                                <TooltipTrigger><Info className="h-4 w-4 text-text-tertiary" /></TooltipTrigger>
                                 <TooltipContent>
-                                    <p className="max-w-xs">Estimasi level resistance berdasarkan faktor pemulihan dari ATL.</p>
+                                    <p className="max-w-xs body-small">Estimasi level resistance berdasarkan faktor pemulihan dari ATL.</p>
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
                     </div>
                   </TableCell>
-                  <TableCell className="text-right text-destructive font-semibold">{formatCurrency(resistanceLevel)}</TableCell>
+                  <TableCell className="text-right text-market-down font-semibold">{formatCurrency(resistanceLevel)}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="card-primary">
           <CardHeader>
-            <CardTitle className="text-xl">Statistik Pasokan</CardTitle>
+            <CardTitle className="headline-6">Statistik Pasokan</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
@@ -286,34 +285,34 @@ export default async function CoinPage({ params }: CoinPageProps) {
 
       <TradingViewWidget symbol={symbol || ''} />
       
-      <Card className="mb-6">
+      <Card className="card-primary mb-6">
         <CardHeader>
-          <CardTitle className="text-xl">Perubahan Harga (%)</CardTitle>
+          <CardTitle className="headline-6">Perubahan Harga (%)</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableBody>
               <TableRow>
                 <TableCell>24 Jam</TableCell>
-                <TableCell className={`text-right ${price_change_percentage_24h && price_change_percentage_24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                <TableCell className={`text-right ${price_change_percentage_24h && price_change_percentage_24h >= 0 ? 'text-market-up' : 'text-market-down'}`}>
                   {price_change_percentage_24h?.toFixed(2) ?? 'N/A'}%
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>7 Hari</TableCell>
-                <TableCell className={`text-right ${price_change_percentage_7d && price_change_percentage_7d >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                <TableCell className={`text-right ${price_change_percentage_7d && price_change_percentage_7d >= 0 ? 'text-market-up' : 'text-market-down'}`}>
                   {price_change_percentage_7d?.toFixed(2) ?? 'N/A'}%
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>30 Hari</TableCell>
-                <TableCell className={`text-right ${price_change_percentage_30d && price_change_percentage_30d >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                <TableCell className={`text-right ${price_change_percentage_30d && price_change_percentage_30d >= 0 ? 'text-market-up' : 'text-market-down'}`}>
                   {price_change_percentage_30d?.toFixed(2) ?? 'N/A'}%
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>1 Tahun</TableCell>
-                <TableCell className={`text-right ${price_change_percentage_1y && price_change_percentage_1y >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                <TableCell className={`text-right ${price_change_percentage_1y && price_change_percentage_1y >= 0 ? 'text-market-up' : 'text-market-down'}`}>
                   {price_change_percentage_1y?.toFixed(2) ?? 'N/A'}%
                 </TableCell>
               </TableRow>
@@ -323,13 +322,13 @@ export default async function CoinPage({ params }: CoinPageProps) {
       </Card>
 
       {description?.en && (
-        <Card className="mb-6">
+        <Card className="card-primary mb-6">
           <CardHeader>
-            <CardTitle className="text-xl">Tentang {name ?? 'koin ini'}</CardTitle>
+            <CardTitle className="headline-6">Tentang {name ?? 'koin ini'}</CardTitle>
           </CardHeader>
           <CardContent>
             <SanitizedHtml
-              className="prose prose-invert prose-sm max-w-none"
+              className="prose prose-invert max-w-none prose-p:body-regular prose-headings:text-text-primary prose-a:text-accent-primary"
               html={description.en}
             />
           </CardContent>
@@ -337,43 +336,43 @@ export default async function CoinPage({ params }: CoinPageProps) {
       )}
 
       {links && (
-        <Card className="mb-6">
+        <Card className="card-primary mb-6">
           <CardHeader>
-            <CardTitle className="text-xl">Tautan Resmi</CardTitle>
+            <CardTitle className="headline-6">Tautan Resmi</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2">
               {links.homepage?.[0] && (
                 <li>
-                  <Link href={links.homepage[0]} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-2">
+                  <Link href={links.homepage[0]} target="_blank" rel="noopener noreferrer" className="text-accent-primary hover:underline flex items-center gap-2">
                     <LinkIcon className="h-4 w-4" /> Situs Web Resmi
                   </Link>
                 </li>
               )}
               {links.blockchain_site?.[0] && (
                 <li>
-                  <Link href={links.blockchain_site[0]} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-2">
+                  <Link href={links.blockchain_site[0]} target="_blank" rel="noopener noreferrer" className="text-accent-primary hover:underline flex items-center gap-2">
                     <LinkIcon className="h-4 w-4" /> Blockchain Explorer
                   </Link>
                 </li>
               )}
               {links.repos_url?.github?.[0] && (
                 <li>
-                  <Link href={links.repos_url.github[0]} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-2">
+                  <Link href={links.repos_url.github[0]} target="_blank" rel="noopener noreferrer" className="text-accent-primary hover:underline flex items-center gap-2">
                     <LinkIcon className="h-4 w-4" /> GitHub Repo
                   </Link>
                 </li>
               )}
               {links.subreddit_url && (
                 <li>
-                  <Link href={links.subreddit_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-2">
+                  <Link href={links.subreddit_url} target="_blank" rel="noopener noreferrer" className="text-accent-primary hover:underline flex items-center gap-2">
                     <LinkIcon className="h-4 w-4" /> Reddit
                   </Link>
                 </li>
               )}
               {links.twitter_screen_name && (
                 <li>
-                  <Link href={`https://twitter.com/${links.twitter_screen_name}`} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-2">
+                  <Link href={`https://twitter.com/${links.twitter_screen_name}`} target="_blank" rel="noopener noreferrer" className="text-accent-primary hover:underline flex items-center gap-2">
                     <LinkIcon className="h-4 w-4" /> Twitter
                   </Link>
                 </li>
@@ -384,9 +383,9 @@ export default async function CoinPage({ params }: CoinPageProps) {
       )}
 
       {protocols && protocols.length > 0 && (
-        <Card className="mb-6">
+        <Card className="card-primary mb-6">
           <CardHeader>
-            <CardTitle className="text-xl">Protokol DeFi Terkait</CardTitle>
+            <CardTitle className="headline-6">Protokol DeFi Terkait</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
@@ -403,12 +402,12 @@ export default async function CoinPage({ params }: CoinPageProps) {
 
       {relatedArticles.length > 0 && (
         <section className="mt-7">
-          <h2 className="text-3xl font-semibold font-headline tracking-tight mb-5 flex items-center gap-3">
-            <Newspaper className="h-6 w-6 text-muted-foreground" /> Artikel Terkait
+          <h2 className="headline-4 mb-5 flex items-center gap-3">
+            <Newspaper className="h-6 w-6 text-text-secondary" /> Artikel Terkait
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {relatedArticles.map((article) => (
-              <Card key={article.id} className="flex flex-col overflow-hidden">
+              <Card key={article.id} className="card-news flex flex-col overflow-hidden">
                 {article.feature_image && (
                   <div className="relative h-48 w-full">
                     <Image
@@ -426,16 +425,16 @@ export default async function CoinPage({ params }: CoinPageProps) {
                       {article.primary_tag.name}
                     </Badge>
                   )}
-                  <CardTitle className="text-lg font-headline leading-tight">
+                  <CardTitle className="headline-6 leading-tight">
                     <Link href={`/news/${article.slug}`} className="hover:underline">
                       {article.title}
                     </Link>
                   </CardTitle>
-                  <CardDescription className="line-clamp-3">
+                  <CardDescription className="body-small text-text-secondary line-clamp-3">
                     {article.excerpt}
                   </CardDescription>
                 </CardHeader>
-                <CardFooter className="text-sm text-muted-foreground">
+                <CardFooter className="caption-regular text-text-tertiary">
                   Diterbitkan pada {format(new Date(article.published_at), "d MMMM yyyy")}
                 </CardFooter>
               </Card>
@@ -443,17 +442,6 @@ export default async function CoinPage({ params }: CoinPageProps) {
           </div>
         </section>
       )}
-=======
-export default function CoinDetailPage({ params }: { params: { id: string } }) {
-  return (
-    <div className="container mx-auto px-4 py-3 md:py-4">
-      <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight mb-2">
-        Detail untuk {params.id}
-      </h1>
-      <p className="text-xl text-muted-foreground max-w-3xl">
-        Halaman ini akan menampilkan informasi detail untuk koin yang dipilih.
-      </p>
->>>>>>> d32eafdf79fc1270a0712b11f562506629d2d989
     </div>
   );
 }

@@ -21,7 +21,7 @@ export default function LoginPage() {
          <Link
             href="/"
             aria-label="Kembali ke halaman utama"
-            className="absolute left-4 top-4 flex items-center gap-2 rounded-lg bg-black/30 px-3 py-2 text-sm text-background backdrop-blur-sm transition-colors hover:bg-black/50 md:left-8 md:top-8"
+            className="absolute left-4 top-4 flex items-center gap-2 rounded-lg bg-black/30 px-3 py-2 text-sm text-background backdrop-blur-sm transition-colors hover:bg-black/50 md:left-8 md:top-8 focus-ring"
         >
             <ArrowLeft className="h-4 w-4" />
             <span>Kembali ke Beranda</span>
@@ -29,10 +29,10 @@ export default function LoginPage() {
         <div className="w-full max-w-md space-y-6">
             <div className="flex flex-col items-center text-center">
                 <Logo />
-                <h1 className="mt-4 text-2xl font-semibold tracking-tight">
+                <h1 className="headline-5 mt-4">
                     Welcome to Fud Court
                 </h1>
-                <p className="text-sm text-muted-foreground">
+                <p className="body-small text-text-secondary">
                     Your journey to clarity in the crypto world starts here.
                 </p>
             </div>

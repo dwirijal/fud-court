@@ -23,20 +23,14 @@ export const metadata = {
 
 export default async function ArticlesPage() {
   const articles = await getPosts({ tag: 'article' });
-  // Ambil featured post, fallback ke artikel terbaru
   let featuredPosts = await getPosts({ tag: 'featured', limit: 5 });
   if (!featuredPosts || featuredPosts.length === 0) {
     featuredPosts = articles.slice(0, 5);
   }
 
   return (
-<<<<<<< HEAD
-    <div className="container mx-auto px-4 py-3 md:py-4">
+    <div className="container-full section-spacing">
       <Breadcrumb className="mb-8">
-=======
-    <div className="container mx-auto px-4 py-7 md:py-8">
-      <Breadcrumb className="mb-6">
->>>>>>> b058873b045abf5277ae8797dcaa268e60af95fe
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink href="/" asChild>
@@ -50,19 +44,18 @@ export default async function ArticlesPage() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      {/* HERO SLIDER */}
       <ArticleHeroSlider posts={featuredPosts} />
 
-      <header className="mb-7">
+      <header className="mb-7 mt-8">
         <div className="flex items-center gap-4 mb-2">
-            <div className="bg-primary/10 text-primary p-2 rounded-lg">
+            <div className="bg-accent-primary/10 text-accent-primary p-2 rounded-lg">
                 <BookOpen className="h-8 w-8" />
             </div>
-            <h1 className="text-4xl font-semibold font-headline tracking-tight">
+            <h1 className="headline-2">
                 Artikel
             </h1>
         </div>
-        <p className="text-lg text-muted-foreground mt-2">
+        <p className="body-large text-text-secondary mt-2">
             Analisis mendalam dan konten panjang tentang lanskap kripto.
         </p>
       </header>
@@ -70,7 +63,7 @@ export default async function ArticlesPage() {
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {articles.length > 0 ? (
           articles.map((article) => (
-            <Card key={article.id} className="flex flex-col overflow-hidden">
+            <Card key={article.id} className="card-news flex flex-col overflow-hidden">
               {article.feature_image && (
                 <div className="relative h-48 w-full">
                   <Image
@@ -88,22 +81,22 @@ export default async function ArticlesPage() {
                     {article.primary_tag.name}
                   </Badge>
                 )}
-                <CardTitle className="text-lg font-headline leading-tight">
+                <CardTitle className="headline-6 leading-tight">
                   <Link href={`/news/${article.slug}`} className="hover:underline">
                     {article.title}
                   </Link>
                 </CardTitle>
-                <CardDescription className="line-clamp-3">
+                <CardDescription className="body-small text-text-secondary line-clamp-3">
                   {article.excerpt}
                 </CardDescription>
               </CardHeader>
-              <CardFooter className="text-sm text-muted-foreground">
+              <CardFooter className="caption-regular text-text-tertiary">
                 Diterbitkan pada {format(new Date(article.published_at), "d MMMM yyyy")}
               </CardFooter>
             </Card>
           ))
         ) : (
-          <p className="col-span-full text-center text-muted-foreground">Tidak ada artikel yang ditemukan.</p>
+          <p className="col-span-full text-center body-regular text-text-secondary">Tidak ada artikel yang ditemukan.</p>
         )}
       </section>
     </div>

@@ -30,7 +30,6 @@ export async function generateMetadata(
     };
   }
 
-  // Use specific SEO fields from Ghost if available, otherwise fall back to defaults.
   const seoTitle = post.meta_title || post.og_title || post.title;
   const seoDescription = post.meta_description || post.og_description || post.excerpt;
   const seoImage = post.og_image || post.twitter_image || post.feature_image;
@@ -93,13 +92,8 @@ export default async function PostPage({ params }: { params: { slug: string } })
 
 
   return (
-<<<<<<< HEAD
-    <article className="container mx-auto px-4 py-3 md:py-4 max-w-4xl">
-      <Breadcrumb className="mb-8">
-=======
-    <article className="container mx-auto px-4 py-7 md:py-8 max-w-4xl">
+    <article className="container-full section-spacing max-w-4xl">
       <Breadcrumb className="mb-6">
->>>>>>> b058873b045abf5277ae8797dcaa268e60af95fe
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink href="/" asChild>
@@ -128,15 +122,15 @@ export default async function PostPage({ params }: { params: { slug: string } })
             {post.primary_tag.name}
           </Badge>
         )}
-        <h1 className="text-4xl font-semibold font-headline tracking-tight mb-4 leading-tight">
+        <h1 className="headline-3 mb-4">
           {post.title}
         </h1>
         {post.primary_tag?.name?.toLowerCase() !== 'news' && (
-          <p className="text-muted-foreground text-lg">
+          <p className="body-large text-text-secondary">
             {post.excerpt}
           </p>
         )}
-        <time dateTime={post.published_at} className="text-sm text-muted-foreground mt-4 block">
+        <time dateTime={post.published_at} className="caption-regular text-text-tertiary mt-4 block">
           Diterbitkan pada {format(new Date(post.published_at), "d MMMM yyyy")}
         </time>
       </header>
@@ -157,12 +151,13 @@ export default async function PostPage({ params }: { params: { slug: string } })
       
       {post.html && (
         <SanitizedHtml
-          className="prose prose-invert prose-lg max-w-none 
-                     prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl
-                     prose-headings:font-headline prose-headings:text-foreground
-                     prose-a:text-primary hover:prose-a:text-primary/90
-                     prose-strong:text-foreground
-                     prose-blockquote:border-primary"
+          className="prose prose-invert max-w-none 
+                     prose-h1:headline-3 prose-h2:headline-4 prose-h3:headline-5
+                     prose-headings:text-text-primary
+                     prose-p:body-regular
+                     prose-a:text-accent-primary hover:prose-a:text-accent-secondary
+                     prose-strong:text-text-primary
+                     prose-blockquote:border-accent-primary"
           html={post.html}
         />
       )}

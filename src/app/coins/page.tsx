@@ -46,14 +46,14 @@ export default async function CoinsPage({ searchParams }: { searchParams?: { cur
   }
 
   return (
-    <div className="container mx-auto px-4 py-3 md:py-4">
+    <div className="container-full section-spacing">
       <header className="mb-12">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="text-center sm:text-left">
-            <h1 className="text-5xl md:text-6xl font-semibold font-headline tracking-tight mb-2">
+            <h1 className="headline-2 mb-2">
               Pasar Kripto
             </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl">
+            <p className="body-large text-text-secondary max-w-3xl">
               Jelajahi harga mata uang kripto, kapitalisasi pasar, dan volume perdagangan secara real-time.
             </p>
           </div>
@@ -63,13 +63,13 @@ export default async function CoinsPage({ searchParams }: { searchParams?: { cur
         </div>
       </header>
 
-      <div className="w-full overflow-x-auto futuristic-card rounded-lg p-0">
+      <div className="w-full overflow-x-auto card-primary p-0">
           <Suspense fallback={<TableSkeleton />}>
             {error ? (
-               <div className="flex flex-col items-center justify-center p-12 text-center text-destructive">
+               <div className="flex flex-col items-center justify-center p-12 text-center text-market-down">
                    <AlertTriangle className="h-12 w-12 mb-4" />
-                   <h3 className="text-xl font-semibold">Gagal Memuat Data Pasar</h3>
-                   <p className="text-sm text-destructive/80 mt-2 max-w-md">
+                   <h3 className="headline-5">Gagal Memuat Data Pasar</h3>
+                   <p className="body-small text-market-down/80 mt-2 max-w-md">
                        {error}
                    </p>
                </div>
@@ -81,4 +81,3 @@ export default async function CoinsPage({ searchParams }: { searchParams?: { cur
     </div>
   );
 }
-

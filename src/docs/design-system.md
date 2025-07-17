@@ -85,20 +85,20 @@ The design system includes semantic typography classes based on a **Major Second
 
 ## 📏 Spacing System
 
-### Modular Spacing Scale
+### 8px Grid System
 
-The system uses a 1.5 ratio (Perfect Fifth) for spacing:
+The system uses an 8px grid. Most spacing values are multiples of 8px (0.5rem), with 4px (0.25rem) used for fine-tuning.
 
 ```jsx
-// Padding
+// Padding (examples)
 <div className="p-1">   {/* 4px */}
 <div className="p-2">   {/* 8px */}
 <div className="p-3">   {/* 12px */}
 <div className="p-4">   {/* 16px */}
 <div className="p-5">   {/* 24px */}
-<div className="p-6">   {/* 36px */}
-<div className="p-7">   {/* 54px */}
-<div className="p-8">   {/* 81px */}
+<div className="p-6">   {/* 32px */}
+<div className="p-7">   {/* 48px */}
+<div className="p-8">   {/* 64px */}
 
 // Margin
 <div className="m-4">   {/* 16px */}
@@ -343,7 +343,7 @@ const chartColors = [
 ### Do's
 
 ✅ **Use semantic classes**: Prefer `headline-3` over `text-3xl font-semibold`
-✅ **Consistent spacing**: Use the modular scale (p-4, m-5, gap-3)
+✅ **Consistent spacing**: Use the 8px grid scale (p-4, m-5, gap-3)
 ✅ **Market colors**: Use `market-up`, `market-down`, `market-neutral` for financial data
 ✅ **Focus accessibility**: Always add `focus-ring` to interactive elements
 ✅ **Monospace for numbers**: Use `font-mono` for prices and percentages

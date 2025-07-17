@@ -69,28 +69,28 @@
     /* 📐 MODULAR SCALE ------------------------- */
 
     /* Typography Scale (Major Second - 1.125 ratio) */
-    --text-xs: 0.711rem;
-    --text-sm: 0.8rem;
-    --text-base: 0.9rem;
-    --text-lg: 1.012rem;
-    --text-xl: 1.139rem;
-    --text-2xl: 1.281rem;
-    --text-3xl: 1.442rem;
-    --text-4xl: 1.622rem;
-    --text-5xl: 1.825rem;
-    --text-6xl: 2.053rem;
+    --text-xs: 0.711rem;   /* 11.38px */
+    --text-sm: 0.8rem;     /* 12.8px */
+    --text-base: 0.9rem;   /* 14.4px */
+    --text-lg: 1.012rem;   /* 16.19px */
+    --text-xl: 1.139rem;   /* 18.22px */
+    --text-2xl: 1.281rem;   /* 20.49px */
+    --text-3xl: 1.442rem;   /* 23.07px */
+    --text-4xl: 1.622rem;   /* 25.95px */
+    --text-5xl: 1.825rem;   /* 29.2px */
+    --text-6xl: 2.053rem;   /* 32.85px */
 
-    /* Spacing Scale (Perfect Fifth - 1.5 ratio) */
-    --space-1: 0.25rem;
-    --space-2: 0.5rem;
-    --space-3: 0.75rem;
-    --space-4: 1rem;
-    --space-5: 1.5rem;
-    --space-6: 2.25rem;
-    --space-7: 3.375rem;
-    --space-8: 5.063rem;
-    --space-9: 7.594rem;
-    --space-10: 11.391rem;
+    /* Spacing Scale (8px Grid System) */
+    --space-1: 0.25rem;   /* 4px */
+    --space-2: 0.5rem;    /* 8px */
+    --space-3: 0.75rem;   /* 12px */
+    --space-4: 1rem;      /* 16px */
+    --space-5: 1.5rem;    /* 24px */
+    --space-6: 2rem;      /* 32px */
+    --space-7: 3rem;      /* 48px */
+    --space-8: 4rem;      /* 64px */
+    --space-9: 5rem;      /* 80px */
+    --space-10: 6rem;     /* 96px */
 
     /* Border Radius Scale */
     --radius-1: 0.125rem;

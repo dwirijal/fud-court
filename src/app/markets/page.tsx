@@ -1,9 +1,8 @@
 
 import { Suspense } from "react";
 import { getTopCoins, getExchangeRate } from "@/lib/coingecko";
-import { TableSkeleton } from "@/app/coins/market-data-table";
+import { TableSkeleton, MarketDataTableClient } from "@/app/coins/market-data-table-client";
 import { CurrencySwitcher } from "@/components/molecules/currency-switcher";
-import { MarketDataTableClient } from "@/app/coins/market-data-table-client";
 import { CryptoData } from "@/types";
 import { AlertTriangle, LineChart } from "lucide-react";
 

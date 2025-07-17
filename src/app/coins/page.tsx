@@ -1,11 +1,21 @@
 
 import { Suspense } from "react";
 import { getTopCoins, getExchangeRate } from "@/lib/coingecko";
-import { TableSkeleton } from "./market-data-table";
+import { TableSkeleton } from "./market-data-table-client";
 import { CurrencySwitcher } from "@/components/molecules/currency-switcher";
 import { MarketDataTableClient } from "./market-data-table-client";
 import { CryptoData } from "@/types";
 import { AlertTriangle } from "lucide-react";
+
+export function TableSkeleton() {
+    return (
+        <div className="space-y-2 p-5">
+            {Array.from({ length: 15 }).map((_, i) => (
+                <Skeleton key={i} className="h-12 w-full" />
+            ))}
+        </div>
+    );
+}
 
 export default async function CoinsPage({ searchParams }: { searchParams?: { currency?: string } }) {
   const currency = searchParams?.currency?.toLowerCase() || 'usd';

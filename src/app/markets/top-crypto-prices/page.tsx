@@ -1,6 +1,5 @@
 
 import { Card, CardContent } from "@/components/ui/card";
-import { MarketDataTable } from "@/app/coins/market-data-table";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,8 +11,11 @@ import {
 import Link from "next/link";
 import { DollarSign } from "lucide-react";
 import { Suspense } from "react";
-import { TableSkeleton } from "@/app/coins/market-data-table";
+import { MarketDataTableClient, TableSkeleton } from "@/app/coins/market-data-table-client";
 import { CurrencySwitcherClient } from "@/components/molecules/currency-switcher-client";
+import { CryptoData } from "@/types";
+import { getTopCoins, getExchangeRate } from "@/lib/coingecko";
+import { AlertTriangle } from "lucide-react";
 
 export const metadata = {
   title: 'Top Crypto Prices',
@@ -22,6 +24,41 @@ export const metadata = {
 
 export default async function TopCryptoPricesPage({ searchParams }: { searchParams?: { currency?: string } }) {
   const currency = searchParams?.currency?.toLowerCase() || 'usd';
+  let initialData: CryptoData[] = [];
+  let error: string | null = null;
+  
+  try {
+    const usdData = await getTopCoins(1, 20); 
+
+    if (!usdData) {
+      throw new Error("Gagal memuat data market. API tidak merespons atau cache kosong.");
+    }
+    
+    let exchangeRate = 1;
+    if (currency !== 'usd') {
+      const rate = await getExchangeRate(currency);
+      if (rate) {
+        exchangeRate = rate;
+      } else {
+        console.warn(`Gagal mengambil nilai tukar untuk ${currency}. Menampilkan data dalam USD.`);
+      }
+    }
+
+    initialData = usdData.map(coin => ({
+      ...coin,
+      current_price: coin.current_price * exchangeRate,
+      market_cap: coin.market_cap * exchangeRate,
+      total_volume: coin.total_volume * exchangeRate,
+      high_24h: coin.high_24h * exchangeRate,
+      low_24h: coin.low_24h * exchangeRate,
+      ath: coin.ath * exchangeRate,
+      ath_market_cap: coin.ath_market_cap ? coin.ath_market_cap * exchangeRate : null,
+    }));
+
+  } catch (err) {
+    console.error("Gagal mengambil data market untuk halaman Markets:", err);
+    error = err instanceof Error ? err.message : "Terjadi kesalahan tak terduga.";
+  }
 
   return (
     <div className="container-full section-spacing">
@@ -67,7 +104,17 @@ export default async function TopCryptoPricesPage({ searchParams }: { searchPara
       <Card className="card-primary p-0 overflow-hidden">
         <CardContent className="p-0">
           <Suspense fallback={<TableSkeleton />}>
-            <MarketDataTable currency={currency} />
+             {error ? (
+               <div className="flex flex-col items-center justify-center p-12 text-center text-market-down">
+                   <AlertTriangle className="h-12 w-12 mb-4" />
+                   <h3 className="headline-5">Gagal Memuat Data Pasar</h3>
+                   <p className="body-small text-market-down/80 mt-2 max-w-md">
+                       {error}
+                   </p>
+               </div>
+            ) : (
+              <MarketDataTableClient initialData={initialData} currency={currency} />
+            )}
           </Suspense>
         </CardContent>
       </Card>

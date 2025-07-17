@@ -1,4 +1,3 @@
-
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
@@ -16,7 +15,47 @@ const config: Config = {
         '2xl': '1400px',
       },
     },
+    spacing: {
+        '0': '0px',
+        'px': '1px',
+        '1': 'var(--space-1)', // 4px
+        '2': 'var(--space-2)', // 8px
+        '3': 'var(--space-3)', // 12px
+        '4': 'var(--space-4)', // 16px
+        '5': 'var(--space-5)', // 24px
+        '6': 'var(--space-6)', // 32px
+        '7': 'var(--space-7)', // 48px
+        '8': 'var(--space-8)', // 64px
+    },
+    borderRadius: {
+      '1': 'var(--radius-1)',
+      '2': 'var(--radius-2)',
+      '3': 'var(--radius-3)',
+      '4': 'var(--radius-4)',
+      'full': 'var(--radius-full)',
+      'lg': 'var(--radius-3)',
+      'md': 'var(--radius-2)',
+      'sm': 'var(--radius-1)',
+    },
+    fontSize: {
+      xs: ['var(--text-xs)', { lineHeight: '1.4' }],
+      sm: ['var(--text-sm)', { lineHeight: '1.5' }],
+      base: ['var(--text-base)', { lineHeight: '1.6' }],
+      lg: ['var(--text-lg)', { lineHeight: '1.6' }],
+      xl: ['var(--text-xl)', { lineHeight: '1.3' }],
+      '2xl': ['var(--text-2xl)', { lineHeight: '1.3' }],
+      '3xl': ['var(--text-3xl)', { lineHeight: '1.2' }],
+      '4xl': ['var(--text-4xl)', { lineHeight: '1.2' }],
+      '5xl': ['var(--text-5xl)', { lineHeight: '1.1' }],
+      '6xl': ['var(--text-6xl)', { lineHeight: '1.1' }],
+    },
     extend: {
+      fontFamily: {
+        primary: ['var(--font-primary)', 'sans-serif'],
+        sans: ['var(--font-primary)', 'sans-serif'],
+        headline: ['var(--font-primary)', 'sans-serif'],
+        mono: 'var(--font-mono)',
+      },
       colors: {
         'bg-primary': 'hsl(var(--bg-primary))',
         'bg-secondary': 'hsl(var(--bg-secondary))',
@@ -44,7 +83,6 @@ const config: Config = {
         'chart-6': 'hsl(var(--chart-color-6))',
         'chart-7': 'hsl(var(--chart-color-7))',
         'chart-8': 'hsl(var(--chart-color-8))',
-        
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
@@ -78,47 +116,6 @@ const config: Config = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
-      },
-      spacing: {
-        '1': 'var(--space-1)', '2': 'var(--space-2)', '3': 'var(--space-3)',
-        '4': 'var(--space-4)', '5': 'var(--space-5)', '6': 'var(--space-6)',
-        '7': 'var(--space-7)', '8': 'var(--space-8)', '9': 'var(--space-9)',
-        '10': 'var(--space-10)',
-      },
-      borderRadius: {
-        '1': 'var(--radius-1)', 
-        '2': 'var(--radius-2)', 
-        '3': 'var(--radius-3)',
-        '4': 'var(--radius-4)', 
-        'full': 'var(--radius-full)',
-        lg: 'var(--radius-3)',
-        md: 'var(--radius-2)',
-        sm: 'var(--radius-1)',
-      },
-      fontSize: {
-        xs: ['var(--text-xs)', { lineHeight: '1.4' }],
-        sm: ['var(--text-sm)', { lineHeight: '1.5' }],
-        base: ['var(--text-base)', { lineHeight: '1.6' }],
-        lg: ['var(--text-lg)', { lineHeight: '1.6' }],
-        xl: ['var(--text-xl)', { lineHeight: '1.3' }],
-        '2xl': ['var(--text-2xl)', { lineHeight: '1.3' }],
-        '3xl': ['var(--text-3xl)', { lineHeight: '1.2' }],
-        '4xl': ['var(--text-4xl)', { lineHeight: '1.2' }],
-        '5xl': ['var(--text-5xl)', { lineHeight: '1.1' }],
-        '6xl': ['var(--text-6xl)', { lineHeight: '1.1' }],
-      },
-      fontFamily: {
-        primary: 'var(--font-primary)',
-        sans: 'var(--font-primary)',
-        mono: 'var(--font-mono)',
-      },
-      fontWeight: {
-        light: '300',
-        normal: '400',
-        medium: '500',
-        semibold: '600',
-        bold: '700',
-        extrabold: '800',
       },
       transitionTimingFunction: {
         'out-expo': 'var(--ease-out-expo)',

@@ -17,7 +17,7 @@ interface MarketCarouselProps {
 
 export function MarketCarousel({ data }: MarketCarouselProps) {
   const plugin = React.useRef(
-    Autoplay({ delay: 2000, stopOnInteraction: false })
+    Autoplay({ delay: 2000, stopOnInteraction: false, stopOnMouseEnter: true })
   );
 
   return (
@@ -33,7 +33,7 @@ export function MarketCarousel({ data }: MarketCarouselProps) {
         {data.map((crypto) => (
           <CarouselItem
             key={crypto.id}
-            className="pl-4 md:basis-1/2 lg:basis-1/3 xl:basis-1/4"
+            className="pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6"
           >
             <div className="p-1 h-full">
               <CryptoCard data={crypto} className="h-full" />

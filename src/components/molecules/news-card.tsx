@@ -36,46 +36,41 @@ export function NewsCard({ post }: { post: Post }) {
     setPublicationDate(format(new Date(post.published_at), 'd MMMM yyyy, HH:mm'));
   }, [post.published_at]);
   
-  const showImage = post.primary_tag?.name?.toLowerCase() !== 'news';
-
   return (
     <motion.div
-      className="h-full"
       initial="hidden"
       whileInView="visible"
-      whileHover={{ scale: 1.03 }}
       viewport={{ once: true, amount: 0.3 }}
-      transition={{ duration: 0.3 }}
       variants={cardVariants}
+      className="h-full"
     >
       <Link href={`/news/${post.slug}`} className="group block h-full">
-        <Card className="h-full flex flex-col bg-card/60 backdrop-blur-md transition-shadow duration-300 hover:shadow-xl">
-          {showImage && (
+        <Card className="card-news h-full flex flex-col">
             <CardHeader className="p-0">
-<div className="relative h-[24rem] w-full overflow-hidden rounded-t-lg">
+              <div className="relative aspect-[16/10] w-full overflow-hidden rounded-t-3">
                 <Image
                   src={post.feature_image || "https://placehold.co/600x400"}
                   alt={post.title}
                   fill
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  className="object-cover transition-transform duration-normal group-hover:scale-105"
                   data-ai-hint="crypto abstract"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
               </div>
             </CardHeader>
-          )}
-          <CardContent className="flex-grow p-6 space-y-3">
+          <CardContent className="flex-grow p-4 space-y-2">
             {post.primary_tag && (
               <Badge variant="secondary">{post.primary_tag.name}</Badge>
             )}
-            <CardTitle className="text-xl font-headline leading-snug group-hover:text-primary transition-colors">
+            <CardTitle className="headline-6 leading-tight group-hover:text-accent-primary transition-colors">
               {post.title}
             </CardTitle>
-            <p className="text-muted-foreground text-sm line-clamp-3">
+            <p className="body-small text-text-secondary line-clamp-3">
               {post.excerpt}
             </p>
           </CardContent>
-          <CardFooter className="p-6 pt-0">
-            <time dateTime={post.published_at} className="text-xs text-muted-foreground">
+          <CardFooter className="p-4 pt-0">
+            <time dateTime={post.published_at} className="caption-regular text-text-tertiary">
               {publicationDate || '...'}
             </time>
           </CardFooter>

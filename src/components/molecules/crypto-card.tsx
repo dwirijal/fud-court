@@ -14,26 +14,19 @@ export function CryptoCard({ data, className }: { data: CryptoData, className?: 
   const isPositive = (data.price_change_percentage_24h_in_currency ?? 0) >= 0;
 
   return (
-    <Card className={cn("relative flex flex-col justify-between bg-background/50 backdrop-blur-md h-full overflow-hidden", className)}>
-      <Image
-        src={data.image}
-        alt={`${data.name} background logo`}
-        width={128}
-        height={128}
-        className="absolute -top-10 -left-10 w-32 h-32 opacity-[0.35] rotate-[30deg] rounded-full"
-      />
-      <div className="relative z-10 flex flex-col h-full">
-        <CardHeader className="flex flex-row items-start justify-between space-y-0 p-2 pb-0 gap-1">
-          <div className="flex items-center gap-1">
-            <CardTitle className="text-xs font-medium">{data.name}</CardTitle>
+    <Card className={cn("relative flex flex-col justify-between h-full overflow-hidden transition-all duration-normal hover:-translate-y-px hover:shadow-lg", className)}>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 pb-0">
+          <div className="flex items-center gap-2">
+            <Image src={data.image} alt={`${data.name} logo`} width={24} height={24} className="rounded-full" />
+            <CardTitle className="body-small font-semibold">{data.name}</CardTitle>
           </div>
-          <span className="text-xs text-muted-foreground">
+          <span className="caption-regular text-text-tertiary">
             {data.symbol.toUpperCase()}
           </span>
         </CardHeader>
-        <CardContent className="p-2 flex-grow flex flex-col justify-end">
+        <CardContent className="p-3 flex-grow flex flex-col justify-end">
           <div className="flex items-end justify-between">
-              <div className="text-lg font-bold">
+              <div className="number-regular">
                 $
                 {data.current_price.toLocaleString("en-US", {
                   minimumFractionDigits: 2,
@@ -42,8 +35,8 @@ export function CryptoCard({ data, className }: { data: CryptoData, className?: 
               </div>
               <div
                 className={cn(
-                  "flex items-center gap-0.5 text-xs font-medium",
-                  isPositive ? "text-chart-2" : "text-destructive"
+                  "flex items-center gap-1 caption-regular",
+                  isPositive ? "text-market-up" : "text-market-down"
                 )}
               >
                 {isPositive ? (
@@ -55,7 +48,6 @@ export function CryptoCard({ data, className }: { data: CryptoData, className?: 
               </div>
           </div>
         </CardContent>
-      </div>
     </Card>
   );
 }

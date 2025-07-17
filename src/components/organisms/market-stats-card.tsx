@@ -10,6 +10,7 @@ import { useState, useEffect, useRef } from 'react';
 import anime from "animejs";
 
 const formatCurrency = (value: number) => {
+    if (!value) return '$0.00';
     return new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
@@ -36,7 +37,7 @@ const cardVariants = {
   }
 };
 
-const AnimatedStatNumber = ({ to, formatter, className, delay = 0, isPercentage = false }: { to: number, formatter: (val: number) => string, className?: string, delay?: number, isPercentage?: boolean }) => {
+const AnimatedStatNumber = ({ to, formatter, className, delay = 0 }: { to: number, formatter: (val: number) => string, className?: string, delay?: number }) => {
     const [value, setValue] = useState(0);
     const hasAnimated = useRef(false);
     const targetRef = useRef({ value: 0 });
@@ -53,6 +54,7 @@ const AnimatedStatNumber = ({ to, formatter, className, delay = 0, isPercentage 
             duration: 1200,
             delay: delay,
             easing: 'easeOutCubic',
+            round: formatter === formatPercentage ? 100 : undefined,
             update: () => {
                 setValue(targetRef.current.value);
             }
@@ -63,12 +65,12 @@ const AnimatedStatNumber = ({ to, formatter, className, delay = 0, isPercentage 
         return () => {
           animation.pause();
         }
-    }, [to, delay]);
+    }, [to, delay, formatter]);
 
     return <p className={className}>{formatter(value)}</p>;
 };
 
-function StatCard({ label, value, underlyingValue, colorClass, index, valueIsTvl = false }: { label: string, value: number, underlyingValue: number, colorClass: string, index: number, valueIsTvl?: boolean }) {
+function StatCard({ label, value, underlyingValue, colorClass, index, valueIsPercentage = false }: { label: string, value: number, underlyingValue?: number, colorClass: string, index: number, valueIsPercentage?: boolean }) {
     return (
         <motion.div
             className="h-full"
@@ -86,18 +88,16 @@ function StatCard({ label, value, underlyingValue, colorClass, index, valueIsTvl
                 <div>
                      <AnimatedStatNumber
                         to={value}
-                        formatter={formatPercentage}
+                        formatter={valueIsPercentage ? formatPercentage : formatCurrency}
                         className="text-2xl font-bold"
                         delay={index * 100}
-                        isPercentage
                     />
-                    <AnimatedStatNumber
+                    {underlyingValue !== undefined && <AnimatedStatNumber
                         to={underlyingValue}
                         formatter={formatCurrency}
                         className="text-xs text-muted-foreground font-mono"
                         delay={index * 100}
-                    />
-                    {valueIsTvl && <p className="text-xs text-muted-foreground/80 font-mono -mt-1">TVL</p>}
+                    />}
                 </div>
             </div>
         </motion.div>
@@ -115,6 +115,7 @@ export function MarketStatsCard({ marketStats }: MarketStatsCardProps) {
     
     const { 
         totalMarketCap,
+        defiTotalTvl,
         btcDominance,
         ethDominance,
         solDominance,
@@ -128,20 +129,20 @@ export function MarketStatsCard({ marketStats }: MarketStatsCardProps) {
     } = marketStats;
 
     const stats = [
-        { label: "Bitcoin Dominance", value: btcDominance, underlyingValue: btcMarketCap, colorClass: "bg-orange-400" },
-        { label: "ETH Dominance", value: ethDominance, underlyingValue: ethMarketCap, colorClass: "bg-gray-400" },
-        { label: "ETH Ecosystem", value: (ethTvl / totalMarketCap) * 100, underlyingValue: ethTvl, colorClass: "bg-indigo-400", valueIsTvl: true },
-        { label: "SOL Dominance", value: solDominance, underlyingValue: solMarketCap, colorClass: "bg-purple-400" },
-        { label: "SOL Ecosystem", value: (solTvl / totalMarketCap) * 100, underlyingValue: solTvl, colorClass: "bg-fuchsia-400", valueIsTvl: true },
-        { label: "Stablecoin Dominance", value: stablecoinDominance, underlyingValue: stablecoinMarketCap, colorClass: "bg-green-400" },
+        { label: "Total Market Cap", value: totalMarketCap, colorClass: "bg-blue-400" },
+        { label: "DeFi TVL", value: defiTotalTvl, colorClass: "bg-cyan-400" },
+        { label: "Bitcoin Dominance", value: btcDominance, underlyingValue: btcMarketCap, colorClass: "bg-orange-400", valueIsPercentage: true },
+        { label: "ETH Dominance", value: ethDominance, underlyingValue: ethTvl, colorClass: "bg-gray-400", valueIsPercentage: true },
+        { label: "SOL Dominance", value: solDominance, underlyingValue: solTvl, colorClass: "bg-purple-400", valueIsPercentage: true },
+        { label: "Stablecoin Dominance", value: stablecoinDominance, underlyingValue: stablecoinMarketCap, colorClass: "bg-green-400", valueIsPercentage: true },
     ];
 
     return (
         <Card className="h-full">
             <CardHeader>
-                <CardTitle>Market Dominance</CardTitle>
+                <CardTitle>Dominasi & TVL</CardTitle>
                 <CardDescription>
-                    Perbandingan kapitalisasi pasar (MC) dan nilai terkunci (TVL) berbagai ekosistem terhadap total pasar kripto (Cap: {formatCurrency(totalMarketCap)}).
+                    Perbandingan kapitalisasi pasar (MC) dan nilai terkunci (TVL) berbagai ekosistem terhadap total pasar kripto.
                 </CardDescription>
             </CardHeader>
             <CardContent>

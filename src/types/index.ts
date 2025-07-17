@@ -239,6 +239,7 @@ export interface FearGreedData {
 // Market Stats for Dominance Card
 export interface MarketStats {
     totalMarketCap: number;
+    defiTotalTvl: number;
     btcMarketCap: number;
     ethMarketCap: number;
     solMarketCap: number;
@@ -288,6 +289,7 @@ export interface CombinedMarketData {
     stablecoinDominance: number;
     maxHistoricalMarketCapDate: string;
     topCoinsForAnalysis: TopCoinForAnalysis[];
+    defiTotalTvl: number;
 }
 
 // DefiLlama Types matching the new schema

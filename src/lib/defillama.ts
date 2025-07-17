@@ -3,7 +3,7 @@
 'use server';
 
 import type { DefiLlamaProtocol, DefiLlamaStablecoin, DefiLlamaHistoricalTvl } from '@/types';
-import { supabase } from './supabase'; // Import Supabase client
+import { supabase } from './supabase';
 
 const DEFILLAMA_API_BASE_URL = 'https://api.llama.fi';
 const DEFILLAMA_STABLECOINS_API_BASE_URL = 'https://stablecoins.llama.fi';
@@ -102,10 +102,6 @@ async function syncDefiLlamaHistoricalTvl(): Promise<void> {
 }
 
 
-// --- Functions to get data from cache ---
-// These functions are now primarily for use by coingecko.ts to assemble combined data.
-// They will attempt a sync if the cache is empty.
-
 export async function getDefiLlamaProtocols(): Promise<DefiLlamaProtocol[]> {
     const { data, error } = await supabase.from('defillama_protocols').select('*');
     
@@ -150,9 +146,20 @@ export async function getDefiLlamaStablecoins(): Promise<DefiLlamaStablecoin[]> 
 
 export async function getDefiLlamaHistoricalTvl(): Promise<DefiLlamaHistoricalTvl[] | null> {
     const { data, error } = await supabase.from('defillama_historical_tvl').select('date, tvl');
-    if (error) {
-        console.error('Error fetching historical TVL from cache:', error);
-        return null;
+    if (error || !data || data.length === 0) {
+        console.warn('Cache for DefiLlama historical TVL is empty. Fetching from API.');
+        try {
+            await syncDefiLlamaHistoricalTvl();
+            const { data: newData, error: newError } = await supabase.from('defillama_historical_tvl').select('*');
+            if (newError) {
+                console.error('Failed to fetch historical TVL from cache after sync:', newError);
+                return null;
+            }
+            return (newData as DefiLlamaHistoricalTvl[]) || null;
+        } catch (syncError) {
+            console.error('Failed to sync and fetch historical TVL:', syncError);
+            return null;
+        }
     }
     return data as DefiLlamaHistoricalTvl[];
 }

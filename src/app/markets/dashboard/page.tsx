@@ -1,12 +1,10 @@
 
-import { DetailedMarketStatsSection } from "@/components/organisms/detailed-market-stats-section";
-import { DetailedMarketSummarySection } from "@/components/organisms/detailed-market-summary-section";
+import { MarketStatsCard } from "@/components/organisms/market-stats-card";
+import { MarketSummaryCard } from "@/components/organisms/market-summary-card";
 import { fetchMarketData } from "@/lib/coingecko";
-import { getFearAndGreedIndex } from "@/lib/fear-greed";
 
 export default async function MarketDashboardPage() {
   const marketData = await fetchMarketData();
-  const fearGreedData = await getFearAndGreedIndex();
 
   if (!marketData) {
     return (
@@ -25,11 +23,11 @@ export default async function MarketDashboardPage() {
       </header>
       
       <section>
-        <DetailedMarketSummarySection marketData={marketData} />
+        <MarketSummaryCard marketData={marketData} />
       </section>
 
       <section>
-        <DetailedMarketStatsSection marketStats={marketData} />
+        <MarketStatsCard marketStats={marketData} />
       </section>
 
     </div>

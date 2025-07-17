@@ -1,11 +1,10 @@
 
-
 'use server';
 
 import type { CryptoData, DetailedCoinData, CombinedMarketData, TopCoinForAnalysis, CGMarket } from '@/types';
 import { supabase } from './supabase';
 import { getFearAndGreedIndexFromCache } from './fear-greed';
-import { getDefiLlamaProtocols, getDefiLlamaStablecoins, syncDefiLlamaData } from './defillama';
+import { getDefiLlamaChains, getDefiLlamaProtocols, getDefiLlamaStablecoins, syncDefiLlamaData } from './defillama';
 
 const COINGECKO_API_BASE_URL = 'https://api.coingecko.com/api/v3';
 
@@ -277,21 +276,22 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
             }
         }
 
-        const [fearAndGreed, topCoinsData, defiProtocols, stablecoinsData, avg30DayVolume] = await Promise.all([
+        const [fearAndGreed, topCoinsData, defiChains, stablecoinsData, avg30DayVolume] = await Promise.all([
             getFearAndGreedIndexFromCache(),
             supabase.from('crypto_data').select('*').order('market_cap_rank', { ascending: true, nullsFirst: false }).limit(20),
-            getDefiLlamaProtocols(),
+            getDefiLlamaChains(),
             getDefiLlamaStablecoins(),
             getAvg30DayVolume(),
         ]);
         
         const globalData = globalDataResult.data?.data;
         
-        // Use a more reliable way to calculate total DeFi TVL by summing protocols
-        const defiTotalTvl = defiProtocols?.reduce((sum, protocol) => sum + (protocol.tvl ?? 0), 0) ?? 0;
+        // Use a more reliable way to calculate total DeFi TVL by summing chains
+        const defiTotalTvl = defiChains?.reduce((sum, chain) => sum + (chain.tvl ?? 0), 0) ?? 0;
+        const findChainTvl = (chainName: string) => defiChains.find(c => c.name === chainName)?.tvl ?? 0;
 
-        if (!globalData || !fearAndGreed || topCoinsData.error || !defiProtocols || !stablecoinsData) {
-            console.error('Failed to fetch one or more core data sources.', { globalData: !!globalData, fearAndGreed: !!fearAndGreed, topCoinsError: topCoinsData.error, defiProtocols: !!defiProtocols, stablecoinsData: !!stablecoinsData });
+        if (!globalData || !fearAndGreed || topCoinsData.error || !defiChains || !stablecoinsData) {
+            console.error('Failed to fetch one or more core data sources.', { globalData: !!globalData, fearAndGreed: !!fearAndGreed, topCoinsError: topCoinsData.error, defiChains: !!defiChains, stablecoinsData: !!stablecoinsData });
             return null;
         }
         
@@ -303,11 +303,10 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
         const ethMarketCap = totalMarketCap * (globalData.market_cap_percentage.eth / 100);
         const solMarketCap = topCoins.find(c => c.symbol === 'sol')?.market_cap ?? 0;
         
-        // Calculate TVL by summing from protocols data
-        const btcTvl = defiProtocols.reduce((sum, p) => sum + (p.chain_tvls?.Bitcoin ?? 0), 0);
-        const ethTvl = defiProtocols.reduce((sum, p) => sum + (p.chain_tvls?.Ethereum ?? 0), 0);
-        const solTvl = defiProtocols.reduce((sum, p) => sum + (p.chain_tvls?.Solana ?? 0), 0);
-        const arbTvl = defiProtocols.reduce((sum, p) => sum + (p.chain_tvls?.Arbitrum ?? 0), 0);
+        const btcTvl = findChainTvl('Bitcoin');
+        const ethTvl = findChainTvl('Ethereum');
+        const solTvl = findChainTvl('Solana');
+        const arbTvl = findChainTvl('Arbitrum');
         
         const stablecoinMarketCap = stablecoinsData?.reduce((sum, coin) => sum + (coin.circulating_pegged_usd ?? 0), 0) ?? 0;
         

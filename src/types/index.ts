@@ -306,8 +306,12 @@ export interface DefiLlamaStablecoin {
   price: number | null;
 }
 
-
-export interface DefiLlamaHistoricalTvl {
-  date: number; // Unix timestamp
-  tvl: number; // Total Value Locked in USD
+export interface DefiLlamaChain {
+  id: string;
+  name: string;
+  gecko_id: string | null;
+  tvl: number | null;
+  token_symbol: string | null;
+  cmc_id: string | null;
+  chain_id: number | null;
 }

@@ -1,8 +1,7 @@
 
-
 'use server';
 
-import type { DefiLlamaProtocol, DefiLlamaStablecoin } from '@/types';
+import type { DefiLlamaProtocol, DefiLlamaStablecoin, DefiLlamaChain } from '@/types';
 import { supabase } from './supabase';
 
 const DEFILLAMA_API_BASE_URL = 'https://api.llama.fi';
@@ -17,6 +16,7 @@ export async function syncDefiLlamaData() {
         await Promise.all([
             syncDefiLlamaProtocols(),
             syncDefiLlamaStablecoins(),
+            syncDefiLlamaChains(),
         ]);
         console.log("Sync finished: All DefiLlama Data");
     } catch (error) {
@@ -24,7 +24,6 @@ export async function syncDefiLlamaData() {
         throw error;
     }
 }
-
 
 async function syncDefiLlamaProtocols(): Promise<void> {
     console.log("Starting sync: DefiLlama Protocols");
@@ -51,7 +50,6 @@ async function syncDefiLlamaProtocols(): Promise<void> {
     }
     console.log("Sync finished: DefiLlama Protocols");
 }
-
 
 async function syncDefiLlamaStablecoins(): Promise<void> {
     console.log("Starting sync: DefiLlama Stablecoins");
@@ -81,6 +79,29 @@ async function syncDefiLlamaStablecoins(): Promise<void> {
     console.log("Sync finished: DefiLlama Stablecoins");
 }
 
+async function syncDefiLlamaChains(): Promise<void> {
+    console.log("Starting sync: DefiLlama Chains TVL");
+    const response = await fetch(`${DEFILLAMA_API_BASE_URL}/v2/chains`);
+    if (!response.ok) throw new Error(`DefiLlama Chains API error: ${response.status}`);
+    
+    const chainsData: any[] = await response.json();
+    const chainsToUpsert = chainsData.map(c => ({
+        id: c.name, // Use name as the primary key
+        name: c.name,
+        gecko_id: c.gecko_id,
+        tvl: c.tvl,
+        token_symbol: c.tokenSymbol,
+        cmc_id: c.cmcId,
+        chain_id: c.chainId,
+    }));
+
+    const { error } = await supabase.from('defillama_chains').upsert(chainsToUpsert, { onConflict: 'id' });
+    if (error) {
+        console.error('Error upserting DefiLlama chains into cache:', error.message);
+        throw error;
+    }
+    console.log("Sync finished: DefiLlama Chains TVL");
+}
 
 export async function getDefiLlamaProtocols(): Promise<DefiLlamaProtocol[]> {
     const { data, error } = await supabase.from('defillama_protocols').select('*');
@@ -122,4 +143,26 @@ export async function getDefiLlamaStablecoins(): Promise<DefiLlamaStablecoin[]> 
         }
     }
     return data as DefiLlamaStablecoin[];
+}
+
+
+export async function getDefiLlamaChains(): Promise<DefiLlamaChain[]> {
+    const { data, error } = await supabase.from('defillama_chains').select('*');
+
+    if (error || !data || data.length === 0) {
+        console.warn('Cache for DefiLlama chains is empty or failed to load. Fetching from API.');
+        try {
+            await syncDefiLlamaChains();
+            const { data: newData, error: newError } = await supabase.from('defillama_chains').select('*');
+            if (newError) {
+                console.error('Failed to fetch chains from cache after sync:', newError);
+                return [];
+            }
+            return (newData as DefiLlamaChain[]) || [];
+        } catch (syncError) {
+            console.error('Failed to sync and fetch DefiLlama chains:', syncError);
+            return [];
+        }
+    }
+    return data as DefiLlamaChain[];
 }

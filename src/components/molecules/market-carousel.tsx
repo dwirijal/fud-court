@@ -33,7 +33,7 @@ export function MarketCarousel({ data }: MarketCarouselProps) {
         {data.map((crypto) => (
           <CarouselItem
             key={crypto.id}
-            className="pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6"
+            className="pl-4 basis-[60%] sm:basis-1/3 md:basis-1/4 lg:basis-1/4 xl:basis-1/5"
           >
             <div className="p-1 h-full">
               <CryptoCard data={crypto} className="h-full" />

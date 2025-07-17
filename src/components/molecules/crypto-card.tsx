@@ -33,7 +33,7 @@ export function CryptoCard({ data, className }: { data: CryptoData, className?: 
         </CardHeader>
         <CardContent className="p-2 flex-grow flex flex-col justify-end">
           <div className="flex items-end justify-between">
-              <div className="text-sm font-bold">
+              <div className="text-lg font-bold">
                 $
                 {data.current_price.toLocaleString("en-US", {
                   minimumFractionDigits: 2,

@@ -44,26 +44,37 @@ export async function syncFearAndGreedData() {
       throw error;
     }
     console.log("Sync finished: Fear & Greed Index");
+    return data;
   }
+  return null;
 }
 
 /**
  * Fetches the Fear & Greed Index from the Supabase cache.
- * Throws an error if no data is found in the cache.
+ * If the cache is empty, it fetches from the API and populates the cache.
+ * Throws an error if both cache and API fail.
  */
 export async function getFearAndGreedIndexFromCache(): Promise<FearGreedData> {
-  const { data, error } = await supabase
+  const { data: cachedData, error: cacheError } = await supabase
     .from('fear_and_greed')
     .select('*')
     .single();
 
-  if (error || !data) {
-    console.error("Could not fetch Fear & Greed data from cache:", error);
-    throw new Error("Fear & Greed data not available in cache.");
+  if (!cacheError && cachedData) {
+    return {
+      value: cachedData.value,
+      value_classification: cachedData.value_classification as FearGreedData['value_classification'],
+    };
+  }
+
+  // If cache is empty or there was an error, fetch from API
+  console.log("Fear & Greed cache is empty or failed to load. Fetching from API as fallback.");
+  const apiData = await syncFearAndGreedData(); // sync also returns the data
+
+  if (apiData) {
+    return apiData;
   }
   
-  return {
-      value: data.value,
-      value_classification: data.value_classification as FearGreedData['value_classification'],
-  };
+  // If both cache and API fail, throw an error
+  throw new Error("Fear & Greed data not available. Both cache and API failed.");
 }

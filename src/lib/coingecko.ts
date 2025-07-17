@@ -1,9 +1,9 @@
 
 'use server';
 
-import type { CryptoData, FearGreedData, DetailedCoinData, CombinedMarketData, TopCoinForAnalysis, DefiLlamaProtocol, DefiLlamaStablecoin } from '@/types';
+import type { CryptoData, FearGreedData, DetailedCoinData, CombinedMarketData, TopCoinForAnalysis, DefiLlamaProtocol, DefiLlamaStablecoin, CGMarket } from '@/types';
 import { supabase } from './supabase'; // Import Supabase client
-import { getFearAndGreedIndex } from './fear-greed'; // Import Fear & Greed API function
+import { getFearAndGreedIndexFromCache } from './fear-greed'; // Import Fear & Greed API function
 import { getDefiLlamaProtocols, getDefiLlamaStablecoins } from './defillama';
 
 const COINGECKO_API_BASE_URL = 'https://api.coingecko.com/api/v3';
@@ -23,20 +23,75 @@ interface CoinGeckoGlobalData {
   };
 }
 
-async function getGlobalMarketData(): Promise<CoinGeckoGlobalData['data'] | null> {
+/**
+ * Fetches and syncs the top 250 coins from CoinGecko to the Supabase DB.
+ */
+export async function syncTopCoins() {
+  console.log("Starting sync: Top Coins from CoinGecko");
+  const url = `${COINGECKO_API_BASE_URL}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&page=1&sparkline=true&price_change_percentage=1h,24h,7d`;
+  
   try {
-    const response = await fetch(`${COINGECKO_API_BASE_URL}/global`, { next: { revalidate: 3600 } }); // Cache for 1 hour
-    if (!response.ok) {
-      console.error(`CoinGecko Global API error: ${response.status} ${response.statusText}`);
-      return null;
-    }
-    const data: CoinGeckoGlobalData = await response.json();
-    return data.data;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`CoinGecko Market API error: ${response.status}`);
+    const data: CGMarket[] = await response.json();
+
+    const mappedData: Omit<CryptoData, 'last_updated'>[] = data.map(coin => ({
+      id: coin.id,
+      symbol: coin.symbol,
+      name: coin.name,
+      image: coin.image,
+      current_price: coin.current_price,
+      market_cap: coin.market_cap,
+      market_cap_rank: coin.market_cap_rank,
+      total_volume: coin.total_volume,
+      high_24h: coin.high_24h,
+      low_24h: coin.low_24h,
+      price_change_percentage_1h_in_currency: coin.price_change_percentage_1h_in_currency,
+      price_change_percentage_24h_in_currency: coin.price_change_percentage_24h,
+      price_change_percentage_7d_in_currency: coin.price_change_percentage_7d_in_currency,
+      sparkline_in_7d: coin.sparkline_in_7d,
+      ath: coin.ath,
+      ath_market_cap: null, // This specific field is not available in the markets endpoint
+    }));
+
+    const { error } = await supabase.from('crypto_data').upsert(mappedData, { onConflict: 'id' });
+    if (error) throw error;
+    
+    console.log("Sync finished: Top Coins from CoinGecko");
   } catch (error) {
-    console.error('An error occurred while fetching global market data from CoinGecko:', error);
-    return null;
+    console.error("Error syncing top coins data:", error);
+    throw error;
   }
 }
+
+/**
+ * Fetches and syncs global market data from CoinGecko to Supabase.
+ */
+export async function syncGlobalMarketData() {
+  console.log("Starting sync: Global Market Data from CoinGecko");
+  const url = `${COINGECKO_API_BASE_URL}/global`;
+  
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`CoinGecko Global API error: ${response.status}`);
+    const data: CoinGeckoGlobalData = await response.json();
+
+    const globalData = {
+      id: 'global', // a single row to always upsert
+      data: data.data,
+      last_updated: new Date().toISOString(),
+    };
+
+    const { error } = await supabase.from('global_market_data').upsert(globalData, { onConflict: 'id' });
+    if (error) throw error;
+    
+    console.log("Sync finished: Global Market Data from CoinGecko");
+  } catch (error) {
+    console.error('Error syncing global market data:', error);
+    throw error;
+  }
+}
+
 
 /**
  * Fetches the average 30-day trading volume for Bitcoin as a proxy for the total market.
@@ -74,7 +129,7 @@ export async function getTopCoins(page: number = 1, per_page: number = 20): Prom
         const { data, error } = await supabase
             .from('crypto_data')
             .select('*')
-            .order('market_cap_rank', { ascending: true })
+            .order('market_cap_rank', { ascending: true, nullsFirst: false })
             .range((page - 1) * per_page, page * per_page - 1);
 
         if (error) {
@@ -88,32 +143,6 @@ export async function getTopCoins(page: number = 1, per_page: number = 20): Prom
         return null;
     }
 }
-
-/**
- * Fetches Fear & Greed data for today from the Supabase database.
- * @returns A promise resolving to today's F&G data or null on failure.
- */
-/*
-export async function fetchFearGreedData(): Promise<{ today: FearGreedData | null }> {
-    try {
-        const { data, error } = await supabase.from('fear_and_greed').select('*').limit(1);
-        if (error) {
-            console.error('Error fetching Fear & Greed data from Supabase:', error);
-            return { today: null };
-        }
-        const todayData = data[0];
-        return {
-            today: todayData ? {
-                value: todayData.value,
-                value_classification: todayData.value_classification,
-            } : null,
-        };
-    } catch (error) {
-        console.error('An error occurred while fetching Fear & Greed data from Supabase:', error);
-        return { today: null };
-    }
-}
-*/
 
 /**
  * Fetches detailed coin data for a given coin ID from the Supabase database.
@@ -223,14 +252,16 @@ export async function updateCryptoExchangeRates(): Promise<void> {
  */
 export async function fetchMarketData(): Promise<CombinedMarketData | null> {
     try {
-        const [globalData, fearAndGreed, topCoinsData, defiProtocols, stablecoinsData, avg30DayVolume] = await Promise.all([
-            getGlobalMarketData(),
-            getFearAndGreedIndex(),
-            supabase.from('crypto_data').select('*').order('market_cap_rank', { ascending: true }).limit(20),
+        const [globalDataResult, fearAndGreed, topCoinsData, defiProtocols, stablecoinsData, avg30DayVolume] = await Promise.all([
+            supabase.from('global_market_data').select('*').single(),
+            getFearAndGreedIndexFromCache(),
+            supabase.from('crypto_data').select('*').order('market_cap_rank', { ascending: true, nullsFirst: false }).limit(20),
             getDefiLlamaProtocols(),
             getDefiLlamaStablecoins(),
             getAvg30DayVolume(),
         ]);
+        
+        const globalData = globalDataResult.data?.data;
 
         if (!globalData || !fearAndGreed || topCoinsData.error || !defiProtocols || !stablecoinsData) {
             console.error('Failed to fetch one or more core data sources.', { globalData: !!globalData, fearAndGreed: !!fearAndGreed, topCoinsError: topCoinsData.error, defiProtocols: !!defiProtocols, stablecoinsData: !!stablecoinsData });
@@ -261,7 +292,7 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
             totalVolume24h: globalData.total_volume?.usd ?? 0,
             avg30DayVolume: avg30DayVolume,
             btcDominance,
-            fearAndGreedIndex: parseInt(fearAndGreed.value),
+            fearAndGreedIndex: fearAndGreed.value,
             topCoins: topCoins.map(coin => ({
                 name: coin.name,
                 symbol: coin.symbol,
@@ -293,158 +324,3 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
         return null;
     }
 }
-
-export async function calculateVolatilityIndex(priceChanges: number[]): Promise<number> {
-    if (priceChanges.length === 0) return 0;
-
-    const sumOfSquares = priceChanges.reduce((sum, change) => sum + Math.pow(change, 2), 0);
-    const variance = sumOfSquares / priceChanges.length;
-    const volatility = Math.sqrt(variance) * 100; // Convert to percentage
-    return volatility;
-}
-
-export async function calculateLiquidityRatio(totalVolume24h: number, marketCap: number): Promise<number> {
-    if (marketCap === 0) return 0;
-    return (totalVolume24h / marketCap) * 100;
-}
-
-export async function calculateMarketSentimentScore(
-    priceChange24h: number,
-    volumeChange24h: number,
-    marketCapChange24h: number,
-    dominanceChange: number
-): Promise<number> {
-    const rawScore = (
-        (priceChange24h * 0.3) +
-        (volumeChange24h * 0.2) +
-        (marketCapChange24h * 0.2) +
-        (dominanceChange * 0.3)
-    ) / 4;
-
-    // Normalize score to a 0-100 scale
-    const normalizedScore = (rawScore + 100) / 2;
-    return Math.max(0, Math.min(100, normalizedScore)); // Ensure score is between 0 and 100
-}
-
-export async function calculateSupportResistanceLevels(currentPrice: number, ath: number, atl: number): Promise<{ supportLevel: number | null; resistanceLevel: number | null }> {
-    if (ath <= 0 || atl < 0 || currentPrice <= 0) {
-        return { supportLevel: null, resistanceLevel: null };
-    }
-
-    const athDrawdown = (ath - currentPrice) / ath; // Percentage drawdown from ATH
-    const recoveryFactor = (currentPrice - atl) / (ath - atl); // Percentage recovery from ATL
-
-    const supportLevel = currentPrice * (1 - (athDrawdown * 0.618));
-    const resistanceLevel = currentPrice * (1 + (recoveryFactor * 0.382));
-
-    return { supportLevel, resistanceLevel };
-}
-
-export async function calculateSMA(prices: number[], period: number): Promise<number | null> {
-    if (prices.length < period) return Promise.resolve(null);
-    const sum = prices.slice(0, period).reduce((acc, price) => acc + price, 0);
-    return Promise.resolve(sum / period);
-}
-
-export async function calculateEMA(prices: number[], period: number): Promise<number | null> {
-    if (prices.length < period) return Promise.resolve(null);
-
-    // Calculate SMA for the first EMA value
-    const sma = await calculateSMA(prices, period);
-    if (sma === null) return Promise.resolve(null);
-
-    const multiplier = 2 / (period + 1);
-    let ema = sma;
-
-    // Calculate EMA for subsequent prices
-    for (let i = period; i < prices.length; i++) {
-        ema = (prices[i] - ema) * multiplier + ema;
-    }
-    return Promise.resolve(ema);
-}
-
-export async function calculatePriceSignal(prices: number[]): Promise<number | null> {
-    const ema12 = await calculateEMA(prices, 12);
-    const ema26 = await calculateEMA(prices, 26);
-
-    if (ema12 === null || ema26 === null || ema26 === 0) return Promise.resolve(null); // Avoid division by zero
-
-    return Promise.resolve((ema12 - ema26) / ema26 * 100);
-}
-
-export async function validateMarketData(data: any): Promise<{ price: number; volume: number; marketCap: number; dominance: number }> {
-    return Promise.resolve({
-        price: Math.max(0, parseFloat(data.price) || 0),
-        volume: Math.max(0, parseFloat(data.volume) || 0),
-        marketCap: Math.max(0, parseFloat(data.marketCap) || 0),
-        dominance: Math.min(100, Math.max(0, parseFloat(data.dominance) || 0))
-    });
-}
-
-async function calculateAverage(values: number[]): Promise<number> {
-    if (values.length === 0) return 0;
-    const sum = values.reduce((acc, val) => acc + val, 0);
-    return sum / values.length;
-}
-
-async function calculateStandardDeviation(values: number[]): Promise<number> {
-    if (values.length < 2) return 0;
-    const avg = await calculateAverage(values);
-    const squareDiffs = values.map(value => Math.pow(value - avg, 2));
-    const avgSquareDiff = await calculateAverage(squareDiffs);
-    return Math.sqrt(avgSquareDiff);
-}
-
-export async function calculateSharpeRatio(returns: number[], riskFreeRate: number): Promise<number> {
-    const avgReturn = await calculateAverage(returns);
-    const stdDev = await calculateStandardDeviation(returns);
-
-    if (stdDev === 0) return 0; // Avoid division by zero
-
-    return (avgReturn - riskFreeRate) / stdDev;
-}
-
-export async function detectOutliers(values: number[]): Promise<number[]> {
-    if (values.length < 4) return Promise.resolve(values); // Not enough data to detect outliers reliably
-
-    const sortedValues = [...values].sort((a, b) => a - b);
-    const q1 = sortedValues[Math.floor(sortedValues.length / 4)];
-    const q3 = sortedValues[Math.ceil(sortedValues.length * 3 / 4) - 1];
-    const iqr = q3 - q1;
-    const lowerBound = q1 - (1.5 * iqr);
-    const upperBound = q3 + (1.5 * iqr);
-        
-    return Promise.resolve(values.filter(v => v >= lowerBound && v <= upperBound));
-}
-
-export async function rateLimitedCalculation<T, R>(calculation: (data: T) => R, maxPerSecond: number = 10) {
-    const queue: { resolve: (value: R) => void; data: T }[] = [];
-    let lastExecutionTime = 0;
-    const delay = 1000 / maxPerSecond;
-
-    const executeNext = () => {
-        if (queue.length > 0) {
-            const now = Date.now();
-            const timeSinceLastExecution = now - lastExecutionTime;
-
-            if (timeSinceLastExecution >= delay) {
-                const { resolve, data } = queue.shift()!;
-                resolve(calculation(data));
-                lastExecutionTime = now;
-            } else {
-                // Reschedule if not enough time has passed
-                setTimeout(executeNext, delay - timeSinceLastExecution);
-            }
-        }
-    };
-
-    // Start the timer to process the queue
-    setInterval(executeNext, delay);
-
-    return async (data: T) => new Promise<R>((resolve) => {
-        queue.push({ resolve, data });
-        executeNext(); // Try to execute immediately if possible
-    });
-}
-
-    

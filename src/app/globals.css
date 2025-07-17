@@ -93,14 +93,13 @@
     --space-10: 6rem;     /* 96px */
 
     /* Border Radius Scale */
-    --radius-1: 0.125rem;
-    --radius-2: 0.25rem;
-    --radius-3: 0.5rem;
-    --radius-4: 0.75rem;
-    --radius-5: 1rem;
-    --radius-6: 1.5rem;
-    --radius-full: 9999px;
-    --radius: var(--radius-3);
+    --radius-1: 0.25rem;   /* 4px - Small controls, tags */
+    --radius-2: 0.5rem;    /* 8px - Buttons, inputs */
+    --radius-3: 0.75rem;   /* 12px - Cards, containers */
+    --radius-4: 1rem;      /* 16px - Large containers, page sections */
+    --radius-5: 1.5rem;    /* 24px - Very large containers, modals */
+    --radius-full: 9999px; /* Pills, circles */
+    --radius: var(--radius-2); /* Default radius for shadcn */
 
     /* 🔤 TYPOGRAPHY ------------------------- */
     --font-primary: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
@@ -149,23 +148,23 @@
   .number-small { @apply font-mono text-sm font-medium; }
 
   /* Card Components */
-  .card-primary { @apply bg-bg-secondary border border-bg-tertiary rounded-4 p-5; }
-  .card-elevated { @apply bg-bg-tertiary border border-[hsl(var(--bg-quaternary))] rounded-4 p-5 shadow-lg; }
+  .card-primary { @apply bg-bg-secondary border border-bg-tertiary rounded-3 p-5; }
+  .card-elevated { @apply bg-bg-tertiary border border-[hsl(var(--bg-quaternary))] rounded-3 p-5 shadow-lg; }
   .card-news { @apply bg-bg-secondary border border-bg-tertiary rounded-3 p-4 transition-all duration-normal ease-out-quart; }
   .card-news:hover { @apply border-accent-primary -translate-y-px; }
   
   /* Button Components */
-  .btn-primary { @apply bg-accent-primary text-primary-foreground rounded-3 px-5 py-3 font-semibold transition-all duration-fast ease-out-quart; }
+  .btn-primary { @apply bg-accent-primary text-primary-foreground rounded-2 px-5 py-3 font-semibold transition-all duration-fast ease-out-quart; }
   .btn-primary:hover { @apply bg-[hsl(var(--accent-secondary))] -translate-y-px; }
   
-  .btn-secondary { @apply bg-bg-tertiary text-text-primary border border-[hsl(var(--bg-quaternary))] rounded-3 px-5 py-3 font-medium transition-all duration-fast ease-out-quart; }
+  .btn-secondary { @apply bg-bg-tertiary text-text-primary border border-[hsl(var(--bg-quaternary))] rounded-2 px-5 py-3 font-medium transition-all duration-fast ease-out-quart; }
   .btn-secondary:hover { @apply bg-[hsl(var(--bg-quaternary))] border-accent-primary; }
 
-  .btn-ghost { @apply bg-transparent text-text-secondary border border-transparent rounded-3 px-5 py-3 font-medium transition-all duration-fast ease-out-quart; }
+  .btn-ghost { @apply bg-transparent text-text-secondary border border-transparent rounded-2 px-5 py-3 font-medium transition-all duration-fast ease-out-quart; }
   .btn-ghost:hover { @apply bg-bg-tertiary text-text-primary; }
   
   /* Table Components */
-  .table-container { @apply bg-bg-secondary border border-bg-tertiary rounded-4 overflow-hidden; }
+  .table-container { @apply bg-bg-secondary border border-bg-tertiary rounded-3 overflow-hidden; }
   .table-header { @apply bg-bg-tertiary px-4 py-4 font-semibold text-text-secondary text-sm uppercase tracking-wider; }
   .table-row { @apply px-4 py-4 border-b border-bg-tertiary transition-colors duration-fast ease-out-quart; }
   .table-row:hover { @apply bg-bg-tertiary; }
@@ -188,7 +187,7 @@
   .price-change.neutral { @apply text-market-neutral; }
 
   /* Chart Container */
-  .chart-container { @apply bg-bg-secondary border border-bg-tertiary rounded-4 p-5 relative; }
+  .chart-container { @apply bg-bg-secondary border border-bg-tertiary rounded-3 p-5 relative; }
   .chart-header { @apply flex justify-between items-center mb-4; }
   .chart-title { @apply text-lg font-semibold text-text-primary; }
   .chart-controls { @apply flex gap-2; }

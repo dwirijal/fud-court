@@ -109,6 +109,20 @@ The system uses an 8px grid. Most spacing values are multiples of 8px (0.5rem), 
 <div className="grid gap-4"> {/* 16px gap */}
 ```
 
+## ⚪️ Border Radius System
+
+A consistent scale is used for rounded corners to unify the UI.
+
+```jsx
+// Radius classes
+<div className="rounded-1">  {/* 4px - Small controls, tags */}
+<div className="rounded-2">  {/* 8px - Buttons, inputs */}
+<div className="rounded-3">  {/* 12px - Cards, containers */}
+<div className="rounded-4">  {/* 16px - Large containers */}
+<div className="rounded-5">  {/* 24px - Modals, popovers */}
+<div className="rounded-full">{/* Circles, pills */}
+```
+
 ## 🏗️ Component Patterns
 
 ### Card Components
@@ -344,13 +358,14 @@ const chartColors = [
 
 ✅ **Use semantic classes**: Prefer `headline-3` over `text-3xl font-semibold`
 ✅ **Consistent spacing**: Use the 8px grid scale (p-4, m-5, gap-3)
+✅ **Consistent radius**: Use the radius scale (`rounded-1` to `rounded-5`)
 ✅ **Market colors**: Use `market-up`, `market-down`, `market-neutral` for financial data
 ✅ **Focus accessibility**: Always add `focus-ring` to interactive elements
 ✅ **Monospace for numbers**: Use `font-mono` for prices and percentages
 
 ### Don'ts
 
-❌ **Avoid arbitrary values**: Don't use `p-[13px]`, use scale values
+❌ **Avoid arbitrary values**: Don't use `p-[13px]` or `rounded-[10px]`, use scale values
 ❌ **Don't mix color systems**: Stick to design system colors
 ❌ **Avoid inline styles**: Use CSS classes and variables
 ❌ **Don't ignore accessibility**: Always consider screen readers and keyboard navigation

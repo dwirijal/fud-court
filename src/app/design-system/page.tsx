@@ -421,7 +421,7 @@ export default function DesignSystemPage() {
                   <input 
                     type="text" 
                     placeholder="Focusable input"
-                    className="px-4 py-2 bg-bg-tertiary border border-bg-quaternary rounded-3 focus-ring"
+                    className="px-4 py-2 bg-bg-tertiary border border-bg-quaternary rounded-2 focus-ring"
                   />
                 </div>
               </div>

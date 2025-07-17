@@ -85,12 +85,15 @@ const config: Config = {
         '10': 'var(--space-10)',
       },
       borderRadius: {
-        '1': 'var(--radius-1)', '2': 'var(--radius-2)', '3': 'var(--radius-3)',
-        '4': 'var(--radius-4)', '5': 'var(--radius-5)', '6': 'var(--radius-6)',
+        '1': 'var(--radius-1)', 
+        '2': 'var(--radius-2)', 
+        '3': 'var(--radius-3)',
+        '4': 'var(--radius-4)', 
+        '5': 'var(--radius-5)', 
         'full': 'var(--radius-full)',
-        lg: 'var(--radius-3)',
-        md: 'var(--radius-2)',
-        sm: 'var(--radius-1)',
+        lg: 'var(--radius-2)', // Default large radius
+        md: 'var(--radius-2)', // Default medium radius
+        sm: 'var(--radius-1)', // Default small radius
       },
       fontSize: {
         xs: ['var(--text-xs)', { lineHeight: '1.4' }],

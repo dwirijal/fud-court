@@ -55,11 +55,11 @@ export function NftCard() {
       transition={{ duration: 1, ease: 'easeOut' }}
       className="group relative w-full max-w-xs cursor-pointer"
     >
-      <Card className="relative overflow-hidden rounded-xl bg-background/80 backdrop-blur-sm transition-shadow duration-300 group-hover:shadow-2xl">
+      <Card className="relative overflow-hidden rounded-5 bg-background/80 backdrop-blur-sm transition-shadow duration-300 group-hover:shadow-2xl">
         <CardContent className="p-5">
           <motion.div
             style={{ transform: 'translateZ(20px)' }}
-            className="aspect-[3/4] relative w-full overflow-hidden rounded-lg"
+            className="aspect-[3/4] relative w-full overflow-hidden rounded-4"
           >
             <Image
               src="https://placehold.co/600x600.png"

@@ -1,8 +1,8 @@
 
-import type {Config} from 'tailwindcss';
+import type { Config } from 'tailwindcss';
 
 const config: Config = {
-  darkMode: "class",
+  darkMode: 'class',
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -11,46 +11,39 @@ const config: Config = {
   theme: {
     container: {
       center: true,
-      padding: "var(--space-4)",
+      padding: 'var(--space-4)',
       screens: {
-        "2xl": "1400px",
+        '2xl': '1400px',
       },
     },
     spacing: {
-      '0': '0px',
-      '1': 'var(--space-1)',
-      '2': 'var(--space-2)',
-      '3': 'var(--space-3)',
-      '4': 'var(--space-4)',
-      '5': 'var(--space-5)',
-      '6': 'var(--space-6)',
-      '7': 'var(--space-7)',
-      '8': 'var(--space-8)',
-      '9': 'var(--space-9)',
-      '10': 'var(--space-10)',
+        '0': '0',
+        'px': '1px',
+        '1': '0.25rem',
+        '2': '0.5rem',
+        '3': '0.75rem',
+        '4': '1rem',
+        '5': '1.5rem',
+        '6': '2rem',
+        '7': '3rem',
+        '8': '4rem',
+        '9': '5rem',
+        '10': '6rem',
+        '11': 'var(--space-11)',
+        '12': 'var(--space-12)',
+        '14': 'var(--space-14)',
+        '16': 'var(--space-16)',
     },
     borderRadius: {
-      '1': 'var(--radius-1)',
-      '2': 'var(--radius-2)',
-      '3': 'var(--radius-3)',
-      '4': 'var(--radius-4)',
+      '1': 'var(--radius-1)', // 4px
+      '2': 'var(--radius-2)', // 8px
+      '3': 'var(--radius-3)', // 12px
+      '4': 'var(--radius-4)', // 16px
       'full': 'var(--radius-full)',
-      // Legacy support for ShadCN
-      lg: 'var(--radius-3)',
-      md: 'var(--radius-2)',
-      sm: 'var(--radius-1)',
-    },
-    fontSize: {
-      xs: ['var(--text-xs)', { lineHeight: '1.4' }],
-      sm: ['var(--text-sm)', { lineHeight: '1.5' }],
-      base: ['var(--text-base)', { lineHeight: '1.6' }],
-      lg: ['var(--text-lg)', { lineHeight: '1.6' }],
-      xl: ['var(--text-xl)', { lineHeight: '1.6' }],
-      '2xl': ['var(--text-2xl)', { lineHeight: '1.4' }],
-      '3xl': ['var(--text-3xl)', { lineHeight: '1.3' }],
-      '4xl': ['var(--text-4xl)', { lineHeight: '1.2' }],
-      '5xl': ['var(--text-5xl)', { lineHeight: '1.1' }],
-      '6xl': ['var(--text-6xl)', { lineHeight: '1.1' }],
+      'DEFAULT': 'var(--radius-2)',
+      'sm': 'var(--radius-1)',
+      'md': 'var(--radius-2)',
+      'lg': 'var(--radius-3)',
     },
     extend: {
       fontFamily: {
@@ -59,54 +52,33 @@ const config: Config = {
         headline: ['var(--font-primary)', 'sans-serif'],
         mono: 'var(--font-mono)',
       },
-      spacing: {
-        'px': 'var(--space-px)',
-        '1': 'var(--space-1)',
-        '2': 'var(--space-2)',
-        '3': 'var(--space-3)',
-        '4': 'var(--space-4)',
-        '5': 'var(--space-5)',
-        '6': 'var(--space-6)',
-        '7': 'var(--space-7)',
-        '8': 'var(--space-8)',
-        '9': 'var(--space-9)',
-        '10': 'var(--space-10)',
-        '11': 'var(--space-11)',
-        '12': 'var(--space-12)',
-        '14': 'var(--space-14)',
-        '16': 'var(--space-16)',
-      },
       colors: {
-        // Background colors
         'bg-primary': 'hsl(var(--bg-primary))',
         'bg-secondary': 'hsl(var(--bg-secondary))',
         'bg-tertiary': 'hsl(var(--bg-tertiary))',
-        'bg-glass': 'hsl(var(--bg-glass))',
-
-        // Text colors
+        'bg-quaternary': 'hsl(var(--bg-quaternary))',
         'text-primary': 'hsl(var(--text-primary))',
         'text-secondary': 'hsl(var(--text-secondary))',
         'text-tertiary': 'hsl(var(--text-tertiary))',
-        
-        // Accent colors
+        'text-quaternary': 'hsl(var(--text-quaternary))',
         'accent-primary': 'hsl(var(--accent-primary))',
-
-        // Market colors
+        'accent-secondary': 'hsl(var(--accent-secondary))',
+        'accent-tertiary': 'hsl(var(--accent-tertiary))',
         'market-up': 'hsl(var(--market-up))',
         'market-down': 'hsl(var(--market-down))',
         'market-neutral': 'hsl(var(--market-neutral))',
-        
-        // Chart colors
-        'chart-1': 'hsl(var(--chart-1))',
-        'chart-2': 'hsl(var(--chart-2))',
-        'chart-3': 'hsl(var(--chart-3))',
-        'chart-4': 'hsl(var(--chart-4))',
-        'chart-5': 'hsl(var(--chart-5))',
-        'chart-6': 'hsl(var(--chart-6))',
-        'chart-7': 'hsl(var(--chart-7))',
-        'chart-8': 'hsl(var(--chart-8))',
-        
-        // Legacy Tailwind support for ShadCN
+        'status-success': 'hsl(var(--status-success))',
+        'status-warning': 'hsl(var(--status-warning))',
+        'status-error': 'hsl(var(--status-error))',
+        'status-info': 'hsl(var(--status-info))',
+        'chart-1': 'hsl(var(--chart-color-1))',
+        'chart-2': 'hsl(var(--chart-color-2))',
+        'chart-3': 'hsl(var(--chart-color-3))',
+        'chart-4': 'hsl(var(--chart-color-4))',
+        'chart-5': 'hsl(var(--chart-color-5))',
+        'chart-6': 'hsl(var(--chart-color-6))',
+        'chart-7': 'hsl(var(--chart-color-7))',
+        'chart-8': 'hsl(var(--chart-color-8))',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
@@ -141,23 +113,17 @@ const config: Config = {
           foreground: 'hsl(var(--card-foreground))',
         },
       },
-      borderRadius: {
-        '1': 'var(--radius-1)',
-        '2': 'var(--radius-2)',
-        '3': 'var(--radius-3)',
-        '4': 'var(--radius-4)',
-        'full': 'var(--radius-full)',
-        // Legacy support for ShadCN
-        lg: 'var(--radius-3)',
-        md: 'var(--radius-2)',
-        sm: 'var(--radius-1)',
-      },
       transitionTimingFunction: {
+        'out-expo': 'var(--ease-out-expo)',
+        'out-circ': 'var(--ease-out-circ)',
         'out-quart': 'var(--ease-out-quart)',
+        'in-out-quart': 'var(--ease-in-out-quart)',
       },
       transitionDuration: {
-        'normal': 'var(--duration-normal)',
-        'fast': 'var(--duration-fast)',
+        fast: 'var(--duration-fast)',
+        normal: 'var(--duration-normal)',
+        slow: 'var(--duration-slow)',
+        slower: 'var(--duration-slower)',
       },
       keyframes: {
         'accordion-down': {
@@ -168,7 +134,21 @@ const config: Config = {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: '0' },
         },
-        'marquee': {
+        fadeInUp: {
+          from: { opacity: '0', transform: 'translateY(20px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        skeleton: {
+          '0%': { opacity: '1' },
+          '50%': { opacity: '0.4' },
+          '100%': { opacity: '1' },
+        },
+        pricePulse: {
+          '0%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(1.05)' },
+          '100%': { transform: 'scale(1)' },
+        },
+        marquee: {
           'from': { transform: 'translateX(0)' },
           'to': { transform: 'translateX(-50%)' },
         },
@@ -176,8 +156,33 @@ const config: Config = {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
-        'marquee': 'marquee 60s linear infinite',
+        fadeInUp: 'fadeInUp var(--duration-slow) var(--ease-out-quart)',
+        skeleton: 'skeleton 1.5s ease-in-out infinite',
+        pricePulse: 'pricePulse var(--duration-normal) ease-in-out',
+        marquee: 'marquee 60s linear infinite',
       },
+      typography: (theme: (path: string) => any) => ({
+        DEFAULT: {
+          css: {
+            '--tw-prose-body': theme('colors.text-secondary'),
+            '--tw-prose-headings': theme('colors.text-primary'),
+            '--tw-prose-lead': theme('colors.text-secondary'),
+            '--tw-prose-links': theme('colors.accent-primary'),
+            '--tw-prose-bold': theme('colors.text-primary'),
+            '--tw-prose-counters': theme('colors.text-tertiary'),
+            '--tw-prose-bullets': theme('colors.text-tertiary'),
+            '--tw-prose-hr': theme('colors.border'),
+            '--tw-prose-quotes': theme('colors.text-primary'),
+            '--tw-prose-quote-borders': theme('colors.accent-primary'),
+            '--tw-prose-captions': theme('colors.text-tertiary'),
+            '--tw-prose-code': theme('colors.text-primary'),
+            '--tw-prose-pre-code': theme('colors.text-primary'),
+            '--tw-prose-pre-bg': theme('colors.bg-tertiary'),
+            '--tw-prose-th-borders': theme('colors.border'),
+            '--tw-prose-td-borders': theme('colors.border'),
+          },
+        },
+      }),
     },
   },
   plugins: [

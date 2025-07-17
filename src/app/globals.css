@@ -77,10 +77,10 @@
     --space-10: 6rem;    /* 96px */
 
     /* Border Radius Scale */
-    --radius-1: 0.25rem;
-    --radius-2: 0.5rem;
-    --radius-3: 0.75rem;
-    --radius-4: 1rem;
+    --radius-1: 0.25rem; /* 4px */
+    --radius-2: 0.5rem;  /* 8px */
+    --radius-3: 0.75rem; /* 12px */
+    --radius-4: 1rem;    /* 16px */
     --radius-full: 9999px;
     --radius: var(--radius-2);
 
@@ -113,13 +113,11 @@
 @layer components {
   /* Card Components */
   .card-primary { @apply bg-bg-secondary border border-border rounded-3; }
-  .card-elevated { 
-    @apply bg-bg-tertiary border border-border rounded-3 shadow-lg; 
-  }
+  .card-elevated { @apply bg-bg-tertiary border border-border rounded-3 shadow-lg; }
   .card-news { @apply bg-bg-secondary border border-border rounded-3 transition-all duration-normal ease-out-quart; }
   .card-news:hover { @apply border-accent-primary -translate-y-px shadow-lg; }
   
-  /* Button Components */
+  /* Button Component Styles */
   .btn-primary { 
     @apply bg-accent-primary text-primary-foreground font-semibold transition-all duration-fast ease-out-quart;
   }
@@ -150,7 +148,7 @@
   .container-full { @apply w-full mx-auto px-4 sm:px-6 lg:px-8; }
   .section-spacing { @apply py-8 md:py-12 lg:py-16; }
 
-  /* Prose Overrides */
+  /* Prose Overrides for Rich Text Content */
   .prose-invert {
     --tw-prose-body: hsl(var(--text-secondary));
     --tw-prose-headings: hsl(var(--text-primary));
@@ -191,9 +189,14 @@
     50% { transform: scale(1.05); }
     100% { transform: scale(1); }
   }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
   .animate-fadeInUp { animation: fadeInUp var(--duration-slow) var(--ease-out-quart) forwards; }
   .animate-skeleton { animation: skeleton 1.5s ease-in-out infinite; }
   .animate-pricePulse { animation: pricePulse var(--duration-normal) ease-in-out; }
+  .animate-marquee { animation: marquee 60s linear infinite; }
   
   /* Reduced Motion */
   @media (prefers-reduced-motion: reduce) {

@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -196,8 +197,8 @@
   .focus-ring:focus { @apply outline-none ring-2 ring-accent-primary ring-offset-2 ring-offset-bg-primary; }
   .sr-only { @apply absolute w-px h-px p-0 -m-px overflow-hidden; clip: rect(0, 0, 0, 0); border: 0; }
   
-  .skip-link { @apply absolute -top-10 left-1.5 bg-accent-primary text-primary-foreground px-2 py-2 no-underline z-50 rounded-2; }
-  .skip-link:focus { @apply top-1.5; }
+  .skip-link { @apply absolute -top-10 left-2 bg-accent-primary text-primary-foreground px-2 py-2 no-underline z-50 rounded-2; }
+  .skip-link:focus { @apply top-2; }
   
   /* Layout */
   .container-full { @apply w-full mx-auto px-4 sm:px-5 lg:px-6; }

@@ -39,14 +39,13 @@ const AnimatedText = ({ text, className }: { text: string; className?: string })
   );
 };
 
-<<<<<<< HEAD
 const GridPatternAnimation = () => {
     return (
         <div className="absolute inset-0 -z-10 h-full w-full">
             <div 
                 className="absolute inset-0 h-full w-full"
                 style={{
-                    backgroundImage: 'linear-gradient(to right, hsl(var(--border-color)) 1px, transparent 1px), linear-gradient(to bottom, hsl(var(--border-color)) 1px, transparent 1px)',
+                    backgroundImage: 'linear-gradient(to right, hsl(var(--border)) 1px, transparent 1px), linear-gradient(to bottom, hsl(var(--border)) 1px, transparent 1px)',
                     backgroundSize: '40px 40px',
                     maskImage: 'radial-gradient(ellipse 80% 50% at 50% 0%, hsl(var(--bg-primary)) 70%, transparent 100%)',
                 }}
@@ -65,31 +64,15 @@ export function HeroSection() {
       <div className="container relative z-10 mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
           <div className="flex justify-center items-center mt-8 lg:mt-0">
-=======
-export function HeroSection() {
-  return (
-    <section className="relative flex items-center justify-center min-h-[calc(100vh-4rem)] overflow-hidden">
-      <div className="container relative z-10 mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-center">
-          <div className="lg:col-span-2 flex justify-center items-center">
->>>>>>> b058873b045abf5277ae8797dcaa268e60af95fe
             <NftCard />
           </div>
           <div className="text-center lg:text-left">
             <AnimatedText
-<<<<<<< HEAD
               text="Kejelasan di Tengah Kekacauan."
-              className="text-4xl md:text-5xl lg:text-[3.3rem] font-extrabold leading-tight tracking-tighter mb-6 [&_.letter]:inline-block text-glow"
+              className="text-4xl md:text-5xl lg:text-[3.3rem] font-extrabold leading-tight tracking-tighter mb-6 [&_.letter]:inline-block text-text-primary"
             />
             <p className="text-base md:text-lg text-text-secondary max-w-xl mx-auto lg:mx-0 mb-10">
               Fud Court membelah kebisingan pasar dengan analisis berbasis data dan berita yang tidak bias, memberdayakan Anda untuk membuat keputusan investasi kripto yang lebih cerdas.
-=======
-              text="Clarity in Chaos."
-              className="text-5xl font-extrabold tracking-tighter mb-5 [&_.letter]:inline-block"
-            />
-            <p className="text-lg text-muted-foreground max-w-xl mx-auto lg:mx-0 mb-6">
-              Fud Court cuts through market noise with data-driven analysis and unbiased news, empowering you to make smarter crypto investment decisions.
->>>>>>> b058873b045abf5277ae8797dcaa268e60af95fe
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-8 lg:mb-0">
               <Button size="lg" asChild>

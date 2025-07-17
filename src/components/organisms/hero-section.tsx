@@ -59,11 +59,11 @@ const GridPatternAnimation = () => {
 
 export function HeroSection() {
   return (
-    <section className="relative flex items-center justify-center min-h-screen overflow-hidden">
+    <section className="relative flex items-center justify-center min-h-screen overflow-hidden pt-20 md:pt-0">
       <GridPatternAnimation />
       <div className="container relative z-10 mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
-          <div className="flex justify-center items-center mb-12 lg:mb-0">
+          <div className="flex justify-center items-center mt-8 lg:mt-0">
             <NftCard />
           </div>
           <div className="text-center lg:text-left">
@@ -71,10 +71,10 @@ export function HeroSection() {
               text="Kejelasan di Tengah Kekacauan."
               className="text-4xl md:text-5xl lg:text-[3.3rem] font-extrabold leading-tight tracking-tighter mb-6 [&_.letter]:inline-block text-glow"
             />
-            <p className="text-lg text-text-secondary max-w-xl mx-auto lg:mx-0 mb-10">
+            <p className="text-base md:text-lg text-text-secondary max-w-xl mx-auto lg:mx-0 mb-10">
               Fud Court membelah kebisingan pasar dengan analisis berbasis data dan berita yang tidak bias, memberdayakan Anda untuk membuat keputusan investasi kripto yang lebih cerdas.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-8 lg:mb-0">
               <Button size="lg" asChild>
                 <Link href="#" target="_blank" rel="noopener noreferrer">Gabung Komunitas</Link>
               </Button>

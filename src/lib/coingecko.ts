@@ -39,6 +39,31 @@ async function getGlobalMarketData(): Promise<CoinGeckoGlobalData['data'] | null
 }
 
 /**
+ * Fetches the average 30-day trading volume for Bitcoin as a proxy for the total market.
+ * @returns A promise that resolves to the average volume, or 0 on failure.
+ */
+async function getAvg30DayVolume(): Promise<number> {
+    try {
+        const url = `${COINGECKO_API_BASE_URL}/coins/bitcoin/market_chart?vs_currency=usd&days=30&interval=daily`;
+        const response = await fetch(url, { next: { revalidate: 3600 } }); // Cache for 1 hour
+        if (!response.ok) {
+            console.error(`CoinGecko Market Chart API error: ${response.status} ${response.statusText}`);
+            return 0;
+        }
+        const data = await response.json();
+        const volumes = data.total_volumes.map((v: [number, number]) => v[1]);
+        if (volumes.length === 0) return 0;
+        
+        const sum = volumes.reduce((a: number, b: number) => a + b, 0);
+        return sum / volumes.length;
+    } catch (error) {
+        console.error('An error occurred while fetching 30-day average volume:', error);
+        return 0;
+    }
+}
+
+
+/**
  * Fetches a list of top cryptocurrencies from the Supabase database.
  * @param page The page number to fetch.
  * @param per_page The number of coins per page.
@@ -198,12 +223,13 @@ export async function updateCryptoExchangeRates(): Promise<void> {
  */
 export async function fetchMarketData(): Promise<CombinedMarketData | null> {
     try {
-        const [globalData, fearAndGreed, topCoinsData, defiProtocols, stablecoinsData] = await Promise.all([
+        const [globalData, fearAndGreed, topCoinsData, defiProtocols, stablecoinsData, avg30DayVolume] = await Promise.all([
             getGlobalMarketData(),
             getFearAndGreedIndex(),
             supabase.from('crypto_data').select('*').order('market_cap_rank', { ascending: true }).limit(20),
             getDefiLlamaProtocols(),
-            getDefiLlamaStablecoins()
+            getDefiLlamaStablecoins(),
+            getAvg30DayVolume(),
         ]);
 
         if (!globalData || !fearAndGreed || topCoinsData.error || !defiProtocols || !stablecoinsData) {
@@ -231,9 +257,9 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
         
         const result: CombinedMarketData = {
             totalMarketCap,
-            maxHistoricalMarketCap: totalMarketCap,
+            maxHistoricalMarketCap: totalMarketCap, // Placeholder, ideally should come from historical data
             totalVolume24h: globalData.total_volume?.usd ?? 0,
-            avg30DayVolume: 0, // Not available from CoinGecko /global endpoint
+            avg30DayVolume: avg30DayVolume,
             btcDominance,
             fearAndGreedIndex: parseInt(fearAndGreed.value),
             topCoins: topCoins.map(coin => ({

@@ -51,8 +51,8 @@ export async function getDefiLlamaProtocols(): Promise<DefiLlamaProtocol[] | nul
       console.error('Supabase DefiLlama protocols cache read error:', cacheError);
     }
 
-    if (cachedData && cachedData.length > 0) {
-      cachedProtocols = cachedData[0].protocols_data as DefiLlamaProtocol[];
+    if (cachedData && cachedData.length > 0 && cachedData[0].data) {
+      cachedProtocols = cachedData[0].data as DefiLlamaProtocol[];
       const lastUpdated = new Date(cachedData[0].last_updated).getTime();
       const now = new Date().getTime();
       if ((now - lastUpdated) / 1000 < CACHE_DURATION_SECONDS) {
@@ -81,7 +81,7 @@ export async function getDefiLlamaProtocols(): Promise<DefiLlamaProtocol[] | nul
 
     const { error: upsertError } = await supabase.from('defillama_protocols').upsert({
         id: 1, // Use a fixed ID for this singleton-like table
-        protocols_data: protocolsData,
+        data: protocolsData, // Corrected column name
         last_updated: new Date().toISOString(),
     }, { onConflict: 'id' });
 

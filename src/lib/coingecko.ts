@@ -64,32 +64,45 @@ export async function syncTopCoins() {
   }
 }
 
+async function getGlobalMarketDataFromApi(): Promise<CoinGeckoGlobalData['data'] | null> {
+    const url = `${COINGECKO_API_BASE_URL}/global`;
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            console.error(`CoinGecko Global API error: ${response.status}`);
+            return null;
+        }
+        const data: CoinGeckoGlobalData = await response.json();
+        return data.data;
+    } catch (error) {
+        console.error('Error fetching global market data from API:', error);
+        return null;
+    }
+}
+
+
 /**
  * Fetches and syncs global market data from CoinGecko to Supabase.
  */
 export async function syncGlobalMarketData() {
   console.log("Starting sync: Global Market Data from CoinGecko");
-  const url = `${COINGECKO_API_BASE_URL}/global`;
-  
-  try {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`CoinGecko Global API error: ${response.status}`);
-    const data: CoinGeckoGlobalData = await response.json();
-
+  const apiData = await getGlobalMarketDataFromApi();
+  if (apiData) {
     const globalData = {
       id: 'global', // a single row to always upsert
-      data: data.data,
+      data: apiData,
       last_updated: new Date().toISOString(),
     };
 
     const { error } = await supabase.from('global_market_data').upsert(globalData, { onConflict: 'id' });
-    if (error) throw error;
-    
+    if (error) {
+      console.error('Error syncing global market data to Supabase:', error);
+      throw error;
+    }
     console.log("Sync finished: Global Market Data from CoinGecko");
-  } catch (error) {
-    console.error('Error syncing global market data:', error);
-    throw error;
+    return apiData;
   }
+  return null;
 }
 
 
@@ -252,8 +265,19 @@ export async function updateCryptoExchangeRates(): Promise<void> {
  */
 export async function fetchMarketData(): Promise<CombinedMarketData | null> {
     try {
-        const [globalDataResult, fearAndGreed, topCoinsData, defiProtocols, stablecoinsData, avg30DayVolume] = await Promise.all([
-            supabase.from('global_market_data').select('*').single(),
+        let globalDataResult = await supabase.from('global_market_data').select('*').single();
+        
+        if (globalDataResult.error || !globalDataResult.data) {
+            console.warn("Global market data cache is empty or failed to load. Fetching from API as fallback.");
+            const apiData = await syncGlobalMarketData();
+            if (apiData) {
+                globalDataResult = { data: { data: apiData }, error: null } as any;
+            } else {
+                throw new Error("Failed to fetch global market data from both cache and API.");
+            }
+        }
+
+        const [fearAndGreed, topCoinsData, defiProtocols, stablecoinsData, avg30DayVolume] = await Promise.all([
             getFearAndGreedIndexFromCache(),
             supabase.from('crypto_data').select('*').order('market_cap_rank', { ascending: true, nullsFirst: false }).limit(20),
             getDefiLlamaProtocols(),

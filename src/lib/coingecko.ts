@@ -163,13 +163,13 @@ export async function updateCryptoExchangeRates(): Promise<void> {
 
         const updates = [];
         if (data.eurc && data.eurc.usd) {
-            updates.push({ currency: 'eurc', rate: data.eurc.usd });
+            updates.push({ currency: 'eur', rate: data.eurc.usd });
         }
         if (data.idrx && data.idrx.usd) {
-            updates.push({ currency: 'idrx', rate: data.idrx.usd });
+            updates.push({ currency: 'idr', rate: data.idrx.usd });
         }
         if (data['pax-gold'] && data['pax-gold'].usd) {
-            updates.push({ currency: 'paxg', rate: data['pax-gold'].usd }); // Store as 'paxg'
+            updates.push({ currency: 'xau', rate: data['pax-gold'].usd });
         }
 
         if (updates.length > 0) {
@@ -206,11 +206,11 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
             getDefiLlamaStablecoins()
         ]);
 
-        if (!globalData || !fearAndGreed || topCoinsData.error) {
-            console.error('Failed to fetch one or more core data sources.', { globalData: !!globalData, fearAndGreed: !!fearAndGreed, topCoinsError: topCoinsData.error });
+        if (!globalData || !fearAndGreed || topCoinsData.error || !defiProtocols || !stablecoinsData) {
+            console.error('Failed to fetch one or more core data sources.', { globalData: !!globalData, fearAndGreed: !!fearAndGreed, topCoinsError: topCoinsData.error, defiProtocols: !!defiProtocols, stablecoinsData: !!stablecoinsData });
             return null;
         }
-
+        
         const topCoins = topCoinsData.data || [];
         const totalMarketCap = globalData.total_market_cap?.usd ?? 0;
         
@@ -222,7 +222,7 @@ export async function fetchMarketData(): Promise<CombinedMarketData | null> {
         const ethTvl = defiProtocols?.find(p => p.name === "Ethereum")?.tvl ?? 0;
         const solTvl = defiProtocols?.find(p => p.name === "Solana")?.tvl ?? 0;
         
-        const stablecoinMarketCap = stablecoinsData?.reduce((sum, coin) => sum + (coin.circulating?.peggedUSD ?? 0), 0) ?? 0;
+        const stablecoinMarketCap = stablecoinsData?.reduce((sum, coin) => sum + (coin.circulating_pegged_usd ?? 0), 0) ?? 0;
         
         const btcDominance = globalData.market_cap_percentage?.btc ?? 0;
         const ethDominance = globalData.market_cap_percentage?.eth ?? 0;

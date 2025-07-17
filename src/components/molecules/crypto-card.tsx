@@ -20,7 +20,7 @@ export function CryptoCard({ data, className }: { data: CryptoData, className?: 
         alt={`${data.name} background logo`}
         width={128}
         height={128}
-        className="absolute -top-10 -left-10 w-32 h-32 opacity-[0.45] rotate-[30deg]"
+        className="absolute -top-10 -left-10 w-32 h-32 opacity-[0.35] rotate-[30deg] rounded-full"
       />
       <div className="relative z-10 flex flex-col h-full">
         <CardHeader className="flex flex-row items-start justify-between space-y-0 p-2 pb-0 gap-1">

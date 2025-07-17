@@ -80,22 +80,22 @@ function StatCard({ label, value, underlyingValue, colorClass, index, valueIsPer
             transition={{ delay: index * 0.1 }}
             variants={cardVariants}
         >
-            <div className="rounded-lg border bg-card text-card-foreground p-4 flex flex-col justify-between h-full shadow-inner">
+            <div className="card-primary h-full flex flex-col justify-between">
                 <div className="flex items-center gap-2">
                     <span className={cn("h-2.5 w-2.5 rounded-full", colorClass)} />
-                    <p className="text-sm font-medium text-muted-foreground">{label}</p>
+                    <p className="caption-regular text-text-secondary">{label}</p>
                 </div>
                 <div>
                      <AnimatedStatNumber
                         to={value}
                         formatter={valueIsPercentage ? formatPercentage : formatCurrency}
-                        className="text-2xl font-bold"
+                        className="number-large"
                         delay={index * 100}
                     />
                     {underlyingValue !== undefined && <AnimatedStatNumber
                         to={underlyingValue}
                         formatter={formatCurrency}
-                        className="text-xs text-muted-foreground"
+                        className="caption-regular text-text-secondary"
                         delay={index * 100}
                     />}
                 </div>
@@ -110,7 +110,7 @@ interface MarketStatsCardProps {
 
 export function MarketStatsCard({ marketStats }: MarketStatsCardProps) {
     if (!marketStats) {
-        return <Skeleton className="h-[220px] lg:h-[120px] w-full" />;
+        return <Skeleton className="h-[220px] lg:h-[120px] w-full rounded-3" />;
     }
     
     const { 
@@ -147,14 +147,14 @@ export function MarketStatsCard({ marketStats }: MarketStatsCardProps) {
     ];
 
     return (
-        <Card className="h-full">
-            <CardHeader>
-                <CardTitle>Dominasi & TVL</CardTitle>
-                <CardDescription>
+        <Card className="card-primary">
+            <CardHeader className="p-0 mb-4">
+                <CardTitle className="headline-5">Dominasi & TVL</CardTitle>
+                <CardDescription className="body-regular text-text-secondary">
                     Perbandingan kapitalisasi pasar (MC) dan nilai terkunci (TVL) berbagai ekosistem terhadap total pasar kripto.
                 </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="p-0 space-y-4">
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                     {marketDominanceStats.map((stat, index) => (
                         <StatCard key={stat.label} {...stat} index={index} />

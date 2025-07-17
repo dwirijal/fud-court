@@ -1,7 +1,7 @@
 
 'use server';
 
-import type { DefiLlamaProtocol, DefiLlamaStablecoin, DefiLlamaChain } from '@/types';
+import type { DefiLlamaProtocol, DefiLlamaStablecoin, DefiLlamaChain, DefiLlamaHistoricalTvl } from '@/types';
 import { supabase } from './supabase';
 
 const DEFILLAMA_API_BASE_URL = 'https://api.llama.fi';
@@ -25,7 +25,6 @@ export async function syncDefiLlamaData() {
     }
 }
 
-<<<<<<< HEAD
 async function syncDefiLlamaProtocols(): Promise<void> {
     console.log("Starting sync: DefiLlama Protocols");
     const response = await fetch(`${DEFILLAMA_API_BASE_URL}/protocols`);
@@ -54,7 +53,7 @@ async function syncDefiLlamaProtocols(): Promise<void> {
 
 async function syncDefiLlamaStablecoins(): Promise<void> {
     console.log("Starting sync: DefiLlama Stablecoins");
-    const response = await fetch(`${DEFILLAMA_STABLECOINS_API_BASE_URL}/stablecoins`);
+    const response = await fetch(`${DEFILLAMA_STABLECOINS_API_BASE_URL}/stablecoins?includePrices=true`);
     if (!response.ok) throw new Error(`DefiLlama Stablecoins API error: ${response.status}`);
     
     const data = await response.json();
@@ -169,234 +168,53 @@ export async function getDefiLlamaChains(): Promise<DefiLlamaChain[]> {
         }
     }
     return data as DefiLlamaChain[];
-=======
-export async function getDefiLlamaProtocols(): Promise<DefiLlamaProtocol[] | null> {
-  let cachedData: DefiLlamaProtocol[] | null = null;
-  if (supabase) {
-    try {
-      const { data, error: cacheError } = await supabase
-        .from('defillama_protocols')
-        .select('*');
-
-      if (data && data.length > 0) {
-        const lastUpdated = new Date(data[0].last_updated).getTime();
-        const now = new Date().getTime();
-        
-        if ((now - lastUpdated) / 1000 < CACHE_DURATION_SECONDS) {
-          console.log('Serving DefiLlama protocols from fresh Supabase cache.');
-          return data; // Data is already in the correct format
-        }
-        cachedData = data;
-        console.log('Supabase DefiLlama protocols cache is stale. Will fetch from API.');
-      }
-
-      if (cacheError && cacheError.code !== 'PGRST116') {
-        console.error('Supabase DefiLlama protocols cache read error:', cacheError);
-      }
-    } catch (e) {
-      console.error('An unexpected error occurred during DefiLlama protocols cache fetch:', e);
-    }
-  }
-
-  try {
-    console.log('Fetching DefiLlama protocols from API.');
-    const response = await fetch(`${DEFILLAMA_API_BASE_URL}/protocols`, { cache: 'no-store' });
-    if (!response.ok) {
-        console.error(`DefiLlama Protocols API error: ${response.status} ${response.statusText}`);
-        if (cachedData) {
-            console.warn('DefiLlama Protocols API failed, serving stale data from Supabase cache.');
-            return cachedData;
-        }
-        return null;
-    }
-    const protocolsData: DefiLlamaProtocol[] = await response.json();
-
-    if (supabase) {
-        const protocolsToUpsert = protocolsData.map(p => ({
-            id: p.id,
-            name: p.name,
-            symbol: p.symbol,
-            category: p.category,
-            chains: p.chains,
-            tvl: p.tvl,
-            chain_tvls: p.chainTvls,
-            change_1d: p.change_1d,
-            change_7d: p.change_7d,
-            last_updated: new Date().toISOString()
-        }));
-
-        const { error: upsertError } = await supabase.from('defillama_protocols').upsert(protocolsToUpsert, { onConflict: 'id' });
-        if (upsertError) {
-            console.error('Error upserting DefiLlama protocols into cache:', upsertError.message);
-        } else {
-            console.log('Successfully updated Supabase cache with new DefiLlama protocols data.');
-        }
-    }
-
-    return protocolsData;
-  } catch (error) {
-    console.error("An error occurred while fetching DefiLlama protocols:", error);
-    if (cachedData) {
-        console.warn('DefiLlama Protocols API failed, serving stale data from Supabase cache as fallback.');
-        return cachedData;
-    }
-    return null;
-  }
 }
 
-export async function getDefiLlamaStablecoins(limit?: number): Promise<DefiLlamaStablecoin[] | null> {
-  let cachedData: DefiLlamaStablecoin[] | null = null;
-  if (supabase) {
-      try {
-        const { data, error: cacheError } = await supabase
-            .from('defillama_stablecoins')
-            .select('*')
-            .order('circulating_pegged_usd', { ascending: false, nullsFirst: false });
-
-        if (data && data.length > 0) {
-            const lastUpdated = new Date(data[0].last_updated).getTime();
-            const now = new Date().getTime();
-            if ((now - lastUpdated) / 1000 < CACHE_DURATION_SECONDS) {
-                console.log('Serving DefiLlama stablecoins from fresh Supabase cache.');
-                cachedData = data.map(sc => ({
-                    id: sc.id,
-                    name: sc.name,
-                    symbol: sc.symbol,
-                    pegType: sc.peg_type,
-                    pegMechanism: sc.peg_mechanism,
-                    circulating: { peggedUSD: sc.circulating_pegged_usd },
-                    chains: sc.chains,
-                    chainCirculating: sc.chain_circulating,
-                    price: sc.price,
-                }));
-                return limit ? cachedData.slice(0, limit) : cachedData;
-            }
-            console.log('Supabase DefiLlama stablecoins cache is stale. Will fetch from API.');
-        }
-
-        if (cacheError && cacheError.code !== 'PGRST116') {
-            console.error('Supabase DefiLlama stablecoins cache read error:', cacheError);
-        }
-      } catch (e) {
-        console.error('An unexpected error occurred during DefiLlama stablecoins cache fetch:', e);
-      }
-  }
-
-  try {
-    console.log('Fetching DefiLlama stablecoins from API.');
-    const response = await fetch(`${DEFILLAMA_STABLECOINS_API_BASE_URL}/stablecoins?includePrices=true`, { next: { revalidate: CACHE_DURATION_SECONDS }});
-    if (!response.ok) {
-      console.error(`DefiLlama Stablecoins API error: ${response.status} ${response.statusText}`);
-      if (cachedData) {
-        console.warn('DefiLlama Stablecoins API failed, serving stale data from Supabase cache.');
-        return limit ? cachedData.slice(0, limit) : cachedData;
-      }
-      return null;
-    }
-    const data = await response.json();
-    const stablecoinsData: DefiLlamaStablecoin[] = data.peggedAssets;
-    
-    if (supabase) {
-        const stablecoinsToUpsert = stablecoinsData.map(sc => ({
-            id: sc.id,
-            name: sc.name,
-            symbol: sc.symbol,
-            peg_type: sc.pegType,
-            peg_mechanism: sc.pegMechanism,
-            circulating_pegged_usd: sc.circulating?.peggedUSD,
-            chains: sc.chains,
-            chain_circulating: sc.chainCirculating,
-            price: sc.price,
-            last_updated: new Date().toISOString()
-        }));
-
-        const { error: upsertError } = await supabase.from('defillama_stablecoins').upsert(
-            stablecoinsToUpsert, 
-            { onConflict: 'id' }
-        );
-        
-        if (upsertError) {
-            console.error('Error upserting DefiLlama stablecoins into cache:', upsertError.message);
-        } else {
-            console.log('Successfully updated Supabase cache with new DefiLlama stablecoins data.');
-        }
-    }
-
-    return limit ? stablecoinsData.slice(0, limit) : stablecoinsData;
-  } catch (error) {
-    console.error("An error occurred while fetching DefiLlama stablecoins:", error);
-    if (cachedData) {
-        console.warn('DefiLlama Stablecoins API failed, serving stale data from Supabase cache as fallback.');
-        return limit ? cachedData.slice(0, limit) : cachedData;
-    }
-    return null;
-  }
-}
 
 export async function getDefiLlamaHistoricalTvl(): Promise<DefiLlamaHistoricalTvl[] | null> {
-  let cachedData: DefiLlamaHistoricalTvl[] | null = null;
-  if (supabase) {
     try {
-        const { data, error: cacheError } = await supabase
-        .from('defillama_historical_tvl')
-        .select('*')
-        .order('date', { ascending: false });
+        console.log('Fetching DefiLlama historical TVL from API.');
+        const response = await fetch(`${DEFILLAMA_API_BASE_URL}/v2/historicalChainTvl`);
+        if (!response.ok) {
+        console.error(`DefiLlama Historical TVL API error: ${response.status} ${response.statusText}`);
+        return null;
+        }
+        const data: DefiLlamaHistoricalTvl[] = await response.json();
+        return data;
+    } catch (error) {
+        console.error("An error occurred while fetching DefiLlama historical TVL:", error);
+        return null;
+    }
+}
 
-        if (data && data.length > 0) {
-            const lastUpdated = new Date(data[0].last_updated).getTime();
-            const now = new Date().getTime();
-            if ((now - lastUpdated) / 1000 < CACHE_DURATION_SECONDS) {
-                console.log('Serving DefiLlama historical TVL from fresh Supabase cache.');
-                cachedData = data.map(item => ({ date: item.date, tvl: item.tvl }));
-                return cachedData;
-            }
-            console.log('Supabase DefiLlama historical TVL cache is stale. Will fetch from API.');
+export async function getDefiLlamaCoinData(symbol: string) {
+    if (!symbol) return null;
+    try {
+        const { data: protocolData, error: protocolError } = await supabase
+            .from('defillama_protocols')
+            .select('tvl, chains, name')
+            .ilike('symbol', symbol)
+            .order('tvl', { ascending: false, nullsFirst: false })
+            .limit(10); // Fetch a few to find the best match
+
+        if (protocolError) {
+            console.error(`Error fetching defi llama data for ${symbol}`, protocolError);
+            return null;
         }
 
-        if (cacheError && cacheError.code !== 'PGRST116') {
-            console.error('Supabase DefiLlama historical TVL cache read error:', cacheError);
-        }
-    } catch(e) {
-        console.error('An unexpected error occurred during DefiLlama historical TVL cache fetch:', e);
-    }
-  }
+        if (!protocolData || protocolData.length === 0) return null;
 
-  try {
-    console.log('Fetching DefiLlama historical TVL from API.');
-    const response = await fetch(`${DEFILLAMA_API_BASE_URL}/v2/historicalChainTvl`, { next: { revalidate: CACHE_DURATION_SECONDS }});
-    if (!response.ok) {
-      console.error(`DefiLlama Historical TVL API error: ${response.status} ${response.statusText}`);
-      if (cachedData) {
-        console.warn('DefiLlama Historical TVL API failed, serving stale data from Supabase cache.');
-        return cachedData;
-      }
-      return null;
-    }
-    const data: DefiLlamaHistoricalTvl[] = await response.json();
+        // Simple heuristic: find the protocol with the highest TVL that matches the symbol
+        const bestMatch = protocolData.reduce((prev, current) => (prev.tvl > current.tvl) ? prev : current);
 
-    if (supabase) {
-        const historicalTvlToUpsert = data.map(tvl => ({
-            date: tvl.date, // 'date' is the primary key
-            tvl: tvl.tvl,
-            last_updated: new Date().toISOString(),
-        }));
+        return {
+            tvl: bestMatch.tvl,
+            chains: bestMatch.chains,
+            protocols: protocolData.map(p => ({ name: p.name })),
+        };
 
-        const { error: upsertError } = await supabase.from('defillama_historical_tvl').upsert(historicalTvlToUpsert, { onConflict: 'date' });
-        if (upsertError) {
-            console.error('Error upserting DefiLlama historical TVL into cache:', upsertError.message);
-        } else {
-            console.log('Successfully updated Supabase cache with new DefiLlama historical TVL data.');
-        }
+    } catch (error) {
+        console.error(`Unexpected error fetching DefiLlama data for ${symbol}:`, error);
+        return null;
     }
-
-    return data;
-  } catch (error) {
-    console.error("An error occurred while fetching DefiLlama historical TVL:", error);
-    if (cachedData) {
-        console.warn('DefiLlama Historical TVL API failed, serving stale data from Supabase cache as fallback.');
-        return cachedData;
-    }
-    return null;
-  }
->>>>>>> b058873b045abf5277ae8797dcaa268e60af95fe
 }

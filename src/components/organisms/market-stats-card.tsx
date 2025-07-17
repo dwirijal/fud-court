@@ -147,7 +147,6 @@ export function MarketStatsCard({ marketStats }: MarketStatsCardProps) {
     ];
 
     return (
-<<<<<<< HEAD
         <Card className="h-full">
             <CardHeader>
                 <CardTitle>Dominasi & TVL</CardTitle>
@@ -158,18 +157,6 @@ export function MarketStatsCard({ marketStats }: MarketStatsCardProps) {
             <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                     {marketDominanceStats.map((stat, index) => (
-=======
-        <Card className="h-full bg-primary/5 border-primary/20">
-            <CardHeader className="p-6">
-                <CardTitle className="text-2xl font-headline">Dominasi Pasar</CardTitle>
-                <CardDescription>
-                    Total Kap. Pasar: {formatCurrency(totalMarketCap)}. Bitcoin menyumbang {formatPercentage(btcDominance)}, diikuti oleh aset lainnya.
-                </CardDescription>
-            </CardHeader>
-            <CardContent className="p-6 pt-0">
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                    {stats.map((stat, index) => (
->>>>>>> b058873b045abf5277ae8797dcaa268e60af95fe
                         <StatCard key={stat.label} {...stat} index={index} />
                     ))}
                 </div>

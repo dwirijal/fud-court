@@ -51,11 +51,11 @@ export default async function ArticlesPage() {
             <div className="bg-accent-primary/10 text-accent-primary p-2 rounded-3">
                 <BookOpen className="h-8 w-8" />
             </div>
-            <h1 className="text-5xl font-bold tracking-tight">
+            <h1 className="text-3xl font-bold tracking-tighter">
                 Artikel
             </h1>
         </div>
-        <p className="text-lg text-text-secondary mt-2">
+        <p className="text-base text-text-secondary mt-2">
             Analisis mendalam dan konten panjang tentang lanskap kripto.
         </p>
       </header>
@@ -81,7 +81,7 @@ export default async function ArticlesPage() {
                     {article.primary_tag.name}
                   </Badge>
                 )}
-                <CardTitle className="text-xl font-semibold leading-tight">
+                <CardTitle className="text-lg font-semibold leading-tight">
                   <Link href={`/news/${article.slug}`} className="hover:underline">
                     {article.title}
                   </Link>

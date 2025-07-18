@@ -190,8 +190,8 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
             </CardDescription>
         </CardHeader>
          <CardContent className="flex flex-col flex-grow">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-grow">
-                <div className="lg:col-span-1 flex flex-col justify-between items-center text-center p-6 bg-bg-secondary rounded-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-grow">
+                <div className="md:col-span-1 flex flex-col justify-between items-center text-center p-6 bg-bg-secondary rounded-3">
                     <div className="space-y-2">
                       <AnimatedNumber to={analysisResult.macroScore} className={cn("text-7xl md:text-8xl font-bold tracking-tighter", activeColorClass)} />
                       <p className={cn("text-2xl font-semibold", activeColorClass)}>{analysisResult.marketCondition}</p>
@@ -217,15 +217,15 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                         </Button>
                     </div>
                 </div>
-                <div className="lg:col-span-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 gap-3">
+                <div className="md:col-span-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     {indicatorDetails.map((detail) => (
                          <FlippableIndicatorCard
                             key={detail.name}
                             icon={detail.icon}
                             name={detail.name}
-                            score={analysisResult.components[detail.valueKey]}
+                            score={analysisResult.components[detail.valueKey as keyof typeof analysisResult.components]}
                             formula={detail.formula}
-                            rawData={analysisResult.rawData[detail.rawDataKey]}
+                            rawData={analysisResult.rawData[detail.rawDataKey as keyof typeof analysisResult.rawData]}
                         />
                     ))}
                 </div>

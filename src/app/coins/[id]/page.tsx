@@ -101,7 +101,7 @@ export default async function CoinPage({ params }: CoinPageProps) {
         </div>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
         <Card className="card-primary p-5">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 p-0 pb-2">
                 <CardTitle className="text-sm font-medium text-text-secondary">Harga Saat Ini</CardTitle>

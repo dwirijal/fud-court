@@ -109,14 +109,24 @@
 
 @layer components {
   /* Card Components */
-  .card-primary { @apply bg-bg-tertiary border border-border rounded-4; }
-  .card-elevated { @apply bg-bg-tertiary border border-border rounded-3 shadow-lg; }
-  .card-news { @apply bg-bg-tertiary border border-border rounded-3 transition-all duration-300 ease-out; }
-  .card-news:hover { @apply border-accent-primary/50 -translate-y-px shadow-lg shadow-accent-primary/5; }
+  .card-primary { @apply bg-bg-tertiary border border-border rounded-3; }
+  .card-elevated { @apply bg-bg-tertiary border border-border rounded-lg shadow-lg; }
+  .card-news { @apply bg-bg-tertiary border border-border rounded-lg transition-all duration-300 ease-out; }
+  .card-news:hover { @apply border-primary -translate-y-px shadow-lg shadow-primary/10; }
   
+  /* Layout */
+  .container-full { @apply w-full mx-auto px-5; }
+  .section-spacing { @apply py-8 md:py-12 lg:py-16; }
+
+  /* Bento Grid */
+  .bento-container { @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-5; }
+  .bento-item { @apply bg-bg-secondary p-5 rounded-xl border border-border; }
+  .bento-item-content { @apply h-full w-full flex flex-col; }
+  
+
   /* Button Component Styles */
   .btn-primary { 
-    @apply bg-gradient-to-r from-green-400 to-teal-400 text-black font-semibold transition-all duration-fast ease-out;
+    @apply bg-gradient-to-r from-green-400 to-teal-400 text-black font-semibold transition-all duration-150 ease-out;
   }
   .btn-primary:hover {
     box-shadow: 0 0 15px hsl(var(--accent-primary) / 0.5);
@@ -124,22 +134,22 @@
   }
   
   .btn-secondary { 
-    @apply bg-transparent text-accent-primary border border-accent-primary font-medium transition-colors duration-fast ease-out; 
+    @apply bg-transparent text-primary border border-primary font-medium transition-colors duration-150 ease-out; 
   }
   .btn-secondary:hover {
-    background-color: hsl(var(--accent-primary) / 0.1);
+    background-color: hsl(var(--primary) / 0.1);
   }
 
   .btn-destructive {
-    @apply bg-gradient-to-r from-red-500 to-pink-500 text-white font-semibold transition-all duration-fast ease-out;
+    @apply bg-gradient-to-r from-red-500 to-pink-500 text-white font-semibold transition-all duration-150 ease-out;
   }
   .btn-destructive:hover {
     box-shadow: 0 0 15px hsl(var(--accent-secondary) / 0.5);
     transform: translateY(-1px);
   }
 
-  .btn-ghost { @apply bg-transparent text-text-secondary border border-transparent font-medium transition-colors duration-fast ease-out; }
-  .btn-ghost:hover { @apply bg-bg-quaternary text-text-primary; }
+  .btn-ghost { @apply bg-transparent text-text-secondary border border-transparent font-medium transition-colors duration-150 ease-out; }
+  .btn-ghost:hover { @apply bg-accent text-text-primary; }
   
   /* Accessibility */
   .focus-ring:focus-visible { @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background; }
@@ -148,9 +158,6 @@
   .skip-link { @apply absolute -top-12 left-4 bg-accent-primary text-primary-foreground px-4 py-2 no-underline z-50 rounded-2; }
   .skip-link:focus { @apply top-4; }
   
-  /* Layout */
-  .container-full { @apply w-full mx-auto px-4 sm:px-6 lg:px-8; }
-  .section-spacing { @apply py-8 md:py-12 lg:py-16; }
 
   /* Prose Overrides for Rich Text Content */
   .prose {
@@ -160,22 +167,22 @@
     @apply text-base leading-relaxed;
   }
   .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
-    @apply text-text-primary font-mono font-bold tracking-tighter;
+    @apply text-text-primary font-headline font-bold tracking-tighter;
   }
   .prose a {
-    @apply text-accent-primary;
+    @apply text-primary;
   }
   .prose strong {
     @apply text-text-primary;
   }
   .prose blockquote {
-    @apply border-l-accent-primary text-text-primary;
+    @apply border-l-primary text-text-primary;
   }
   .prose code {
-    @apply font-mono text-accent-primary bg-bg-secondary p-1 rounded-1;
+    @apply font-mono text-primary bg-bg-secondary p-1 rounded-sm;
   }
   .prose pre {
-    @apply font-mono bg-bg-secondary p-4 rounded-3;
+    @apply font-mono bg-bg-secondary p-4 rounded-lg;
   }
   .prose pre code {
     @apply bg-transparent p-0;

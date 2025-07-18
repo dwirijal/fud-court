@@ -16,8 +16,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { AnimatedNumber } from '../molecules/animated-number';
-import { IndicatorCard } from '../molecules/indicator-card';
 import type { CombinedMarketData } from '@/types';
+import { FlippableIndicatorCard } from '../molecules/flippable-indicator-card';
 
 const weights = {
   marketCap: 0.25,
@@ -26,6 +26,21 @@ const weights = {
   ath: 0.25,
   marketBreadth: 0.10
 };
+
+const formatCurrency = (value: number, compact: boolean = true) => {
+    const options: Intl.NumberFormatOptions = {
+        style: 'currency',
+        currency: 'USD',
+    };
+    if (compact) {
+        options.notation = 'compact';
+        options.maximumFractionDigits = 2;
+    } else {
+        options.minimumFractionDigits = 2;
+        options.maximumFractionDigits = value < 1 ? 6 : 2;
+    }
+    return new Intl.NumberFormat('en-US', options).format(value);
+  };
 
 function analyzeMarketData(input: CombinedMarketData) {
     let confidence = 100;
@@ -80,6 +95,14 @@ function analyzeMarketData(input: CombinedMarketData) {
     else if (macroScore >= 20) marketCondition = 'Bearish / Distribusi';
     else marketCondition = 'Capitulation / Fear ekstrem';
 
+    const rawData = {
+        marketCap: { "Kapitalisasi Pasar Saat Ini": formatCurrency(input.totalMarketCap, false), "Kapitalisasi Puncak": formatCurrency(input.maxHistoricalMarketCap, false) },
+        volume: { "Volume Saat Ini": formatCurrency(input.totalVolume24h, false), "Rata-rata Volume 30h": formatCurrency(input.avg30DayVolume, false) },
+        fearAndGreed: { "Nilai Indeks": input.fearAndGreedIndex },
+        ath: { "Rata-rata % Jarak dari ATH": `${avgDistanceFromAth.toFixed(2)}%` },
+        marketBreadth: { "Token Naik": risingTokens, "Total Koin Teratas": n_breadth },
+    };
+
     return {
       macroScore: Math.round(macroScore),
       marketCondition,
@@ -90,6 +113,7 @@ function analyzeMarketData(input: CombinedMarketData) {
         athScore: Math.round(finalScores.ath),
         marketBreadthScore: Math.round(finalScores.marketBreadth),
       },
+      rawData,
       confidenceScore,
     };
 }
@@ -107,11 +131,11 @@ const getActiveColorClass = (interpretation: string) => {
 };
 
 const indicatorDetails = [
-    { name: "Kapitalisasi Pasar", valueKey: "marketCapScore", summary: "Seberapa Dekat Pasar dengan Puncaknya?", icon: Scale },
-    { name: "Volume", valueKey: "volumeScore", summary: "Seberapa Aktif Pasar Hari Ini?", icon: Zap },
-    { name: "Fear & Greed", valueKey: "fearGreedScore", summary: "Mengukur Rasa Takut atau Serakah Investor", icon: AlertTriangle },
-    { name: "Jarak ATH", valueKey: "athScore", summary: "Seberapa Jauh dari Puncak?", icon: TrendingUp },
-    { name: "Sebaran Pasar", valueKey: "marketBreadthScore", summary: "Apakah Pasar Bergerak Secara Luas?", icon: Package },
+    { name: "Kapitalisasi Pasar", valueKey: "marketCapScore", formula: "(Kapitalisasi Pasar Saat Ini / Kapitalisasi Puncak) * 100", icon: Scale },
+    { name: "Volume", valueKey: "volumeScore", formula: "min((Volume Saat Ini / Rata-rata 30h) * 100, 200) / 2", icon: Zap },
+    { name: "Fear & Greed", valueKey: "fearGreedScore", formula: "Nilai Indeks Fear & Greed", icon: AlertTriangle },
+    { name: "Jarak ATH", valueKey: "athScore", formula: "100 - (Rata-rata % Jarak dari ATH)", icon: TrendingUp },
+    { name: "Sebaran Pasar", valueKey: "marketBreadthScore", formula: "(Token Naik / Total Koin) * 100", icon: Package },
 ] as const;
 
 interface MarketSummaryCardProps {
@@ -136,7 +160,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
           <Skeleton className="h-[220px] w-full mb-4 rounded-3" />
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
               {Array.from({ length: 5 }).map((_, i) => (
-                  <Skeleton key={i} className="h-32 w-full aspect-square rounded-3" />
+                  <Skeleton key={i} className="h-24 w-full aspect-square rounded-3" />
               ))}
           </div>
       </div>
@@ -162,15 +186,17 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
         <CardHeader>
             <CardTitle className="text-2xl font-semibold">Gambaran Umum Pasar</CardTitle>
             <CardDescription className="text-base text-text-secondary max-w-2xl">
-                Mengukur kondisi pasar crypto secara keseluruhan menggunakan 5 indikator utama.
+                Mengukur kondisi pasar crypto secara keseluruhan menggunakan 5 indikator gabungan utama.
             </CardDescription>
         </CardHeader>
          <CardContent className="flex flex-col flex-grow">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-6 flex-grow">
-                <div className="space-y-4 text-center md:text-left">
-                    <AnimatedNumber to={analysisResult.macroScore} className={cn("text-7xl md:text-8xl font-bold tracking-tighter", activeColorClass)} />
-                    <p className={cn("text-2xl font-semibold", activeColorClass)}>{analysisResult.marketCondition}</p>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-grow">
+                <div className="lg:col-span-1 flex flex-col justify-between items-center text-center p-6 bg-bg-secondary rounded-3">
                     <div className="space-y-2">
+                      <AnimatedNumber to={analysisResult.macroScore} className={cn("text-7xl md:text-8xl font-bold tracking-tighter", activeColorClass)} />
+                      <p className={cn("text-2xl font-semibold", activeColorClass)}>{analysisResult.marketCondition}</p>
+                    </div>
+                    <div className="space-y-2 mt-4">
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
@@ -191,12 +217,15 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                         </Button>
                     </div>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 w-full md:w-auto">
+                <div className="lg:col-span-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 gap-3">
                     {indicatorDetails.map((detail) => (
-                        <IndicatorCard
+                         <FlippableIndicatorCard
                             key={detail.name}
-                            detail={detail}
-                            value={analysisResult.components[detail.valueKey]}
+                            icon={detail.icon}
+                            name={detail.name}
+                            score={analysisResult.components[detail.valueKey]}
+                            formula={detail.formula}
+                            rawData={analysisResult.rawData[detail.valueKey.replace('Score', '') as keyof typeof analysisResult.rawData]}
                         />
                     ))}
                 </div>

@@ -46,7 +46,7 @@ export default async function MarketsPage({ searchParams }: { searchParams?: { c
   }
 
   return (
-    <div className="container-full section-spacing">
+    <>
       <header className="mb-8">
         <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
           <div className="text-left">
@@ -85,6 +85,6 @@ export default async function MarketsPage({ searchParams }: { searchParams?: { c
             )}
           </Suspense>
       </Card>
-    </div>
+    </>
   );
 }

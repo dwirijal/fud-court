@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useState } from "react";
+import React from "react";
 import { Logo } from "@/components/atoms/logo";
 import { cn } from "@/lib/utils";
 import {
@@ -16,9 +16,7 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { BookOpen, LineChart, Newspaper } from "lucide-react";
-import { motion } from "framer-motion";
 
-// Define navigation structure
 const mainNavLinks = [
   { href: "/markets", label: "Pasar", icon: LineChart },
 ];
@@ -46,84 +44,58 @@ const readingComponents: { title: string; href: string; description: string, ico
 
 export function Header() {
   const pathname = usePathname();
-  const [isHovered, setIsHovered] = useState(false);
-  const [activeMenu, setActiveMenu] = useState("");
-
-  const isIslandExpanded = isHovered || activeMenu !== "";
-
-  // This header is now only for desktop. Mobile has its own bottom nav.
+  
   return (
-    <header 
-        className="hidden md:flex items-center justify-center fixed top-4 left-0 right-0 z-50 pointer-events-none"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-    >
-      <motion.div
-        layout
-        transition={{ type: "spring", stiffness: 500, damping: 30 }}
-        className={cn(
-          "flex items-center justify-center rounded-full bg-bg-secondary/50 border border-bg-tertiary backdrop-blur-lg shadow-lg pointer-events-auto",
-          "shadow-[0_0_20px_hsl(var(--accent-primary)/0.1),_0_0_0_1px_hsl(var(--bg-tertiary))]",
-        )}
-      >
-        <Link href="/" className="flex-shrink-0 p-2">
-          <Logo />
+    <header className="hidden md:flex items-center justify-between fixed top-0 left-0 right-0 z-50 h-16 px-5 border-b border-border/50 bg-background/60 backdrop-blur-lg">
+        <Link href="/" className="flex items-center gap-3">
+            <Logo />
+            <span className="text-xl font-semibold tracking-tight text-foreground">
+                Fud Court
+            </span>
         </Link>
-
-        <motion.div
-            initial={{ opacity: 0, width: 0 }}
-            animate={{ 
-                opacity: isIslandExpanded ? 1 : 0, 
-                width: isIslandExpanded ? 'auto' : 0,
-            }}
-            transition={{ type: "spring", stiffness: 500, damping: 30, delay: isIslandExpanded ? 0.1 : 0 }}
-            className="flex items-center overflow-hidden pr-2"
-        >
-          <NavigationMenu onValueChange={setActiveMenu} >
+        <NavigationMenu>
             <NavigationMenuList>
-              {mainNavLinks.map((item) => (
-                  <NavigationMenuItem key={item.label}>
-                    <NavigationMenuLink asChild>
-                      <Link
-                        href={item.href}
-                        className={cn(
-                          navigationMenuTriggerStyle(),
-                          "bg-transparent hover:bg-bg-tertiary font-semibold",
-                          pathname.startsWith(item.href)
-                            ? "text-accent-primary"
-                            : "text-text-primary"
-                        )}
-                      >
-                        <item.icon className="mr-2 h-4 w-4" />
-                        {item.label}
-                      </Link>
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-              ))}
+                {mainNavLinks.map((item) => (
+                    <NavigationMenuItem key={item.label}>
+                        <NavigationMenuLink asChild>
+                        <Link
+                            href={item.href}
+                            className={cn(
+                            navigationMenuTriggerStyle(),
+                            "bg-transparent hover:bg-bg-tertiary font-semibold",
+                            pathname.startsWith(item.href)
+                                ? "text-accent-primary"
+                                : "text-text-primary"
+                            )}
+                        >
+                            <item.icon className="mr-2 h-4 w-4" />
+                            {item.label}
+                        </Link>
+                        </NavigationMenuLink>
+                    </NavigationMenuItem>
+                ))}
 
-              <NavigationMenuItem value="reading">
-                  <NavigationMenuTrigger className="bg-transparent hover:bg-bg-tertiary font-semibold data-[state=open]:bg-bg-tertiary text-text-primary">
-                      Bacaan
-                  </NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                      <ul className="grid w-[350px] gap-3 p-4">
-                          {readingComponents.map((component) => (
-                              <ListItem
-                                  key={component.title}
-                                  href={component.href}
-                                  title={component.title}
-                                  icon={component.icon}
-                              >
-                                  {component.description}
-                              </ListItem>
-                          ))}
-                      </ul>
-                  </NavigationMenuContent>
-              </NavigationMenuItem>
+                <NavigationMenuItem>
+                    <NavigationMenuTrigger className="bg-transparent hover:bg-bg-tertiary font-semibold data-[state=open]:bg-bg-tertiary text-text-primary">
+                        Bacaan
+                    </NavigationMenuTrigger>
+                    <NavigationMenuContent>
+                        <ul className="grid w-[350px] gap-3 p-4">
+                            {readingComponents.map((component) => (
+                                <ListItem
+                                    key={component.title}
+                                    href={component.href}
+                                    title={component.title}
+                                    icon={component.icon}
+                                >
+                                    {component.description}
+                                </ListItem>
+                            ))}
+                        </ul>
+                    </NavigationMenuContent>
+                </NavigationMenuItem>
             </NavigationMenuList>
-          </NavigationMenu>
-        </motion.div>
-      </motion.div>
+        </NavigationMenu>
     </header>
   );
 }

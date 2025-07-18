@@ -16,6 +16,7 @@ interface AppLayoutProps {
 export function AppLayout({ children }: AppLayoutProps) {
   const pathname = usePathname();
   const isLoginPage = pathname === '/login';
+  const isHomePage = pathname === '/';
 
   return (
     <ThemeProvider
@@ -26,14 +27,22 @@ export function AppLayout({ children }: AppLayoutProps) {
     >
       <div className={cn(
         "flex min-h-screen flex-col",
-        isLoginPage ? "" : "pt-16 md:pt-0 pb-16 md:pb-0" // Adjust padding for navs
+        isLoginPage ? "" : "md:pt-16 pb-16 md:pb-0" // Adjust padding for navs
       )}>
         {isLoginPage ? (
           children
         ) : (
           <>
             <Header />
-            <main className="flex-1">{children}</main>
+            <main className="flex-1">
+              {isHomePage ? (
+                children
+              ) : (
+                <div className="container-full section-spacing">
+                  {children}
+                </div>
+              )}
+            </main>
             <Footer />
             <MobileBottomNav />
           </>

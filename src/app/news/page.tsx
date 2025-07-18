@@ -8,7 +8,7 @@ export default async function NewsPage() {
   const posts = await getPosts({ tag: 'realtime-news' });
 
   return (
-    <div className="container-full section-spacing">
+    <>
       <header className="mb-8">
         <div className="flex items-center gap-4 mb-2">
           <div className="bg-primary/10 text-primary p-3 rounded-3">
@@ -26,6 +26,6 @@ export default async function NewsPage() {
       </header>
 
       <NewsTable posts={posts} />
-    </div>
+    </>
   );
 }

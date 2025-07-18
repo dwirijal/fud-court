@@ -22,7 +22,7 @@ export default async function Home() {
     <>
       <HeroSection />
       
-      <main className="container-full section-spacing">
+      <div className="container-full section-spacing">
         <div className="bento-container">
           <div className="lg:col-span-6 flex flex-col lg:flex-row gap-5">
             <div className="lg:col-span-4 w-full">
@@ -45,7 +45,7 @@ export default async function Home() {
             </div>
           </Card>
         </div>
-      </main>
+      </div>
     </>
   );
 }

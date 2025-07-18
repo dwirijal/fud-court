@@ -29,7 +29,7 @@ export default async function ArticlesPage() {
   }
 
   return (
-    <div className="container-full section-spacing">
+    <>
       <Breadcrumb className="mb-8">
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -99,6 +99,6 @@ export default async function ArticlesPage() {
           <p className="col-span-full text-center text-base text-text-secondary">Tidak ada artikel yang ditemukan.</p>
         )}
       </section>
-    </div>
+    </>
   );
 }

@@ -6,7 +6,7 @@ import { getDetailedCoinData } from "@/lib/coingecko";
 import { getDefiLlamaCoinData } from "@/lib/defillama";
 import { getPosts } from "@/lib/ghost";
 import { calculateSupportResistanceLevels } from "@/lib/calculations";
-
+import { formatCurrency } from "@/lib/formatters";
 import { format } from "date-fns";
 import {
   Breadcrumb,
@@ -30,23 +30,6 @@ interface CoinPageProps {
     id: string;
   };
 }
-
-const formatCurrency = (value: number | null | undefined, currency: string = 'usd', compact: boolean = false) => {
-  if (value === null || value === undefined || isNaN(value)) return 'N/A';
-  const options: Intl.NumberFormatOptions = {
-    style: 'currency',
-    currency: currency.toUpperCase(),
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  };
-  if (compact) {
-    options.notation = 'compact';
-    options.maximumFractionDigits = 2;
-  } else if (value < 1) {
-    options.maximumFractionDigits = 6;
-  }
-  return new Intl.NumberFormat('en-US', options).format(value);
-};
 
 export default async function CoinPage({ params }: CoinPageProps) {
   const coinData = await getDetailedCoinData(params.id);

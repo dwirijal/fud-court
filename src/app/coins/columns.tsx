@@ -7,43 +7,17 @@ import { TrendingDown, TrendingUp } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
+import { formatCurrency } from '@/lib/formatters'
 
 export const getColumns = (currency: string): ColumnDef<CryptoData>[] => {
-    
-    const getLocaleForCurrency = (cur: string) => {
-        switch (cur.toLowerCase()) {
-            case 'idr':
-                return 'id-ID';
-            case 'eur':
-                return 'de-DE';
-            case 'usd':
-            default:
-                return 'en-US';
-        }
-    }
 
-    const formatValue = (amount: number, cur: string, isPrice: boolean = false) => {
-        if (cur.toLowerCase() === 'xau') {
-          const options: Intl.NumberFormatOptions = {
-            minimumFractionDigits: isPrice ? 2 : 0,
-            maximumFractionDigits: isPrice && amount < 1 ? 6 : 2,
-            notation: isPrice ? undefined : 'compact',
-            compactDisplay: isPrice ? undefined : 'short',
-          };
-          return `XAU ${new Intl.NumberFormat('en-US', options).format(amount)}`;
-        }
+    const formatPrice = (amount: number) => {
+        return formatCurrency(amount, currency);
+    }
     
-        const locale = getLocaleForCurrency(cur);
-    
-        return new Intl.NumberFormat(locale, {
-          style: 'currency',
-          currency: cur.toUpperCase(),
-          minimumFractionDigits: isPrice ? 2 : 0,
-          maximumFractionDigits: isPrice && amount < 1 ? 6 : 2,
-          notation: isPrice ? undefined : 'compact',
-          compactDisplay: isPrice ? undefined : 'short',
-        }).format(amount);
-    };
+    const formatCompact = (amount: number) => {
+        return formatCurrency(amount, currency, true);
+    }
 
     return [
         {
@@ -84,7 +58,7 @@ export const getColumns = (currency: string): ColumnDef<CryptoData>[] => {
             header: () => <div className="text-right">Harga</div>,
             cell: ({ row }) => {
                 const price = parseFloat(row.getValue('current_price'))
-                return <div className="font-mono text-right font-medium text-text-primary">{formatValue(price, currency, true)}</div>
+                return <div className="font-mono text-right font-medium text-text-primary">{formatPrice(price)}</div>
             },
         },
         {
@@ -135,12 +109,12 @@ export const getColumns = (currency: string): ColumnDef<CryptoData>[] => {
         {
             accessorKey: 'market_cap',
             header: () => <div className="text-right">Kapitalisasi Pasar</div>,
-            cell: ({ row }) => <div className="font-mono text-right text-text-secondary">{formatValue(row.getValue('market_cap'), currency)}</div>,
+            cell: ({ row }) => <div className="font-mono text-right text-text-secondary">{formatCompact(row.getValue('market_cap'))}</div>,
         },
         {
             accessorKey: 'total_volume',
             header: () => <div className="text-right">Volume (24j)</div>,
-            cell: ({ row }) => <div className="font-mono text-right text-text-secondary">{formatValue(row.getValue('total_volume'), currency)}</div>,
+            cell: ({ row }) => <div className="font-mono text-right text-text-secondary">{formatCompact(row.getValue('total_volume'))}</div>,
         },
     ]
 }

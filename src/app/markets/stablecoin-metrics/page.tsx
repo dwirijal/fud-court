@@ -24,35 +24,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Skeleton } from '@/components/ui/skeleton';
-
-const formatCurrency = (value: number | null | undefined, currency: string = 'usd', compact: boolean = false) => {
-  if (value === null || value === undefined || isNaN(value)) return 'N/A';
-
-  if (Math.abs(value) < 1e-6 && !compact) {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: currency.toUpperCase(),
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    }).format(0);
-  }
-
-  const options: Intl.NumberFormatOptions = {
-    style: 'currency',
-    currency: currency.toUpperCase(),
-  };
-
-  if (compact) {
-    options.notation = 'compact';
-    options.maximumFractionDigits = 2;
-  } else {
-    options.minimumFractionDigits = value > 0.1 ? 2 : 4;
-    options.maximumFractionDigits = value > 0.1 ? 2 : 6;
-  }
-
-  return new Intl.NumberFormat('en-US', options).format(value);
-};
-
+import { formatCurrency } from '@/lib/formatters';
 
 const ITEMS_PER_LOAD = 9;
 

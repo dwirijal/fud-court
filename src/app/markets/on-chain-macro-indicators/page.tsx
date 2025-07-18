@@ -14,26 +14,11 @@ import Link from "next/link";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TrendingUp } from "lucide-react";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { formatCurrency } from "@/lib/formatters";
 
 export const metadata = {
   title: 'On-Chain Macro Indicators',
   description: 'Indikator makro on-chain, termasuk Total Value Locked (TVL) historis.',
-};
-
-const formatCurrency = (value: number | null | undefined, compact: boolean = true) => {
-  if (value === null || value === undefined || isNaN(value)) return 'N/A';
-  const options: Intl.NumberFormatOptions = {
-    style: 'currency',
-    currency: 'USD',
-  };
-  if (compact) {
-    options.notation = 'compact';
-    options.maximumFractionDigits = 2;
-  } else {
-    options.minimumFractionDigits = 2;
-    options.maximumFractionDigits = value < 1 ? 6 : 2;
-  }
-  return new Intl.NumberFormat('en-US', options).format(value);
 };
 
 export default async function OnChainMacroIndicatorsPage() {
@@ -104,7 +89,7 @@ export default async function OnChainMacroIndicatorsPage() {
                   tickLine={false}
                   axisLine={false}
                   tickMargin={8}
-                  tickFormatter={(value) => formatCurrency(value, true)}
+                  tickFormatter={(value) => formatCurrency(value as number, 'usd', true)}
                 />
                 <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
                 <Line

@@ -13,25 +13,11 @@ import {
 import Link from "next/link";
 import { Zap } from "lucide-react";
 import { TrendChange } from "@/components/ui/TrendChange";
+import { formatCurrency } from "@/lib/formatters";
 
 export const metadata = {
   title: 'DeFi TVL Metrics',
   description: 'Metrik Total Value Locked (TVL) untuk berbagai protokol DeFi.',
-};
-
-const formatCurrency = (value: number | null | undefined, currency: string = 'usd', compact: boolean = false) => {
-  if (value === null || value === undefined || isNaN(value)) return 'N/A';
-  const options: Intl.NumberFormatOptions = {
-    style: 'currency',
-    currency: currency.toUpperCase(),
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  };
-  if (compact) {
-    options.notation = 'compact';
-    options.maximumFractionDigits = 2;
-  }
-  return new Intl.NumberFormat('en-US', options).format(value);
 };
 
 export default async function DefiTvlMetricsPage() {

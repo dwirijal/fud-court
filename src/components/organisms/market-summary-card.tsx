@@ -18,6 +18,7 @@ import {
 import { AnimatedNumber } from '../molecules/animated-number';
 import type { CombinedMarketData } from '@/types';
 import { FlippableIndicatorCard } from '../molecules/flippable-indicator-card';
+import { formatCurrency } from '@/lib/formatters';
 
 const weights = {
   marketCap: 0.25,
@@ -26,21 +27,6 @@ const weights = {
   ath: 0.25,
   marketBreadth: 0.10
 };
-
-const formatCurrency = (value: number, compact: boolean = true) => {
-    const options: Intl.NumberFormatOptions = {
-        style: 'currency',
-        currency: 'USD',
-    };
-    if (compact) {
-        options.notation = 'compact';
-        options.maximumFractionDigits = 2;
-    } else {
-        options.minimumFractionDigits = 2;
-        options.maximumFractionDigits = value < 1 ? 6 : 2;
-    }
-    return new Intl.NumberFormat('en-US', options).format(value);
-  };
 
 function analyzeMarketData(input: CombinedMarketData) {
     let confidence = 100;
@@ -96,8 +82,8 @@ function analyzeMarketData(input: CombinedMarketData) {
     else marketCondition = 'Capitulation / Fear ekstrem';
 
     const rawData = {
-        marketCap: { "Kapitalisasi Pasar Saat Ini": formatCurrency(input.totalMarketCap, false), "Kapitalisasi Puncak": formatCurrency(input.maxHistoricalMarketCap, false) },
-        volume: { "Volume Saat Ini": formatCurrency(input.totalVolume24h, false), "Rata-rata Volume 30h": formatCurrency(input.avg30DayVolume, false) },
+        marketCap: { "Kapitalisasi Pasar Saat Ini": formatCurrency(input.totalMarketCap), "Kapitalisasi Puncak": formatCurrency(input.maxHistoricalMarketCap) },
+        volume: { "Volume Saat Ini": formatCurrency(input.totalVolume24h), "Rata-rata Volume 30h": formatCurrency(input.avg30DayVolume) },
         fearAndGreed: { "Nilai Indeks": input.fearAndGreedIndex },
         ath: { "Rata-rata % Jarak dari ATH": `${avgDistanceFromAth.toFixed(2)}%` },
         marketBreadth: { "Token Naik": risingTokens, "Total Koin Teratas": n_breadth },

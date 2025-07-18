@@ -8,18 +8,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useState, useEffect, useRef } from 'react';
 import anime from "animejs";
-
-const formatCurrency = (value: number) => {
-    if (!value) return '$0.00';
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        notation: 'compact',
-        compactDisplay: 'short',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    }).format(value);
-};
+import { formatCurrency } from "@/lib/formatters";
 
 const formatPercentage = (value: number) => {
     return `${value.toFixed(2)}%`;
@@ -87,13 +76,13 @@ function StatItem({ label, value, underlyingValue, colorClass, delay = 0, valueI
             <div>
                  <AnimatedStatNumber
                     to={value}
-                    formatter={valueIsPercentage ? formatPercentage : formatCurrency}
+                    formatter={valueIsPercentage ? formatPercentage : (val) => formatCurrency(val, 'usd', true)}
                     className="text-2xl font-semibold font-mono"
                     delay={delay * 100}
                 />
                 {underlyingValue !== undefined && <AnimatedStatNumber
                     to={underlyingValue}
-                    formatter={formatCurrency}
+                    formatter={(val) => formatCurrency(val, 'usd', true)}
                     className="text-xs font-medium text-text-secondary"
                     delay={delay * 100}
                 />}

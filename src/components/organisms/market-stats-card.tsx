@@ -6,8 +6,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { MarketStats } from "@/types";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { useState, useEffect, useRef } from 'react';
-import anime from "animejs";
+import { useState, useEffect } from 'react';
+import { useSpring } from "framer-motion";
 import { formatCurrency } from "@/lib/formatters";
 
 const formatPercentage = (value: number) => {
@@ -27,36 +27,30 @@ const cardVariants = {
 };
 
 const AnimatedStatNumber = ({ to, formatter, className, delay = 0 }: { to: number, formatter: (val: number) => string, className?: string, delay?: number }) => {
-    const [value, setValue] = useState(0);
-    const hasAnimated = useRef(false);
-    const targetRef = useRef({ value: 0 });
+    const [displayValue, setDisplayValue] = useState(0);
+    const spring = useSpring(0, { 
+        stiffness: 100, 
+        damping: 30,
+        mass: 1 
+    });
 
     useEffect(() => {
-        if (hasAnimated.current) {
-            setValue(to);
-            return;
-        }
-        
-        const animation = anime({
-            targets: targetRef.current,
-            value: to,
-            duration: 1200,
-            delay: delay,
-            easing: 'easeOutCubic',
-            round: formatter === formatPercentage ? 100 : undefined,
-            update: () => {
-                setValue(targetRef.current.value);
-            }
+        const timeout = setTimeout(() => {
+            spring.set(to);
+        }, delay);
+
+        return () => clearTimeout(timeout);
+    }, [to, delay, spring]);
+
+    useEffect(() => {
+        const unsubscribe = spring.onChange((value) => {
+            setDisplayValue(value);
         });
 
-        hasAnimated.current = true;
+        return unsubscribe;
+    }, [spring]);
 
-        return () => {
-          animation.pause();
-        }
-    }, [to, delay, formatter]);
-
-    return <p className={className}>{formatter(value)}</p>;
+    return <p className={className}>{formatter(displayValue)}</p>;
 };
 
 function StatItem({ label, value, underlyingValue, colorClass, delay = 0, valueIsPercentage = false }: { label: string, value: number, underlyingValue?: number, colorClass: string, delay?: number, valueIsPercentage?: boolean }) {

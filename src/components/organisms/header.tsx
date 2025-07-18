@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/atoms/logo";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, BookOpen, LineChart, Newspaper } from "lucide-react";
+import { Menu, BookOpen, TrendingUp, Newspaper } from "lucide-react";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -21,7 +21,7 @@ import {
 import { motion } from 'framer-motion';
 
 const mainNavLinks = [
-  { href: "/markets", label: "Pasar", icon: LineChart },
+  { href: "/markets", label: "Pasar", icon: TrendingUp },
 ];
 
 const readingComponents: { title: string; href: string; description: string, icon: React.ElementType }[] = [

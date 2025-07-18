@@ -1,8 +1,7 @@
-
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import anime from 'animejs';
+import { useState, useEffect } from 'react';
+import { motion, useSpring } from 'framer-motion';
 
 interface AnimatedNumberProps {
     to: number;
@@ -14,31 +13,37 @@ interface AnimatedNumberProps {
 const defaultFormatter = (value: number) => Math.round(value).toLocaleString();
 
 export function AnimatedNumber({ to, className, delay = 0, formatter = defaultFormatter }: AnimatedNumberProps) {
-    const [value, setValue] = useState(0);
-    const targetRef = useRef({ value: 0 });
+    const [displayValue, setDisplayValue] = useState(0);
+    const spring = useSpring(0, { 
+        stiffness: 100, 
+        damping: 30,
+        mass: 1 
+    });
 
     useEffect(() => {
-        const target = targetRef.current;
-        
-        anime.remove(target); // Remove previous animations on this target
+        const timeout = setTimeout(() => {
+            spring.set(to);
+        }, delay);
 
-        const animation = anime({
-            targets: target,
-            value: to,
-            round: 1,
-            duration: 1200,
-            delay: delay,
-            easing: 'easeOutCubic',
-            update: () => {
-                setValue(target.value);
-            }
+        return () => clearTimeout(timeout);
+    }, [to, delay, spring]);
+
+    useEffect(() => {
+        const unsubscribe = spring.onChange((value) => {
+            setDisplayValue(value);
         });
-        
-        return () => {
-          animation.pause();
-        }
 
-    }, [to, delay]);
+        return unsubscribe;
+    }, [spring]);
 
-    return <p className={className}>{formatter(value)}</p>;
+    return (
+        <motion.p 
+            className={className}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: delay / 1000 }}
+        >
+            {formatter(displayValue)}
+        </motion.p>
+    );
 }

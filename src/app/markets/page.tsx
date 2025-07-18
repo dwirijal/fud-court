@@ -1,11 +1,11 @@
 
 import { Suspense } from "react";
 import { getTopCoins, getExchangeRate } from "@/lib/coingecko";
-import { TableSkeleton } from "@/app/coins/market-data-table-client";
 import { MarketDataTableClient } from "@/app/coins/market-data-table-client";
 import { CryptoData } from "@/types";
-import { AlertTriangle, LineChart } from "lucide-react";
+import { AlertTriangle, TrendingUp } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { MarketPageClient } from "./market-page-client";
 
 
@@ -59,7 +59,7 @@ export default async function MarketsPage({
           <div className="text-left flex-grow">
             <div className="flex items-center gap-4 mb-2">
                 <div className="bg-primary/10 text-primary p-3 rounded-3">
-                    <LineChart className="h-6 w-6" />
+                    <TrendingUp className="h-6 w-6" />
                 </div>
                 <div>
                     <h1 className="text-3xl font-bold tracking-tighter">
@@ -78,7 +78,13 @@ export default async function MarketsPage({
       </header>
 
       <Card className="card-primary p-0 overflow-hidden">
-          <Suspense fallback={<TableSkeleton />}>
+          <Suspense fallback={
+            <div className="p-4 space-y-2">
+              {Array.from({ length: 10 }).map((_, i) => (
+                <Skeleton key={i} className="h-16 w-full" />
+              ))}
+            </div>
+          }>
             {error ? (
                <div className="flex flex-col items-center justify-center p-12 text-center text-market-down">
                    <AlertTriangle className="h-12 w-12 mb-4" />

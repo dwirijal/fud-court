@@ -84,8 +84,20 @@
     --radius: var(--radius-2);
 
     /* 🔤 TYPOGRAPHY ------------------------- */
-    --font-primary: "JetBrains Mono", "SF Mono", "Consolas", monospace;
-    --font-secondary: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --font-primary: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --font-secondary: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    
+    /* 📐 MODULAR SCALE (Minor Second - 1.125) ------------------------- */
+    --text-xs: 0.75rem;      /* 12px */
+    --text-sm: 0.875rem;     /* 14px */
+    --text-base: 1rem;       /* 16px - base */
+    --text-lg: 1.125rem;     /* 18px */
+    --text-xl: 1.266rem;     /* ~20px */
+    --text-2xl: 1.424rem;    /* ~23px */
+    --text-3xl: 1.602rem;    /* ~26px */
+    --text-4xl: 1.802rem;    /* ~29px */
+    --text-5xl: 2.027rem;    /* ~32px */
+    --text-6xl: 2.281rem;    /* ~36px */
     
     /* 🎬 ANIMATION TOKENS --------------------- */
     --ease: cubic-bezier(0.4, 0, 0.2, 1);

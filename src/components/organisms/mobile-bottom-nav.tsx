@@ -3,13 +3,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, LineChart, Newspaper } from 'lucide-react';
+import { Home, TrendingUp, Newspaper } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
 const navItems = [
   { href: '/', label: 'Beranda', icon: Home, exact: true },
-  { href: '/markets', label: 'Pasar', icon: LineChart },
+  { href: '/markets', label: 'Pasar', icon: TrendingUp },
   { href: '/news', label: 'Berita', icon: Newspaper },
 ];
 

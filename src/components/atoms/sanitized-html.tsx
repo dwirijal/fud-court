@@ -28,7 +28,7 @@ function SanitizedHtmlComponent({ html, className }: SanitizedHtmlProps) {
 
   // While sanitizing, sanitizedContent will be null. You can render a loader here if desired.
   if (sanitizedContent === null) {
-    return <div className={className}>Memuat konten...</div>;
+    return <div className={className}><p className="prose prose-invert">Memuat konten...</p></div>;
   }
 
   // If sanitization fails or result is empty, render an empty div

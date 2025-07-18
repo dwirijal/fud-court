@@ -13,14 +13,13 @@ const buttonVariants = cva(
         default: "btn-primary focus-ring",
         destructive: "bg-market-down text-text-primary hover:bg-market-down/90 focus-ring",
         outline: "btn-secondary focus-ring",
-        secondary: "btn-secondary focus-ring", // Alias for outline
         ghost: "btn-ghost focus-ring",
         link: "text-accent-primary underline-offset-4 hover:underline focus-ring p-0",
       },
       size: {
         default: "h-10 px-4",
-        sm: "h-9 rounded-2 px-3",
-        lg: "h-11 rounded-3 px-6 text-base",
+        sm: "h-9 px-3",
+        lg: "h-11 px-5 text-base",
         icon: "h-10 w-10",
       },
     },

@@ -117,9 +117,13 @@ export function Header() {
         <motion.div
           layout
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          style={{
+            padding: isIslandExpanded ? '0.5rem' : '0.625rem', // p-2 vs p-2.5
+            gap: isIslandExpanded ? '0.5rem' : '0rem', // gap-2 vs gap-0
+          }}
           className="flex items-center justify-center rounded-full bg-background/60 border border-border/50 shadow-lg backdrop-blur-md pointer-events-auto"
         >
-          <Link href="/" className="flex-shrink-0 p-2.5">
+          <Link href="/" className="flex-shrink-0">
             <Logo />
           </Link>
 
@@ -137,7 +141,6 @@ export function Header() {
                           href={item.href}
                           className={cn(
                             navigationMenuTriggerStyle(),
-                            "bg-transparent hover:bg-accent text-sm font-medium",
                             pathname.startsWith(item.href)
                               ? "text-primary"
                               : "text-foreground/70"
@@ -151,7 +154,7 @@ export function Header() {
                 ))}
 
                 <NavigationMenuItem value="reading">
-                    <NavigationMenuTrigger className="bg-transparent hover:bg-accent text-sm font-medium data-[state=open]:bg-accent/50 text-foreground/70">
+                    <NavigationMenuTrigger className={cn(navigationMenuTriggerStyle(), "text-foreground/70")}>
                         Bacaan
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>

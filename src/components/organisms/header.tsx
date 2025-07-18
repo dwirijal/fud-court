@@ -3,9 +3,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/atoms/logo";
 import { cn } from "@/lib/utils";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Menu, BookOpen, LineChart, Newspaper } from "lucide-react";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -15,7 +18,7 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { BookOpen, LineChart, Newspaper } from "lucide-react";
+import { motion } from 'framer-motion';
 
 const mainNavLinks = [
   { href: "/markets", label: "Pasar", icon: LineChart },
@@ -42,45 +45,117 @@ const readingComponents: { title: string; href: string; description: string, ico
     },
 ];
 
+const mobileNavLinks = [
+    { href: "/", label: "Beranda" },
+    ...mainNavLinks.map(item => ({ href: item.href, label: item.label })),
+    ...readingComponents.map(item => ({ href: item.href, label: item.title }))
+];
+
+
 export function Header() {
   const pathname = usePathname();
-  
+  const [isHovered, setIsHovered] = useState(false);
+  const [activeMenu, setActiveMenu] = useState("");
+
+  const isIslandExpanded = isHovered || activeMenu !== "";
+
   return (
-    <header className="hidden md:flex items-center justify-between fixed top-0 left-0 right-0 z-50 h-16 px-5 border-b border-border/50 bg-background/60 backdrop-blur-lg">
+    <>
+      {/* Mobile Header: Standard sticky bar with a slide-out sheet menu. */}
+      <header className="md:hidden sticky top-0 z-40 flex h-16 items-center justify-between border-b border-border/50 bg-background/60 px-4 backdrop-blur-lg">
         <Link href="/" className="flex items-center gap-3">
-            <Logo />
-            <span className="text-xl font-semibold tracking-tight text-foreground">
-                Fud Court
-            </span>
+          <Logo />
+          <span className="text-xl font-semibold tracking-tight text-foreground">
+            Fud Court
+          </span>
         </Link>
-        <NavigationMenu>
-            <NavigationMenuList>
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <Menu className="h-6 w-6" />
+              <span className="sr-only">Buka Menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="right" className="p-0">
+             <SheetHeader className="p-6 pb-0">
+               <SheetTitle className="sr-only">Menu Navigasi</SheetTitle>
+            </SheetHeader>
+            <div className="flex h-full flex-col p-6">
+              <Link href="/" className="flex items-center gap-3 mb-6">
+                <Logo />
+                <span className="text-xl font-semibold tracking-tight text-foreground">
+                  Fud Court
+                </span>
+              </Link>
+              <nav className="grid gap-4 text-lg font-medium">
+                {mobileNavLinks.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      "transition-colors hover:text-primary",
+                      pathname.startsWith(item.href) && item.href !== '/' || pathname === item.href
+                        ? "text-primary font-semibold"
+                        : "text-text-secondary"
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </nav>
+            </div>
+          </SheetContent>
+        </Sheet>
+      </header>
+
+      {/* Desktop Header: Dynamic Island */}
+      <div
+        className="hidden md:flex items-center justify-center fixed top-4 left-0 right-0 z-50 pointer-events-none"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <motion.div
+          layout
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          className="flex items-center justify-center rounded-full bg-background/60 border border-border/50 shadow-lg backdrop-blur-md pointer-events-auto"
+        >
+          <Link href="/" className="flex-shrink-0 p-2.5">
+            <Logo />
+          </Link>
+
+          <motion.div
+            animate={{ width: isIslandExpanded ? 'auto' : 0, opacity: isIslandExpanded ? 1 : 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className="flex items-center overflow-hidden"
+          >
+            <NavigationMenu onValueChange={setActiveMenu} className="px-2">
+              <NavigationMenuList>
                 {mainNavLinks.map((item) => (
                     <NavigationMenuItem key={item.label}>
-                        <NavigationMenuLink asChild>
+                      <NavigationMenuLink asChild>
                         <Link
-                            href={item.href}
-                            className={cn(
+                          href={item.href}
+                          className={cn(
                             navigationMenuTriggerStyle(),
-                            "bg-transparent hover:bg-bg-tertiary font-semibold",
+                            "bg-transparent hover:bg-accent text-sm font-medium",
                             pathname.startsWith(item.href)
-                                ? "text-accent-primary"
-                                : "text-text-primary"
-                            )}
+                              ? "text-primary"
+                              : "text-foreground/70"
+                          )}
                         >
-                            <item.icon className="mr-2 h-4 w-4" />
-                            {item.label}
+                          <item.icon className="mr-2 h-4 w-4" />
+                          {item.label}
                         </Link>
-                        </NavigationMenuLink>
+                      </NavigationMenuLink>
                     </NavigationMenuItem>
                 ))}
 
-                <NavigationMenuItem>
-                    <NavigationMenuTrigger className="bg-transparent hover:bg-bg-tertiary font-semibold data-[state=open]:bg-bg-tertiary text-text-primary">
+                <NavigationMenuItem value="reading">
+                    <NavigationMenuTrigger className="bg-transparent hover:bg-accent text-sm font-medium data-[state=open]:bg-accent/50 text-foreground/70">
                         Bacaan
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>
-                        <ul className="grid w-[350px] gap-3 p-4">
+                        <ul className="grid w-[300px] gap-2 p-3">
                             {readingComponents.map((component) => (
                                 <ListItem
                                     key={component.title}
@@ -94,9 +169,12 @@ export function Header() {
                         </ul>
                     </NavigationMenuContent>
                 </NavigationMenuItem>
-            </NavigationMenuList>
-        </NavigationMenu>
-    </header>
+              </NavigationMenuList>
+            </NavigationMenu>
+          </motion.div>
+        </motion.div>
+      </div>
+    </>
   );
 }
 

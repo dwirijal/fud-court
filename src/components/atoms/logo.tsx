@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 export function Logo({ className }: { className?: string }) {
   return (
-    <div className={cn("bg-accent-primary text-primary-foreground p-2 rounded-full", className)}>
+    <div className={cn("bg-primary text-primary-foreground p-2 rounded-full", className)}>
         <Gavel className="h-5 w-5" />
     </div>
   );

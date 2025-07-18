@@ -63,7 +63,7 @@ export function HeroSection() {
       <GridPatternAnimation />
       <div className="container-full relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
-          <div className="flex justify-center items-center mt-8 lg:mt-0 lg:order-last">
+          <div className="flex justify-center items-center mt-8 lg:mt-0">
             <NftCard />
           </div>
           <div className="text-center lg:text-left">

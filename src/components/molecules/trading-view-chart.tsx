@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, memo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { rgbToHex } from "@/lib/utils";
 
 interface TradingViewWidgetProps {
@@ -68,19 +68,11 @@ function TradingViewWidget({ symbol }: TradingViewWidgetProps) {
   }, [symbol]);
 
   return (
-    <Card className="mb-12">
-      <CardHeader>
-        <CardTitle>Grafik Harga ({symbol?.toUpperCase()}/USDT)</CardTitle>
-      </CardHeader>
-      <CardContent>
-          <div className="h-[450px] w-full">
+    <Card className="card-primary p-0">
+      <CardContent className="p-1">
+          <div className="h-[400px] md:h-[450px] w-full">
             <div className="tradingview-widget-container" ref={container} style={{ height: "100%", width: "100%" }}>
               <div className="tradingview-widget-container__widget" style={{ height: "calc(100% - 32px)", width: "100%" }}></div>
-              <div className="tradingview-widget-copyright">
-                <a href="https://www.tradingview.com" rel="noopener nofollow" target="_blank">
-                    <span className="blue-text">Lacak semua pasar di TradingView</span>
-                </a>
-              </div>
             </div>
           </div>
       </CardContent>

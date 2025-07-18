@@ -36,7 +36,7 @@ export function MarketPageClient({ initialCurrency, initialSearch }: MarketPageC
     const [searchQuery, setSearchQuery] = useState(initialSearch);
     const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
-    const createQueryString = useCallback((params: Record<string, string>) => {
+    const createQueryString = useCallback((params: Record<string, string | null>) => {
         const current = new URLSearchParams(Array.from(searchParams.entries()));
         for (const [name, value] of Object.entries(params)) {
              if (value) {
@@ -49,7 +49,7 @@ export function MarketPageClient({ initialCurrency, initialSearch }: MarketPageC
     }, [searchParams]);
 
     useEffect(() => {
-        const query = createQueryString({ search: debouncedSearchQuery });
+        const query = createQueryString({ search: debouncedSearchQuery || null });
         router.push(`${pathname}?${query}`);
     }, [debouncedSearchQuery, pathname, router, createQueryString]);
 

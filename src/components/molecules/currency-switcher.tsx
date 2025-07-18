@@ -2,7 +2,6 @@
 "use client"
 
 import * as React from "react"
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import {
   Select,
   SelectContent,
@@ -22,24 +21,12 @@ const currencies = [
 interface CurrencySwitcherProps {
     defaultValue: string;
     className?: string;
+    onValueChange: (value: string) => void;
 }
 
-export function CurrencySwitcher({ defaultValue, className }: CurrencySwitcherProps) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
-  const handleValueChange = (value: string) => {
-    const current = new URLSearchParams(Array.from(searchParams.entries()));
-    current.set('currency', value);
-    const search = current.toString();
-    const query = search ? `?${search}` : "";
-    // Use router.replace to avoid adding to history stack for a simple filter change
-    router.replace(`${pathname}${query}`);
-  };
-
+export function CurrencySwitcher({ defaultValue, className, onValueChange }: CurrencySwitcherProps) {
   return (
-    <Select onValueChange={handleValueChange} defaultValue={defaultValue}>
+    <Select onValueChange={onValueChange} defaultValue={defaultValue}>
       <SelectTrigger className={cn("w-[140px]", className)} aria-label="Pilih Mata Uang">
         <SelectValue placeholder="Pilih Mata Uang" />
       </SelectTrigger>

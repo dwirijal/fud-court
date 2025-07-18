@@ -1,14 +1,21 @@
 
 import { Suspense } from "react";
 import { getTopCoins, getExchangeRate } from "@/lib/coingecko";
-import { TableSkeleton, MarketDataTableClient } from "@/app/coins/market-data-table-client";
-import { CurrencySwitcher } from "@/components/molecules/currency-switcher";
+import { TableSkeleton } from "@/app/coins/market-data-table-client";
+import { MarketDataTableClient } from "@/app/coins/market-data-table-client";
 import { CryptoData } from "@/types";
 import { AlertTriangle, LineChart } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { MarketPageClient } from "./market-page-client";
 
-export default async function MarketsPage({ searchParams }: { searchParams?: { currency?: string } }) {
+
+export default async function MarketsPage({ 
+    searchParams 
+}: { 
+    searchParams?: { currency?: string, search?: string } 
+}) {
   const currency = searchParams?.currency?.toLowerCase() || 'usd';
+  const searchQuery = searchParams?.search || '';
   let initialData: CryptoData[] = [];
   let error: string | null = null;
   
@@ -49,7 +56,7 @@ export default async function MarketsPage({ searchParams }: { searchParams?: { c
     <>
       <header className="mb-8">
         <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-          <div className="text-left">
+          <div className="text-left flex-grow">
             <div className="flex items-center gap-4 mb-2">
                 <div className="bg-primary/10 text-primary p-3 rounded-3">
                     <LineChart className="h-6 w-6" />
@@ -64,8 +71,8 @@ export default async function MarketsPage({ searchParams }: { searchParams?: { c
                 </div>
             </div>
           </div>
-          <Suspense fallback={<div className="h-10 w-[140px] bg-muted rounded-md" />}>
-            <CurrencySwitcher defaultValue={currency} />
+           <Suspense fallback={<div className="h-10 w-full sm:w-[320px] bg-muted rounded-md" />}>
+             <MarketPageClient initialCurrency={currency} initialSearch={searchQuery} />
           </Suspense>
         </div>
       </header>
@@ -81,7 +88,11 @@ export default async function MarketsPage({ searchParams }: { searchParams?: { c
                    </p>
                </div>
             ) : (
-              <MarketDataTableClient initialData={initialData} currency={currency} />
+              <MarketDataTableClient 
+                initialData={initialData} 
+                currency={currency}
+                filter={searchQuery} 
+              />
             )}
           </Suspense>
       </Card>

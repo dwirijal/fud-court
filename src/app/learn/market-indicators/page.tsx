@@ -1,3 +1,4 @@
+
 import {
     Card,
     CardContent,
@@ -33,18 +34,14 @@ export default async function MarketIndicatorsPage() {
 
   return (
     <div className="container-full section-spacing">
-       <Breadcrumb className="mb-6">
+       <Breadcrumb className="mb-8">
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href="/" asChild>
-              <Link href="/">Beranda</Link>
-            </BreadcrumbLink>
+            <BreadcrumbLink href="/">Beranda</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink href="/learn" asChild>
-              <Link href="/learn">Belajar</Link>
-            </BreadcrumbLink>
+            <BreadcrumbLink href="/learn">Belajar</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
@@ -53,18 +50,20 @@ export default async function MarketIndicatorsPage() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <header className="mb-7">
+      <header className="mb-12">
         <div className="flex items-center gap-4 mb-2">
-            <div className="bg-primary/10 text-primary p-2 rounded-lg">
-                <BookOpen className="h-8 w-8" />
+            <div className="bg-primary/10 text-primary p-3 rounded-3">
+                <BookOpen className="h-6 w-6" />
             </div>
-            <h1 className="text-4xl font-semibold tracking-tight">
-                Indikator Skor Pasar
-            </h1>
+             <div>
+                <h1 className="text-3xl font-bold tracking-tighter">
+                    Indikator Skor Pasar
+                </h1>
+                <p className="text-base text-muted-foreground mt-1">
+                    Rincian mendalam tentang komponen yang digunakan untuk menghitung Skor Sentimen Makro.
+                </p>
+            </div>
         </div>
-        <p className="text-lg text-muted-foreground mt-2">
-            Rincian mendalam tentang komponen yang digunakan untuk menghitung Skor Sentimen Makro.
-        </p>
       </header>
       
       <MarketIndicatorsClient marketData={marketData} />

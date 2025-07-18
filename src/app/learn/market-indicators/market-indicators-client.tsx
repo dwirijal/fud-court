@@ -157,7 +157,7 @@ export function MarketIndicatorsClient({ marketData }: MarketIndicatorsClientPro
   return (
     <div className="space-y-8">
         {marketData ? (
-             <Card>
+             <Card className="card-primary">
                 <CardHeader>
                     <div className="flex items-center gap-3">
                         <Database className="h-5 w-5 text-muted-foreground" />
@@ -167,39 +167,39 @@ export function MarketIndicatorsClient({ marketData }: MarketIndicatorsClientPro
                 </CardHeader>
                 <CardContent className="space-y-6">
                     <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4 text-sm">
-                        <li className="flex justify-between items-baseline border-b pb-2">
+                        <li className="flex justify-between items-baseline border-b border-border pb-2">
                             <span className="text-muted-foreground">Total Kapitalisasi Pasar</span>
                             <span className="font-mono font-semibold">{formatCurrency(marketData.totalMarketCap)}</span>
                         </li>
-                         <li className="flex justify-between items-baseline border-b pb-2">
+                         <li className="flex justify-between items-baseline border-b border-border pb-2">
                             <span className="text-muted-foreground pl-4">↳ Kap. Pasar BTC</span>
                             <span className="font-mono font-semibold">{formatCurrency(marketData.btcMarketCap)}</span>
                         </li>
-                         <li className="flex justify-between items-baseline border-b pb-2">
+                         <li className="flex justify-between items-baseline border-b border-border pb-2">
                             <span className="text-muted-foreground pl-4">↳ Kap. Pasar ETH</span>
                             <span className="font-mono font-semibold">{formatCurrency(marketData.ethMarketCap)}</span>
                         </li>
-                         <li className="flex justify-between items-baseline border-b pb-2">
+                         <li className="flex justify-between items-baseline border-b border-border pb-2">
                             <span className="text-muted-foreground pl-4">↳ Kap. Pasar SOL</span>
                             <span className="font-mono font-semibold">{formatCurrency(marketData.solMarketCap)}</span>
                         </li>
-                        <li className="flex justify-between items-baseline border-b pb-2">
+                        <li className="flex justify-between items-baseline border-b border-border pb-2">
                             <span className="text-muted-foreground pl-4">↳ Kap. Pasar Stablecoin</span>
                             <span className="font-mono font-semibold">{formatCurrency(marketData.stablecoinMarketCap)}</span>
                         </li>
-                         <li className="flex justify-between items-baseline border-b pb-2">
+                         <li className="flex justify-between items-baseline border-b border-border pb-2">
                             <span className="text-muted-foreground">Volume 24j</span>
                             <span className="font-mono font-semibold">{formatCurrency(marketData.totalVolume24h)}</span>
                         </li>
-                        <li className="flex justify-between items-baseline border-b pb-2">
+                        <li className="flex justify-between items-baseline border-b border-border pb-2">
                             <span className="text-muted-foreground">Indeks Fear & Greed</span>
                             <span className="font-mono font-semibold">{marketData.fearAndGreedIndex}</span>
                         </li>
-                        <li className="flex justify-between items-baseline border-b pb-2">
+                        <li className="flex justify-between items-baseline border-b border-border pb-2">
                             <span className="text-muted-foreground">Dominasi BTC</span>
                             <span className="font-mono font-semibold">{marketData.btcDominance.toFixed(2)}%</span>
                         </li>
-                        <li className="flex justify-between items-baseline border-b pb-2">
+                         <li className="flex justify-between items-baseline border-b border-border pb-2">
                             <span className="text-muted-foreground">Kap. Historis Maks ({marketData.maxHistoricalMarketCapDate})</span>
                              <span className="font-mono font-semibold">{formatCurrency(marketData.maxHistoricalMarketCap)}</span>
                         </li>
@@ -236,7 +236,7 @@ export function MarketIndicatorsClient({ marketData }: MarketIndicatorsClientPro
                 </CardContent>
             </Card>
         ) : (
-            <Card className="bg-destructive/10 border-destructive">
+            <Card className="card-primary bg-destructive/10 border-destructive">
                 <CardHeader className="flex-row gap-3 items-center">
                     <AlertTriangle className="h-5 w-5 text-destructive" />
                     <CardTitle className="text-destructive">Tidak Dapat Mengambil Data Langsung</CardTitle>
@@ -249,16 +249,16 @@ export function MarketIndicatorsClient({ marketData }: MarketIndicatorsClientPro
 
 
         <div className="space-y-6">
-            <h2 className="text-3xl font-headline font-semibold">Rincian Indikator</h2>
+            <h2 className="text-3xl font-bold font-headline tracking-tighter">Rincian Indikator</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {indicators.map((indicator, index) => (
-                    <Card key={index} className="flex flex-col">
+                    <Card key={index} className="card-primary flex flex-col">
                         <CardHeader className="flex-grow">
                             <div className="flex justify-between items-start">
                                 <CardTitle className="text-xl font-headline">{indicator.name}</CardTitle>
                                 <Badge variant="secondary">Bobot: {indicator.weight}</Badge>
                             </div>
-                            <CardDescription className="line-clamp-2">{indicator.purpose}</CardDescription>
+                            <CardDescription className="line-clamp-2 mt-2">{indicator.purpose}</CardDescription>
                         </CardHeader>
                         <CardContent className="flex justify-between items-center">
                             <div className="flex items-center gap-2 text-lg font-bold text-primary">
@@ -322,7 +322,7 @@ export function MarketIndicatorsClient({ marketData }: MarketIndicatorsClientPro
                 ))}
             </div>
 
-            <Card>
+            <Card className="card-primary">
                 <CardHeader>
                     <div className="flex justify-between items-start">
                         <CardTitle className="text-2xl font-headline">Perhitungan Skor Akhir (M)</CardTitle>

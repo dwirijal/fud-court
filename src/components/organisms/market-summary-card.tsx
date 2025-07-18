@@ -19,7 +19,6 @@ import { AnimatedNumber } from '../molecules/animated-number';
 import { IndicatorCard } from '../molecules/indicator-card';
 import type { CombinedMarketData } from '@/types';
 
-// Directly integrate the analysis logic here.
 const weights = {
   marketCap: 0.25,
   volume: 0.20,
@@ -29,7 +28,6 @@ const weights = {
 };
 
 function analyzeMarketData(input: CombinedMarketData) {
-    // 1. Confidence Score
     let confidence = 100;
     if (input.totalMarketCap <= 0) confidence -= 25;
     if (input.totalVolume24h <= 0) confidence -= 25;
@@ -41,7 +39,6 @@ function analyzeMarketData(input: CombinedMarketData) {
     }
     const confidenceScore = Math.max(0, Math.round(confidence));
 
-    // 2. Component Scores
     const s1_marketCap = (input.totalMarketCap / input.maxHistoricalMarketCap) * 100;
     const raw_volume_score = (input.totalVolume24h / input.avg30DayVolume) * 100;
     const capped_volume_score = Math.min(raw_volume_score, 200);
@@ -69,7 +66,6 @@ function analyzeMarketData(input: CombinedMarketData) {
         marketBreadth: normalize(s5_marketBreadth),
     };
     
-    // 3. Final Macro Score
     const macroScore = 
         finalScores.marketCap * weights.marketCap +
         finalScores.volume * weights.volume +
@@ -149,7 +145,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
 
   if (!analysisResult) {
     return (
-      <Card className="card-primary flex flex-col items-center justify-center p-6 bg-destructive/10 border-destructive">
+      <Card className="card-primary flex flex-col items-center justify-center p-6 bg-destructive/10 border-destructive h-full">
           <AlertTriangle className="h-12 w-12 text-destructive mb-4" />
           <CardTitle className="text-2xl font-semibold text-destructive">Analisis Gagal</CardTitle>
           <CardDescription className="text-destructive/80 mt-2 text-center max-w-md">
@@ -162,17 +158,19 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
   const activeColorClass = getActiveColorClass(analysisResult.marketCondition);
 
   return (
-    <div className="space-y-6">
-        <Card className="card-primary bg-primary/5 border-primary/20 overflow-hidden p-5">
-            <CardHeader className="p-0">
-                <CardTitle className="text-4xl font-semibold">Gambaran Umum Pasar Saat Ini</CardTitle>
-                <CardDescription className="text-base text-text-secondary max-w-2xl">
-                    Mengukur kondisi pasar crypto secara keseluruhan menggunakan 5 indikator gabungan utama.
-                </CardDescription>
-            </CardHeader>
-             <CardContent className="p-0 mt-4">
-                <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-                    <div className="space-y-2 text-center md:text-left">
+    <Card className="card-primary h-full flex flex-col">
+        <CardHeader>
+            <CardTitle className="text-2xl font-semibold">Gambaran Umum Pasar</CardTitle>
+            <CardDescription className="text-base text-text-secondary max-w-2xl">
+                Mengukur kondisi pasar crypto secara keseluruhan menggunakan 5 indikator utama.
+            </CardDescription>
+        </CardHeader>
+         <CardContent className="flex flex-col flex-grow">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-6 flex-grow">
+                <div className="space-y-4 text-center md:text-left">
+                    <AnimatedNumber to={analysisResult.macroScore} className={cn("text-7xl md:text-8xl font-bold tracking-tighter", activeColorClass)} />
+                    <p className={cn("text-2xl font-semibold", activeColorClass)}>{analysisResult.marketCondition}</p>
+                    <div className="space-y-2">
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
@@ -192,23 +190,18 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                             </Link>
                         </Button>
                     </div>
-                    <div className="text-center md:text-right flex-shrink-0">
-                        <AnimatedNumber to={analysisResult.macroScore} className={cn("text-7xl md:text-8xl font-bold tracking-tighter", activeColorClass)} />
-                        <p className={cn("text-2xl font-semibold", activeColorClass)}>{analysisResult.marketCondition}</p>
-                    </div>
                 </div>
-            </CardContent>
-        </Card>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {indicatorDetails.map((detail) => (
-                <IndicatorCard
-                    key={detail.name}
-                    detail={detail}
-                    value={analysisResult.components[detail.valueKey]}
-                />
-            ))}
-        </div>
-    </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 w-full md:w-auto">
+                    {indicatorDetails.map((detail) => (
+                        <IndicatorCard
+                            key={detail.name}
+                            detail={detail}
+                            value={analysisResult.components[detail.valueKey]}
+                        />
+                    ))}
+                </div>
+            </div>
+        </CardContent>
+    </Card>
   );
 }

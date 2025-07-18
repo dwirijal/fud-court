@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getPosts } from "@/lib/ghost";
 import { format } from "date-fns";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Breadcrumb,
@@ -33,9 +33,7 @@ export default async function ArticlesPage() {
       <Breadcrumb className="mb-8">
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href="/" asChild>
-              <Link href="/">Beranda</Link>
-            </BreadcrumbLink>
+            <BreadcrumbLink href="/">Beranda</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
@@ -46,31 +44,34 @@ export default async function ArticlesPage() {
 
       <ArticleHeroSlider posts={featuredPosts} />
 
-      <header className="mb-8 mt-8">
+      <header className="mb-8 mt-12">
         <div className="flex items-center gap-4 mb-2">
-            <div className="bg-accent-primary/10 text-accent-primary p-2 rounded-3">
-                <BookOpen className="h-8 w-8" />
+            <div className="bg-primary/10 text-primary p-3 rounded-3">
+                <BookOpen className="h-6 w-6" />
             </div>
-            <h1 className="text-3xl font-bold tracking-tighter">
-                Artikel
-            </h1>
+            <div>
+              <h1 className="text-3xl font-bold tracking-tighter">
+                  Semua Artikel
+              </h1>
+              <p className="text-base text-text-secondary mt-1">
+                  Analisis mendalam dan konten panjang tentang lanskap kripto.
+              </p>
+            </div>
         </div>
-        <p className="text-base text-text-secondary mt-2">
-            Analisis mendalam dan konten panjang tentang lanskap kripto.
-        </p>
       </header>
 
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {articles.length > 0 ? (
           articles.map((article) => (
             <Card key={article.id} className="card-news flex flex-col overflow-hidden">
+             <Link href={`/news/${article.slug}`} className="block h-full flex flex-col group">
               {article.feature_image && (
-                <div className="relative h-48 w-full">
+                <div className="relative h-48 w-full overflow-hidden">
                   <Image
                     src={article.feature_image}
                     alt={article.title}
                     fill
-                    className="object-cover"
+                    className="object-cover transition-transform duration-slow group-hover:scale-105"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
                 </div>
@@ -81,18 +82,17 @@ export default async function ArticlesPage() {
                     {article.primary_tag.name}
                   </Badge>
                 )}
-                <CardTitle className="text-lg font-semibold leading-tight">
-                  <Link href={`/news/${article.slug}`} className="hover:underline">
+                <CardTitle className="text-lg font-semibold leading-tight group-hover:text-primary transition-colors">
                     {article.title}
-                  </Link>
                 </CardTitle>
-                <CardDescription className="text-sm text-text-secondary line-clamp-3">
+                <CardDescription className="text-sm text-text-secondary line-clamp-3 mt-1">
                   {article.excerpt}
                 </CardDescription>
               </CardHeader>
-              <CardFooter className="p-4 pt-0 text-xs font-medium text-text-tertiary">
+              <CardFooter className="p-4 pt-0 mt-auto text-xs font-medium text-text-tertiary">
                 Diterbitkan pada {format(new Date(article.published_at), "d MMMM yyyy")}
               </CardFooter>
+              </Link>
             </Card>
           ))
         ) : (

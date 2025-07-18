@@ -6,9 +6,9 @@ import { MarketSummaryCard } from "@/components/organisms/market-summary-card";
 import { MarketStatsCard } from "@/components/organisms/market-stats-card";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 export default async function Home() {
-  // Fetch all data concurrently for better performance
   const [rawTopCoins, marketData] = await Promise.all([
     getTopCoins(1, 50),
     fetchMarketData(),
@@ -22,27 +22,29 @@ export default async function Home() {
     <>
       <HeroSection />
       
-      <main>
-        <section className="bg-bg-secondary/50 border-t border-b border-border section-spacing">
-          <div className="container-full">
-            
-            <div className="space-y-8">
+      <main className="container-full section-spacing">
+        <div className="bento-container">
+          <div className="lg:col-span-6 flex flex-col lg:flex-row gap-5">
+            <div className="lg:col-span-4 w-full">
               <MarketSummaryCard marketData={marketData} />
-              <MarketStatsCard marketStats={marketData} />
             </div>
-
-            <div className="mt-12">
-              <MarketCarousel data={topCoins || []} />
-              <div className="flex justify-center mt-8">
-                <Button size="lg" asChild>
-                    <Link href="/markets">
-                        Lihat Semua Pasar
-                    </Link>
-                </Button>
-              </div>
+            <div className="lg:col-span-2 w-full">
+               <MarketStatsCard marketStats={marketData} />
             </div>
           </div>
-        </section>
+
+          <Card className="lg:col-span-6 card-primary p-5">
+            <h2 className="text-xl font-semibold mb-4">Aset Populer</h2>
+            <MarketCarousel data={topCoins || []} />
+            <div className="flex justify-center mt-6">
+              <Button size="lg" asChild>
+                  <Link href="/markets">
+                      Lihat Semua Pasar
+                  </Link>
+              </Button>
+            </div>
+          </Card>
+        </div>
       </main>
     </>
   );

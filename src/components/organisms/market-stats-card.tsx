@@ -70,35 +70,33 @@ const AnimatedStatNumber = ({ to, formatter, className, delay = 0 }: { to: numbe
     return <p className={className}>{formatter(value)}</p>;
 };
 
-function StatCard({ label, value, underlyingValue, colorClass, index, valueIsPercentage = false }: { label: string, value: number, underlyingValue?: number, colorClass: string, index: number, valueIsPercentage?: boolean }) {
+function StatItem({ label, value, underlyingValue, colorClass, delay = 0, valueIsPercentage = false }: { label: string, value: number, underlyingValue?: number, colorClass: string, delay?: number, valueIsPercentage?: boolean }) {
     return (
         <motion.div
-            className="h-full"
+            className="card-primary p-4 flex flex-col justify-between"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.5 }}
-            transition={{ delay: index * 0.1 }}
+            transition={{ delay: delay * 0.1 }}
             variants={cardVariants}
         >
-            <div className="card-primary h-full flex flex-col justify-between p-4">
-                <div className="flex items-center gap-2">
-                    <span className={cn("h-2.5 w-2.5 rounded-full", colorClass)} />
-                    <p className="text-xs font-medium text-text-secondary">{label}</p>
-                </div>
-                <div>
-                     <AnimatedStatNumber
-                        to={value}
-                        formatter={valueIsPercentage ? formatPercentage : formatCurrency}
-                        className="text-2xl font-semibold font-mono"
-                        delay={index * 100}
-                    />
-                    {underlyingValue !== undefined && <AnimatedStatNumber
-                        to={underlyingValue}
-                        formatter={formatCurrency}
-                        className="text-xs font-medium text-text-secondary"
-                        delay={index * 100}
-                    />}
-                </div>
+            <div className="flex items-center gap-2">
+                <span className={cn("h-2.5 w-2.5 rounded-full", colorClass)} />
+                <p className="text-xs font-medium text-text-secondary">{label}</p>
+            </div>
+            <div>
+                 <AnimatedStatNumber
+                    to={value}
+                    formatter={valueIsPercentage ? formatPercentage : formatCurrency}
+                    className="text-2xl font-semibold font-mono"
+                    delay={delay * 100}
+                />
+                {underlyingValue !== undefined && <AnimatedStatNumber
+                    to={underlyingValue}
+                    formatter={formatCurrency}
+                    className="text-xs font-medium text-text-secondary"
+                    delay={delay * 100}
+                />}
             </div>
         </motion.div>
     );
@@ -110,7 +108,7 @@ interface MarketStatsCardProps {
 
 export function MarketStatsCard({ marketStats }: MarketStatsCardProps) {
     if (!marketStats) {
-        return <Skeleton className="h-[220px] lg:h-[120px] w-full rounded-3" />;
+        return <Skeleton className="h-full w-full rounded-3" />;
     }
     
     const { 
@@ -147,24 +145,20 @@ export function MarketStatsCard({ marketStats }: MarketStatsCardProps) {
     ];
 
     return (
-        <Card className="card-primary p-5">
-            <CardHeader className="p-0 mb-4">
-                <CardTitle className="text-2xl font-semibold">Dominasi & TVL</CardTitle>
+        <Card className="card-primary h-full flex flex-col">
+            <CardHeader>
+                <CardTitle className="text-xl font-semibold">Dominasi & TVL</CardTitle>
                 <CardDescription className="text-base text-text-secondary">
-                    Perbandingan kapitalisasi pasar (MC) dan nilai terkunci (TVL) berbagai ekosistem terhadap total pasar kripto.
+                    Perbandingan kapitalisasi pasar (MC) dan nilai terkunci (TVL).
                 </CardDescription>
             </CardHeader>
-            <CardContent className="p-0 space-y-4">
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                    {marketDominanceStats.map((stat, index) => (
-                        <StatCard key={stat.label} {...stat} index={index} />
-                    ))}
-                </div>
-                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                    {tvlStats.map((stat, index) => (
-                        <StatCard key={stat.label} {...stat} index={index + marketDominanceStats.length} />
-                    ))}
-                </div>
+            <CardContent className="flex-grow grid grid-cols-2 md:grid-cols-3 lg:grid-cols-2 gap-3">
+                {marketDominanceStats.map((stat, index) => (
+                    <StatItem key={stat.label} {...stat} delay={index} />
+                ))}
+                {tvlStats.map((stat, index) => (
+                    <StatItem key={stat.label} {...stat} delay={index + marketDominanceStats.length} />
+                ))}
             </CardContent>
         </Card>
     );

@@ -5,6 +5,7 @@ import { TableSkeleton, MarketDataTableClient } from "@/app/coins/market-data-ta
 import { CurrencySwitcher } from "@/components/molecules/currency-switcher";
 import { CryptoData } from "@/types";
 import { AlertTriangle, LineChart } from "lucide-react";
+import { Card } from "@/components/ui/card";
 
 export default async function MarketsPage({ searchParams }: { searchParams?: { currency?: string } }) {
   const currency = searchParams?.currency?.toLowerCase() || 'usd';
@@ -47,19 +48,21 @@ export default async function MarketsPage({ searchParams }: { searchParams?: { c
   return (
     <div className="container-full section-spacing">
       <header className="mb-8">
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-          <div className="text-center sm:text-left">
-            <div className="flex items-center justify-center sm:justify-start gap-4 mb-2">
-                <div className="bg-accent-primary/10 text-accent-primary p-2 rounded-3">
-                    <LineChart className="h-8 w-8" />
+        <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+          <div className="text-left">
+            <div className="flex items-center gap-4 mb-2">
+                <div className="bg-primary/10 text-primary p-3 rounded-3">
+                    <LineChart className="h-6 w-6" />
                 </div>
-                <h1 className="text-3xl font-bold tracking-tighter">
-                  Pasar Kripto
-                </h1>
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tighter">
+                      Pasar Kripto
+                    </h1>
+                     <p className="text-base text-text-secondary mt-1">
+                        Jelajahi harga mata uang kripto, kapitalisasi pasar, dan volume perdagangan secara real-time.
+                    </p>
+                </div>
             </div>
-            <p className="text-base text-text-secondary max-w-3xl mt-2">
-              Jelajahi harga mata uang kripto, kapitalisasi pasar, dan volume perdagangan secara real-time.
-            </p>
           </div>
           <Suspense fallback={<div className="h-10 w-[140px] bg-muted rounded-md" />}>
             <CurrencySwitcher defaultValue={currency} />
@@ -67,7 +70,7 @@ export default async function MarketsPage({ searchParams }: { searchParams?: { c
         </div>
       </header>
 
-      <div className="w-full overflow-x-auto card-primary p-0">
+      <Card className="card-primary p-0 overflow-hidden">
           <Suspense fallback={<TableSkeleton />}>
             {error ? (
                <div className="flex flex-col items-center justify-center p-12 text-center text-market-down">
@@ -81,7 +84,7 @@ export default async function MarketsPage({ searchParams }: { searchParams?: { c
               <MarketDataTableClient initialData={initialData} currency={currency} />
             )}
           </Suspense>
-      </div>
+      </Card>
     </div>
   );
 }

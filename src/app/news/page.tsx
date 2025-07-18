@@ -11,16 +11,18 @@ export default async function NewsPage() {
     <div className="container-full section-spacing">
       <header className="mb-8">
         <div className="flex items-center gap-4 mb-2">
-          <div className="bg-accent-primary/10 text-accent-primary p-2 rounded-lg">
-            <Newspaper className="h-8 w-8" />
+          <div className="bg-primary/10 text-primary p-3 rounded-3">
+            <Newspaper className="h-6 w-6" />
           </div>
-          <h1 className="text-3xl font-bold tracking-tighter">
-            Berita Fud Court
-          </h1>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tighter">
+              Berita Fud Court
+            </h1>
+            <p className="text-base text-text-secondary mt-1">
+              Sumber Anda untuk berita kripto yang tidak bias dan wawasan berbasis data.
+            </p>
+          </div>
         </div>
-        <p className="text-base text-text-secondary max-w-2xl mt-2">
-          Sumber Anda untuk berita kripto yang tidak bias dan wawasan berbasis data.
-        </p>
       </header>
 
       <NewsTable posts={posts} />

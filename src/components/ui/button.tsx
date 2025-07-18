@@ -11,10 +11,11 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "btn-primary focus-ring",
-        destructive: "bg-market-down text-text-primary hover:bg-market-down/90 focus-ring",
+        destructive:
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90 focus-ring",
         outline: "btn-secondary focus-ring",
         ghost: "btn-ghost focus-ring",
-        link: "text-accent-primary underline-offset-4 hover:underline focus-ring p-0",
+        link: "text-accent-primary underline-offset-4 hover:underline focus-ring p-0 h-auto",
       },
       size: {
         default: "h-10 px-4",

@@ -30,7 +30,7 @@
 
     --status-success: 145 58% 55%;
     --status-warning: 38 100% 61%;
-    --status-error: 3 100% 61%;
+    --status-error: 0 100% 61%;        /* Aligned with market-down for consistency */
     --status-info: 210 100% 50%;
 
     /* Chart Colors */
@@ -64,7 +64,7 @@
     --input: var(--bg-tertiary);
     --ring: var(--accent-primary);
     
-    /* 📐 MODULAR SCALE ------------------------- */
+    /* 📐 SPACING & SIZING ------------------------- */
     --space-1: 0.25rem;  /* 4px */
     --space-2: 0.5rem;   /* 8px */
     --space-3: 0.75rem;  /* 12px */
@@ -73,8 +73,6 @@
     --space-6: 2rem;     /* 32px */
     --space-7: 3rem;     /* 48px */
     --space-8: 4rem;     /* 64px */
-    --space-9: 5rem;     /* 80px */
-    --space-10: 6rem;    /* 96px */
 
     /* Border Radius Scale */
     --radius-1: 0.25rem; /* 4px */
@@ -124,6 +122,7 @@
   .btn-primary:hover {
     background-color: hsl(var(--accent-secondary));
     transform: translateY(-1px);
+    box-shadow: 0 4px 10px hsl(var(--accent-primary) / 0.2);
   }
   
   .btn-secondary { 
@@ -149,27 +148,32 @@
   .section-spacing { @apply py-8 md:py-12 lg:py-16; }
 
   /* Prose Overrides for Rich Text Content */
-  .prose-invert {
-    --tw-prose-body: hsl(var(--text-secondary));
-    --tw-prose-headings: hsl(var(--text-primary));
-    --tw-prose-lead: hsl(var(--text-secondary));
-    --tw-prose-links: hsl(var(--accent-primary));
-    --tw-prose-bold: hsl(var(--text-primary));
-    --tw-prose-counters: hsl(var(--text-tertiary));
-    --tw-prose-bullets: hsl(var(--text-tertiary));
-    --tw-prose-hr: hsl(var(--border));
-    --tw-prose-quotes: hsl(var(--text-primary));
-    --tw-prose-quote-borders: hsl(var(--accent-primary));
-    --tw-prose-captions: hsl(var(--text-tertiary));
-    --tw-prose-code: hsl(var(--text-primary));
-    --tw-prose-pre-code: hsl(var(--text-primary));
-    --tw-prose-pre-bg: hsl(var(--bg-tertiary));
-    --tw-prose-th-borders: hsl(var(--border));
-    --tw-prose-td-borders: hsl(var(--border));
+  .prose {
+    @apply max-w-none text-text-secondary;
   }
-  
-  .prose-invert p {
+  .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+    @apply text-text-primary;
+  }
+  .prose p {
     @apply text-base leading-relaxed;
+  }
+  .prose a {
+    @apply text-accent-primary;
+  }
+  .prose strong {
+    @apply text-text-primary;
+  }
+  .prose blockquote {
+    @apply border-l-accent-primary text-text-primary;
+  }
+  .prose code {
+    @apply text-text-primary bg-bg-tertiary p-1 rounded-1;
+  }
+  .prose pre {
+    @apply bg-bg-tertiary p-4 rounded-3;
+  }
+  .prose pre code {
+    @apply bg-transparent p-0;
   }
 }
 

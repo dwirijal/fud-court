@@ -55,8 +55,9 @@ export function NewsCard({ post }: { post: Post }) {
       variants={cardVariants}
       className="h-full"
     >
-      <Card asChild className="card-news h-full flex flex-col">
-        <Link href={`/news/${post.slug}`} className="group block focus-ring rounded-3">
+      <Link href={`/news/${post.slug}`} className="group block h-full focus-ring rounded-3">
+        <Card asChild className="card-news h-full flex flex-col">
+          <article>
             <CardHeader className="p-0">
               <div className="relative aspect-[16/10] w-full overflow-hidden rounded-t-3">
                 <Image
@@ -69,24 +70,25 @@ export function NewsCard({ post }: { post: Post }) {
                 />
               </div>
             </CardHeader>
-          <CardContent className="flex-grow p-4 space-y-2">
-            {post.primary_tag && (
-              <Badge variant="secondary">{post.primary_tag.name}</Badge>
-            )}
-            <CardTitle className="text-xl font-semibold leading-tight group-hover:text-accent-primary transition-colors">
-              {post.title}
-            </CardTitle>
-            <p className="text-sm text-text-secondary line-clamp-3">
-              {post.excerpt}
-            </p>
-          </CardContent>
-          <CardFooter className="p-4 pt-0">
-            <time dateTime={post.published_at} className="text-xs font-medium text-text-tertiary">
-              {publicationDate || '...'}
-            </time>
-          </CardFooter>
-        </Link>
-      </Card>
+            <CardContent className="flex-grow p-4 space-y-2">
+              {post.primary_tag && (
+                <Badge variant="secondary">{post.primary_tag.name}</Badge>
+              )}
+              <CardTitle className="text-xl font-semibold leading-tight group-hover:text-accent-primary transition-colors">
+                {post.title}
+              </CardTitle>
+              <p className="text-sm text-text-secondary line-clamp-3">
+                {post.excerpt}
+              </p>
+            </CardContent>
+            <CardFooter className="p-4 pt-0">
+              <time dateTime={post.published_at} className="text-xs font-medium text-text-tertiary">
+                {publicationDate || '...'}
+              </time>
+            </CardFooter>
+          </article>
+        </Card>
+      </Link>
     </motion.div>
   );
 }

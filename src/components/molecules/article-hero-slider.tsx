@@ -31,7 +31,7 @@ export function ArticleHeroSlider({ posts }: ArticleHeroSliderProps) {
         }}
       >
         <CarouselContent className="-ml-4">
-          {posts.map((post) => (
+          {posts.map((post, index) => (
             <CarouselItem
               key={post.id}
               className="pl-4 md:basis-1/2 lg:basis-1/3"
@@ -45,7 +45,7 @@ export function ArticleHeroSlider({ posts }: ArticleHeroSliderProps) {
                       fill
                       className="object-cover transition-transform duration-slow group-hover:scale-105"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      priority={posts.indexOf(post) < 3}
+                      priority={index < 3}
                     />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex flex-col justify-end p-5">

@@ -24,13 +24,11 @@ export default async function Home() {
       
       <div className="container-full section-spacing">
         <div className="bento-container">
-          <div className="lg:col-span-6 flex flex-col lg:flex-row gap-5">
-            <div className="lg:col-span-4 w-full">
-              <MarketSummaryCard marketData={marketData} />
-            </div>
-            <div className="lg:col-span-2 w-full">
-               <MarketStatsCard marketStats={marketData} />
-            </div>
+          <div className="lg:col-span-4 w-full">
+            <MarketSummaryCard marketData={marketData} />
+          </div>
+          <div className="lg:col-span-2 w-full">
+             <MarketStatsCard marketStats={marketData} />
           </div>
 
           <Card className="lg:col-span-6 card-primary p-5">

@@ -131,11 +131,11 @@ const getActiveColorClass = (interpretation: string) => {
 };
 
 const indicatorDetails = [
-    { name: "Kapitalisasi Pasar", valueKey: "marketCapScore", formula: "(Kapitalisasi Pasar Saat Ini / Kapitalisasi Puncak) * 100", icon: Scale },
-    { name: "Volume", valueKey: "volumeScore", formula: "min((Volume Saat Ini / Rata-rata 30h) * 100, 200) / 2", icon: Zap },
-    { name: "Fear & Greed", valueKey: "fearGreedScore", formula: "Nilai Indeks Fear & Greed", icon: AlertTriangle },
-    { name: "Jarak ATH", valueKey: "athScore", formula: "100 - (Rata-rata % Jarak dari ATH)", icon: TrendingUp },
-    { name: "Sebaran Pasar", valueKey: "marketBreadthScore", formula: "(Token Naik / Total Koin) * 100", icon: Package },
+    { name: "Kapitalisasi Pasar", valueKey: "marketCapScore", rawDataKey: "marketCap", formula: "(Kapitalisasi Pasar Saat Ini / Kapitalisasi Puncak) * 100", icon: Scale },
+    { name: "Volume", valueKey: "volumeScore", rawDataKey: "volume", formula: "min((Volume Saat Ini / Rata-rata 30h) * 100, 200) / 2", icon: Zap },
+    { name: "Fear & Greed", valueKey: "fearGreedScore", rawDataKey: "fearAndGreed", formula: "Nilai Indeks Fear & Greed", icon: AlertTriangle },
+    { name: "Jarak ATH", valueKey: "athScore", rawDataKey: "ath", formula: "100 - (Rata-rata % Jarak dari ATH)", icon: TrendingUp },
+    { name: "Sebaran Pasar", valueKey: "marketBreadthScore", rawDataKey: "marketBreadth", formula: "(Token Naik / Total Koin) * 100", icon: Package },
 ] as const;
 
 interface MarketSummaryCardProps {
@@ -225,7 +225,7 @@ export function MarketSummaryCard({ marketData }: MarketSummaryCardProps) {
                             name={detail.name}
                             score={analysisResult.components[detail.valueKey]}
                             formula={detail.formula}
-                            rawData={analysisResult.rawData[detail.valueKey.replace('Score', '') as keyof typeof analysisResult.rawData]}
+                            rawData={analysisResult.rawData[detail.rawDataKey]}
                         />
                     ))}
                 </div>

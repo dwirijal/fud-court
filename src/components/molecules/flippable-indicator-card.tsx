@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -54,12 +53,16 @@ export function FlippableIndicatorCard({
                  <div className="absolute w-full h-full backface-hidden [transform:rotateY(180deg)]">
                      <Card className="h-full bg-bg-tertiary border-accent-primary/20 flex flex-col justify-center p-3 cursor-pointer">
                         <div className="space-y-1 text-xs w-full">
-                          {Object.entries(rawData).map(([key, value]) => (
-                            <div key={key} className="flex justify-between items-baseline gap-2">
-                              <span className="text-text-secondary truncate" title={key}>{key}</span>
-                              <span className="font-mono text-text-primary font-semibold">{value}</span>
-                            </div>
-                          ))}
+                          {rawData && Object.keys(rawData).length > 0 ? (
+                             Object.entries(rawData).map(([key, value]) => (
+                              <div key={key} className="flex justify-between items-baseline gap-2">
+                                <span className="text-text-secondary truncate" title={key}>{key}</span>
+                                <span className="font-mono text-text-primary font-semibold">{value}</span>
+                              </div>
+                            ))
+                          ) : (
+                            <p className="text-center text-text-tertiary">Data tidak tersedia</p>
+                          )}
                         </div>
                         <Separator className="my-1.5 bg-accent-primary/20"/>
                         <p className="text-xs text-center font-mono text-accent-primary/80" title={formula}>

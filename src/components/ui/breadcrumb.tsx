@@ -1,10 +1,6 @@
-
-"use client"
-
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { ChevronRight, MoreHorizontal } from "lucide-react"
-import Link from "next/link"
 
 import { cn } from "@/lib/utils"
 
@@ -45,11 +41,11 @@ BreadcrumbItem.displayName = "BreadcrumbItem"
 
 const BreadcrumbLink = React.forwardRef<
   HTMLAnchorElement,
-  React.ComponentPropsWithoutRef<typeof Link> & {
+  React.ComponentPropsWithoutRef<"a"> & {
     asChild?: boolean
   }
 >(({ asChild, className, ...props }, ref) => {
-  const Comp = asChild ? Slot : Link
+  const Comp = asChild ? Slot : "a"
 
   return (
     <Comp
@@ -76,28 +72,27 @@ const BreadcrumbPage = React.forwardRef<
 ))
 BreadcrumbPage.displayName = "BreadcrumbPage"
 
-const BreadcrumbSeparator = React.forwardRef<
-  HTMLLIElement,
-  React.ComponentPropsWithoutRef<"li">
->(({ children, className, ...props }, ref) => (
+const BreadcrumbSeparator = ({
+  children,
+  className,
+  ...props
+}: React.ComponentProps<"li">) => (
   <li
-    ref={ref}
     role="presentation"
     aria-hidden="true"
-    className={cn("[&>svg]:size-3.5", className)}
+    className={cn("[&>svg]:w-3.5 [&>svg]:h-3.5", className)}
     {...props}
   >
     {children ?? <ChevronRight />}
   </li>
-))
+)
 BreadcrumbSeparator.displayName = "BreadcrumbSeparator"
 
-const BreadcrumbEllipsis = React.forwardRef<
-  HTMLSpanElement,
-  React.ComponentPropsWithoutRef<"span">
->(({ className, ...props }, ref) => (
+const BreadcrumbEllipsis = ({
+  className,
+  ...props
+}: React.ComponentProps<"span">) => (
   <span
-    ref={ref}
     role="presentation"
     aria-hidden="true"
     className={cn("flex h-9 w-9 items-center justify-center", className)}
@@ -106,8 +101,8 @@ const BreadcrumbEllipsis = React.forwardRef<
     <MoreHorizontal className="h-4 w-4" />
     <span className="sr-only">More</span>
   </span>
-))
-BreadcrumbEllipsis.displayName = "BreadcrumbEllipsis"
+)
+BreadcrumbEllipsis.displayName = "BreadcrumbElipssis"
 
 export {
   Breadcrumb,

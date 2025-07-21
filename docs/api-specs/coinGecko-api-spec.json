@@ -1,0 +1,333 @@
+
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "CoinGecko Public API",
+    "description": "OpenAPI specification for the public endpoints of the CoinGecko REST API, based on the implementation in `src/api/crypto/coinGecko.ts`.",
+    "version": "v3"
+  },
+  "servers": [
+    {
+      "url": "https://api.coingecko.com/api/v3",
+      "description": "Main API V3 Server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "General",
+      "description": "General server information and connectivity."
+    },
+    {
+      "name": "Coins",
+      "description": "Endpoints for retrieving cryptocurrency data."
+    },
+    {
+      "name": "Search",
+      "description": "Endpoints for searching assets."
+    },
+    {
+      "name": "Global",
+      "description": "Endpoints for global market data."
+    }
+  ],
+  "paths": {
+    "/ping": {
+      "get": {
+        "tags": ["General"],
+        "summary": "Check API Server Status",
+        "description": "Checks if the API server is up and running.",
+        "responses": {
+          "200": {
+            "description": "API status message.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "gecko_says": { "type": "string", "example": "(V3) To the Moon!" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/simple/price": {
+      "get": {
+        "tags": ["Coins"],
+        "summary": "Get Simple Price",
+        "description": "Get the current price of any cryptocurrencies in any other supported currencies that you need.",
+        "parameters": [
+          {
+            "name": "ids",
+            "in": "query",
+            "description": "A comma-separated string of coin IDs (e.g., bitcoin,ethereum).",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "vs_currencies",
+            "in": "query",
+            "description": "A comma-separated string of fiat currency symbols (e.g., usd,eur).",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A JSON object of coin prices.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": { "type": "number" }
+                  },
+                  "example": {
+                    "bitcoin": { "usd": 60000 },
+                    "ethereum": { "usd": 4000 }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/coins/markets": {
+      "get": {
+        "tags": ["Coins"],
+        "summary": "Get Coin Market Data",
+        "description": "Get cryptocurrency market data, including price, market cap, and volume.",
+        "parameters": [
+          {
+            "name": "vs_currency",
+            "in": "query",
+            "description": "The target currency of market data (e.g., usd, eur).",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "ids",
+            "in": "query",
+            "description": "A comma-separated string of coin IDs to filter by.",
+            "required": false,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Total results per page.",
+            "required": false,
+            "schema": { "type": "integer", "default": 100 }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page through results.",
+            "required": false,
+            "schema": { "type": "integer", "default": 1 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of coin market data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Coin" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/coins/{id}": {
+      "get": {
+        "tags": ["Coins"],
+        "summary": "Get Coin Details",
+        "description": "Get detailed data for a single coin.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The ID of the coin (e.g., bitcoin).",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detailed information for a single coin.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CoinDetails" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/coins/{id}/market_chart": {
+      "get": {
+        "tags": ["Coins"],
+        "summary": "Get Coin Market Chart",
+        "description": "Get historical market data (price, market cap, and volume) for a coin.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The ID of the coin (e.g., bitcoin).",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "vs_currency",
+            "in": "query",
+            "description": "The target currency.",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "days",
+            "in": "query",
+            "description": "Data up to number of days ago (e.g., 1, 7, 30).",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Historical market data.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MarketData" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search/trending": {
+      "get": {
+        "tags": ["Search"],
+        "summary": "Get Trending Search Data",
+        "description": "Get the top 7 trending coins on CoinGecko as searched by users in the last 24 hours.",
+        "responses": {
+          "200": {
+            "description": "A list of trending coins.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TrendingResults" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/global": {
+      "get": {
+        "tags": ["Global"],
+        "summary": "Get Global Market Data",
+        "description": "Get global cryptocurrency market data.",
+        "responses": {
+          "200": {
+            "description": "Global market data.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/GlobalData" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Coin": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "symbol": { "type": "string" },
+          "name": { "type": "string" },
+          "image": { "type": "string", "format": "uri" },
+          "current_price": { "type": "number" },
+          "market_cap": { "type": "number" },
+          "market_cap_rank": { "type": "integer" },
+          "total_volume": { "type": "number" },
+          "price_change_percentage_24h": { "type": "number" }
+        }
+      },
+      "CoinDetails": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "symbol": { "type": "string" },
+          "name": { "type": "string" },
+          "description": { "type": "object", "properties": { "en": { "type": "string" } } },
+          "image": { 
+            "type": "object",
+            "properties": {
+              "thumb": { "type": "string", "format": "uri" },
+              "small": { "type": "string", "format": "uri" },
+              "large": { "type": "string", "format": "uri" }
+            }
+          },
+          "market_cap_rank": { "type": "integer" },
+          "market_data": { "type": "object" }
+        }
+      },
+      "MarketData": {
+        "type": "object",
+        "properties": {
+          "prices": { "type": "array", "items": { "type": "array", "items": { "type": "number" } } },
+          "market_caps": { "type": "array", "items": { "type": "array", "items": { "type": "number" } } },
+          "total_volumes": { "type": "array", "items": { "type": "array", "items": { "type": "number" } } }
+        }
+      },
+      "TrendingResults": {
+        "type": "object",
+        "properties": {
+          "coins": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "item": { "type": "object" }
+              }
+            }
+          }
+        }
+      },
+      "GlobalData": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "active_cryptocurrencies": { "type": "integer" },
+              "markets": { "type": "integer" },
+              "total_market_cap": { 
+                "type": "object",
+                "additionalProperties": { "type": "number" }
+              },
+              "total_volume": {
+                "type": "object",
+                "additionalProperties": { "type": "number" }
+              },
+              "market_cap_percentage": {
+                "type": "object",
+                "additionalProperties": { "type": "number" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,13 +1,16 @@
 
 import { NextResponse } from 'next/server';
-import { syncGlobalMarketData, syncTopCoins } from '@/lib/coingecko';
-import { syncFearAndGreedData } from '@/lib/fear-greed';
-import { syncDefiLlamaData } from '@/lib/defillama';
+import { CoinGeckoAPI, DefiLlamaClient } from '@/lib/api-clients/crypto';
+import { FearGreedClient } from '@/lib/api-clients/alternative';
 
 // This endpoint can be triggered by a cron job to keep the database fresh.
 export async function GET() {
   console.log("Starting all data synchronization jobs...");
   try {
+    const coinGeckoClient = new CoinGeckoAPI();
+    const defiLlamaClient = new DefiLlamaClient();
+    const fearGreedClient = new FearGreedClient();
+
     // Run all sync jobs concurrently for efficiency
     const [
       coinsResult,
@@ -15,10 +18,16 @@ export async function GET() {
       fearGreedResult,
       defiLlamaResult,
     ] = await Promise.allSettled([
-      syncTopCoins(),
-      syncGlobalMarketData(),
-      syncFearAndGreedData(),
-      syncDefiLlamaData(),
+      coinGeckoClient.getCoinsMarkets({
+        vs_currency: 'usd',
+        order: 'market_cap_desc',
+        per_page: 100,
+        sparkline: false,
+        price_change_percentage: '24h',
+      }),
+      coinGeckoClient.getGlobal(),
+      fearGreedClient.getFearAndGreedIndex(),
+      defiLlamaClient.getProtocols(),
     ]);
 
     const results = {

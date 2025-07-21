@@ -1,0 +1,181 @@
+
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "DexScreener Public API",
+    "description": "OpenAPI specification for the public endpoints of the DexScreener REST API, based on the implementation in `src/api/crypto/dexScreener.ts`.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.dexscreener.com/latest",
+      "description": "Main API Server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Pairs",
+      "description": "Endpoints for retrieving pair and token data."
+    },
+    {
+      "name": "Search",
+      "description": "Endpoints for searching pairs."
+    }
+  ],
+  "paths": {
+    "/dex/search/": {
+      "get": {
+        "tags": ["Search"],
+        "summary": "Search for Pairs",
+        "description": "Search for pairs by token symbol, name, or address.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "description": "The search query string.",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of pairs matching the search query.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DexScreenerSearchResult" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dex/pairs/{chainId}/{pairAddresses}": {
+      "get": {
+        "tags": ["Pairs"],
+        "summary": "Get Pairs by Addresses",
+        "description": "Get information for up to 30 pairs by their addresses on a specific chain.",
+        "parameters": [
+          {
+            "name": "chainId",
+            "in": "path",
+            "description": "The blockchain identifier (e.g., ethereum, bsc).",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "pairAddresses",
+            "in": "path",
+            "description": "A comma-separated string of pair addresses.",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of the requested pairs.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DexScreenerSearchResult" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dex/tokens/{tokenAddresses}": {
+      "get": {
+        "tags": ["Pairs"],
+        "summary": "Get Pairs for Tokens",
+        "description": "Get all pairs that include one of the specified token addresses.",
+        "parameters": [
+          {
+            "name": "tokenAddresses",
+            "in": "path",
+            "description": "A comma-separated string of token addresses.",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of pairs associated with the given tokens.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DexScreenerTokenResponse" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DexScreenerPair": {
+        "type": "object",
+        "properties": {
+          "chainId": { "type": "string" },
+          "dexId": { "type": "string" },
+          "url": { "type": "string", "format": "uri" },
+          "pairAddress": { "type": "string" },
+          "baseToken": { "$ref": "#/components/schemas/Token" },
+          "quoteToken": { "$ref": "#/components/schemas/Token" },
+          "priceNative": { "type": "string" },
+          "priceUsd": { "type": "string" },
+          "volume": {
+            "type": "object",
+            "properties": {
+              "h24": { "type": "number" },
+              "h6": { "type": "number" },
+              "h1": { "type": "number" },
+              "m5": { "type": "number" }
+            }
+          },
+          "priceChange": {
+            "type": "object",
+            "properties": {
+              "h24": { "type": "number" },
+              "h6": { "type": "number" },
+              "h1": { "type": "number" },
+              "m5": { "type": "number" }
+            }
+          },
+          "liquidity": {
+            "type": "object",
+            "properties": {
+              "usd": { "type": "number" }
+            }
+          }
+        }
+      },
+      "Token": {
+        "type": "object",
+        "properties": {
+          "address": { "type": "string" },
+          "name": { "type": "string" },
+          "symbol": { "type": "string" }
+        }
+      },
+      "DexScreenerSearchResult": {
+        "type": "object",
+        "properties": {
+          "schemaVersion": { "type": "string" },
+          "pairs": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/DexScreenerPair" }
+          }
+        }
+      },
+      "DexScreenerTokenResponse": {
+        "type": "object",
+        "properties": {
+          "schemaVersion": { "type": "string" },
+          "pairs": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/DexScreenerPair" }
+          }
+        }
+      }
+    }
+  }
+}

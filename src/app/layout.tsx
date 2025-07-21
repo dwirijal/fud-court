@@ -1,11 +1,11 @@
 
-import type {Metadata} from 'next';
+import type { Metadata } from 'next';
 import './globals.css';
-import { AppLayout } from '@/components/organisms/app-layout';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { GlobalNewsTicker } from '@/components/organisms/global-news-ticker';
+import { Header } from '@/components/layout/Header';
+import { Footer } from '@/components/layout/Footer';
 
 const fontSans = Inter({
   subsets: ['latin'],
@@ -22,8 +22,15 @@ const fontMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: 'Fud Court',
   description: 'Di mana klaim kripto diadili.',
+};
+
+export const viewport = {
   themeColor: '#0A0A0B',
 };
+
+import { ThemeProvider } from 'next-themes';
+
+// ... (rest of the file)
 
 export default async function RootLayout({
   children,
@@ -32,14 +39,18 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="id" className="dark" suppressHydrationWarning>
-      <body className={`${fontSans.variable} ${fontMono.variable} font-sans`}>
-        <AppLayout>
-          {children}
-        </AppLayout>
-        <GlobalNewsTicker />
+      <body className={`${fontSans.variable} ${fontMono.variable} font-sans min-h-screen flex flex-col`}>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <Header />
+          <main className="flex-grow">
+            {children}
+          </main>
+          <Footer />
+        </ThemeProvider>
         <Analytics />
         <SpeedInsights />
       </body>
     </html>
   );
 }
+

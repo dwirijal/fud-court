@@ -1,0 +1,57 @@
+API Name,Endpoint/Method,Description of Data
+DefiLlama,/protocols,List of all protocols with TVL data
+DefiLlama,/protocol/{protocol},Historical TVL of a protocol
+DefiLlama,/v2/historicalChainTvl,Historical TVL of DeFi on all chains
+DefiLlama,/v2/historicalChainTvl/{chain},Historical TVL of a specific chain
+DefiLlama,/tvl/{protocol},Current TVL of a protocol
+DefiLlama,/v2/chains,Current TVL of all chains
+DefiLlama,/prices/current/{coins},Current prices of tokens by contract address
+DefiLlama,/prices/historical/{timestamp}/{coins},Historical prices of tokens by contract address
+DefiLlama,/batchHistorical,Historical prices for multiple tokens at multiple different timestamps
+DefiLlama,/chart/{coins},Token prices at regular time intervals
+DefiLlama,/percentage/{coins},Percentage change in price over time
+DefiLlama,/prices/first/{coins},Earliest timestamp price record for coins
+DefiLlama,/block/{chain}/{timestamp},Closest block to a timestamp
+DefiLlama,/stablecoins,List of all stablecoins with circulating amounts
+DefiLlama,/stablecoincharts/all,Historical market cap sum of all stablecoins
+DefiLlama,/stablecoincharts/{chain},Historical market cap sum of all stablecoins in a chain
+DefiLlama,/stablecoin/{asset},Historical market cap and chain distribution of a stablecoin
+DefiLlama,/stablecoinchains,Current market cap sum of all stablecoins on each chain
+DefiLlama,/stablecoinprices,Historical prices of all stablecoins
+DefiLlama,/pools,Latest data for all yield pools
+DefiLlama,/chart/{pool},Historical APY and TVL of a yield pool
+DefiLlama,/overview/dexs,Overview of all DEXs with volume data
+DefiLlama,/overview/dexs/{chain},Overview of DEXs on specified chain with volume data
+DefiLlama,/summary/dexs/{protocol},Summary of dex volume with historical data
+DefiLlama,/overview/options,Overview of all options DEXs with volume data
+Binance,/ping,API connectivity status
+Binance,/time,Current server time
+Binance,/exchangeInfo,Exchange trading rules and symbol information
+Binance,/depth,Order book (market depth)
+Binance,/trades,Recent trades list
+Binance,/historicalTrades,Older market trades
+Binance,/aggTrades,Compressed, aggregate trades
+Binance,/klines,Kline/candlestick bars
+Binance,/avgPrice,Current average price
+Binance,/ticker/24hr,24hr ticker price change statistics
+Binance,/ticker/price,Symbol price ticker
+Binance,/ticker/bookTicker,Symbol order book ticker
+CoinGecko,/ping,API server status
+CoinGecko,/simple/price,Current price of coins
+CoinGecko,/simple/supported_vs_currencies,List of supported vs currencies
+CoinGecko,/coins/markets,List of coins with market data
+CoinGecko,/coins/list,List of all supported coins
+CoinGecko,/coins/{id},Detailed information about a specific coin
+CoinGecko,/coins/{id}/market_chart,Historical market data for a coin
+CoinGecko,/coins/{id}/market_chart/range,Historical market data within a date range
+CoinGecko,/search,Search for coins, exchanges, and categories
+CoinGecko,/search/trending,Trending coins
+CoinGecko,/global,Global cryptocurrency data
+CoinGecko,/exchange_rates,BTC-to-Currency exchange rates
+DexScreener,/latest/dex/tokens/{tokenAddresses},Pairs for one or more token addresses
+DexScreener,/latest/dex/pairs/{chainId}/{pairAddress},Pair information by chain ID and pair address
+DexScreener,/latest/dex/pairs/{pairAddresses},Pairs by addresses
+DexScreener,/latest/dex/search/?q={query},Search for pairs matching query
+DexScreener,/orders/v1/{chainId}/{tokenAddress},Token profile information
+CoinMarketCap,/cryptocurrency/listings/latest,Top cryptocurrency data (price, volume, market cap, etc.)
+Fear and Greed Index,/fng/,Latest data of the Fear and Greed Index

@@ -1,12 +1,18 @@
-import { updateCryptoExchangeRates } from '@/lib/coingecko';
 import { NextResponse } from 'next/server';
+import { CoinGeckoAPI } from '@/lib/api-clients/crypto';
 
 export async function GET() {
   try {
-    await updateCryptoExchangeRates();
-    return NextResponse.json({ message: 'Exchange rates updated successfully' }, { status: 200 });
+    const coinGeckoClient = new CoinGeckoAPI();
+    const exchangeRates = await coinGeckoClient.getSimplePrice({
+      ids: 'bitcoin,ethereum',
+      vs_currencies: 'usd,eur',
+      include_24hr_change: true,
+    });
+    console.log('Fetched exchange rates:', exchangeRates);
+    return NextResponse.json({ message: 'Exchange rates fetched successfully', data: exchangeRates }, { status: 200 });
   } catch (error) {
-    console.error('Error updating exchange rates:', error);
-    return NextResponse.json({ message: 'Error updating exchange rates' }, { status: 500 });
+    console.error('Error fetching exchange rates:', error);
+    return NextResponse.json({ message: 'Error fetching exchange rates' }, { status: 500 });
   }
 }

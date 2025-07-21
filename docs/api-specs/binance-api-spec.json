@@ -1,0 +1,553 @@
+
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Binance Public API",
+    "description": "OpenAPI specification for the public endpoints of the Binance REST API, based on the implementation in `src/api/crypto/binance.ts`.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.binance.com/api/v3",
+      "description": "Main API V3 Server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "General",
+      "description": "General server information and connectivity."
+    },
+    {
+      "name": "Market Data",
+      "description": "Endpoints for retrieving market data."
+    },
+    {
+      "name": "Tickers",
+      "description": "Endpoints related to price tickers."
+    }
+  ],
+  "paths": {
+    "/ping": {
+      "get": {
+        "tags": ["General"],
+        "summary": "Test API Connectivity",
+        "description": "Tests connectivity to the REST API.",
+        "responses": {
+          "200": {
+            "description": "An empty object on success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/time": {
+      "get": {
+        "tags": ["General"],
+        "summary": "Get Server Time",
+        "description": "Fetches the current server time.",
+        "responses": {
+          "200": {
+            "description": "The current server time.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BinanceServerTime"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/exchangeInfo": {
+      "get": {
+        "tags": ["General"],
+        "summary": "Get Exchange Information",
+        "description": "Fetches current exchange trading rules and symbol information.",
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "description": "Symbol to get info for (e.g., BTCUSDT).",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Exchange information.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BinanceExchangeInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/depth": {
+      "get": {
+        "tags": ["Market Data"],
+        "summary": "Get Order Book",
+        "description": "Fetches the order book for a specific symbol.",
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "description": "Trading symbol (e.g., BTCUSDT).",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of orders to retrieve.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "enum": [5, 10, 20, 50, 100, 500, 1000, 5000],
+              "default": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The order book.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BinanceOrderBook"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/trades": {
+      "get": {
+        "tags": ["Market Data"],
+        "summary": "Get Recent Trades",
+        "description": "Fetches the most recent trades for a symbol.",
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "description": "Trading symbol (e.g., BTCUSDT).",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of trades to retrieve.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 500,
+              "maximum": 1000
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of recent trades.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BinanceTrade"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/aggTrades": {
+      "get": {
+        "tags": ["Market Data"],
+        "summary": "Get Aggregate Trades",
+        "description": "Fetches compressed, aggregate trades.",
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "description": "Trading symbol (e.g., BTCUSDT).",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of trades to retrieve.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 500,
+              "maximum": 1000
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of aggregate trades.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BinanceAggTrade"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/klines": {
+      "get": {
+        "tags": ["Market Data"],
+        "summary": "Get Kline/Candlestick Data",
+        "description": "Fetches kline (candlestick) data for a symbol.",
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "description": "Trading symbol (e.g., BTCUSDT).",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "interval",
+            "in": "query",
+            "description": "The kline interval.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["1s", "1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1M"]
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of klines to retrieve.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 500,
+              "maximum": 1000
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of kline data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BinanceKline"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/avgPrice": {
+      "get": {
+        "tags": ["Market Data"],
+        "summary": "Get Current Average Price",
+        "description": "Fetches the current average price for a symbol.",
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "description": "Trading symbol (e.g., BTCUSDT).",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The average price.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BinanceAvgPrice"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ticker/24hr": {
+      "get": {
+        "tags": ["Tickers"],
+        "summary": "Get 24hr Ticker Statistics",
+        "description": "Fetches 24-hour ticker price change statistics.",
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "description": "Trading symbol (e.g., BTCUSDT). If omitted, all symbols are returned.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ticker statistics for one or all symbols.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    { "$ref": "#/components/schemas/BinanceTicker24hr" },
+                    { 
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/BinanceTicker24hr" }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ticker/price": {
+      "get": {
+        "tags": ["Tickers"],
+        "summary": "Get Symbol Price Ticker",
+        "description": "Fetches the latest price for a symbol or symbols.",
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "description": "Trading symbol (e.g., BTCUSDT). If omitted, all symbols are returned.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Price for one or all symbols.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    { "$ref": "#/components/schemas/BinancePrice" },
+                    { 
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/BinancePrice" }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ticker/bookTicker": {
+      "get": {
+        "tags": ["Tickers"],
+        "summary": "Get Order Book Ticker",
+        "description": "Fetches the best price/quantity on the order book for a symbol or symbols.",
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "description": "Trading symbol (e.g., BTCUSDT). If omitted, all symbols are returned.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Book ticker for one or all symbols.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    { "$ref": "#/components/schemas/BinanceBookTicker" },
+                    { 
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/BinanceBookTicker" }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BinanceServerTime": {
+        "type": "object",
+        "properties": {
+          "serverTime": { "type": "integer" }
+        }
+      },
+      "BinanceExchangeInfo": {
+        "type": "object",
+        "properties": {
+          "timezone": { "type": "string" },
+          "serverTime": { "type": "integer" },
+          "rateLimits": { "type": "array", "items": { "type": "object" } },
+          "exchangeFilters": { "type": "array", "items": { "type": "object" } },
+          "symbols": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/BinanceSymbol" }
+          }
+        }
+      },
+      "BinanceSymbol": {
+        "type": "object",
+        "properties": {
+          "symbol": { "type": "string" },
+          "status": { "type": "string" },
+          "baseAsset": { "type": "string" },
+          "baseAssetPrecision": { "type": "integer" },
+          "quoteAsset": { "type": "string" },
+          "quotePrecision": { "type": "integer" },
+          "orderTypes": { "type": "array", "items": { "type": "string" } },
+          "isSpotTradingAllowed": { "type": "boolean" },
+          "isMarginTradingAllowed": { "type": "boolean" }
+        }
+      },
+      "BinanceOrderBook": {
+        "type": "object",
+        "properties": {
+          "lastUpdateId": { "type": "integer" },
+          "bids": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+          "asks": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        }
+      },
+      "BinanceTrade": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "price": { "type": "string" },
+          "qty": { "type": "string" },
+          "quoteQty": { "type": "string" },
+          "time": { "type": "integer" },
+          "isBuyerMaker": { "type": "boolean" }
+        }
+      },
+      "BinanceAggTrade": {
+        "type": "object",
+        "properties": {
+          "a": { "type": "integer" },
+          "p": { "type": "string" },
+          "q": { "type": "string" },
+          "f": { "type": "integer" },
+          "l": { "type": "integer" },
+          "T": { "type": "integer" },
+          "m": { "type": "boolean" }
+        }
+      },
+      "BinanceKline": {
+        "type": "object",
+        "properties": {
+          "openTime": { "type": "integer" },
+          "open": { "type": "string" },
+          "high": { "type": "string" },
+          "low": { "type": "string" },
+          "close": { "type": "string" },
+          "volume": { "type": "string" },
+          "closeTime": { "type": "integer" },
+          "quoteAssetVolume": { "type": "string" },
+          "numberOfTrades": { "type": "integer" }
+        }
+      },
+      "BinanceAvgPrice": {
+        "type": "object",
+        "properties": {
+          "mins": { "type": "integer" },
+          "price": { "type": "string" }
+        }
+      },
+      "BinanceTicker24hr": {
+        "type": "object",
+        "properties": {
+          "symbol": { "type": "string" },
+          "priceChange": { "type": "string" },
+          "priceChangePercent": { "type": "string" },
+          "weightedAvgPrice": { "type": "string" },
+          "lastPrice": { "type": "string" },
+          "volume": { "type": "string" },
+          "quoteVolume": { "type": "string" },
+          "openTime": { "type": "integer" },
+          "closeTime": { "type": "integer" },
+          "count": { "type": "integer" }
+        }
+      },
+      "BinancePrice": {
+        "type": "object",
+        "properties": {
+          "symbol": { "type": "string" },
+          "price": { "type": "string" }
+        }
+      },
+      "BinanceBookTicker": {
+        "type": "object",
+        "properties": {
+          "symbol": { "type": "string" },
+          "bidPrice": { "type": "string" },
+          "bidQty": { "type": "string" },
+          "askPrice": { "type": "string" },
+          "askQty": { "type": "string" }
+        }
+      }
+    }
+  }
+}

@@ -17,7 +17,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useTheme } from 'next-themes';
-import { Sun, Moon, Bot, BarChart, FileCode, BookOpen, Info } from 'lucide-react';
+import { Sun, Moon, Bot, BarChart } from 'lucide-react';
 
 const ListItem = React.forwardRef<
   React.ElementRef<"a">,
@@ -35,9 +35,6 @@ const ListItem = React.forwardRef<
           {...props}
         >
           <div className="text-sm font-medium leading-none">{title}</div>
-          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-            {children}
-          </p>
         </a>
       </NavigationMenuLink>
     </li>
@@ -101,15 +98,9 @@ export function Header() {
                         </a>
                       </NavigationMenuLink>
                     </li>
-                    <ListItem href="/market/global" title="Global Overview">
-                      Lihat data pasar cryptocurrency global.
-                    </ListItem>
-                    <ListItem href="/market/fear-greed" title="Fear & Greed Index">
-                      Jelajahi sentimen pasar dengan Fear & Greed Index.
-                    </ListItem>
-                    <ListItem href="/market/exchanges" title="Exchange Overview">
-                      Bandingkan pasangan perdagangan dan informasi bursa.
-                    </ListItem>
+                    <ListItem href="/market/global" title="Global Overview" />
+                    <ListItem href="/market/fear-greed" title="Fear & Greed Index" />
+                    <ListItem href="/market/exchanges" title="Exchange Overview" />
                   </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>
@@ -118,43 +109,21 @@ export function Header() {
                 <NavigationMenuContent>
                   <ul className="grid w-[400px] gap-3 p-4 md:w-[600px] md:grid-cols-3 lg:w-[800px]">
                     <div className="flex flex-col">
-                      <ListItem href="/coins" title="Coins Overview" className="font-bold bg-muted/50">
-                        Jelajahi ribuan cryptocurrency dan alat terkait.
-                      </ListItem>
-                      <ListItem href="/coins/trending" title="Trending Coins">
-                        Temukan cryptocurrency yang sedang tren.
-                      </ListItem>
-                      <ListItem href="/coins/watchlist" title="My Watchlist">
-                        Lacak cryptocurrency favorit Anda.
-                      </ListItem>
-                      <ListItem href="/coins/compare" title="Compare Coins">
-                        Bandingkan beberapa cryptocurrency secara berdampingan.
-                      </ListItem>
+                      <ListItem href="/coins" title="Coins Overview" className="font-bold bg-muted/50" />
+                      <ListItem href="/coins/trending" title="Trending Coins" />
+                      <ListItem href="/coins/watchlist" title="My Watchlist" />
+                      <ListItem href="/coins/compare" title="Compare Coins" />
                     </div>
                     <div className="flex flex-col">
-                      <ListItem href="/degen" title="Degen Trading" className="font-bold bg-muted/50">
-                         Alat dan data untuk perdagangan terdesentralisasi.
-                      </ListItem>
-                       <ListItem href="/degen/pairs" title="Hot Trading Pairs">
-                        Temukan pasangan perdagangan yang paling aktif dan tren.
-                      </ListItem>
-                      <ListItem href="/degen/new-listings" title="New Listings">
-                        Jelajahi token dan pasangan yang baru terdaftar.
-                      </ListItem>
+                      <ListItem href="/degen" title="Degen Trading" className="font-bold bg-muted/50" />
+                       <ListItem href="/degen/pairs" title="Hot Trading Pairs" />
+                      <ListItem href="/degen/new-listings" title="New Listings" />
                     </div>
                     <div className="flex flex-col">
-                      <ListItem href="/defi" title="DeFi Analytics" className="font-bold bg-muted/50">
-                        Menyelam jauh ke dalam data keuangan terdesentralisasi.
-                      </ListItem>
-                      <ListItem href="/defi/protocols" title="Protocols">
-                        Jelajahi Total Value Locked (TVL) dari protokol DeFi.
-                      </ListItem>
-                      <ListItem href="/defi/chains" title="Chains">
-                        Bandingkan TVL di berbagai jaringan blockchain.
-                      </ListItem>
-                      <ListItem href="/defi/yield" title="Yield Farming">
-                        Temukan peluang untuk yield farming.
-                      </ListItem>
+                      <ListItem href="/defi" title="DeFi Analytics" className="font-bold bg-muted/50" />
+                      <ListItem href="/defi/protocols" title="Protocols" />
+                      <ListItem href="/defi/chains" title="Chains" />
+                      <ListItem href="/defi/yield" title="Yield Farming" />
                     </div>
                   </ul>
                 </NavigationMenuContent>
@@ -165,21 +134,13 @@ export function Header() {
                   <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] lg:w-[600px] lg:grid-cols-2">
                     <div>
                         <li className="text-sm font-medium text-foreground py-2 px-3">Learn</li>
-                        <ListItem href="/economic/news" title="Economic News">
-                          Berita ekonomi terbaru yang mempengaruhi pasar global.
-                        </ListItem>
-                        <ListItem href="/article/learn" title="Learning Hub">
-                          Pelajari tentang konsep investasi dan analisis pasar.
-                        </ListItem>
+                        <ListItem href="/economic/news" title="Economic News" />
+                        <ListItem href="/article/learn" title="Learning Hub" />
                     </div>
                     <div>
                         <li className="text-sm font-medium text-foreground py-2 px-3">Project</li>
-                        <ListItem href="/about" title="About">
-                          Pelajari lebih lanjut tentang Fud Court dan misinya.
-                        </ListItem>
-                        <ListItem href="/docs" title="Docs">
-                          Dokumentasi teknis untuk FudCourtt.
-                        </ListItem>
+                        <ListItem href="/about" title="About" />
+                        <ListItem href="/docs" title="Docs" />
                     </div>
                   </ul>
                 </NavigationMenuContent>

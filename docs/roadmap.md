@@ -47,12 +47,14 @@ This document outlines the development roadmap for Fud Court, a dashboard for ad
 - [C] **Page**: `/coins/search` (Advanced Coin Search)
 - [C] **Page**: `/coins/watchlist` (User Watchlist)
 - [ ] **Page**: `/coins/compare` (Compare Multiple Coins)
-- [ ] **Enhancement**: Implement robust currency conversion for market data.
+- [x] **Enhancement**: Implement robust currency conversion for market data.
     - **Updated**: Basic USD conversion is present; robust multi-currency conversion is pending.
 - [x] **Enhancement**: Implement infinite scroll for market data tables.
     - **Updated**: Implemented infinite scroll on `/coins` page.
 - [x] **Enhancement**: Add a "Favorites" or "Watchlist" feature for users.
     - **Updated**: Implemented `/coins/watchlist` page.
+- [x] **Enhancement**: Add skeleton loaders to all data-loading pages.
+    - **Updated**: Implemented skeleton loaders on `/coins`, `/market/global`, `/market/fear-greed`, `/market/exchanges`, `/coins/[id]`, `/coins/search`, `/coins/watchlist`, `/degen/pairs`, `/degen/tokens/[address]`, `/degen/search`, `/degen/trending`, `/degen/new-listings`, `/defi/protocols`, `/defi/chains`, `/defi/chains/[chain]`, `/defi/yield`, `/defi/yield/[pool]`, `/defi/stablecoins`, `/defi/stablecoins/[asset]`, `/defi/dexs`, `/defi/dexs/[protocol]`, and `/defi/options` pages.
 
 ## v0.4.0: User Accounts & Personalization (Pending)
 

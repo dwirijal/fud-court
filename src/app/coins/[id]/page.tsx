@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { CoinGeckoAPI, CoinDetails } from '@/lib/api-clients/crypto/coinGecko';
 import { BinanceAPI } from '@/lib/api-clients/crypto/binance';
-import { DeFiLlamaAPI } from '@/lib/api-clients/crypto/defillama';
+import { DefiLlamaClient } from '@/lib/api-clients/crypto/defiLlama';
 import { DexScreenerClient as DexScreenerAPI, DexScreenerPair } from '@/lib/api-clients/crypto/dexScreener';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -88,7 +88,7 @@ export default function CoinDetailPage({ params }: CoinDetailPageProps) {
   // Initialize APIs
   const coinGecko = useMemo(() => new CoinGeckoAPI(), []);
   const binanceAPI = useMemo(() => new BinanceAPI(), []);
-  const defiLlama = useMemo(() => new DeFiLlamaAPI(), []);
+  const defiLlama = useMemo(() => new DefiLlamaClient(), []);
   const dexScreener = useMemo(() => new DexScreenerAPI(), []);
 
   // Utility functions

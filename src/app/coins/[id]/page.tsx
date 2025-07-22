@@ -182,47 +182,40 @@ export default function CoinDetailPage({ params }: CoinDetailPageProps) {
       
       checkBookmarkStatus();
 
+      const [binanceResult, defiLlamaResult, dexScreenerResult] = await Promise.allSettled([
+        coin.symbol ? binanceAPI.getTopTradingPairs(coin.symbol.toUpperCase()) : Promise.resolve([]),
+        coin.name ? defiLlama.getProtocolInfo(coin.name.toLowerCase()) : Promise.resolve(null),
+        coin.symbol ? dexScreener.search(coin.symbol) : Promise.resolve({ pairs: [] })
+      ]);
+      
       // Binance
-      try {
-        if (coin.symbol) {
-          const tickers = await binanceAPI.getTopTradingPairs(coin.symbol.toUpperCase());
-          setBinancePairs(tickers.slice(0, 5) as BinanceTicker[]); // Top 5 pairs
-        }
-      } catch (err) {
-        console.error('Binance fetch error:', err);
-      } finally {
-        setLoadingStates(prev => ({ ...prev, binance: false }));
+      if (binanceResult.status === 'fulfilled') {
+        setBinancePairs(binanceResult.value.slice(0, 5) as BinanceTicker[]);
+      } else {
+        console.error('Binance fetch error:', binanceResult.reason);
       }
+      setLoadingStates(prev => ({ ...prev, binance: false }));
 
       // DeFiLlama
-      try {
-        if (coin.name) {
-          const protocol = await defiLlama.getProtocolInfo(coin.name.toLowerCase());
-          if(protocol) {
-            setDefiData({
-              tvl: protocol.tvl,
-              chains: protocol.chains,
-              category: protocol.category,
-            });
-          }
-        }
-      } catch (err) {
-        console.error('DeFiLlama fetch error:', err);
-      } finally {
-        setLoadingStates(prev => ({ ...prev, defillama: false }));
+      if (defiLlamaResult.status === 'fulfilled' && defiLlamaResult.value) {
+        const protocol = defiLlamaResult.value;
+        setDefiData({
+          tvl: protocol.tvl,
+          chains: protocol.chains,
+          category: protocol.category,
+        });
+      } else if (defiLlamaResult.status === 'rejected') {
+        console.error('DeFiLlama fetch error:', defiLlamaResult.reason);
       }
+      setLoadingStates(prev => ({ ...prev, defillama: false }));
 
       // DexScreener
-      try {
-        if (coin.symbol) {
-          const searchResults = await dexScreener.search(coin.symbol);
-          setDexPairs(searchResults.pairs.slice(0, 3)); // Top 3 DEX pairs
-        }
-      } catch (err) {
-        console.error('DexScreener fetch error:', err);
-      } finally {
-        setLoadingStates(prev => ({ ...prev, dexscreener: false }));
+      if (dexScreenerResult.status === 'fulfilled') {
+        setDexPairs(dexScreenerResult.value.pairs.slice(0, 3));
+      } else {
+        console.error('DexScreener fetch error:', dexScreenerResult.reason);
       }
+      setLoadingStates(prev => ({ ...prev, dexscreener: false }));
     };
 
     fetchOtherApis();

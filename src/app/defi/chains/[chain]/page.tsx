@@ -1,13 +1,14 @@
+
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { DefiLlamaClient, ChainTVL } from '@/lib/api-clients/crypto/defiLlama';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { TrendingUp, TrendingDown, DollarSign, Calendar, Activity, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Skeleton } from '@/components/ui/skeleton'; // Import Skeleton
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface ChainDetailPageProps {
   params: { chain: string };
@@ -39,11 +40,22 @@ export default function ChainDetailPage({ params }: ChainDetailPageProps) {
   const [error, setError] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d' | '1y'>('30d');
 
-  // Format chain name for display
   const chainName = chain.charAt(0).toUpperCase() + chain.slice(1).replace(/-/g, ' ');
 
-  // Process and filter TVL data based on time range
-  const processedTVLData = processedTVLData
+  const processedTVLData = useMemo(() => {
+    if (!chainTVL) return [];
+    
+    const now = new Date();
+    const daysToSubtract = {
+      '7d': 7,
+      '30d': 30,
+      '90d': 90,
+      '1y': 365
+    }[timeRange];
+    
+    const cutoffTime = new Date().setDate(now.getDate() - daysToSubtract);
+
+    return chainTVL
       .filter(entry => entry.date * 1000 >= cutoffTime)
       .map(entry => ({
         date: new Date(entry.date * 1000).toISOString().split('T')[0],
@@ -58,7 +70,6 @@ export default function ChainDetailPage({ params }: ChainDetailPageProps) {
       .sort((a, b) => a.timestamp - b.timestamp);
   }, [chainTVL, timeRange]);
 
-  // Calculate statistics
   const stats = useMemo(() => {
     if (!processedTVLData.length) return null;
 
@@ -134,15 +145,22 @@ export default function ChainDetailPage({ params }: ChainDetailPageProps) {
   if (loading || !chain) {
     return (
       <div className="p-6 space-y-6">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-64 mb-4"></div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            {[1, 2, 3, 4].map(i => (
-              <div key={i} className="h-32 bg-gray-200 rounded"></div>
-            ))}
-          </div>
-          <div className="h-96 bg-gray-200 rounded"></div>
+        <Skeleton className="h-8 w-64 mb-4" />
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          {[1, 2, 3, 4].map(i => (
+            <Card key={i}>
+              <CardContent className="p-4">
+                <Skeleton className="h-5 w-24 mb-2" />
+                <Skeleton className="h-7 w-32" />
+              </CardContent>
+            </Card>
+          ))}
         </div>
+        <Card>
+            <CardContent className="p-4">
+                <Skeleton className="h-96 w-full" />
+            </CardContent>
+        </Card>
       </div>
     );
   }
@@ -176,7 +194,7 @@ export default function ChainDetailPage({ params }: ChainDetailPageProps) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">{chainName}</h1>
-          <p className="text-gray-600 mt-1">Total Value Locked Analysis</p>
+          <div className="text-gray-600 mt-1">Total Value Locked Analysis</div>
         </div>
         {chainInfo?.symbol && (
           <div className="text-right">

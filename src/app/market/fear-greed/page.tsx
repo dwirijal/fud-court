@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -35,7 +36,7 @@ const calculateVolatility = (values: number[], period = 7): number => {
 };
 
 const calculateRSI = (values: number[], period = 14): number => {
-  if (values.length < period) return 50;
+  if (values.length < period + 1) return 50;
   
   let gains = 0;
   let losses = 0;
@@ -47,7 +48,9 @@ const calculateRSI = (values: number[], period = 14): number => {
   }
   
   const avgGain = gains / period;
-  const avgLoss = losses / (avgLoss || 0.01);
+  const avgLoss = losses / period;
+  if(avgLoss === 0) return 100;
+
   const rs = avgGain / avgLoss;
   return 100 - (100 / (1 + rs));
 };
@@ -75,9 +78,9 @@ export default function FearGreedPage() {
         const response = await client.getFearAndGreedIndex({ limit: 30 });
         const data = response.data;
         
-        const values = data.map(item => parseInt(item.value));
-        const enhancedData: EnhancedFearGreedData[] = data.map((item, index) => {
-          const numericValue = parseInt(item.value);
+        const values = data.map(item => parseInt(item.value, 10)).reverse(); // old to new
+        const enhancedData: EnhancedFearGreedData[] = data.reverse().map((item, index) => { // reverse original to match values
+          const numericValue = parseInt(item.value, 10);
           const historicalValues = values.slice(0, index + 1);
           
           return {
@@ -89,7 +92,7 @@ export default function FearGreedPage() {
             movingAverage: calculateMovingAverage(historicalValues),
             trend: calculateMomentum(historicalValues) > 2 ? 'bullish' : 
                    calculateMomentum(historicalValues) < -2 ? 'bearish' : 'neutral',
-            date: new Date(parseInt(item.timestamp) * 1000).toLocaleDateString('en-US', { 
+            date: new Date(parseInt(item.timestamp, 10) * 1000).toLocaleDateString('en-US', { 
               month: 'short', 
               day: 'numeric' 
             })
@@ -225,9 +228,9 @@ export default function FearGreedPage() {
             <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-slate-900 to-slate-600 dark:from-slate-100 dark:to-slate-400 bg-clip-text text-transparent mb-2">
               Fear & Greed Index
             </h1>
-            <p className="text-slate-600 dark:text-slate-400 text-lg">
+            <div className="text-slate-600 dark:text-slate-400 text-lg">
               Real-time market sentiment analysis with advanced mathematical modeling
-            </p>
+            </div>
           </motion.div>
   
           {/* Main Dashboard */}
@@ -249,18 +252,18 @@ export default function FearGreedPage() {
                     </div>
                   </CardHeader>
                   <CardContent className="relative z-10 text-center pb-6">
-                    <motion.p 
+                    <motion.div 
                       className="text-5xl md:text-6xl font-bold mb-4"
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ type: "spring", stiffness: 150, delay: 0.2 }}
                     >
                       {latestIndex.value}
-                    </motion.p>
+                    </motion.div>
                     <div className="space-y-2 text-sm opacity-90">
-                      <p>Last updated: {new Date(parseInt(latestIndex.timestamp) * 1000).toLocaleString()}</p>
+                      <p>Last updated: {new Date(parseInt(latestIndex.timestamp, 10) * 1000).toLocaleString()}</p>
                       {latestIndex.time_until_update && (
-                        <p>Next update: {Math.floor(parseInt(latestIndex.time_until_update) / 3600)}h {Math.floor((parseInt(latestIndex.time_until_update) % 3600) / 60)}m</p>
+                        <p>Next update: {Math.floor(parseInt(latestIndex.time_until_update, 10) / 3600)}h {Math.floor((parseInt(latestIndex.time_until_update, 10) % 3600) / 60)}m</p>
                       )}
                     </div>
                     <Progress 
@@ -409,7 +412,7 @@ export default function FearGreedPage() {
                                     transition={{ delay: index * 0.05 }}
                                     className="hover:bg-slate-50 dark:hover:bg-slate-800/50"
                                   >
-                                    <TableCell>{new Date(parseInt(item.timestamp) * 1000).toLocaleDateString()}</TableCell>
+                                    <TableCell>{new Date(parseInt(item.timestamp, 10) * 1000).toLocaleDateString()}</TableCell>
                                     <TableCell className="font-bold">{item.value}</TableCell>
                                     <TableCell>
                                       <Badge className={cn(colors.bg, colors.text)}>
@@ -534,27 +537,27 @@ export default function FearGreedPage() {
                           <div className="space-y-3 text-sm">
                             <div>
                               <strong>Volatility:</strong>
-                              <p className="text-slate-600 dark:text-slate-400 mt-1">
+                              <div className="text-slate-600 dark:text-slate-400 mt-1">
                                 σ = √(Σ(xi - μ)² / n) - Standard deviation of 7-day price movements
-                              </p>
+                              </div>
                             </div>
                             <div>
                               <strong>RSI (14-period):</strong>
-                              <p className="text-slate-600 dark:text-slate-400 mt-1">
+                              <div className="text-slate-600 dark:text-slate-400 mt-1">
                                 RSI = 100 - (100 / (1 + RS)) where RS = Average Gain / Average Loss
-                              </p>
+                              </div>
                             </div>
                             <div>
                               <strong>Momentum:</strong>
-                              <p className="text-slate-600 dark:text-slate-400 mt-1">
+                              <div className="text-slate-600 dark:text-slate-400 mt-1">
                                 M = Current Value - Value n-periods ago (3-day momentum)
-                              </p>
+                              </div>
                             </div>
                             <div>
                               <strong>Moving Average:</strong>
-                              <p className="text-slate-600 dark:text-slate-400 mt-1">
+                              <div className="text-slate-600 dark:text-slate-400 mt-1">
                                 MA = (P1 + P2 + ... + Pn) / n (7-day simple moving average)
-                              </p>
+                              </div>
                             </div>
                           </div>
                         </CardContent>

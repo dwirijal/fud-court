@@ -11,8 +11,7 @@ export default function Home() {
             FUD Court
           </h1>
           <p className="text-lg md:text-xl text-gray-300 max-w-md">
-            Where memes meet justice.<br />
-            Join the decentralized courtroom where every case is judged by vibes, facts, and a little bit of FUD.
+            A sophisticated, data-driven dashboard designed to bring clarity to the chaotic world of cryptocurrency. Your all-in-one command center for market analysis, news, and deep-dives.
           </p>
           <Link
             href="https://discord.gg/Dh6CUWJ6bT"

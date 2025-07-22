@@ -73,11 +73,14 @@ export function Header() {
                 <NavigationMenuTrigger className="text-base">Market</NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-                    <ListItem href="/market/crypto" title="Crypto">
-                      Jelajahi pasar cryptocurrency, analisis, dan data real-time.
+                    <ListItem href="/market/global" title="Global Overview">
+                      View global cryptocurrency market data.
                     </ListItem>
-                    <ListItem href="/market/forex" title="Forex">
-                      Data dan analisis untuk pasar valuta asing.
+                     <ListItem href="/market/fear-greed" title="Fear & Greed Index">
+                      Explore market sentiment with the Fear & Greed Index.
+                    </ListItem>
+                     <ListItem href="/market/exchanges" title="Exchange Overview">
+                      Compare trading pairs and exchange information.
                     </ListItem>
                     <ListItem href="/degen" title="Degen">
                       Alat untuk perdagangan spekulatif dan berisiko tinggi.

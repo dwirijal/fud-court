@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -118,8 +119,8 @@ export function Header() {
                   <ul className="grid w-[400px] gap-3 p-4 md:w-[600px] md:grid-cols-2 lg:w-[700px]">
                     <div>
                       <li className="text-sm font-medium text-foreground py-2 px-3">Coins</li>
-                      <ListItem href="/coins" title="All Coins">
-                        Jelajahi ribuan cryptocurrency.
+                      <ListItem href="/coins" title="Coins Overview">
+                        Jelajahi ribuan cryptocurrency dan alat terkait.
                       </ListItem>
                       <ListItem href="/coins/trending" title="Trending Coins">
                         Temukan cryptocurrency yang sedang tren.
@@ -133,6 +134,9 @@ export function Header() {
                     </div>
                     <div>
                       <li className="text-sm font-medium text-foreground py-2 px-3">Degen</li>
+                       <ListItem href="/degen" title="Degen Trading">
+                        Alat dan data untuk perdagangan terdesentralisasi.
+                       </ListItem>
                        <ListItem href="/degen/pairs" title="Hot Trading Pairs">
                         Temukan pasangan perdagangan yang paling aktif dan tren.
                       </ListItem>
@@ -142,6 +146,9 @@ export function Header() {
                     </div>
                     <div>
                       <li className="text-sm font-medium text-foreground py-2 px-3">DeFi</li>
+                      <ListItem href="/defi" title="DeFi Analytics">
+                        Menyelam jauh ke dalam data keuangan terdesentralisasi.
+                      </ListItem>
                       <ListItem href="/defi/protocols" title="Protocols">
                         Jelajahi Total Value Locked (TVL) dari protokol DeFi.
                       </ListItem>

@@ -22,7 +22,7 @@ import { Sun, Moon, Compass, BarChart, HardHat, Pickaxe, Bot } from 'lucide-reac
 const ListItem = ({ href, title, children }: { href: string; title: string; children: React.ReactNode }) => (
   <li>
     <NavigationMenuLink asChild>
-      <a
+      <Link
         href={href}
         className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
       >
@@ -30,7 +30,7 @@ const ListItem = ({ href, title, children }: { href: string; title: string; chil
         <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
           {children}
         </p>
-      </a>
+      </Link>
     </NavigationMenuLink>
   </li>
 );
@@ -58,7 +58,7 @@ export function Header() {
     {
       title: 'Docs',
       href: '/docs',
-      description: 'Read the documentation for Fud Court.',
+      description: 'Read the documentation for Fud Courtt.',
     },
   ];
 
@@ -90,7 +90,7 @@ export function Header() {
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
-                <Link href="/" legacyBehavior passHref>
+                <Link href="/" asChild>
                   <NavigationMenuLink
                     active={pathname === '/'}
                     className={navigationMenuTriggerStyle()}

@@ -1,201 +1,172 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { CoinGeckoAPI, Coin } from '@/lib/api-clients/crypto/coinGecko';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { cn } from '@/lib/utils/utils';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Skeleton } from '@/components/ui/skeleton'; // Import Skeleton
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { HeroSection } from '@/components/shared/HeroSection';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
 
-export default function CoinComparePage() {
-  const [selectedCoinIds, setSelectedCoinIds] = useState<string[]>([]);
-  const [availableCoins, setAvailableCoins] = useState<{ id: string; name: string; symbol: string }[]>([]);
-  const [compareCoinsData, setCompareCoinsData] = useState<Coin[]>([]);
-  const [loading, setLoading] = useState(false);
+const MAX_COMPARE_COUNT = 5;
+
+export default function CompareCoinsPage() {
+  const [allCoins, setAllCoins] = useState<Coin[]>([]);
+  const [selectedCoins, setSelectedCoins] = useState<string[]>([]);
+  const [comparedData, setComparedData] = useState<Coin[]>([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [coinInput, setCoinInput] = useState('');
 
-  // Fetch all available coins for selection
   useEffect(() => {
-    const fetchCoinList = async () => {
-      try {
-        const coinGecko = new CoinGeckoAPI();
-        const list = await coinGecko.getCoinsList();
-        setAvailableCoins(list);
-      } catch (err) {
-        console.error('Failed to fetch coin list:', err);
-      }
-    };
-    fetchCoinList();
-  }, []);
-
-  const handleAddCoin = useCallback(() => {
-    const normalizedInput = coinInput.toLowerCase().trim();
-    const foundCoin = availableCoins.find(
-      (coin) => coin.id === normalizedInput || coin.symbol === normalizedInput
-    );
-
-    if (foundCoin && !selectedCoinIds.includes(foundCoin.id)) {
-      setSelectedCoinIds((prev) => [...prev, foundCoin.id]);
-      setCoinInput('');
-    } else if (selectedCoinIds.includes(foundCoin?.id || '')) {
-      alert('Coin already selected!');
-    } else {
-      alert('Coin not found. Please enter a valid CoinGecko ID or symbol.');
-    }
-  }, [coinInput, availableCoins, selectedCoinIds]);
-
-  const handleRemoveCoin = useCallback((idToRemove: string) => {
-    setSelectedCoinIds((prev) => prev.filter((id) => id !== idToRemove));
-  }, []);
-
-  // Fetch data for selected coins
-  useEffect(() => {
-    const fetchCompareData = async () => {
-      if (selectedCoinIds.length === 0) {
-        setCompareCoinsData([]);
-        setLoading(false);
-        return;
-      }
-
-      setLoading(true);
-      setError(null);
+    const fetchAllCoins = async () => {
       try {
         const coinGecko = new CoinGeckoAPI();
         const data = await coinGecko.getCoinsMarkets({
           vs_currency: 'usd',
-          ids: selectedCoinIds.join(','),
-          price_change_percentage: '24h,7d',
+          order: 'market_cap_desc',
+          per_page: 100,
+          page: 1,
+          sparkline: false,
         });
-        setCompareCoinsData(data);
+        setAllCoins(data);
       } catch (err) {
-        setError('Failed to fetch comparison data.');
+        setError('Failed to fetch coin list.');
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
+    fetchAllCoins();
+  }, []);
 
-    fetchCompareData();
-  }, [selectedCoinIds]);
+  const handleCheckboxChange = (coinId: string) => {
+    setSelectedCoins((prev) => {
+      if (prev.includes(coinId)) {
+        return prev.filter((id) => id !== coinId);
+      } else if (prev.length < MAX_COMPARE_COUNT) {
+        return [...prev, coinId];
+      }
+      return prev;
+    });
+  };
+
+  const handleCompare = async () => {
+    if (selectedCoins.length < 2) {
+      setError('Please select at least two coins to compare.');
+      return;
+    }
+    setError(null);
+    setLoading(true);
+    try {
+      const coinGecko = new CoinGeckoAPI();
+      const data = await coinGecko.getCoinsMarkets({
+        vs_currency: 'usd',
+        ids: selectedCoins.join(','),
+      });
+      setComparedData(data);
+    } catch (err) {
+      setError('Failed to fetch comparison data.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const comparisonMetrics = [
+    { label: 'Price (USD)', value: (c: Coin) => c.current_price?.toFixed(2) },
+    { label: 'Market Cap (USD)', value: (c: Coin) => c.market_cap?.toLocaleString() },
+    { label: 'Market Cap Rank', value: (c: Coin) => c.market_cap_rank },
+    { label: '24h High', value: (c: Coin) => c.high_24h?.toLocaleString() },
+    { label: '24h Low', value: (c: Coin) => c.low_24h?.toLocaleString() },
+    { label: '24h Price Change', value: (c: Coin) => c.price_change_24h?.toLocaleString() },
+    { label: '24h Price Change %', value: (c: Coin) => c.price_change_percentage_24h?.toFixed(2) + '%' },
+    { label: 'All-Time High', value: (c: Coin) => c.ath?.toLocaleString() },
+    { label: 'All-Time Low', value: (c: Coin) => c.atl?.toLocaleString() },
+    { label: 'Circulating Supply', value: (c: Coin) => c.circulating_supply?.toLocaleString() },
+    { label: 'Total Supply', value: (c: Coin) => c.total_supply?.toLocaleString() },
+  ];
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Compare Cryptocurrencies</h1>
-
-      <Card className="mb-4">
-        <CardHeader>
-          <CardTitle>Select Coins to Compare</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-4">
-          <div className="flex gap-2">
-            <Input
-              type="text"
-              placeholder="Enter CoinGecko ID or symbol (e.g., bitcoin, btc)"
-              value={coinInput}
-              onChange={(e) => setCoinInput(e.target.value)}
-              className="flex-grow"
-            />
-            <Button onClick={handleAddCoin}>Add</Button>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {selectedCoinIds.map((id) => (
-              <Button key={id} variant="outline" size="sm" onClick={() => handleRemoveCoin(id)}>
-                {availableCoins.find(c => c.id === id)?.name || id} (x)
+    <>
+      <HeroSection
+        title="Compare Cryptocurrencies"
+        description="Select up to 5 coins to see a side-by-side comparison of their key metrics."
+      />
+      <div className="p-4">
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Select Coins to Compare</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                {[...Array(12)].map((_, i) => (
+                  <div key={i} className="flex items-center space-x-2">
+                    <Skeleton className="h-4 w-4" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                {allCoins.map((coin) => (
+                  <div key={coin.id} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={coin.id}
+                      checked={selectedCoins.includes(coin.id)}
+                      onCheckedChange={() => handleCheckboxChange(coin.id)}
+                      disabled={!selectedCoins.includes(coin.id) && selectedCoins.length >= MAX_COMPARE_COUNT}
+                    />
+                    <label htmlFor={coin.id} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      {coin.name}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="mt-4 flex justify-end">
+              <Button onClick={handleCompare} disabled={selectedCoins.length < 2 || loading}>
+                Compare
               </Button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+            </div>
+          </CardContent>
+        </Card>
 
-      {loading ? (
-        <Card>
-          <CardHeader>
-            <Skeleton className="h-6 w-1/2 mb-4" />
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
+        {error && <p className="text-red-500 mb-4">{error}</p>}
+
+        {comparedData.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Comparison Results</CardTitle>
+            </CardHeader>
+            <CardContent>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead><Skeleton className="h-4 w-16" /></TableHead>
-                    <TableHead><Skeleton className="h-4 w-20" /></TableHead>
-                    <TableHead><Skeleton className="h-4 w-20" /></TableHead>
-                    <TableHead><Skeleton className="h-4 w-24" /></TableHead>
-                    <TableHead><Skeleton className="h-4 w-24" /></TableHead>
+                    <TableHead>Metric</TableHead>
+                    {comparedData.map((coin) => (
+                      <TableHead key={coin.id} className="text-right">{coin.name}</TableHead>
+                    ))}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {[...Array(3)].map((_, i) => (
-                    <TableRow key={i}>
-                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                  {comparisonMetrics.map((metric) => (
+                    <TableRow key={metric.label}>
+                      <TableCell className="font-medium">{metric.label}</TableCell>
+                      {comparedData.map((coin) => (
+                        <TableCell key={coin.id} className="text-right">
+                          {metric.value(coin) ?? 'N/A'}
+                        </TableCell>
+                      ))}
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
-            </div>
-          </CardContent>
-        </Card>
-      ) : error ? (
-        <div className="p-4 text-red-500">Error: {error}</div>
-      ) : compareCoinsData.length > 0 ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>Comparison Table</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Coin</TableHead>
-                    <TableHead className="text-right">Price (USD)</TableHead>
-                    <TableHead className="text-right">Market Cap</TableHead>
-                    <TableHead className="text-right">24h Change (%)</TableHead>
-                    <TableHead className="text-right">7d Change (%)</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {compareCoinsData.map((coin) => (
-                    <TableRow key={coin.id}>
-                      <TableCell className="font-medium">
-                        <div className="flex items-center gap-2">
-                          {coin.image && <Image src={coin.image} alt={coin.name} width={20} height={20} className="rounded-full" />}
-                          {coin.name}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">${coin.current_price?.toFixed(2)}</TableCell>
-                      <TableCell className="text-right">${coin.market_cap?.toLocaleString()}</TableCell>
-                      <TableCell className={cn(
-                        "text-right",
-                        coin.price_change_percentage_24h >= 0 ? 'text-green-500' : 'text-red-500'
-                      )}>
-                        {coin.price_change_percentage_24h?.toFixed(2)}%
-                      </TableCell>
-                      <TableCell className={cn(
-                        "text-right",
-                        coin.price_change_percentage_7d_in_currency >= 0 ? 'text-green-500' : 'text-red-500'
-                      )}>
-                        {coin.price_change_percentage_7d_in_currency?.toFixed(2)}%
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
-      ) : selectedCoinIds.length > 0 && compareCoinsData.length === 0 && !loading && !error ? (
-        <div className="p-4 text-muted-foreground">No comparison data available for selected coins.</div>
-      ) : null}
-    </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    </>
   );
 }

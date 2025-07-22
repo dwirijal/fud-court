@@ -111,7 +111,10 @@ export function Header() {
                     <ListItem href="/article/learn" title="Learn">
                       Pelajari tentang konsep investasi dan analisis pasar.
                     </ListItem>
-                     <ListItem href="/docs" title="Docs">
+                    <ListItem href="/about" title="About">
+                      Pelajari lebih lanjut tentang Fud Court dan misinya.
+                    </ListItem>
+                    <ListItem href="/docs" title="Docs">
                       Dokumentasi teknis untuk Fud Courtt.
                     </ListItem>
                   </ul>

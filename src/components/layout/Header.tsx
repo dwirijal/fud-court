@@ -58,13 +58,15 @@ export function Header() {
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
-                <Link href="/" passHref asChild>
-                  <NavigationMenuLink
-                    active={pathname === '/'}
-                    className={cn(navigationMenuTriggerStyle(), 'text-base', pathname === '/' ? '' : 'text-muted-foreground')}
-                  >
-                    Home
-                  </NavigationMenuLink>
+                <Link
+                  href="/"
+                  className={cn(
+                    navigationMenuTriggerStyle(),
+                    'text-base',
+                    pathname === '/' ? '' : 'text-muted-foreground'
+                  )}
+                >
+                  Home
                 </Link>
               </NavigationMenuItem>
               <NavigationMenuItem>

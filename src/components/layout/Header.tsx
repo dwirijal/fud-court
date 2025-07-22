@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils/utils';
@@ -15,31 +16,41 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useTheme } from 'next-themes';
-import { useEffect, useState } from 'react';
-import { Sun, Moon, Bot } from 'lucide-react';
+import { Sun, Moon, Bot, BarChart, FileCode, BookOpen, Info } from 'lucide-react';
 
-const ListItem = ({ href, title, children }: { href: string; title: string; children: React.ReactNode }) => (
-  <li>
-    <NavigationMenuLink asChild>
-      <Link
-        href={href}
-        className="block select-none space-y-1 rounded-card p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-      >
-        <div className="text-base font-medium leading-none">{title}</div>
-        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-          {children}
-        </p>
-      </Link>
-    </NavigationMenuLink>
-  </li>
-);
+const ListItem = React.forwardRef<
+  React.ElementRef<"a">,
+  React.ComponentPropsWithoutRef<"a">
+>(({ className, title, children, ...props }, ref) => {
+  return (
+    <li>
+      <NavigationMenuLink asChild>
+        <a
+          ref={ref}
+          className={cn(
+            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+            className
+          )}
+          {...props}
+        >
+          <div className="text-sm font-medium leading-none">{title}</div>
+          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+            {children}
+          </p>
+        </a>
+      </NavigationMenuLink>
+    </li>
+  );
+});
+ListItem.displayName = "ListItem";
+
 
 export function Header() {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const [mounted, setMounted] = React.useState(false);
 
-  useEffect(() => {
+  React.useEffect(() => {
     setMounted(true);
   }, []);
 
@@ -72,15 +83,31 @@ export function Header() {
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="text-base">Market</NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
+                  <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                    <li className="row-span-3">
+                      <NavigationMenuLink asChild>
+                        <a
+                          className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                          href="/market"
+                        >
+                          <BarChart className="h-6 w-6" />
+                          <div className="mb-2 mt-4 text-lg font-medium">
+                            Market Overview
+                          </div>
+                          <p className="text-sm leading-tight text-muted-foreground">
+                            Data pasar komprehensif untuk tetap terinformasi.
+                          </p>
+                        </a>
+                      </NavigationMenuLink>
+                    </li>
                     <ListItem href="/market/global" title="Global Overview">
-                      View global cryptocurrency market data.
+                      Lihat data pasar cryptocurrency global.
                     </ListItem>
-                     <ListItem href="/market/fear-greed" title="Fear & Greed Index">
-                      Explore market sentiment with the Fear & Greed Index.
+                    <ListItem href="/market/fear-greed" title="Fear & Greed Index">
+                      Jelajahi sentimen pasar dengan Fear & Greed Index.
                     </ListItem>
-                     <ListItem href="/market/exchanges" title="Exchange Overview">
-                      Compare trading pairs and exchange information.
+                    <ListItem href="/market/exchanges" title="Exchange Overview">
+                      Bandingkan pasangan perdagangan dan informasi bursa.
                     </ListItem>
                   </ul>
                 </NavigationMenuContent>
@@ -88,35 +115,68 @@ export function Header() {
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="text-base">Crypto</NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-                    <ListItem href="/coins" title="Coins">
-                      Jelajahi, cari, dan bandingkan ribuan mata uang kripto.
-                    </ListItem>
-                    <ListItem href="/degen" title="Degen">
-                      Alat untuk perdagangan spekulatif dan berisiko tinggi.
-                    </ListItem>
-                    <ListItem href="/defi" title="DeFi">
-                      Jelajahi protokol dan peluang keuangan terdesentralisasi.
-                    </ListItem>
+                  <ul className="grid w-[400px] gap-3 p-4 md:w-[600px] md:grid-cols-2 lg:w-[700px]">
+                    <div>
+                      <li className="text-sm font-medium text-foreground py-2 px-3">Coins</li>
+                      <ListItem href="/coins" title="All Coins">
+                        Jelajahi ribuan cryptocurrency.
+                      </ListItem>
+                      <ListItem href="/coins/trending" title="Trending Coins">
+                        Temukan cryptocurrency yang sedang tren.
+                      </ListItem>
+                      <ListItem href="/coins/watchlist" title="My Watchlist">
+                        Lacak cryptocurrency favorit Anda.
+                      </ListItem>
+                      <ListItem href="/coins/compare" title="Compare Coins">
+                        Bandingkan beberapa cryptocurrency secara berdampingan.
+                      </ListItem>
+                    </div>
+                    <div>
+                      <li className="text-sm font-medium text-foreground py-2 px-3">Degen</li>
+                       <ListItem href="/degen/pairs" title="Hot Trading Pairs">
+                        Temukan pasangan perdagangan yang paling aktif dan tren.
+                      </ListItem>
+                      <ListItem href="/degen/new-listings" title="New Listings">
+                        Jelajahi token dan pasangan yang baru terdaftar.
+                      </ListItem>
+                    </div>
+                    <div>
+                      <li className="text-sm font-medium text-foreground py-2 px-3">DeFi</li>
+                      <ListItem href="/defi/protocols" title="Protocols">
+                        Jelajahi Total Value Locked (TVL) dari protokol DeFi.
+                      </ListItem>
+                      <ListItem href="/defi/chains" title="Chains">
+                        Bandingkan TVL di berbagai jaringan blockchain.
+                      </ListItem>
+                      <ListItem href="/defi/yield" title="Yield Farming">
+                        Temukan peluang untuk yield farming.
+                      </ListItem>
+                    </div>
                   </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="text-base">Insights</NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] lg:w-[500px]">
-                    <ListItem href="/economic/news" title="Economic News">
-                      Berita ekonomi terbaru yang mempengaruhi pasar global.
-                    </ListItem>
-                    <ListItem href="/article/learn" title="Learn">
-                      Pelajari tentang konsep investasi dan analisis pasar.
-                    </ListItem>
-                    <ListItem href="/about" title="About">
-                      Pelajari lebih lanjut tentang Fud Court dan misinya.
-                    </ListItem>
-                    <ListItem href="/docs" title="Docs">
-                      Dokumentasi teknis untuk Fud Courtt.
-                    </ListItem>
+                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] lg:w-[600px] lg:grid-cols-2">
+                    <div>
+                        <li className="text-sm font-medium text-foreground py-2 px-3">Learn</li>
+                        <ListItem href="/economic/news" title="Economic News">
+                          Berita ekonomi terbaru yang mempengaruhi pasar global.
+                        </ListItem>
+                        <ListItem href="/article/learn" title="Learning Hub">
+                          Pelajari tentang konsep investasi dan analisis pasar.
+                        </ListItem>
+                    </div>
+                    <div>
+                        <li className="text-sm font-medium text-foreground py-2 px-3">Project</li>
+                        <ListItem href="/about" title="About">
+                          Pelajari lebih lanjut tentang Fud Court dan misinya.
+                        </ListItem>
+                        <ListItem href="/docs" title="Docs">
+                          Dokumentasi teknis untuk FudCourtt.
+                        </ListItem>
+                    </div>
                   </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>

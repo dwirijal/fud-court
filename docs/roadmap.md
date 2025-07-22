@@ -2,6 +2,12 @@
 
 This document outlines the development roadmap for Fud Court, a dashboard for adjudicating crypto claims.
 
+**Status Legend:**
+- [x] Completed
+- [ ] Pending
+- [C] Created (Page/Feature has been implemented, but may need further refinement/bug fixes)
+- [U] Curated (Page/Feature is stable, well-tested, and meets design/functional requirements)
+
 ## v0.1.0: Foundation & Core Setup (Completed)
 
 - [x] **Project Scaffolding**: Initialize Next.js 14+ with TypeScript.
@@ -31,9 +37,16 @@ This document outlines the development roadmap for Fud Court, a dashboard for ad
     - **Updated**: Integrated CoinGecko, Binance, DefiLlama, DexScreener, and Alternative.me (Fear & Greed Index) APIs. Data is fetched directly from these APIs, not Supabase.
 - [x] **Feature**: Replace mock crypto data on the dashboard with real-time data.
     - **Updated**: Data is now fetched directly from integrated APIs.
-- [x] **Feature**: Create dynamic pages for individual cryptocurrencies (`/coins/[id]`).
-- [x] **Feature**: Implement detailed charts and historical data views on token pages.
-    - **Updated**: Basic data display implemented; charting functionality is pending.
+- [C] **Page**: `/market` (Main Market Overview)
+- [C] **Page**: `/market/global` (Global Crypto Data)
+- [C] **Page**: `/market/fear-greed` (Fear & Greed Index Dashboard)
+- [C] **Page**: `/market/exchanges` (Exchange Comparison)
+- [C] **Page**: `/coins` (Main Coins Overview with Infinite Scroll)
+- [C] **Page**: `/coins/[id]` (Individual Coin Detail Page)
+- [C] **Page**: `/coins/trending` (Trending Coins)
+- [C] **Page**: `/coins/search` (Advanced Coin Search)
+- [C] **Page**: `/coins/watchlist` (User Watchlist)
+- [ ] **Page**: `/coins/compare` (Compare Multiple Coins)
 - [ ] **Enhancement**: Implement robust currency conversion for market data.
     - **Updated**: Basic USD conversion is present; robust multi-currency conversion is pending.
 - [x] **Enhancement**: Implement infinite scroll for market data tables.
@@ -52,6 +65,27 @@ This document outlines the development roadmap for Fud Court, a dashboard for ad
 
 - [x] **Feature**: Implement a "Degen" page to show real-time trending tokens.
     - **Updated**: Implemented `/degen/pairs`, `/degen/tokens/[address]`, `/degen/search`, `/degen/trending`, and `/degen/new-listings` pages.
+- [C] **Page**: `/degen` (Main Degen Trading Page)
+- [C] **Page**: `/degen/pairs` (Hot Trading Pairs)
+- [C] **Page**: `/degen/tokens/[address]` (Token Profile & Analytics)
+- [C] **Page**: `/degen/search` (Token & Pair Search)
+- [C] **Page**: `/degen/trending` (Trending Pairs by Volume)
+- [C] **Page**: `/degen/new-listings` (Recently Listed Tokens)
+
+## v0.6.0: DeFi Analytics (In Progress)
+
+- [C] **Page**: `/defi` (Main DeFi Analytics Page)
+- [C] **Page**: `/defi/protocols` (All Protocols Overview)
+- [C] **Page**: `/defi/protocols/[protocol]` (Individual Protocol Analytics)
+- [C] **Page**: `/defi/chains` (Chains TVL Comparison)
+- [C] **Page**: `/defi/chains/[chain]` (Chain-Specific Analytics)
+- [C] **Page**: `/defi/yield` (Yield Farming Opportunities)
+- [C] **Page**: `/defi/yield/[pool]` (Individual Yield Pool Analytics)
+- [C] **Page**: `/defi/stablecoins` (Stablecoin Analytics)
+- [C] **Page**: `/defi/stablecoins/[asset]` (Individual Stablecoin Data)
+- [C] **Page**: `/defi/dexs` (DEX Volume Analytics)
+- [C] **Page**: `/defi/dexs/[protocol]` (Individual DEX Analytics)
+- [C] **Page**: `/defi/options` (Options DEX Overview)
 
 ## Future Milestones & Suggested Improvements
 
@@ -62,8 +96,4 @@ This document outlines the development roadmap for Fud Court, a dashboard for ad
 - **Refactor**: Improve the implementation of Next.js Server and Client Components to prevent rendering issues.
     - **Updated**: Significant refactoring has been done to address these issues.
 - [ ] **Testing**: Increase test coverage for all new features.
-- [ ] **New Task**: Implement `/defi/yield/[pool]` page for individual yield pool analytics.
-- [ ] **New Task**: Implement `/defi/stablecoins` and `/defi/stablecoins/[asset]` pages for stablecoin analytics.
-- [ ] **New Task**: Implement `/defi/dexs` and `/defi/dexs/[protocol]` pages for DEX volume analytics.
-- [ ] **New Task**: Implement `/defi/options` page for options DEX overview.
 - [ ] **New Task**: Implement global search functionality in the navbar.

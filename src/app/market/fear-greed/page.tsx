@@ -5,6 +5,7 @@ import { FearGreedClient, FearGreedData } from '@/lib/api-clients/alternative/fe
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils/utils';
+import { Skeleton } from '@/components/ui/skeleton'; // Import Skeleton
 
 export default function FearGreedPage() {
   const [fearGreedData, setFearGreedData] = useState<FearGreedData[] | null>(null);
@@ -30,7 +31,41 @@ export default function FearGreedPage() {
   }, []);
 
   if (loading) {
-    return <div className="p-4">Loading Fear & Greed Index...</div>;
+    return (
+      <div className="p-4">
+        <h1 className="text-2xl font-bold mb-4">Fear & Greed Index</h1>
+        <Card className="w-full max-w-md mx-auto mb-4">
+          <CardHeader>
+            <Skeleton className="h-8 w-3/4 mx-auto" />
+          </CardHeader>
+          <CardContent className="text-center">
+            <Skeleton className="h-12 w-1/2 mx-auto mb-2" />
+            <Skeleton className="h-4 w-2/3 mx-auto" />
+          </CardContent>
+        </Card>
+        <h2 className="text-xl font-semibold mt-8 mb-4">Historical Data</h2>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead><Skeleton className="h-4 w-16" /></TableHead>
+                <TableHead><Skeleton className="h-4 w-16" /></TableHead>
+                <TableHead><Skeleton className="h-4 w-24" /></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {[...Array(5)].map((_, i) => (
+                <TableRow key={i}>
+                  <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+    );
   }
 
   if (error) {
@@ -42,6 +77,19 @@ export default function FearGreedPage() {
   }
 
   const latestIndex = fearGreedData[0];
+
+  const renderTrend = (cls: string, prob: number) => {
+    const color = {
+      bullish: 'green',
+      bearish: 'red',
+      stable: 'gray'
+    }[cls] || 'gray';
+    return (
+      <Badge variant="outline" className={cn(`border-${color}-500`, `text-${color}-600`)}> 
+        {cls} ({(prob * 100).toFixed(0)}%)
+      </Badge>
+    );
+  };
 
   return (
     <div className="p-4">

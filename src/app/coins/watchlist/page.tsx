@@ -6,8 +6,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { cn } from '@/lib/utils/utils';
+import { cn } '@/lib/utils/utils';
 import Image from 'next/image';
+import Link from 'next/link';
+import { Skeleton } from '@/components/ui/skeleton'; // Import Skeleton
 
 interface CoinListItem {
   id: string;
@@ -122,14 +124,6 @@ export default function WatchlistPage() {
     setWatchlistIds((prev) => prev.filter((id) => id !== idToRemove));
   };
 
-  if (loading) {
-    return <div className="p-4">Loading watchlist...</div>;
-  }
-
-  if (error) {
-    return <div className="p-4 text-red-500">Error: {error}</div>;
-  }
-
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">My Watchlist</h1>
@@ -155,7 +149,7 @@ export default function WatchlistPage() {
                 <div
                   key={coin.id}
                   className="p-2 cursor-pointer hover:bg-muted flex items-center gap-2"
-                  onClick={() => handleAddCoin(coin.id)}
+                  onClick={() => handleSuggestionClick(coin.id)}
                 >
                   {coin.name} ({coin.symbol.toUpperCase()})
                 </div>
@@ -165,7 +159,34 @@ export default function WatchlistPage() {
         </CardContent>
       </Card>
 
-      {watchlistCoins.length === 0 ? (
+      {loading ? (
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead><Skeleton className="h-4 w-24" /></TableHead>
+                <TableHead><Skeleton className="h-4 w-16" /></TableHead>
+                <TableHead className="text-right"><Skeleton className="h-4 w-20" /></TableHead>
+                <TableHead className="text-right"><Skeleton className="h-4 w-24" /></TableHead>
+                <TableHead className="text-right"><Skeleton className="h-4 w-28" /></TableHead>
+                <TableHead><Skeleton className="h-4 w-16" /></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {[...Array(5)].map((_, i) => (
+                <TableRow key={i}>
+                  <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                  <TableCell className="text-right"><Skeleton className="h-4 w-20" /></TableCell>
+                  <TableCell className="text-right"><Skeleton className="h-4 w-24" /></TableCell>
+                  <TableCell className="text-right"><Skeleton className="h-4 w-28" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      ) : watchlistCoins.length === 0 ? (
         <div className="p-4 text-muted-foreground">Your watchlist is empty. Add some coins!</div>
       ) : (
         <div className="overflow-x-auto">
@@ -184,20 +205,34 @@ export default function WatchlistPage() {
               {watchlistCoins.map((coin) => (
                 <TableRow key={coin.id}>
                   <TableCell className="font-medium">
-                    <div className="flex items-center gap-2">
+                    <Link href={`/coins/${coin.id}`} className="flex items-center gap-2">
                       {coin.image && <Image src={coin.image} alt={coin.name} width={20} height={20} className="rounded-full" />}
                       {coin.name}
-                    </div>
+                    </Link>
                   </TableCell>
-                  <TableCell className="uppercase">{coin.symbol}</TableCell>
-                  <TableCell className="text-right">${coin.current_price?.toFixed(2)}</TableCell>
+                  <TableCell className="uppercase">
+                    <Link href={`/coins/${coin.id}`} className="block w-full h-full py-2 px-4">
+                      {coin.symbol}
+                    </Link>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Link href={`/coins/${coin.id}`} className="block w-full h-full py-2 px-4">
+                      ${coin.current_price?.toFixed(2)}
+                    </Link>
+                  </TableCell>
                   <TableCell className={cn(
                     "text-right",
                     coin.price_change_percentage_24h >= 0 ? 'text-green-500' : 'text-red-500'
                   )}>
-                    {coin.price_change_percentage_24h?.toFixed(2)}%
+                    <Link href={`/coins/${coin.id}`} className="block w-full h-full py-2 px-4">
+                      {coin.price_change_percentage_24h?.toFixed(2)}%
+                    </Link>
                   </TableCell>
-                  <TableCell className="text-right">${coin.market_cap?.toLocaleString()}</TableCell>
+                  <TableCell className="text-right">
+                    <Link href={`/coins/${coin.id}`} className="block w-full h-full py-2 px-4">
+                      ${coin.market_cap?.toLocaleString()}
+                    </Link>
+                  </TableCell>
                   <TableCell>
                     <Button variant="destructive" size="sm" onClick={() => handleRemoveCoin(coin.id)}>
                       Remove

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { BinanceAPI, BinanceSymbol } from '@/lib/api-clients/crypto/binance';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton'; // Import Skeleton
 
 export default function ExchangesPage() {
   const [exchangeInfo, setExchangeInfo] = useState<BinanceSymbol[] | null>(null);
@@ -27,16 +28,47 @@ export default function ExchangesPage() {
     fetchExchangeInfo();
   }, []);
 
-  if (loading) {
-    return <div className="p-4">Loading exchange information...</div>;
-  }
-
   if (error) {
     return <div className="p-4 text-red-500">Error: {error}</div>;
   }
 
-  if (!exchangeInfo || exchangeInfo.length === 0) {
-    return <div className="p-4">No exchange information available.</div>;
+  if (loading || !exchangeInfo) {
+    return (
+      <div className="p-4">
+        <h1 className="text-2xl font-bold mb-4">Binance Exchange Overview</h1>
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-1/2 mb-4" />
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead><Skeleton className="h-4 w-16" /></TableHead>
+                    <TableHead><Skeleton className="h-4 w-20" /></TableHead>
+                    <TableHead><Skeleton className="h-4 w-20" /></TableHead>
+                    <TableHead><Skeleton className="h-4 w-16" /></TableHead>
+                    <TableHead><Skeleton className="h-4 w-24" /></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {[...Array(10)].map((_, i) => (
+                    <TableRow key={i}>
+                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-12" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   return (

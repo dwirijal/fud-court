@@ -1,15 +1,16 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, use } from 'react';
 import { DefiLlamaClient, ChainTVL } from '@/lib/api-clients/crypto/defiLlama';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { TrendingUp, TrendingDown, DollarSign, Calendar, Activity, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Skeleton } from '@/components/ui/skeleton'; // Import Skeleton
 
 interface ChainDetailPageProps {
-  params: Promise<{ id: string }> | { id: string };
+  params: { chain: string };
 }
 
 interface ChainData {
@@ -30,36 +31,15 @@ interface FormattedTVLData {
 }
 
 export default function ChainDetailPage({ params }: ChainDetailPageProps) {
-  const [id, setId] = useState<string | null>(null);
+  const { chain } = use(params); // Unwrap the params Promise
   const [chainTVL, setChainTVL] = useState<ChainTVL[] | null>(null);
   const [chainInfo, setChainInfo] = useState<ChainData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d' | '1y'>('30d');
 
-  // Handle both sync and async params
-  useEffect(() => {
-    const getParams = async () => {
-      try {
-        const resolvedParams = await Promise.resolve(params);
-        if (resolvedParams?.id) {
-          setId(resolvedParams.id);
-        }
-      } catch (error) {
-        console.error('Error resolving params:', error);
-        setError('Invalid chain parameter');
-        setLoading(false);
-      }
-    };
-    
-    getParams();
-  }, [params]);
-
   // Format chain name for display
-  const chainName = useMemo(() => {
-    if (!id) return 'Loading...';
-    return id.charAt(0).toUpperCase() + id.slice(1).replace(/-/g, ' ');
-  }, [id]);
+  const chainName = chain.charAt(0).toUpperCase() + chain.slice(1).replace(/-/g, ' ');
 
   // Process and filter TVL data based on time range
   const processedTVLData = useMemo<FormattedTVLData[]>(() => {
@@ -114,7 +94,7 @@ export default function ChainDetailPage({ params }: ChainDetailPageProps) {
 
   useEffect(() => {
     const fetchChainData = async () => {
-      if (!id) return; // Don't fetch if id is not available yet
+      if (!chain) return; // Don't fetch if chain is not available yet
       
       try {
         setLoading(true);
@@ -124,7 +104,7 @@ export default function ChainDetailPage({ params }: ChainDetailPageProps) {
         
         // Fetch both TVL history and current chain info in parallel
         const [tvlData, chainsData] = await Promise.all([
-          defiLlama.getChainTVL(id).catch(() => null),
+          defiLlama.getChainTVL(chain).catch(() => null),
           defiLlama.getChains().catch(() => [])
         ]);
 
@@ -133,10 +113,10 @@ export default function ChainDetailPage({ params }: ChainDetailPageProps) {
         }
 
         // Find current chain info
-        const currentChain = chainsData.find((chain: any) => 
-          chain.name.toLowerCase() === id.toLowerCase() ||
-          chain.gecko_id === id ||
-          chain.chainId === id
+        const currentChain = chainsData.find((c: any) => 
+          c.name.toLowerCase() === chain.toLowerCase() ||
+          c.gecko_id === chain ||
+          c.chainId === chain
         );
 
         if (currentChain) {
@@ -152,7 +132,7 @@ export default function ChainDetailPage({ params }: ChainDetailPageProps) {
     };
 
     fetchChainData();
-  }, [id]);
+  }, [chain]);
 
   const formatCurrency = (value: number) => {
     if (value >= 1e9) return `$${(value / 1e9).toFixed(2)}B`;
@@ -165,7 +145,7 @@ export default function ChainDetailPage({ params }: ChainDetailPageProps) {
     return formatCurrency(value);
   };
 
-  if (loading || !id) {
+  if (loading || !chain) {
     return (
       <div className="p-6 space-y-6">
         <div className="animate-pulse">
@@ -260,7 +240,7 @@ export default function ChainDetailPage({ params }: ChainDetailPageProps) {
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">N/A</div>
+            <div className="text-2xl font-bold">{chainInfo?.protocols || 'N/A'}</div>
             <p className="text-xs text-muted-foreground">Active protocols</p>
           </CardContent>
         </Card>

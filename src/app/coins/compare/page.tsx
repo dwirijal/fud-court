@@ -8,6 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils/utils';
 import Image from 'next/image';
+import Link from 'next/link';
+import { Skeleton } from '@/components/ui/skeleton'; // Import Skeleton
 
 export default function CoinComparePage() {
   const [selectedCoinIds, setSelectedCoinIds] = useState<string[]>([]);
@@ -110,10 +112,41 @@ export default function CoinComparePage() {
         </CardContent>
       </Card>
 
-      {loading && <div className="p-4">Loading comparison data...</div>}
-      {error && <div className="p-4 text-red-500">Error: {error}</div>}
-
-      {compareCoinsData.length > 0 && (
+      {loading ? (
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-1/2 mb-4" />
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead><Skeleton className="h-4 w-16" /></TableHead>
+                    <TableHead><Skeleton className="h-4 w-20" /></TableHead>
+                    <TableHead><Skeleton className="h-4 w-20" /></TableHead>
+                    <TableHead><Skeleton className="h-4 w-24" /></TableHead>
+                    <TableHead><Skeleton className="h-4 w-24" /></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {[...Array(3)].map((_, i) => (
+                    <TableRow key={i}>
+                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+      ) : error ? (
+        <div className="p-4 text-red-500">Error: {error}</div>
+      ) : compareCoinsData.length > 0 ? (
         <Card>
           <CardHeader>
             <CardTitle>Comparison Table</CardTitle>
@@ -160,11 +193,9 @@ export default function CoinComparePage() {
             </div>
           </CardContent>
         </Card>
-      )}
-
-      {selectedCoinIds.length > 0 && compareCoinsData.length === 0 && !loading && !error && (
+      ) : selectedCoinIds.length > 0 && compareCoinsData.length === 0 && !loading && !error ? (
         <div className="p-4 text-muted-foreground">No comparison data available for selected coins.</div>
-      )}
+      ) : null}
     </div>
   );
 }

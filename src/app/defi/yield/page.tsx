@@ -52,7 +52,7 @@ export default function DefiYieldPage() {
       stable: 'gray'
     }[cls] || 'gray';
     return (
-      <Badge variant="outline" className={`border-${color}-500 text-${color}-600`}> 
+      <Badge variant="outline" className={cn(`border-${color}-500`, `text-${color}-600`)}> 
         {cls} ({(prob * 100).toFixed(0)}%)
       </Badge>
     );
@@ -70,7 +70,7 @@ export default function DefiYieldPage() {
           <SelectContent>
             <SelectItem value="">All Chains</SelectItem>
             {chains.map(c => (
-              <SelectItem key={c} value={c}>{c}</SelectItem>
+              c ? <SelectItem key={c} value={c}>{c}</SelectItem> : null
             ))}
           </SelectContent>
         </Select>
@@ -103,19 +103,41 @@ export default function DefiYieldPage() {
                   {filteredPools.map(pool => (
                     <TableRow key={pool.pool}>
                       <TableCell>
-                        <Link href={`/defi/yield/${pool.pool}`} className="text-blue-600 hover:underline">
+                        <Link href={`/defi/yield/${pool.pool}`} className="text-blue-600 hover:underline block w-full h-full py-2 px-4">
                           {pool.project}
                         </Link>
                       </TableCell>
-                      <TableCell>{pool.chain}</TableCell>
-                      <TableCell>{pool.symbol}</TableCell>
-                      <TableCell className="text-right">${pool.tvlUsd.toLocaleString()}</TableCell>
-                      <TableCell className="text-right text-green-600">{pool.apy.toFixed(2)}%</TableCell>
-                      <TableCell>{pool.rewardTokens?.join(', ') || 'N/A'}</TableCell>
                       <TableCell>
-                        {pool.predictions?.predictedClass && pool.predictions?.predictedProbability
-                          ? renderTrend(pool.predictions.predictedClass, pool.predictions.predictedProbability)
-                          : '—'}
+                        <Link href={`/defi/yield/${pool.pool}`} className="block w-full h-full py-2 px-4">
+                          {pool.chain}
+                        </Link>
+                      </TableCell>
+                      <TableCell>
+                        <Link href={`/defi/yield/${pool.pool}`} className="block w-full h-full py-2 px-4">
+                          {pool.symbol}
+                        </Link>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Link href={`/defi/yield/${pool.pool}`} className="block w-full h-full py-2 px-4">
+                          ${pool.tvlUsd.toLocaleString()}
+                        </Link>
+                      </TableCell>
+                      <TableCell className="text-right text-green-600">
+                        <Link href={`/defi/yield/${pool.pool}`} className="block w-full h-full py-2 px-4">
+                          {pool.apy.toFixed(2)}%
+                        </Link>
+                      </TableCell>
+                      <TableCell>
+                        <Link href={`/defi/yield/${pool.pool}`} className="block w-full h-full py-2 px-4">
+                          {pool.rewardTokens?.join(', ') || 'N/A'}
+                        </Link>
+                      </TableCell>
+                      <TableCell>
+                        <Link href={`/defi/yield/${pool.pool}`} className="block w-full h-full py-2 px-4">
+                          {pool.predictions?.predictedClass && pool.predictions?.predictedProbability
+                            ? renderTrend(pool.predictions.predictedClass, pool.predictions.predictedProbability)
+                            : '—'}
+                        </Link>
                       </TableCell>
                     </TableRow>
                   ))}

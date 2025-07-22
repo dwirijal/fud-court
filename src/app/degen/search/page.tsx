@@ -5,8 +5,24 @@ import { DexScreenerClient, DexScreenerPair } from '@/lib/api-clients/crypto/dex
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { cn } from '@/lib/utils/utils';
+import Image from 'next/image';
 import Link from 'next/link';
+import { Skeleton } from '@/components/ui/skeleton'; // Import Skeleton
+
+interface SearchCoinResult {
+  id: string;
+  name: string;
+  symbol: string;
+  market_cap_rank: number;
+  thumb: string;
+  large: string;
+}
+
+interface CoinListItem {
+  id: string;
+  name: string;
+  symbol: string;
+}
 
 export default function DegenSearchPage() {
   const [query, setQuery] = useState('');
@@ -58,10 +74,14 @@ export default function DegenSearchPage() {
         />
       </div>
 
-      {loading && <div className="p-4">Searching...</div>}
-      {error && <div className="p-4 text-red-500">Error: {error}</div>}
-
-      {searchResults && searchResults.length > 0 && (
+      {loading ? (
+        <div className="space-y-4">
+          <Skeleton className="h-10 w-full max-w-lg" />
+          <Skeleton className="h-48 w-full max-w-lg" />
+        </div>
+      ) : error ? (
+        <div className="p-4 text-red-500">Error: {error}</div>
+      ) : searchResults && searchResults.length > 0 ? (
         <Card>
           <CardHeader>
             <CardTitle>Search Results</CardTitle>
@@ -71,32 +91,23 @@ export default function DegenSearchPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Pair</TableHead>
-                    <TableHead>Chain</TableHead>
-                    <TableHead>DEX</TableHead>
-                    <TableHead className="text-right">Price (USD)</TableHead>
-                    <TableHead className="text-right">24h Change (%)</TableHead>
-                    <TableHead className="text-right">24h Volume</TableHead>
+                    <TableHead><Skeleton className="h-4 w-16" /></TableHead>
+                    <TableHead><Skeleton className="h-4 w-20" /></TableHead>
+                    <TableHead><Skeleton className="h-4 w-20" /></TableHead>
+                    <TableHead><Skeleton className="h-4 w-24" /></TableHead>
+                    <TableHead><Skeleton className="h-4 w-24" /></TableHead>
+                    <TableHead><Skeleton className="h-4 w-20" /></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {searchResults.map((pair) => (
-                    <TableRow key={pair.pairAddress}>
-                      <TableCell className="font-medium">
-                        <Link href={`/degen/tokens/${pair.baseToken.address}`} className="flex items-center gap-2">
-                          {pair.baseToken.symbol}/{pair.quoteToken.symbol}
-                        </Link>
-                      </TableCell>
-                      <TableCell>{pair.chainId}</TableCell>
-                      <TableCell>{pair.dexId}</TableCell>
-                      <TableCell className="text-right">${parseFloat(pair.priceUsd || '0').toFixed(6)}</TableCell>
-                      <TableCell className={cn(
-                        "text-right",
-                        pair.priceChange.h24 >= 0 ? 'text-green-500' : 'text-red-500'
-                      )}>
-                        {pair.priceChange.h24?.toFixed(2)}%
-                      </TableCell>
-                      <TableCell className="text-right">${pair.volume.h24?.toLocaleString()}</TableCell>
+                  {[...Array(5)].map((_, i) => (
+                    <TableRow key={i}>
+                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -104,11 +115,9 @@ export default function DegenSearchPage() {
             </div>
           </CardContent>
         </Card>
-      )}
-
-      {searchResults && searchResults.length === 0 && query.trim() && !loading && (
+      ) : searchResults && searchResults.length === 0 && query.trim() && !loading ? (
         <div className="p-4 text-muted-foreground">No results found for &quot;{query}&quot;.</div>
-      )}
+      ) : null}
     </div>
   );
 }

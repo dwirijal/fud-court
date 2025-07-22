@@ -5,6 +5,7 @@ import { DefiLlamaClient, StablecoinData } from '@/lib/api-clients/crypto/defiLl
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils/utils';
+import { Skeleton } from '@/components/ui/skeleton'; // Import Skeleton
 
 interface StablecoinDetailPageProps {
   params: { asset: string };
@@ -36,16 +37,69 @@ export default function StablecoinDetailPage({ params }: StablecoinDetailPagePro
     }
   }, [asset]);
 
-  if (loading) {
-    return <div className="p-4">Loading stablecoin details...</div>;
-  }
-
   if (error) {
     return <div className="p-4 text-red-500">Error: {error}</div>;
   }
 
-  if (!stablecoinData) {
-    return <div className="p-4">Stablecoin not found.</div>;
+  if (loading || !stablecoinData) {
+    return (
+      <div className="p-4">
+        <h1 className="text-2xl font-bold mb-4"><Skeleton className="h-8 w-64" /></h1>
+        <p className="text-muted-foreground mb-4"><Skeleton className="h-4 w-48" /></p>
+
+        <Card className="mb-4">
+          <CardHeader>
+            <Skeleton className="h-6 w-1/2 mb-4" />
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead><Skeleton className="h-4 w-16" /></TableHead>
+                    <TableHead><Skeleton className="h-4 w-24" /></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {[...Array(5)].map((_, i) => (
+                    <TableRow key={i}>
+                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-1/2 mb-4" />
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead><Skeleton className="h-4 w-16" /></TableHead>
+                    <TableHead><Skeleton className="h-4 w-24" /></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {[...Array(5)].map((_, i) => (
+                    <TableRow key={i}>
+                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   return (

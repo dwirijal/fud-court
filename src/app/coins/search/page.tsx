@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Skeleton } from '@/components/ui/skeleton'; // Import Skeleton
 
 interface SearchCoinResult {
   id: string;
@@ -125,10 +126,14 @@ export default function CoinSearchPage() {
         </div>
       </div>
 
-      {loading && <div className="p-4">Searching...</div>}
-      {error && <div className="p-4 text-red-500">Error: {error}</div>}
-
-      {searchResults && searchResults.length > 0 && (
+      {loading ? (
+        <div className="space-y-4">
+          <Skeleton className="h-10 w-full max-w-lg" />
+          <Skeleton className="h-48 w-full max-w-lg" />
+        </div>
+      ) : error ? (
+        <div className="p-4 text-red-500">Error: {error}</div>
+      ) : searchResults && searchResults.length > 0 ? (
         <Card>
           <CardHeader>
             <CardTitle>Search Results</CardTitle>
@@ -153,7 +158,11 @@ export default function CoinSearchPage() {
                           {coin.name}
                         </Link>
                       </TableCell>
-                      <TableCell className="uppercase">{coin.symbol}</TableCell>
+                      <TableCell className="uppercase">
+                        <Link href={`/coins/${coin.id}`} className="block w-full h-full py-2 px-4">
+                          {coin.symbol}
+                        </Link>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -161,11 +170,9 @@ export default function CoinSearchPage() {
             </div>
           </CardContent>
         </Card>
-      )}
-
-      {searchResults && searchResults.length === 0 && query.trim() && !loading && (
+      ) : searchResults && searchResults.length === 0 && query.trim() && !loading ? (
         <div className="p-4 text-muted-foreground">No results found for &quot;{query}&quot;.</div>
-      )}
+      ) : null}
     </div>
   );
 }

@@ -8,13 +8,31 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
+  NavigationMenuTrigger,
+  NavigationMenuContent,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
-import { Button } from '@/components/ui/button'; // Import Button for theme toggle
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
-import { Sun, Moon } from 'lucide-react'; // Import Sun and Moon icons
+import { Sun, Moon, Compass, BarChart, HardHat, Pickaxe, Bot } from 'lucide-react';
+
+const ListItem = ({ href, title, children }: { href: string; title: string; children: React.ReactNode }) => (
+  <li>
+    <NavigationMenuLink asChild>
+      <a
+        href={href}
+        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+      >
+        <div className="text-sm font-medium leading-none">{title}</div>
+        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+          {children}
+        </p>
+      </a>
+    </NavigationMenuLink>
+  </li>
+);
 
 export function Header() {
   const pathname = usePathname();
@@ -25,12 +43,35 @@ export function Header() {
     setMounted(true);
   }, []);
 
-  const navItems = [
-    { href: '/', label: 'Home' },
-    { href: '/market', label: 'Market' },
-    { href: '/coins', label: 'Coins' },
-    { href: '/degen', label: 'Degen' },
-    { href: '/defi', label: 'DeFi' },
+  const exploreComponents: { title: string; href: string; description: string }[] = [
+    {
+      title: 'Market Overview',
+      href: '/market',
+      description: 'Get a bird\'s-eye view of the entire crypto market.',
+    },
+    {
+      title: 'Coins',
+      href: '/coins',
+      description: 'Browse and search through thousands of cryptocurrencies.',
+    },
+    {
+      title: 'Docs',
+      href: '/docs',
+      description: 'Read the documentation for Fud Court.',
+    },
+  ];
+
+  const platformsComponents: { title: string; href: string; description: string }[] = [
+    {
+      title: 'Degen Trading',
+      href: '/degen',
+      description: 'High-risk, high-reward tools for advanced traders.',
+    },
+    {
+      title: 'DeFi Analytics',
+      href: '/defi',
+      description: 'Explore decentralized finance protocols and opportunities.',
+    },
   ];
 
   if (!mounted) {
@@ -40,34 +81,56 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center justify-between px-4 md:px-6">
-        {/* Left Section: Logo and Navigation */}
         <div className="flex items-center">
           <Link href="/" className="mr-4 flex items-center space-x-2">
+            <Bot className="h-6 w-6" />
             <span className="inline-block font-bold text-lg">FudCourtt</span>
           </Link>
           <NavigationMenu>
             <NavigationMenuList>
-              {navItems.map((item) => (
-                <NavigationMenuItem key={item.href}>
-                  <NavigationMenuLink
-                    asChild
-                    className={cn(
-                      navigationMenuTriggerStyle(),
-                      "text-sm font-medium px-3 py-2", // More minimalist padding
-                      pathname === item.href ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
-                    )}
-                  >
-                    <Link href={item.href}>
-                      {item.label}
-                    </Link>
+              <NavigationMenuItem>
+                <Link href="/" legacyBehavior passHref>
+                  <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), pathname === '/' ? 'text-primary' : 'text-muted-foreground')}>
+                    Home
                   </NavigationMenuLink>
-                </NavigationMenuItem>
-              ))}
+                </Link>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger>Explore</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
+                    {exploreComponents.map((component) => (
+                      <ListItem
+                        key={component.title}
+                        title={component.title}
+                        href={component.href}
+                      >
+                        {component.description}
+                      </ListItem>
+                    ))}
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger>Platforms</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
+                    {platformsComponents.map((component) => (
+                      <ListItem
+                        key={component.title}
+                        title={component.title}
+                        href={component.href}
+                      >
+                        {component.description}
+                      </ListItem>
+                    ))}
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
         </div>
 
-        {/* Center Section: Search Bar */}
         <div className="flex flex-1 justify-center px-4">
           <Input
             type="text"
@@ -76,7 +139,6 @@ export function Header() {
           />
         </div>
 
-        {/* Right Section: Theme Toggle */}
         <div className="flex items-center justify-end">
           <Button
             variant="ghost"
@@ -85,9 +147,9 @@ export function Header() {
             aria-label="Toggle theme"
           >
             {theme === 'dark' ? (
-              <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />
+              <Sun className="h-[1.2rem] w-[1.2rem]" />
             ) : (
-              <Moon className="h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+              <Moon className="h-[1.2rem] w-[1.2rem]" />
             )}
             <span className="sr-only">Toggle theme</span>
           </Button>

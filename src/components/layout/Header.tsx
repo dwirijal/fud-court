@@ -82,6 +82,16 @@ export function Header() {
                      <ListItem href="/market/exchanges" title="Exchange Overview">
                       Compare trading pairs and exchange information.
                     </ListItem>
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger className="text-base">Crypto</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
+                    <ListItem href="/coins" title="Coins">
+                      Jelajahi, cari, dan bandingkan ribuan mata uang kripto.
+                    </ListItem>
                     <ListItem href="/degen" title="Degen">
                       Alat untuk perdagangan spekulatif dan berisiko tinggi.
                     </ListItem>

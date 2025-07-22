@@ -118,8 +118,8 @@ export default function CoinsPage() {
         title="Cryptocurrencies"
         description="Explore various cryptocurrency data and tools."
       />
-      <div className="p-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="p-4 md:p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {coinSections.map((section) => (
             <Link href={section.href} key={section.href}>
               <Card className="h-full hover:shadow-lg transition-shadow">
@@ -127,7 +127,7 @@ export default function CoinsPage() {
                   <CardTitle>{section.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p>{section.description}</p>
+                  <p className="text-sm">{section.description}</p>
                 </CardContent>
               </Card>
             </Link>
@@ -175,7 +175,7 @@ export default function CoinsPage() {
                       </Link>
                     </TableCell>
                     <TableCell className="font-medium">
-                      <Link href={`/coins/${coin.id}`} className="flex items-center gap-2 block w-full h-full py-2 px-4">
+                      <Link href={`/coins/${coin.id}`} className="flex items-center gap-2 py-2 px-4">
                         {coin.image && <Image src={coin.image} alt={coin.name} width={20} height={20} className="rounded-full" />}
                         {coin.name}
                       </Link>

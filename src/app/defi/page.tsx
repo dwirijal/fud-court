@@ -44,8 +44,8 @@ export default function DefiPage() {
         title="DeFi Analytics"
         description="Dive deep into decentralized finance data and opportunities."
       />
-      <div className="p-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="p-4 md:p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {defiSections.map((section) => (
             <Link href={section.href} key={section.href}>
               <Card className="h-full hover:shadow-lg transition-shadow">
@@ -53,7 +53,7 @@ export default function DefiPage() {
                   <CardTitle>{section.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p>{section.description}</p>
+                  <p className="text-sm">{section.description}</p>
                 </CardContent>
               </Card>
             </Link>

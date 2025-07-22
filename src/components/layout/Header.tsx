@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
-import { Sun, Moon, Compass, BarChart, HardHat, Pickaxe, Bot } from 'lucide-react';
+import { Sun, Moon, Bot } from 'lucide-react';
 
 const ListItem = ({ href, title, children }: { href: string; title: string; children: React.ReactNode }) => (
   <li>

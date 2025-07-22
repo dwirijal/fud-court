@@ -35,20 +35,20 @@ export default function DegenPage() {
   ];
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Degen Trading</h1>
+    <div className="p-4 md:p-6">
+      <h1 className="text-3xl font-bold mb-2">Degen Trading</h1>
       <p className="text-muted-foreground mb-6">Tools and data for decentralized and experimental trading.</p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {degenSections.map((section) => (
           <Link href={section.href} key={section.href}>
-            <Card className="h-full hover:shadow-lg transition-shadow glassmorphism">
+            <Card className="h-full hover:shadow-lg transition-shadow">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{section.title}</CardTitle>
+                <CardTitle className="text-xl">{section.title}</CardTitle>
                 <ArrowRight className="ml-auto h-5 w-5" />
               </CardHeader>
               <CardContent>
-                <p>{section.description}</p>
+                <p className="text-sm">{section.description}</p>
               </CardContent>
             </Card>
           </Link>

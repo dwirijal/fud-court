@@ -1,22 +1,17 @@
 
 import type { Metadata } from 'next';
 import './globals.css';
-import { Inter, JetBrains_Mono } from 'next/font/google';
+import { Plus_Jakarta_Sans } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { ThemeProvider } from 'next-themes';
 
-const fontSans = Inter({
+const fontSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-primary',
-});
-
-const fontMono = JetBrains_Mono({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-mono',
+  variable: '--font-sans',
 });
 
 export const metadata: Metadata = {
@@ -28,10 +23,6 @@ export const viewport = {
   themeColor: '#0A0A0B',
 };
 
-import { ThemeProvider } from 'next-themes';
-
-// ... (rest of the file)
-
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -39,7 +30,7 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="id" className="dark" suppressHydrationWarning>
-      <body className={`${fontSans.variable} ${fontMono.variable} font-sans min-h-screen flex flex-col`}>
+      <body className={`${fontSans.variable} font-sans min-h-screen flex flex-col`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <Header />
           <main className="flex-grow">
@@ -53,4 +44,3 @@ export default async function RootLayout({
     </html>
   );
 }
-

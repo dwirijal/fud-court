@@ -9,7 +9,7 @@ export default function HomePage() {
         title="Welcome to FudCourtt!"
         description="Your ultimate dashboard for cryptocurrency market data, DeFi analytics, and degen trading tools."
       />
-      <div className="p-4">
+      <div className="p-4 md:p-6">
         {/* Add more content here */}
       </div>
     </>

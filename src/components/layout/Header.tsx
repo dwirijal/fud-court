@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -15,9 +14,9 @@ import {
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { useTheme } from 'next-themes';
 import { Sun, Moon, Bot, BarChart } from 'lucide-react';
+import { GlobalSearch } from './GlobalSearch';
 
 const ListItem = React.forwardRef<
   React.ElementRef<"a">,
@@ -97,7 +96,6 @@ export function Header() {
                     </li>
                     <ListItem href="/market/global" title="Global Overview" />
                     <ListItem href="/market/fear-greed" title="Fear & Greed Index" />
-                    <ListItem href="/market/exchanges" title="Exchange Overview" />
                   </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>
@@ -154,11 +152,7 @@ export function Header() {
         </div>
 
         <div className="flex flex-1 justify-center px-4">
-          <Input
-            type="text"
-            placeholder="Search..."
-            className="w-full max-w-xs h-9 text-sm bg-muted/50 border-muted-foreground/20 focus-visible:ring-ring focus-visible:ring-offset-0"
-          />
+          <GlobalSearch />
         </div>
 
         <div className="flex items-center justify-end">

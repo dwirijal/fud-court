@@ -69,7 +69,7 @@ export default function TrendingCoinsPage() {
                   <TableHead>Rank</TableHead>
                   <TableHead>Name</TableHead>
                   <TableHead>Symbol</TableHead>
-                  <TableHead>Price (BTC)</TableHead>
+                  <TableHead>usdt</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

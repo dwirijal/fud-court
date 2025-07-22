@@ -18,7 +18,7 @@ import { Search, Compass, CandlestickChart } from 'lucide-react'
 interface CoinSuggestion {
   id: string
   name: string
-  symbol: string
+  symbol: string;
   thumb: string;
 }
 

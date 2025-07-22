@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState, use } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { CoinGeckoAPI, CoinDetails } from '@/lib/api-clients/crypto/coinGecko';
 import { BinanceAPI } from '@/lib/api-clients/crypto/binance';
 import { DeFiLlamaAPI } from '@/lib/api-clients/crypto/defillama';
-import { DexScreenerAPI } from '@/lib/api-clients/crypto/dexscreener';
+import { DexScreenerClient as DexScreenerAPI, DexScreenerPair } from '@/lib/api-clients/crypto/dexScreener';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
@@ -54,27 +54,6 @@ interface DeFiLlamaProtocol {
   category: string;
 }
 
-interface DexScreenerPair {
-  chainId: string;
-  dexId: string;
-  pairAddress: string;
-  baseToken: {
-    symbol: string;
-    name: string;
-  };
-  quoteToken: {
-    symbol: string;
-    name: string;
-  };
-  priceUsd: string;
-  volume: {
-    h24: number;
-  };
-  priceChange: {
-    h24: number;
-  };
-}
-
 interface BookmarkData {
   id: string;
   name: string;
@@ -85,7 +64,7 @@ interface BookmarkData {
 }
 
 export default function CoinDetailPage({ params }: CoinDetailPageProps) {
-  const { id } = use(params);
+  const { id } = params;
   
   // Main data states
   const [coin, setCoin] = useState<CoinDetails | null>(null);
@@ -107,10 +86,10 @@ export default function CoinDetailPage({ params }: CoinDetailPageProps) {
   const [activeTab, setActiveTab] = useState('overview');
 
   // Initialize APIs
-  const coinGecko = new CoinGeckoAPI();
-  const binanceAPI = new BinanceAPI();
-  const defiLlama = new DeFiLlamaAPI();
-  const dexScreener = new DexScreenerAPI();
+  const coinGecko = useMemo(() => new CoinGeckoAPI(), []);
+  const binanceAPI = useMemo(() => new BinanceAPI(), []);
+  const defiLlama = useMemo(() => new DeFiLlamaAPI(), []);
+  const dexScreener = useMemo(() => new DexScreenerAPI(), []);
 
   // Utility functions
   const formatCurrency = (value: number | undefined | null) => {
@@ -172,80 +151,83 @@ export default function CoinDetailPage({ params }: CoinDetailPageProps) {
   };
 
   // Data fetching functions
-  const fetchCoinGeckoData = async () => {
-    try {
-      const data = await coinGecko.getCoinById({
-        id: id,
-        localization: false,
-        tickers: false,
-        market_data: true,
-        community_data: true,
-        developer_data: true,
-        sparkline: false,
-      });
-      setCoin(data);
-    } catch (err) {
-      console.error('CoinGecko fetch error:', err);
-      setError('Failed to fetch coin details from CoinGecko');
-    } finally {
-      setLoadingStates(prev => ({ ...prev, coingecko: false }));
-    }
-  };
-
-  const fetchBinanceData = async () => {
-    try {
-      if (coin?.symbol) {
-        const tickers = await binanceAPI.getTopTradingPairs(coin.symbol.toUpperCase());
-        setBinancePairs(tickers.slice(0, 5)); // Top 5 pairs
-      }
-    } catch (err) {
-      console.error('Binance fetch error:', err);
-    } finally {
-      setLoadingStates(prev => ({ ...prev, binance: false }));
-    }
-  };
-
-  const fetchDeFiLlamaData = async () => {
-    try {
-      if (coin?.name) {
-        const protocol = await defiLlama.getProtocol(coin.name);
-        setDefiData(protocol);
-      }
-    } catch (err) {
-      console.error('DeFiLlama fetch error:', err);
-    } finally {
-      setLoadingStates(prev => ({ ...prev, defillama: false }));
-    }
-  };
-
-  const fetchDexScreenerData = async () => {
-    try {
-      if (coin?.symbol) {
-        const pairs = await dexScreener.searchPairs(coin.symbol);
-        setDexPairs(pairs.slice(0, 3)); // Top 3 DEX pairs
-      }
-    } catch (err) {
-      console.error('DexScreener fetch error:', err);
-    } finally {
-      setLoadingStates(prev => ({ ...prev, dexscreener: false }));
-    }
-  };
-
-  // Effects
   useEffect(() => {
     if (id) {
+      const fetchCoinGeckoData = async () => {
+        try {
+          const data = await coinGecko.getCoinById({
+            id: id,
+            localization: false,
+            tickers: false,
+            market_data: true,
+            community_data: true,
+            developer_data: true,
+            sparkline: false,
+          });
+          setCoin(data);
+        } catch (err) {
+          console.error('CoinGecko fetch error:', err);
+          setError('Failed to fetch coin details from CoinGecko');
+        } finally {
+          setLoadingStates(prev => ({ ...prev, coingecko: false }));
+        }
+      };
       fetchCoinGeckoData();
     }
-  }, [id]);
+  }, [id, coinGecko]);
 
   useEffect(() => {
-    if (coin) {
+    const fetchOtherApis = async () => {
+      if (!coin) return;
+      
       checkBookmarkStatus();
-      fetchBinanceData();
-      fetchDeFiLlamaData();
-      fetchDexScreenerData();
-    }
-  }, [coin]);
+
+      // Binance
+      try {
+        if (coin.symbol) {
+          const tickers = await binanceAPI.getTopTradingPairs(coin.symbol.toUpperCase());
+          setBinancePairs(tickers.slice(0, 5) as BinanceTicker[]); // Top 5 pairs
+        }
+      } catch (err) {
+        console.error('Binance fetch error:', err);
+      } finally {
+        setLoadingStates(prev => ({ ...prev, binance: false }));
+      }
+
+      // DeFiLlama
+      try {
+        if (coin.name) {
+          const protocol = await defiLlama.getProtocolInfo(coin.name.toLowerCase());
+          if(protocol) {
+            setDefiData({
+              tvl: protocol.tvl,
+              chains: protocol.chains,
+              category: protocol.category,
+            });
+          }
+        }
+      } catch (err) {
+        console.error('DeFiLlama fetch error:', err);
+      } finally {
+        setLoadingStates(prev => ({ ...prev, defillama: false }));
+      }
+
+      // DexScreener
+      try {
+        if (coin.symbol) {
+          const searchResults = await dexScreener.search(coin.symbol);
+          setDexPairs(searchResults.pairs.slice(0, 3)); // Top 3 DEX pairs
+        }
+      } catch (err) {
+        console.error('DexScreener fetch error:', err);
+      } finally {
+        setLoadingStates(prev => ({ ...prev, dexscreener: false }));
+      }
+    };
+
+    fetchOtherApis();
+  }, [coin, binanceAPI, defiLlama, dexScreener]);
+
 
   // Loading component
   if (loadingStates.coingecko) {
@@ -712,4 +694,46 @@ export default function CoinDetailPage({ params }: CoinDetailPageProps) {
                     <p className="text-2xl font-bold text-blue-600">
                       {formatNumber(coin.community_data.facebook_likes)}
                     </p>
-                    <p className="text-sm text-muted-foreground">Facebook Likes</p
+                    <p className="text-sm text-muted-foreground">Facebook Likes</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Developer Data */}
+          {coin.developer_data && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Code className="h-5 w-5 mr-2" />
+                  Developer Activity
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                  <div>
+                    <p className="text-2xl font-bold">{formatNumber(coin.developer_data.forks)}</p>
+                    <p className="text-sm text-muted-foreground">Forks</p>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold">{formatNumber(coin.developer_data.stars)}</p>
+                    <p className="text-sm text-muted-foreground">Stars</p>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold">{formatNumber(coin.developer_data.subscribers)}</p>
+                    <p className="text-sm text-muted-foreground">Subscribers</p>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold">{formatNumber(coin.developer_data.commit_count_4_weeks)}</p>
+                    <p className="text-sm text-muted-foreground">Commits (4w)</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}

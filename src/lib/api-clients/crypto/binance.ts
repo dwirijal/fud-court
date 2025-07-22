@@ -42,7 +42,7 @@ interface BinanceFilter {
   maxNumAlgoOrders?: number;
 }
 
-interface BinanceSymbol {
+export interface BinanceSymbol {
   symbol: string;
   status: string;
   baseAsset: string;
@@ -218,7 +218,7 @@ export class BinanceAPI {
       
       const response = await fetch(url, {
         headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
+          'User-Agent': 'FudCourt/1.0.0'
         }
       });
 
@@ -445,6 +445,28 @@ export class BinanceAPI {
   async getBookTicker(symbol?: string): Promise<BinanceBookTicker | BinanceBookTicker[]> {
     const endpoint = symbol ? `/ticker/bookTicker?symbol=${symbol.toUpperCase()}` : '/ticker/bookTicker';
     return this.makeRequest(endpoint);
+  }
+
+  async getTopTradingPairs(baseAsset: string): Promise<any[]> {
+    const exchangeInfo = await this.getExchangeInfo();
+    const allPairs = exchangeInfo.symbols;
+
+    const relevantPairs = allPairs.filter(
+      (pair) => pair.baseAsset === baseAsset || pair.quoteAsset === baseAsset
+    );
+
+    if (relevantPairs.length === 0) {
+      return [];
+    }
+
+    const tickers = (await this.getTicker24hr()) as BinanceTicker24hr[];
+    const relevantTickers = tickers.filter((ticker) =>
+      relevantPairs.some((pair) => pair.symbol === ticker.symbol)
+    );
+
+    return relevantTickers
+      .sort((a, b) => parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume))
+      .slice(0, 5); // Return top 5 by volume
   }
 }
 

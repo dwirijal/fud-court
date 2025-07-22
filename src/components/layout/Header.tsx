@@ -24,9 +24,9 @@ const ListItem = ({ href, title, children }: { href: string; title: string; chil
     <NavigationMenuLink asChild>
       <Link
         href={href}
-        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+        className="block select-none space-y-1 rounded-card p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
       >
-        <div className="text-sm font-medium leading-none">{title}</div>
+        <div className="text-base font-medium leading-none">{title}</div>
         <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
           {children}
         </p>
@@ -81,7 +81,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center justify-between px-4 md:px-6">
+      <div className="container flex h-14 items-center justify-between px-4">
         <div className="flex items-center">
           <Link href="/" className="mr-4 flex items-center space-x-2">
             <Bot className="h-6 w-6" />
@@ -90,7 +90,7 @@ export function Header() {
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
-                <Link href="/" legacyBehavior passHref>
+                <Link href="/" asChild>
                   <NavigationMenuLink
                     active={pathname === '/'}
                     className={navigationMenuTriggerStyle()}
@@ -139,7 +139,7 @@ export function Header() {
           <Input
             type="text"
             placeholder="Search..."
-            className="w-full max-w-xs rounded-full h-9 text-sm bg-muted/50 border-muted-foreground/20 focus-visible:ring-ring focus-visible:ring-offset-0"
+            className="w-full max-w-xs h-9 text-sm bg-muted/50 border-muted-foreground/20 focus-visible:ring-ring focus-visible:ring-offset-0"
           />
         </div>
 

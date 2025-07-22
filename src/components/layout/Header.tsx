@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -23,7 +23,7 @@ const ListItem = ({ href, title, children }: { href: string; title: string; chil
     <NavigationMenuLink asChild>
       <Link
         href={href}
-        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+        className="block select-none space-y-1 rounded-card p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
       >
         <div className="text-base font-medium leading-none">{title}</div>
         <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
@@ -58,7 +58,7 @@ export function Header() {
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
-                <Link href="/" legacyBehavior passHref>
+                <Link href="/" passHref asChild>
                   <NavigationMenuLink
                     active={pathname === '/'}
                     className={cn(navigationMenuTriggerStyle(), 'text-base', pathname === '/' ? '' : 'text-muted-foreground')}

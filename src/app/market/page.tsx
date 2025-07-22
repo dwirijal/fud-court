@@ -17,11 +17,6 @@ export default function MarketPage() {
       title: 'Fear & Greed Index',
       description: 'Explore market sentiment with the Fear & Greed Index.',
     },
-    {
-      href: '/market/exchanges',
-      title: 'Exchange Overview',
-      description: 'Compare trading pairs and exchange information.',
-    },
   ];
 
   return (

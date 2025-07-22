@@ -92,9 +92,6 @@ export function Header() {
                           <div className="mb-2 mt-4 text-lg font-medium">
                             Market Overview
                           </div>
-                          <p className="text-sm leading-tight text-muted-foreground">
-                            Data pasar komprehensif untuk tetap terinformasi.
-                          </p>
                         </a>
                       </NavigationMenuLink>
                     </li>
@@ -111,19 +108,25 @@ export function Header() {
                     <div className="flex flex-col">
                       <ListItem href="/coins" title="Coins Overview" className="font-bold bg-muted/50" />
                       <ListItem href="/coins/trending" title="Trending Coins" />
+                      <ListItem href="/coins/search" title="Coin Search" />
                       <ListItem href="/coins/watchlist" title="My Watchlist" />
                       <ListItem href="/coins/compare" title="Compare Coins" />
                     </div>
                     <div className="flex flex-col">
                       <ListItem href="/degen" title="Degen Trading" className="font-bold bg-muted/50" />
-                       <ListItem href="/degen/pairs" title="Hot Trading Pairs" />
+                      <ListItem href="/degen/pairs" title="Hot Trading Pairs" />
+                      <ListItem href="/degen/trending" title="Trending Pairs" />
                       <ListItem href="/degen/new-listings" title="New Listings" />
+                      <ListItem href="/degen/search" title="Degen Search" />
                     </div>
                     <div className="flex flex-col">
                       <ListItem href="/defi" title="DeFi Analytics" className="font-bold bg-muted/50" />
                       <ListItem href="/defi/protocols" title="Protocols" />
                       <ListItem href="/defi/chains" title="Chains" />
                       <ListItem href="/defi/yield" title="Yield Farming" />
+                      <ListItem href="/defi/stablecoins" title="Stablecoins" />
+                      <ListItem href="/defi/dexs" title="DEXs" />
+                      <ListItem href="/defi/options" title="Options" />
                     </div>
                   </ul>
                 </NavigationMenuContent>
@@ -141,6 +144,7 @@ export function Header() {
                         <li className="text-sm font-medium text-foreground py-2 px-3">Project</li>
                         <ListItem href="/about" title="About" />
                         <ListItem href="/docs" title="Docs" />
+                        <ListItem href="/docs/api-specs/binance-api-spec" title="API Specs" />
                     </div>
                   </ul>
                 </NavigationMenuContent>

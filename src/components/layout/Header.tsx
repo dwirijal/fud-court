@@ -90,7 +90,7 @@ export function Header() {
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
-                <Link href="/" legacyBehavior passHref>
+                <Link href="/" asChild>
                   <NavigationMenuLink
                     active={pathname === '/'}
                     className={navigationMenuTriggerStyle()}

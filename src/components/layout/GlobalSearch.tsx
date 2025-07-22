@@ -22,6 +22,10 @@ interface CoinSuggestion {
   thumb: string;
 }
 
+const isContractAddress = (query: string): boolean => {
+  return /^0x[a-fA-F0-9]{40}$/.test(query);
+};
+
 export function GlobalSearch() {
   const router = useRouter()
   const [open, setOpen] = React.useState(false)
@@ -54,13 +58,22 @@ export function GlobalSearch() {
         const coinGecko = new CoinGeckoAPI()
         const dexScreener = new DexScreenerClient()
 
-        const [coinResults, dexResults] = await Promise.all([
-          coinGecko.search(query).catch(() => ({ coins: [] })),
-          dexScreener.search(query).catch(() => ({ pairs: [] })),
-        ])
+        if (isContractAddress(query)) {
+          // It's a contract address, use getTokens from DexScreener
+          const tokenResults = await dexScreener.getTokens(query).catch(() => ({ pairs: [] }));
+          setDexPairs(tokenResults.pairs?.slice(0, 10) || []);
+          setCoinSuggestions([]); // Clear coin suggestions
+        } else {
+          // It's a text query, use search from both
+          const [coinResults, dexResults] = await Promise.all([
+            coinGecko.search(query).catch(() => ({ coins: [] })),
+            dexScreener.search(query).catch(() => ({ pairs: [] })),
+          ])
+  
+          setCoinSuggestions(coinResults.coins?.slice(0, 5) || [])
+          setDexPairs(dexResults.pairs?.slice(0, 5) || [])
+        }
 
-        setCoinSuggestions(coinResults.coins?.slice(0, 5) || [])
-        setDexPairs(dexResults.pairs?.slice(0, 5) || [])
       } catch (error) {
         console.error("Search failed:", error)
       } finally {
@@ -96,7 +109,7 @@ export function GlobalSearch() {
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput 
-          placeholder="Search for a coin or a pair..." 
+          placeholder="Search for a coin or pair by name or address..." 
           value={query}
           onValueChange={setQuery}
         />

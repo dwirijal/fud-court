@@ -1,9 +1,8 @@
-
 'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils';
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -24,7 +23,7 @@ const ListItem = ({ href, title, children }: { href: string; title: string; chil
     <NavigationMenuLink asChild>
       <Link
         href={href}
-        className="block select-none space-y-1 rounded-card p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
       >
         <div className="text-base font-medium leading-none">{title}</div>
         <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
@@ -44,37 +43,6 @@ export function Header() {
     setMounted(true);
   }, []);
 
-  const exploreComponents: { title: string; href: string; description: string }[] = [
-    {
-      title: 'Market Overview',
-      href: '/market',
-      description: 'Get a bird\'s-eye view of the entire crypto market.',
-    },
-    {
-      title: 'Coins',
-      href: '/coins',
-      description: 'Browse and search through thousands of cryptocurrencies.',
-    },
-    {
-      title: 'Docs',
-      href: '/docs',
-      description: 'Read the documentation for Fud Courtt.',
-    },
-  ];
-
-  const platformsComponents: { title: string; href: string; description: string }[] = [
-    {
-      title: 'Degen Trading',
-      href: '/degen',
-      description: 'High-risk, high-reward tools for advanced traders.',
-    },
-    {
-      title: 'DeFi Analytics',
-      href: '/defi',
-      description: 'Explore decentralized finance protocols and opportunities.',
-    },
-  ];
-
   if (!mounted) {
     return null;
   }
@@ -90,45 +58,47 @@ export function Header() {
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
-                <Link
-                  href="/"
-                  className={cn(
-                    navigationMenuTriggerStyle(),
-                    pathname === '/' ? 'bg-accent' : ''
-                  )}
-                >
-                  Home
+                <Link href="/" legacyBehavior passHref>
+                  <NavigationMenuLink
+                    active={pathname === '/'}
+                    className={cn(navigationMenuTriggerStyle(), 'text-base', pathname === '/' ? '' : 'text-muted-foreground')}
+                  >
+                    Home
+                  </NavigationMenuLink>
                 </Link>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <NavigationMenuTrigger>Explore</NavigationMenuTrigger>
+                <NavigationMenuTrigger className="text-base">Market</NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-                    {exploreComponents.map((component) => (
-                      <ListItem
-                        key={component.title}
-                        title={component.title}
-                        href={component.href}
-                      >
-                        {component.description}
-                      </ListItem>
-                    ))}
+                    <ListItem href="/market/crypto" title="Crypto">
+                      Jelajahi pasar cryptocurrency, analisis, dan data real-time.
+                    </ListItem>
+                    <ListItem href="/market/forex" title="Forex">
+                      Data dan analisis untuk pasar valuta asing.
+                    </ListItem>
+                    <ListItem href="/degen" title="Degen">
+                      Alat untuk perdagangan spekulatif dan berisiko tinggi.
+                    </ListItem>
+                    <ListItem href="/defi" title="DeFi">
+                      Jelajahi protokol dan peluang keuangan terdesentralisasi.
+                    </ListItem>
                   </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <NavigationMenuTrigger>Platforms</NavigationMenuTrigger>
+                <NavigationMenuTrigger className="text-base">Insights</NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-                    {platformsComponents.map((component) => (
-                      <ListItem
-                        key={component.title}
-                        title={component.title}
-                        href={component.href}
-                      >
-                        {component.description}
-                      </ListItem>
-                    ))}
+                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] lg:w-[500px]">
+                    <ListItem href="/economic/news" title="Economic News">
+                      Berita ekonomi terbaru yang mempengaruhi pasar global.
+                    </ListItem>
+                    <ListItem href="/article/learn" title="Learn">
+                      Pelajari tentang konsep investasi dan analisis pasar.
+                    </ListItem>
+                     <ListItem href="/docs" title="Docs">
+                      Dokumentasi teknis untuk Fud Courtt.
+                    </ListItem>
                   </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, use } from 'react';
+import { useEffect, useState } from 'react';
 import { DexScreenerClient, DexScreenerPair } from '@/lib/api-clients/crypto/dexScreener';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -14,7 +14,7 @@ interface TokenDetailPageProps {
 }
 
 export default function TokenDetailPage({ params }: TokenDetailPageProps) {
-  const { address } = use(params); // Unwrap the params Promise
+  const { address } = params;
   const [tokenPairs, setTokenPairs] = useState<DexScreenerPair[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

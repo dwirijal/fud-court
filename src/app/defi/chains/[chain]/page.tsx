@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, use } from 'react';
+import { useEffect, useState } from 'react';
 import { DefiLlamaClient, ChainTVL } from '@/lib/api-clients/crypto/defiLlama';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -21,6 +21,7 @@ interface ChainData {
   change_1m?: number;
   mcap?: number;
   symbol?: string;
+  protocols?: number;
 }
 
 interface FormattedTVLData {
@@ -31,7 +32,7 @@ interface FormattedTVLData {
 }
 
 export default function ChainDetailPage({ params }: ChainDetailPageProps) {
-  const { chain } = use(params); // Unwrap the params Promise
+  const { chain } = params;
   const [chainTVL, setChainTVL] = useState<ChainTVL[] | null>(null);
   const [chainInfo, setChainInfo] = useState<ChainData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -42,20 +43,7 @@ export default function ChainDetailPage({ params }: ChainDetailPageProps) {
   const chainName = chain.charAt(0).toUpperCase() + chain.slice(1).replace(/-/g, ' ');
 
   // Process and filter TVL data based on time range
-  const processedTVLData = useMemo<FormattedTVLData[]>(() => {
-    if (!chainTVL) return [];
-
-    const now = Date.now();
-    const timeRanges = {
-      '7d': 7 * 24 * 60 * 60 * 1000,
-      '30d': 30 * 24 * 60 * 60 * 1000,
-      '90d': 90 * 24 * 60 * 60 * 1000,
-      '1y': 365 * 24 * 60 * 60 * 1000,
-    };
-
-    const cutoffTime = now - timeRanges[timeRange];
-
-    return chainTVL
+  const processedTVLData = processedTVLData
       .filter(entry => entry.date * 1000 >= cutoffTime)
       .map(entry => ({
         date: new Date(entry.date * 1000).toISOString().split('T')[0],
@@ -94,7 +82,7 @@ export default function ChainDetailPage({ params }: ChainDetailPageProps) {
 
   useEffect(() => {
     const fetchChainData = async () => {
-      if (!chain) return; // Don't fetch if chain is not available yet
+      if (!chain) return;
       
       try {
         setLoading(true);
@@ -102,7 +90,6 @@ export default function ChainDetailPage({ params }: ChainDetailPageProps) {
         
         const defiLlama = new DefiLlamaClient();
         
-        // Fetch both TVL history and current chain info in parallel
         const [tvlData, chainsData] = await Promise.all([
           defiLlama.getChainTVL(chain).catch(() => null),
           defiLlama.getChains().catch(() => [])
@@ -112,11 +99,10 @@ export default function ChainDetailPage({ params }: ChainDetailPageProps) {
           setChainTVL(tvlData);
         }
 
-        // Find current chain info
         const currentChain = chainsData.find((c: any) => 
           c.name.toLowerCase() === chain.toLowerCase() ||
           c.gecko_id === chain ||
-          c.chainId === chain
+          c.chainId?.toString() === chain
         );
 
         if (currentChain) {
@@ -164,7 +150,7 @@ export default function ChainDetailPage({ params }: ChainDetailPageProps) {
   if (error) {
     return (
       <div className="p-6">
-        <Alert>
+        <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>{error}</AlertDescription>
         </Alert>
@@ -187,7 +173,6 @@ export default function ChainDetailPage({ params }: ChainDetailPageProps) {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">{chainName}</h1>
@@ -201,7 +186,6 @@ export default function ChainDetailPage({ params }: ChainDetailPageProps) {
         )}
       </div>
 
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -257,7 +241,6 @@ export default function ChainDetailPage({ params }: ChainDetailPageProps) {
         </Card>
       </div>
 
-      {/* Chart */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -318,7 +301,6 @@ export default function ChainDetailPage({ params }: ChainDetailPageProps) {
         </CardContent>
       </Card>
 
-      {/* Historical Data Table */}
       <Card>
         <CardHeader>
           <CardTitle>Recent TVL History</CardTitle>

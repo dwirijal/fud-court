@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, use } from 'react'; // Import use
+import { useEffect, useState } from 'react';
 import { DefiLlamaClient, ProtocolDetails } from '@/lib/api-clients/crypto/defiLlama';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -12,7 +12,7 @@ interface ProtocolDetailPageProps {
 }
 
 export default function ProtocolDetailPage({ params }: ProtocolDetailPageProps) {
-  const { protocol } = use(params); // Unwrap the params Promise
+  const { protocol } = params;
   const [protocolData, setProtocolData] = useState<ProtocolDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

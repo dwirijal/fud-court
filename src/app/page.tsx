@@ -26,7 +26,7 @@ export default function Home() {
         </div>
 
         {/* Right: Spline 3D Embed */}
-        <div className="w-full aspect-[3/1] md:aspect-square">
+        <div className="w-full h-[400px] md:h-[600px]">
           <Spline scene="https://prod.spline.design/GJEG8QHAlHhazltR/scene.splinecode" />
         </div>
       </div>

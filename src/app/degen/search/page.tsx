@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -5,24 +6,9 @@ import { DexScreenerClient, DexScreenerPair } from '@/lib/api-clients/crypto/dex
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import Image from 'next/image';
 import Link from 'next/link';
-import { Skeleton } from '@/components/ui/skeleton'; // Import Skeleton
-
-interface SearchCoinResult {
-  id: string;
-  name: string;
-  symbol: string;
-  market_cap_rank: number;
-  thumb: string;
-  large: string;
-}
-
-interface CoinListItem {
-  id: string;
-  name: string;
-  symbol: string;
-}
+import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils/utils';
 
 export default function DegenSearchPage() {
   const [query, setQuery] = useState('');
@@ -33,6 +19,7 @@ export default function DegenSearchPage() {
   const handleSearch = useCallback(async (searchQuery: string) => {
     if (!searchQuery.trim()) {
       setSearchResults(null);
+      setLoading(false);
       return;
     }
 
@@ -50,11 +37,10 @@ export default function DegenSearchPage() {
     }
   }, []);
 
-  // Debounce search input
   useEffect(() => {
     const handler = setTimeout(() => {
       handleSearch(query);
-    }, 500); // 500ms debounce
+    }, 500);
 
     return () => {
       clearTimeout(handler);
@@ -75,39 +61,54 @@ export default function DegenSearchPage() {
       </div>
 
       {loading ? (
-        <div className="space-y-4">
-          <Skeleton className="h-10 w-full max-w-lg" />
-          <Skeleton className="h-48 w-full max-w-lg" />
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle><Skeleton className="h-6 w-48" /></CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}
+            </div>
+          </CardContent>
+        </Card>
       ) : error ? (
         <div className="p-4 text-red-500">Error: {error}</div>
       ) : searchResults && searchResults.length > 0 ? (
         <Card>
           <CardHeader>
-            <CardTitle>Search Results</CardTitle>
+            <CardTitle>Search Results for &quot;{query}&quot;</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead><Skeleton className="h-4 w-16" /></TableHead>
-                    <TableHead><Skeleton className="h-4 w-20" /></TableHead>
-                    <TableHead><Skeleton className="h-4 w-20" /></TableHead>
-                    <TableHead><Skeleton className="h-4 w-24" /></TableHead>
-                    <TableHead><Skeleton className="h-4 w-24" /></TableHead>
-                    <TableHead><Skeleton className="h-4 w-20" /></TableHead>
+                    <TableHead>Pair</TableHead>
+                    <TableHead>Chain</TableHead>
+                    <TableHead>DEX</TableHead>
+                    <TableHead className="text-right">Price (USD)</TableHead>
+                    <TableHead className="text-right">24h Change (%)</TableHead>
+                    <TableHead className="text-right">Liquidity</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {[...Array(5)].map((_, i) => (
-                    <TableRow key={i}>
-                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-16" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-16" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                  {searchResults.map((pair) => (
+                    <TableRow key={pair.pairAddress}>
+                      <TableCell className="font-medium">
+                        <Link href={`/degen/tokens/${pair.baseToken.address}`} className="hover:underline">
+                          {pair.baseToken.symbol}/{pair.quoteToken.symbol}
+                        </Link>
+                      </TableCell>
+                      <TableCell>{pair.chainId}</TableCell>
+                      <TableCell>{pair.dexId}</TableCell>
+                      <TableCell className="text-right">${parseFloat(pair.priceUsd ?? '0').toPrecision(4)}</TableCell>
+                      <TableCell className={cn(
+                        "text-right",
+                        pair.priceChange.h24 >= 0 ? 'text-green-500' : 'text-red-500'
+                      )}>
+                        {pair.priceChange.h24?.toFixed(2)}%
+                      </TableCell>
+                      <TableCell className="text-right">${pair.liquidity?.usd?.toLocaleString() ?? 'N/A'}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -116,7 +117,7 @@ export default function DegenSearchPage() {
           </CardContent>
         </Card>
       ) : searchResults && searchResults.length === 0 && query.trim() && !loading ? (
-        <div className="p-4 text-muted-foreground">No results found for &quot;{query}&quot;.</div>
+        <div className="p-4 text-center text-muted-foreground">No results found for &quot;{query}&quot;.</div>
       ) : null}
     </div>
   );

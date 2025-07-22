@@ -116,10 +116,9 @@ export function Header() {
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="text-base">Crypto</NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[600px] md:grid-cols-2 lg:w-[700px]">
-                    <div>
-                      <li className="text-sm font-medium text-foreground py-2 px-3">Coins</li>
-                      <ListItem href="/coins" title="Coins Overview">
+                  <ul className="grid w-[400px] gap-3 p-4 md:w-[600px] md:grid-cols-3 lg:w-[800px]">
+                    <div className="flex flex-col">
+                      <ListItem href="/coins" title="Coins Overview" className="font-bold bg-muted/50">
                         Jelajahi ribuan cryptocurrency dan alat terkait.
                       </ListItem>
                       <ListItem href="/coins/trending" title="Trending Coins">
@@ -132,11 +131,10 @@ export function Header() {
                         Bandingkan beberapa cryptocurrency secara berdampingan.
                       </ListItem>
                     </div>
-                    <div>
-                      <li className="text-sm font-medium text-foreground py-2 px-3">Degen</li>
-                       <ListItem href="/degen" title="Degen Trading">
-                        Alat dan data untuk perdagangan terdesentralisasi.
-                       </ListItem>
+                    <div className="flex flex-col">
+                      <ListItem href="/degen" title="Degen Trading" className="font-bold bg-muted/50">
+                         Alat dan data untuk perdagangan terdesentralisasi.
+                      </ListItem>
                        <ListItem href="/degen/pairs" title="Hot Trading Pairs">
                         Temukan pasangan perdagangan yang paling aktif dan tren.
                       </ListItem>
@@ -144,9 +142,8 @@ export function Header() {
                         Jelajahi token dan pasangan yang baru terdaftar.
                       </ListItem>
                     </div>
-                    <div>
-                      <li className="text-sm font-medium text-foreground py-2 px-3">DeFi</li>
-                      <ListItem href="/defi" title="DeFi Analytics">
+                    <div className="flex flex-col">
+                      <ListItem href="/defi" title="DeFi Analytics" className="font-bold bg-muted/50">
                         Menyelam jauh ke dalam data keuangan terdesentralisasi.
                       </ListItem>
                       <ListItem href="/defi/protocols" title="Protocols">

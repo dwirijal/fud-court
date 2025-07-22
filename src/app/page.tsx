@@ -11,7 +11,7 @@ export default function Home() {
             FUD Court
           </h1>
           <p className="text-lg md:text-xl text-gray-300 max-w-md">
-            A sophisticated, data-driven dashboard designed to bring clarity to the chaotic world of cryptocurrency. Your all-in-one command center for market analysis, news, and deep-dives.
+            A sophisticated, data-driven dashboard for the chaotic world of cryptocurrency. Your all-in-one command center for market analysis and insights.
           </p>
           <Link
             href="https://discord.gg/Dh6CUWJ6bT"

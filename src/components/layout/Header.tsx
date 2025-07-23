@@ -95,7 +95,7 @@ export function Header() {
                       </NavigationMenuLink>
                     </li>
                     <ListItem href="/market/global" title="Global Overview" />
-                    <ListItem href="/market/fear-greed" title="Fear & Greed Index" />
+                    <ListItem href="/market/crypto" title="Crypto Market" />
                   </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>

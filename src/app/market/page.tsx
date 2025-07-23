@@ -13,9 +13,9 @@ export default function MarketPage() {
       description: 'View global cryptocurrency market data.',
     },
     {
-      href: '/market/fear-greed',
-      title: 'Fear & Greed Index',
-      description: 'Explore market sentiment with the Fear & Greed Index.',
+      href: '/market/crypto',
+      title: 'Crypto Market',
+      description: 'View crypto market specific data and sentiment.',
     },
   ];
 

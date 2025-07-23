@@ -13,7 +13,6 @@ import { TrendingUp, TrendingDown, Minus, AlertCircle } from 'lucide-react';
 import { HeroSection } from '@/components/shared/HeroSection';
 
 const fredApiKey = process.env.NEXT_PUBLIC_FRED_API_KEY;
-
 const fredClient = fredApiKey ? new FredClient({ apiKey: fredApiKey }) : null;
 
 interface MetricData {
@@ -23,6 +22,7 @@ interface MetricData {
   date: string;
   change: number | null;
   trend: 'up' | 'down' | 'stable';
+  units: string;
 }
 
 const formatValue = (value: string, units: string) => {
@@ -30,9 +30,9 @@ const formatValue = (value: string, units: string) => {
     if (isNaN(num)) return 'N/A';
     
     if (units.toLowerCase().includes('percent')) return `${num.toFixed(2)}%`;
-    if (units.toLowerCase().includes('thousands')) return `${(num / 1000).toFixed(2)}M`;
     if (units.toLowerCase().includes('billions')) return `${num.toFixed(2)}B`;
-    return num.toLocaleString();
+    if (units.toLowerCase().includes('thousands of persons')) return `${(num/1000).toFixed(2)}M`;
+    return num.toLocaleString(undefined, {maximumFractionDigits: 2});
 };
 
 const getTrendIcon = (trend: 'up' | 'down' | 'stable') => {
@@ -72,62 +72,8 @@ const KpiCard = ({ data, isLoading }: { data: MetricData | null; isLoading: bool
     );
 };
 
-
-const IndicatorTable = ({ indicators }: { indicators: Indicator[] }) => {
-    const [data, setData] = useState<Record<string, MetricData>>({});
-    const [loading, setLoading] = useState(true);
-
-    const fetchIndicatorData = useCallback(async () => {
-        if (!fredClient) return;
-
-        setLoading(true);
-        const promises = indicators.map(indicator => 
-            fredClient.getSeriesObservations(indicator.id, { limit: 2, sort_order: 'desc' })
-        );
-
-        const results = await Promise.allSettled(promises);
-        const fetchedData: Record<string, MetricData> = {};
-
-        results.forEach((result, index) => {
-            const indicator = indicators[index];
-            if (result.status === 'fulfilled' && result.value.observations.length > 0) {
-                const observations = result.value.observations;
-                const latest = observations[0];
-                const previous = observations[1];
-                
-                let change = null;
-                let trend: 'up' | 'down' | 'stable' = 'stable';
-
-                if (previous) {
-                    const latestValue = parseFloat(latest.value);
-                    const previousValue = parseFloat(previous.value);
-                    if (!isNaN(latestValue) && !isNaN(previousValue)) {
-                       change = latestValue - previousValue;
-                       if (change > 0) trend = 'up';
-                       if (change < 0) trend = 'down';
-                    }
-                }
-                
-                fetchedData[indicator.id] = {
-                    seriesId: indicator.id,
-                    title: indicator.title,
-                    value: formatValue(latest.value, indicator.units),
-                    date: latest.date,
-                    change,
-                    trend
-                };
-            }
-        });
-
-        setData(fetchedData);
-        setLoading(false);
-    }, [indicators]);
-
-    useEffect(() => {
-        fetchIndicatorData();
-    }, [fetchIndicatorData]);
-
-    if (loading) {
+const IndicatorTable = ({ indicators, data, isLoading }: { indicators: Indicator[], data: Record<string, MetricData>, isLoading: boolean }) => {
+    if (isLoading) {
         return (
             <div className="space-y-2">
                 {[...Array(indicators.length)].map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
@@ -154,7 +100,7 @@ const IndicatorTable = ({ indicators }: { indicators: Indicator[] }) => {
                             <TableCell className="text-right">{metric ? metric.value : 'N/A'}</TableCell>
                             <TableCell className="text-right">{metric ? new Date(metric.date).toLocaleDateString() : 'N/A'}</TableCell>
                             <TableCell className={`text-right ${metric && metric.change && metric.change > 0 ? 'text-green-500' : metric && metric.change && metric.change < 0 ? 'text-red-500' : ''}`}>
-                                {metric && metric.change !== null ? metric.change.toFixed(2) : 'N/A'}
+                                {metric && metric.change !== null ? formatValue(metric.change.toString(), metric.units) : 'N/A'}
                             </TableCell>
                         </TableRow>
                     )
@@ -166,13 +112,55 @@ const IndicatorTable = ({ indicators }: { indicators: Indicator[] }) => {
 
 export default function MacroDashboardPage() {
     const [kpiData, setKpiData] = useState<Record<string, MetricData | null>>({
-        'A191RL1Q225SBEA': null,
-        'UNRATE': null,
-        'CPIAUCSL': null,
-        'FEDFUNDS': null,
+        'A191RL1Q225SBEA': null, 'UNRATE': null, 'CPIAUCSL': null, 'FEDFUNDS': null,
     });
     const [loadingKpis, setLoadingKpis] = useState(true);
-    const [openAccordion, setOpenAccordion] = useState<string | null>(null);
+    const [accordionData, setAccordionData] = useState<Record<string, Record<string, MetricData>>>({});
+    const [loadingAccordions, setLoadingAccordions] = useState<Record<string, boolean>>({});
+
+    const fetchGroupData = useCallback(async (group: typeof indicatorGroups[0]) => {
+        if (!fredClient || accordionData[group.title]) return; // Don't refetch if data exists
+
+        setLoadingAccordions(prev => ({ ...prev, [group.title]: true }));
+        
+        const promises = group.indicators.map(indicator => 
+            fredClient.getSeriesObservations(indicator.id, { limit: 2, sort_order: 'desc' })
+        );
+
+        const results = await Promise.allSettled(promises);
+        const groupData: Record<string, MetricData> = {};
+
+        results.forEach((result, index) => {
+            const indicator = group.indicators[index];
+            if (result.status === 'fulfilled' && result.value.observations.length > 0) {
+                const obs = result.value.observations;
+                const latest = obs[0];
+                const previous = obs[1];
+                let change = null;
+                let trend: 'up' | 'down' | 'stable' = 'stable';
+                
+                if (previous) {
+                    const latestValue = parseFloat(latest.value);
+                    const previousValue = parseFloat(previous.value);
+                    if (!isNaN(latestValue) && !isNaN(previousValue)) {
+                       change = latestValue - previousValue;
+                       if (change > 0.01) trend = 'up';
+                       if (change < -0.01) trend = 'down';
+                    }
+                }
+                
+                groupData[indicator.id] = {
+                    seriesId: indicator.id, title: indicator.title,
+                    value: formatValue(latest.value, indicator.units),
+                    date: latest.date, change, trend, units: indicator.units
+                };
+            }
+        });
+        
+        setAccordionData(prev => ({ ...prev, [group.title]: groupData }));
+        setLoadingAccordions(prev => ({ ...prev, [group.title]: false }));
+
+    }, [accordionData]);
 
     useEffect(() => {
         if (!fredClient) {
@@ -182,27 +170,19 @@ export default function MacroDashboardPage() {
         }
 
         const fetchKpis = async () => {
-            const kpiIds = ['A191RL1Q225SBEA', 'UNRATE', 'CPIAUCSL', 'FEDFUNDS'];
-            const kpiTitles: Record<string, string> = {
-                'A191RL1Q225SBEA': 'GDP Growth (YoY)',
-                'UNRATE': 'Unemployment Rate',
-                'CPIAUCSL': 'Inflation (CPI)',
-                'FEDFUNDS': 'Fed Funds Rate'
-            };
-            const kpiUnits: Record<string, string> = {
-                'A191RL1Q225SBEA': 'Percent',
-                'UNRATE': 'Percent',
-                'CPIAUCSL': 'Index',
-                'FEDFUNDS': 'Percent'
-            };
+            const kpiIndicators: Indicator[] = [
+                { id: 'A191RL1Q225SBEA', title: 'GDP Growth (YoY)', units: 'Percent' },
+                { id: 'UNRATE', title: 'Unemployment Rate', units: 'Percent' },
+                { id: 'CPIAUCSL', title: 'Inflation (CPI)', units: 'Index' },
+                { id: 'FEDFUNDS', title: 'Fed Funds Rate', units: 'Percent' }
+            ];
 
-            const promises = kpiIds.map(id => fredClient.getSeriesObservations(id, { limit: 2, sort_order: 'desc' }));
-
+            const promises = kpiIndicators.map(ind => fredClient.getSeriesObservations(ind.id, { limit: 2, sort_order: 'desc' }));
             const results = await Promise.allSettled(promises);
             const fetchedData: Record<string, MetricData> = {};
 
             results.forEach((result, index) => {
-                const id = kpiIds[index];
+                const indicator = kpiIndicators[index];
                 if (result.status === 'fulfilled' && result.value.observations.length > 0) {
                     const obs = result.value.observations;
                     const latest = obs[0];
@@ -215,13 +195,10 @@ export default function MacroDashboardPage() {
                         if(change < -0.01) trend = 'down';
                     }
                     
-                    fetchedData[id] = {
-                        seriesId: id,
-                        title: kpiTitles[id],
-                        value: formatValue(latest.value, kpiUnits[id]),
-                        date: latest.date,
-                        change: previous ? parseFloat(latest.value) - parseFloat(previous.value) : null,
-                        trend
+                    fetchedData[indicator.id] = {
+                        seriesId: indicator.id, title: indicator.title,
+                        value: formatValue(latest.value, indicator.units),
+                        date: latest.date, change: null, trend, units: indicator.units
                     };
                 }
             });
@@ -256,22 +233,29 @@ export default function MacroDashboardPage() {
                 <KpiCard isLoading={loadingKpis} data={kpiData['FEDFUNDS']} />
             </div>
 
-            <Accordion type="single" collapsible className="w-full" onValueChange={setOpenAccordion}>
+            <Accordion type="single" collapsible className="w-full" onValueChange={(value) => {
+                const group = indicatorGroups.find(g => g.title === value);
+                if (group) {
+                    fetchGroupData(group);
+                }
+            }}>
                 {indicatorGroups.map(group => (
                     <AccordionItem value={group.title} key={group.title}>
                         <AccordionTrigger className="text-xl font-semibold">{group.icon} {group.title}</AccordionTrigger>
                         <AccordionContent>
-                           {openAccordion === group.title && (
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle>{group.title}</CardTitle>
-                                        <p className="text-sm text-muted-foreground">{group.description}</p>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <IndicatorTable indicators={group.indicators} />
-                                    </CardContent>
-                                </Card>
-                            )}
+                           <Card>
+                                <CardHeader>
+                                    <CardTitle>{group.title}</CardTitle>
+                                    <p className="text-sm text-muted-foreground">{group.description}</p>
+                                </CardHeader>
+                                <CardContent>
+                                    <IndicatorTable 
+                                        indicators={group.indicators} 
+                                        data={accordionData[group.title] || {}}
+                                        isLoading={loadingAccordions[group.title] !== false}
+                                    />
+                                </CardContent>
+                            </Card>
                         </AccordionContent>
                     </AccordionItem>
                 ))}

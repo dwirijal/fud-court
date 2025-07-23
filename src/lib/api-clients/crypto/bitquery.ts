@@ -4,7 +4,7 @@ export class BitqueryClient {
   private readonly apiKey: string;
 
   constructor() {
-    this.apiKey = process.env.BITQUERY_API_KEY || '';
+    this.apiKey = process.env.NEXT_PUBLIC_BITQUERY_API_KEY || '';
     if (!this.apiKey) {
       console.warn('Bitquery API key is not set. Requests may fail.');
     }

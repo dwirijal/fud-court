@@ -122,6 +122,7 @@ export function Header() {
                         <li className="text-sm font-medium text-foreground py-2 px-3">Learn</li>
                         <ListItem href="/economic/news" title="Economic News" />
                         <ListItem href="/article/learn" title="Learning Hub" />
+                        <ListItem href="/market/macro" title="Macro Dashboard" />
                     </div>
                     <div>
                         <li className="text-sm font-medium text-foreground py-2 px-3">Project</li>

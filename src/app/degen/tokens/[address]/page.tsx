@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils/utils';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { useTheme } from 'next-themes';
 
 interface TokenDetailPageProps {
   params: { address: string };
@@ -18,6 +19,7 @@ interface TokenDetailPageProps {
 
 export default function TokenDetailPage({ params }: TokenDetailPageProps) {
   const { address } = params;
+  const { theme } = useTheme();
   const [tokenPairs, setTokenPairs] = useState<DexScreenerPair[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -116,6 +118,10 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
         </Card>
         <Card>
             <CardHeader><Skeleton className="h-6 w-1/3" /></CardHeader>
+            <CardContent><Skeleton className="h-96 w-full" /></CardContent>
+        </Card>
+        <Card>
+            <CardHeader><Skeleton className="h-6 w-1/3" /></CardHeader>
             <CardContent><Skeleton className="h-40 w-full" /></CardContent>
         </Card>
       </div>
@@ -166,6 +172,21 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
               <p className="text-sm text-muted-foreground">Liquidity</p>
               <p className="text-xl font-bold">{formatCurrency(aggregatedData.totalLiquidity, 0)}</p>
             </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+            <CardTitle>Price Chart</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="w-full h-96 aspect-video">
+            <iframe
+                src={`https://dexscreener.com/${mostRelevantPair.chainId}/${mostRelevantPair.pairAddress}?embed=1&theme=${theme}`}
+                className="w-full h-full border-0"
+                allowFullScreen
+            ></iframe>
           </div>
         </CardContent>
       </Card>

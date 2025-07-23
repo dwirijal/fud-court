@@ -10,7 +10,9 @@ import { cn } from '@/lib/utils/utils';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { GeckoTerminalAPI, Pool, Token, OHLCVData } from '@/lib/api-clients/crypto/geckoterminal';
+import { GeckoTerminalAPI, OHLCVData } from '@/lib/api-clients/crypto/geckoterminal';
+import { DexScreenerClient, DexScreenerPair } from '@/lib/api-clients/crypto/dexScreener';
+
 
 interface TokenDetailPageProps {
   params: { address: string };
@@ -19,9 +21,10 @@ interface TokenDetailPageProps {
 const formatCurrency = (value: number | string | undefined | null, precision = 2) => {
   const numValue = typeof value === 'string' ? parseFloat(value) : value;
   if (numValue === undefined || numValue === null) return 'N/A';
-  if (Math.abs(numValue) > 1 || numValue === 0) {
+  if (Math.abs(numValue) >= 1) {
     return `$${numValue.toLocaleString(undefined, { minimumFractionDigits: precision, maximumFractionDigits: precision })}`;
   }
+   if (numValue === 0) return '$0.00';
   return `$${numValue.toPrecision(4)}`;
 };
 
@@ -94,8 +97,7 @@ const GeckoTerminalPriceChart = ({ network, poolAddress }: { network: string; po
 
 export default function TokenDetailPage({ params }: TokenDetailPageProps) {
   const { address } = params;
-  const [tokenInfo, setTokenInfo] = useState<Token | null>(null);
-  const [tokenPools, setTokenPools] = useState<Pool[]>([]);
+  const [tokenPools, setTokenPools] = useState<DexScreenerPair[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -109,31 +111,18 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
       if (!address) return;
       setLoading(true);
       setError(null);
-      const api = new GeckoTerminalAPI();
+      const dexScreenerApi = new DexScreenerClient();
 
       try {
-        const searchResponse = await api.search({ query: address });
+        const response = await dexScreenerApi.getTokens(address);
         
-        const tokenFromSearch = searchResponse.data.find(
-          (item: any) => item.type === 'token' && item.attributes.address.toLowerCase() === address.toLowerCase()
-        );
-
-        if (!tokenFromSearch) {
-          setError('Token not found.');
-          setLoading(false);
-          return;
+        if (!response.pairs || response.pairs.length === 0) {
+            setError("Token not found on DexScreener.");
+            setLoading(false);
+            return;
         }
 
-        const networkId = tokenFromSearch.relationships.network.data.id;
-        
-        const [tokenDetailsResponse, tokenPoolsResponse] = await Promise.all([
-            api.getToken(networkId, address),
-            api.getTokenPools(networkId, address, ['base_token', 'quote_token', 'dex'])
-        ]);
-
-        setTokenInfo(tokenDetailsResponse.data);
-
-        const sortedPools = tokenPoolsResponse.data.sort((a, b) => parseFloat(b.attributes.volume_usd.h24) - parseFloat(a.attributes.volume_usd.h24));
+        const sortedPools = response.pairs.sort((a, b) => (b.volume?.h24 || 0) - (a.volume?.h24 || 0));
         setTokenPools(sortedPools);
 
       } catch (err) {
@@ -152,14 +141,19 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
     return tokenPools[0];
   }, [tokenPools]);
 
+  const tokenInfo = useMemo(() => {
+    if (!mostRelevantPool) return null;
+    return mostRelevantPool.baseToken;
+  }, [mostRelevantPool]);
+
   const arbitrageOpportunity = useMemo(() => {
     if (tokenPools.length < 2) return null;
 
     const liquidPools = tokenPools
-      .filter(p => parseFloat(p.attributes.reserve_in_usd) > 1000)
+      .filter(p => p.liquidity?.usd && p.liquidity.usd > 1000)
       .map(p => ({
-        dex: p.relationships.dex.data.id.split('_')[1],
-        price: parseFloat(p.attributes.base_token_price_usd)
+        dex: p.dexId,
+        price: parseFloat(p.priceUsd || '0')
       }));
 
     if (liquidPools.length < 2) return null;
@@ -210,10 +204,13 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
     return <div className="p-4 text-muted-foreground text-center">Token not found or no pools available.</div>;
   }
   
+  const totalVolumeH24 = tokenPools.reduce((sum, pool) => sum + (pool.volume?.h24 || 0), 0);
+  const totalLiquidity = tokenPools.reduce((sum, pool) => sum + (pool.liquidity?.usd || 0), 0);
+  
   return (
     <div className="p-4 md:p-6 space-y-6 max-w-5xl mx-auto">
       <header>
-        <h1 className="text-3xl font-bold">{tokenInfo.attributes.name} ({tokenInfo.attributes.symbol})</h1>
+        <h1 className="text-3xl font-bold">{tokenInfo.name} ({tokenInfo.symbol})</h1>
         <div className="flex items-center gap-2">
           <p className="text-sm text-muted-foreground break-all">{address}</p>
           <Button variant="ghost" size="icon" onClick={handleCopy} className="h-7 w-7">
@@ -229,7 +226,7 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
                 <CardTitle>Price Chart (Hourly)</CardTitle>
             </CardHeader>
             <CardContent>
-              <GeckoTerminalPriceChart network={mostRelevantPool.id.split('_')[0]} poolAddress={mostRelevantPool.attributes.address} />
+              <GeckoTerminalPriceChart network={mostRelevantPool.chainId} poolAddress={mostRelevantPool.pairAddress} />
             </CardContent>
           </Card>
 
@@ -282,19 +279,19 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
                   </TableHeader>
                   <TableBody>
                     {tokenPools.map((pool) => (
-                      <TableRow key={pool.id}>
+                      <TableRow key={pool.pairAddress}>
                         <TableCell>
-                           {pool.attributes.name}
+                           {pool.baseToken.symbol}/{pool.quoteToken.symbol}
                         </TableCell>
-                        <TableCell className="text-muted-foreground capitalize">{pool.relationships.dex.data.id.split('_')[1]}</TableCell>
-                        <TableCell className="text-right font-mono">{formatCurrency(pool.attributes.base_token_price_usd, 6)}</TableCell>
+                        <TableCell className="text-muted-foreground capitalize">{pool.dexId}</TableCell>
+                        <TableCell className="text-right font-mono">{formatCurrency(pool.priceUsd, 6)}</TableCell>
                         <TableCell className={cn(
                           "text-right",
-                          parseFloat(pool.attributes.price_change_percentage.h24) >= 0 ? 'text-green-500' : 'text-red-500'
+                          pool.priceChange.h24 >= 0 ? 'text-green-500' : 'text-red-500'
                         )}>
-                          {parseFloat(pool.attributes.price_change_percentage.h24).toFixed(2)}%
+                          {pool.priceChange.h24.toFixed(2)}%
                         </TableCell>
-                        <TableCell className="text-right font-mono">{formatCurrency(pool.attributes.volume_usd.h24, 0)}</TableCell>
+                        <TableCell className="text-right font-mono">{formatCurrency(pool.volume.h24, 0)}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -310,25 +307,25 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
               <CardContent className="space-y-4">
                   <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">Price</span>
-                      <span className="font-bold">{formatCurrency(tokenInfo.attributes.price_usd)}</span>
+                      <span className="font-bold">{formatCurrency(mostRelevantPool.priceUsd)}</span>
                   </div>
                   <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">24h Volume</span>
-                      <span className="font-mono">{formatCurrency(tokenInfo.attributes.volume_usd.h24, 0)}</span>
+                      <span className="font-mono">{formatCurrency(totalVolumeH24, 0)}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Total Reserve</span>
-                      <span className="font-mono">{formatCurrency(tokenInfo.attributes.total_reserve_in_usd, 0)}</span>
+                      <span className="text-sm text-muted-foreground">Total Liquidity</span>
+                      <span className="font-mono">{formatCurrency(totalLiquidity, 0)}</span>
                   </div>
                    <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">Market Cap</span>
-                      <span className="font-mono">{formatCurrency(tokenInfo.attributes.market_cap_usd, 0)}</span>
+                      <span className="font-mono">{formatCurrency(mostRelevantPool.marketCap, 0)}</span>
                   </div>
                    <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">Website</span>
                       <Button variant="link" size="sm" asChild>
-                        <a href={tokenInfo.attributes.websites?.[0]} target="_blank" rel="noopener noreferrer">
-                          Visit <ExternalLink className="h-3 w-3 ml-1"/>
+                        <a href={mostRelevantPool.url} target="_blank" rel="noopener noreferrer">
+                          View on DexScreener <ExternalLink className="h-3 w-3 ml-1"/>
                         </a>
                       </Button>
                   </div>
@@ -340,15 +337,15 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
                 <CardContent className="space-y-3">
                     <div className="flex justify-between items-center">
                         <span className="text-sm text-green-500 flex items-center gap-2"><TrendingUp/> Buys</span>
-                        <span className="font-mono">{mostRelevantPool.attributes.transactions.h24.buys.toLocaleString()}</span>
+                        <span className="font-mono">{mostRelevantPool.txns.h24.buys.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between items-center">
                         <span className="text-sm text-red-500 flex items-center gap-2"><TrendingDown/> Sells</span>
-                        <span className="font-mono">{mostRelevantPool.attributes.transactions.h24.sells.toLocaleString()}</span>
+                        <span className="font-mono">{mostRelevantPool.txns.h24.sells.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between items-center border-t pt-2">
                         <span className="text-sm text-muted-foreground">Total</span>
-                        <span className="font-mono">{(mostRelevantPool.attributes.transactions.h24.buys + mostRelevantPool.attributes.transactions.h24.sells).toLocaleString()}</span>
+                        <span className="font-mono">{(mostRelevantPool.txns.h24.buys + mostRelevantPool.txns.h24.sells).toLocaleString()}</span>
                     </div>
                 </CardContent>
             </Card>

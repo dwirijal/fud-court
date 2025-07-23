@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
@@ -11,15 +10,96 @@ import { cn } from '@/lib/utils/utils';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { useTheme } from 'next-themes';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BitqueryClient } from '@/lib/api-clients/crypto/bitquery';
 
 interface TokenDetailPageProps {
   params: { address: string };
 }
 
+interface PriceData {
+  time: string;
+  price: number;
+}
+
+const formatCurrency = (value: number | undefined | null, precision = 2) => {
+  if (value === undefined || value === null) return 'N/A';
+  if (value > 1) return `$${value.toLocaleString(undefined, { minimumFractionDigits: precision, maximumFractionDigits: precision })}`;
+  if (value === 0) return `$0.00`;
+  return `$${value.toPrecision(4)}`;
+};
+
+const BitqueryPriceChart = ({ tokenAddress, chainId }: { tokenAddress: string; chainId: string }) => {
+  const [chartData, setChartData] = useState<PriceData[]>([]);
+  const [loadingChart, setLoadingChart] = useState(true);
+
+  useEffect(() => {
+    const fetchChartData = async () => {
+      setLoadingChart(true);
+      try {
+        const bitquery = new BitqueryClient();
+        const trades = await bitquery.getHourlyPriceData(tokenAddress, chainId);
+        
+        const formattedData = trades.map(trade => ({
+          time: new Date(trade.block.timestamp.iso8601).toLocaleString(),
+          price: trade.trade.price,
+        })).reverse(); // Reverse to have time ascending
+
+        setChartData(formattedData);
+      } catch (error) {
+        console.error("Failed to fetch chart data from Bitquery:", error);
+      } finally {
+        setLoadingChart(false);
+      }
+    };
+
+    fetchChartData();
+  }, [tokenAddress, chainId]);
+
+  if (loadingChart) {
+    return <Skeleton className="h-96 w-full" />;
+  }
+  
+  if (chartData.length === 0) {
+    return <div className="h-96 flex items-center justify-center text-muted-foreground">No chart data available.</div>;
+  }
+
+  return (
+    <ResponsiveContainer width="100%" height={400}>
+      <AreaChart data={chartData}>
+        <defs>
+          <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8} />
+            <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+        <XAxis 
+            dataKey="time" 
+            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} 
+            tickFormatter={(time) => new Date(time).toLocaleTimeString()}
+        />
+        <YAxis 
+            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} 
+            tickFormatter={(price) => formatCurrency(price, 4)}
+            domain={['dataMin', 'dataMax']}
+        />
+        <Tooltip
+            contentStyle={{
+                backgroundColor: 'hsl(var(--background))',
+                borderColor: 'hsl(var(--border))'
+            }}
+            formatter={(value: number) => [formatCurrency(value, 6), "Price"]}
+        />
+        <Area type="monotone" dataKey="price" stroke="hsl(var(--primary))" fill="url(#colorPrice)" />
+      </AreaChart>
+    </ResponsiveContainer>
+  );
+};
+
+
 export default function TokenDetailPage({ params }: TokenDetailPageProps) {
   const { address } = params;
-  const { theme } = useTheme();
   const [tokenPairs, setTokenPairs] = useState<DexScreenerPair[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -58,6 +138,12 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
     if (!tokenPairs || tokenPairs.length === 0) return null;
     return tokenPairs[0].baseToken;
   }, [tokenPairs]);
+
+  const mostRelevantPair = useMemo(() => {
+    if (!tokenPairs || tokenPairs.length === 0) return null;
+    return tokenPairs[0];
+  }, [tokenPairs]);
+
 
   const aggregatedData = useMemo(() => {
     if (!tokenPairs || tokenPairs.length === 0) {
@@ -100,11 +186,6 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
     return null;
   }, [tokenPairs]);
 
-  const formatCurrency = (value: number | undefined | null, precision = 2) => {
-    if (value === undefined || value === null) return 'N/A';
-    if (value > 1) return `$${value.toLocaleString(undefined, { minimumFractionDigits: precision, maximumFractionDigits: precision })}`;
-    return `$${value.toPrecision(4)}`;
-  };
   
   if (loading) {
     return (
@@ -134,12 +215,10 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
     return <div className="p-4 text-red-500 text-center">{error}</div>;
   }
 
-  if (!tokenInfo || !tokenPairs || tokenPairs.length === 0) {
+  if (!tokenInfo || !tokenPairs || tokenPairs.length === 0 || !mostRelevantPair) {
     return <div className="p-4 text-muted-foreground text-center">Token not found or no pairs available.</div>;
   }
   
-  const mostRelevantPair = tokenPairs[0];
-
   return (
     <div className="p-4 md:p-6 space-y-6 max-w-5xl mx-auto">
       <header>
@@ -157,16 +236,10 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
         <div className="lg:col-span-2 space-y-6">
           <Card>
             <CardHeader>
-                <CardTitle>Price Chart</CardTitle>
+                <CardTitle>Price Chart (Hourly)</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="w-full h-96 aspect-video">
-                <iframe
-                    src={`https://dexscreener.com/${mostRelevantPair.chainId}/${mostRelevantPair.pairAddress}?embed=1&theme=${theme}`}
-                    className="w-full h-full border-0"
-                    allowFullScreen
-                ></iframe>
-              </div>
+              <BitqueryPriceChart tokenAddress={address} chainId={mostRelevantPair.chainId} />
             </CardContent>
           </Card>
           
@@ -288,4 +361,3 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
     </div>
   );
 }
-

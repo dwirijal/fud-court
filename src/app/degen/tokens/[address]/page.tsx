@@ -135,14 +135,14 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
         const sortedPools = response.pairs.sort((a, b) => (b.volume?.h24 || 0) - (a.volume?.h24 || 0));
         setTokenPools(sortedPools);
         
-        // Fetch RugCheck report in parallel
-        rugCheckApi.getTokenReport(address)
-          .then(report => setRugCheckReport(report))
-          .catch(err => {
-            console.error("Failed to fetch RugCheck report:", err)
-            // It's not a critical error if this fails, so we don't set the main error state
-          });
-
+        // Fetch RugCheck report in parallel, but don't let it crash the page
+        try {
+          const report = await rugCheckApi.getTokenReport(address);
+          setRugCheckReport(report);
+        } catch (err) {
+          console.warn("Could not fetch RugCheck report:", err);
+          // It's not a critical error if this fails, so we just log it and continue
+        }
 
       } catch (err) {
         setError('Failed to fetch token details from DexScreener.');
@@ -488,7 +488,7 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <ScanLine />
-                  Pindai &amp; Analisis Eksternal
+                  Pindai & Analisis Eksternal
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">

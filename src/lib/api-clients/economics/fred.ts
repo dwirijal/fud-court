@@ -898,7 +898,7 @@ export class FredClient {
     realtime_start?: string;
     realtime_end?: string;
     tag_names?: string;
-    tag_group_id?: 'freq' | 'gen' | 'geo' | 'geot' | 'rls' | 'seas' | 'src';
+    tag_group_id?: string;
     search_text?: string;
     limit?: number;
     offset?: number;
@@ -909,36 +909,13 @@ export class FredClient {
   }
 
   /**
-   * Get the related FRED tags for one or more FRED tags
-   * https://fred.stlouisfed.org/docs/api/fred/related_tags.html
-   */
-  async getRelatedTags(
-    tagNames: string,
-    params?: {
-      realtime_start?: string;
-      realtime_end?: string;
-      exclude_tag_names?: string;
-      tag_group_id?: string;
-      search_text?: string;
-      limit?: number;
-      offset?: number;
-      order_by?: 'name' | 'group_id' | 'popularity' | 'created' | 'series_count';
-      sort_order?: 'asc' | 'desc';
-    }
-  ): Promise<TagRelatedTagsResponse> {
-    return this.makeRequest<TagRelatedTagsResponse>('related_tags', {
-      tag_names: tagNames,
-      ...params,
-    });
-  }
-
-  /**
-   * Get the series for a FRED tag
+   * Get the series matching tags
    * https://fred.stlouisfed.org/docs/api/fred/tags_series.html
    */
-  async getTagsSeries(
+  async getTagSeries(
     tagNames: string,
     params?: {
+      exclude_tag_names?: string;
       realtime_start?: string;
       realtime_end?: string;
       limit?: number;
@@ -953,47 +930,539 @@ export class FredClient {
     });
   }
 
+  /**
+   * Get the related FRED tags for one or more FRED tags
+   * https://fred.stlouisfed.org/docs/api/fred/related_tags.html
+   */
+  async getRelatedTags(
+    tagNames: string,
+    params?: {
+      exclude_tag_names?: string;
+      realtime_start?: string;
+      realtime_end?: string;
+      tag_group_id?: string;
+      search_text?: string;
+      limit?: number;
+      offset?: number;
+      order_by?: 'name' | 'group_id' | 'popularity' | 'created' | 'series_count';
+      sort_order?: 'asc' | 'desc';
+    }
+  ): Promise<TagRelatedTagsResponse> {
+    return this.makeRequest<TagRelatedTagsResponse>('related_tags', {
+      tag_names: tagNames,
+      ...params,
+    });
+  }
+
   // ============================================================================
-  // MAPS ENDPOINTS
+  // MAPS (GeoFRED) ENDPOINTS
   // ============================================================================
 
   /**
-   * Get data for a FRED map
-   * https://fred.stlouisfed.org/docs/api/fred/map_geoseries.html
+   * Get the meta information for a GeoFRED series group
+   * https://fred.stlouisfed.org/docs/api/geofred/series_group.html
    */
-  async getMapGeoSeries(
-    seriesId: string,
+  async getGeoSeriesGroup(
+    seriesGroup: string,
     params?: {
-      date?: string;
-      start_date?: string;
+      season?: string;
+      units?: string;
+      frequency?: string;
     }
-  ): Promise<GeoSeriesResponse> {
-    this.validateSeriesId(seriesId);
-    return this.makeRequest<GeoSeriesResponse>('map/geoseries', {
-      series_id: seriesId,
+  ): Promise<any> {
+    return this.makeRequest<any>('geofred/series/group', {
+      series_group: seriesGroup,
       ...params,
     });
+  }
+
+  /**
+   * Get data for a GeoFRED series group
+   * https://fred.stlouisfed.org/docs/api/geofred/series_data.html
+   */
+  async getGeoSeriesData(
+    seriesGroup: string,
+    params?: {
+      season?: string;
+      units?: string;
+      frequency?: string;
+      date?: string;
+      region_type?: string;
+      transformation?: string;
+    }
+  ): Promise<GeoSeriesResponse> {
+    return this.makeRequest<GeoSeriesResponse>('geofred/series/data', {
+      series_group: seriesGroup,
+      ...params,
+    });
+  }
+
+  /**
+   * Get meta information for a GeoFRED regional series
+   * https://fred.stlouisfed.org/docs/api/geofred/regional_data.html
+   */
+  async getGeoRegionalData(
+    seriesGroup: string,
+    region: string,
+    params?: {
+      season?: string;
+      units?: string;
+      frequency?: string;
+      start_date?: string;
+      end_date?: string;
+    }
+  ): Promise<any> {
+    return this.makeRequest<any>('geofred/regional/data', {
+      series_group: seriesGroup,
+      region: region,
+      ...params,
+    });
+  }
+
+  // ============================================================================
+  // CONVENIENCE METHODS
+  // ============================================================================
+
+  /**
+   * Get multiple series data in a single call (batched)
+   */
+  async getMultipleSeries(seriesIds: string[]): Promise<SeriesResponse[]> {
+    const results = await Promise.all(
+      seriesIds.map(id => this.getSeries(id))
+    );
+    return results;
+  }
+
+  /**
+   * Get multiple series observations in a single call (batched)
+   */
+  async getMultipleSeriesObservations(
+    seriesIds: string[],
+    params?: {
+      realtime_start?: string;
+      realtime_end?: string;
+      limit?: number;
+      offset?: number;
+      sort_order?: 'asc' | 'desc';
+      observation_start?: string;
+      observation_end?: string;
+      units?: 'lin' | 'chg' | 'ch1' | 'pch' | 'pc1' | 'pca' | 'cch' | 'cca' | 'log';
+      frequency?: 'd' | 'w' | 'bw' | 'm' | 'q' | 'sa' | 'a';
+      aggregation_method?: 'avg' | 'sum' | 'eop';
+    }
+  ): Promise<SeriesObservationsResponse[]> {
+    const results = await Promise.all(
+      seriesIds.map(id => this.getSeriesObservations(id, params))
+    );
+    return results;
+  }
+
+  /**
+   * Get popular economic indicators
+   */
+  async getPopularIndicators(): Promise<SeriesSearchResponse> {
+    return this.searchSeries('GDP unemployment inflation', {
+      order_by: 'popularity',
+      sort_order: 'desc',
+      limit: 50,
+    });
+  }
+
+  /**
+   * Get latest GDP data
+   */
+  async getLatestGDP(): Promise<SeriesObservationsResponse> {
+    return this.getSeriesObservations('GDP', {
+      limit: 10,
+      sort_order: 'desc',
+    });
+  }
+
+  /**
+   * Get latest unemployment rate
+   */
+  async getLatestUnemploymentRate(): Promise<SeriesObservationsResponse> {
+    return this.getSeriesObservations('UNRATE', {
+      limit: 10,
+      sort_order: 'desc',
+    });
+  }
+
+  /**
+   * Get latest inflation data (CPI)
+   */
+  async getLatestInflation(): Promise<SeriesObservationsResponse> {
+    return this.getSeriesObservations('CPIAUCSL', {
+      limit: 10,
+      sort_order: 'desc',
+    });
+  }
+
+  /**
+   * Get federal funds rate
+   */
+  async getFederalFundsRate(): Promise<SeriesObservationsResponse> {
+    return this.getSeriesObservations('FEDFUNDS', {
+      limit: 10,
+      sort_order: 'desc',
+    });
+  }
+
+  /**
+   * Get 10-Year Treasury rate
+   */
+  async getTreasuryRate10Year(): Promise<SeriesObservationsResponse> {
+    return this.getSeriesObservations('GS10', {
+      limit: 10,
+      sort_order: 'desc',
+    });
+  }
+
+  /**
+   * Get S&P 500 data
+   */
+  async getSP500(): Promise<SeriesObservationsResponse> {
+    return this.getSeriesObservations('SP500', {
+      limit: 10,
+      sort_order: 'desc',
+    });
+  }
+
+  /**
+   * Get housing price index
+   */
+  async getHousingPriceIndex(): Promise<SeriesObservationsResponse> {
+    return this.getSeriesObservations('CSUSHPISA', {
+      limit: 10,
+      sort_order: 'desc',
+    });
+  }
+
+  /**
+   * Get consumer confidence index
+   */
+  async getConsumerConfidence(): Promise<SeriesObservationsResponse> {
+    return this.getSeriesObservations('CSCICP03USM665S', {
+      limit: 10,
+      sort_order: 'desc',
+    });
+  }
+
+  /**
+   * Search series by keyword with common economic terms
+   */
+  async searchEconomicSeries(
+    keyword: string,
+    params?: {
+      limit?: number;
+      tags?: string[];
+      exclude_tags?: string[];
+    }
+  ): Promise<SeriesSearchResponse> {
+    const searchParams: any = {
+      limit: params?.limit || 25,
+      order_by: 'popularity',
+      sort_order: 'desc',
+    };
+
+    if (params?.tags) {
+      searchParams.tag_names = params.tags.join(';');
+    }
+
+    if (params?.exclude_tags) {
+      searchParams.exclude_tag_names = params.exclude_tags.join(';');
+    }
+
+    return this.searchSeries(keyword, searchParams);
+  }
+
+  /**
+   * Get series data for a specific date range
+   */
+  async getSeriesForDateRange(
+    seriesId: string,
+    startDate: string,
+    endDate: string,
+    frequency?: 'd' | 'w' | 'bw' | 'm' | 'q' | 'sa' | 'a'
+  ): Promise<SeriesObservationsResponse> {
+    return this.getSeriesObservations(seriesId, {
+      observation_start: startDate,
+      observation_end: endDate,
+      frequency: frequency,
+      limit: 10000, // Get all data in range
+    });
+  }
+
+  /**
+   * Get the most recent observation for a series
+   */
+  async getLatestObservation(seriesId: string): Promise<SeriesObservation | null> {
+    this.validateSeriesId(seriesId);
+    const response = await this.getSeriesObservations(seriesId, {
+      limit: 1,
+      sort_order: 'desc',
+    });
+
+    return response.observations && response.observations.length > 0 
+      ? response.observations[0] 
+      : null;
+  }
+
+  /**
+   * Get series data transformed to specific units
+   */
+  async getSeriesTransformed(
+    seriesId: string,
+    units: 'lin' | 'chg' | 'ch1' | 'pch' | 'pc1' | 'pca' | 'cch' | 'cca' | 'log',
+    params?: {
+      observation_start?: string;
+      observation_end?: string;
+      frequency?: 'd' | 'w' | 'bw' | 'm' | 'q' | 'sa' | 'a';
+      limit?: number;
+    }
+  ): Promise<SeriesObservationsResponse> {
+    return this.getSeriesObservations(seriesId, {
+      units,
+      ...params,
+    });
+  }
+
+  // ============================================================================
+  // UTILITY METHODS
+  // ============================================================================
+
+  /**
+   * Check API connection and key validity
+   */
+  async testConnection(): Promise<boolean> {
+    try {
+      await this.getCategory(0); // Root category
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  /**
+   * Get API usage info (rate limit status)
+   */
+  getConnectionInfo(): {
+    apiKey: string;
+    baseUrl: string;
+    queueLength: number;
+    rateLimitActive: boolean;
+  } {
+    return {
+      apiKey: this.config.apiKey.substring(0, 8) + '...',
+      baseUrl: this.config.baseUrl,
+      queueLength: this.rateLimitQueue.length,
+      rateLimitActive: this.rateLimitActive,
+    };
+  }
+
+  /**
+   * Format date for FRED API (YYYY-MM-DD)
+   */
+  static formatDate(date: Date | string): string {
+    if (typeof date === 'string') {
+      return date;
+    }
+    return date.toISOString().split('T')[0];
+  }
+
+  /**
+   * Parse FRED date string to Date object
+   */
+  static parseDate(dateString: string): Date {
+    return new Date(dateString + 'T00:00:00.000Z');
+  }
+
+  /**
+   * Get common series IDs for quick reference
+   */
+  static getCommonSeriesIds(): Record<string, string> {
+    return {
+      // Economic Growth
+      GDP: 'GDP', // Gross Domestic Product
+      GDPC1: 'GDPC1', // Real GDP
+      GDPPOT: 'GDPPOT', // Real Potential GDP
+      
+      // Employment
+      UNRATE: 'UNRATE', // Unemployment Rate
+      PAYEMS: 'PAYEMS', // Nonfarm Payrolls
+      CIVPART: 'CIVPART', // Labor Force Participation Rate
+      
+      // Inflation
+      CPIAUCSL: 'CPIAUCSL', // Consumer Price Index
+      CPILFESL: 'CPILFESL', // Core CPI
+      PCEPI: 'PCEPI', // PCE Price Index
+      PCEPILFE: 'PCEPILFE', // Core PCE Price Index
+      
+      // Interest Rates
+      FEDFUNDS: 'FEDFUNDS', // Federal Funds Rate
+      GS10: 'GS10', // 10-Year Treasury Rate
+      GS2: 'GS2', // 2-Year Treasury Rate
+      GS30: 'GS30', // 30-Year Treasury Rate
+      
+      // Money Supply
+      M1SL: 'M1SL', // M1 Money Stock
+      M2SL: 'M2SL', // M2 Money Stock
+      BASE: 'BASE', // Monetary Base
+      
+      // Stock Market
+      SP500: 'SP500', // S&P 500
+      NASDAQCOM: 'NASDAQCOM', // NASDAQ Composite
+      DJIA: 'DJIA', // Dow Jones Industrial Average
+      
+      // Housing
+      CSUSHPISA: 'CSUSHPISA', // Case-Shiller Home Price Index
+      HOUST: 'HOUST', // Housing Starts
+      HSNGOV: 'HSNGOV', // New Home Sales
+      
+      // International Trade
+      BOPGEXP: 'BOPGEXP', // Exports of Goods and Services
+      BOPGIMP: 'BOPGIMP', // Imports of Goods and Services
+      BOPGTB: 'BOPGTB', // Trade Balance
+      
+      // Business & Manufacturing
+      INDPRO: 'INDPRO', // Industrial Production Index
+      TCU: 'TCU', // Capacity Utilization
+      UMCSENT: 'UMCSENT', // Consumer Sentiment
+      
+      // Demographics
+      POP: 'POP', // Total Population
+      EMRATIO: 'EMRATIO', // Employment-Population Ratio
+      
+      // Energy
+      DCOILWTICO: 'DCOILWTICO', // Crude Oil Prices (WTI)
+      DHHNGSP: 'DHHNGSP', // Natural Gas Price
+      
+      // Currency
+      DEXUSEU: 'DEXUSEU', // US/Euro Exchange Rate
+      DEXJPUS: 'DEXJPUS', // Japan/US Exchange Rate
+      DEXCHUS: 'DEXCHUS', // China/US Exchange Rate
+    };
+  }
+
+  /**
+   * Get series description by ID
+   */
+  static getSeriesDescription(seriesId: string): string {
+    const descriptions: Record<string, string> = {
+      GDP: 'Gross Domestic Product, Seasonally Adjusted Annual Rate',
+      GDPC1: 'Real Gross Domestic Product, Chained 2012 Dollars',
+      UNRATE: 'Unemployment Rate, Seasonally Adjusted',
+      CPIAUCSL: 'Consumer Price Index for All Urban Consumers: All Items',
+      FEDFUNDS: 'Effective Federal Funds Rate',
+      GS10: '10-Year Treasury Constant Maturity Rate',
+      SP500: 'S&P 500 Stock Price Index',
+      PAYEMS: 'All Employees, Total Nonfarm, Seasonally Adjusted',
+      M2SL: 'M2 Money Stock, Seasonally Adjusted',
+      CSUSHPISA: 'S&P/Case-Shiller U.S. National Home Price Index',
+      INDPRO: 'Industrial Production Index, Seasonally Adjusted',
+      UMCSENT: 'University of Michigan Consumer Sentiment Index',
+      DCOILWTICO: 'Crude Oil Prices: West Texas Intermediate (WTI)',
+    };
+    
+    return descriptions[seriesId] || 'Economic data series';
   }
 }
 
 // ============================================================================
-// USAGE EXAMPLES
+// HELPER FUNCTIONS
 // ============================================================================
-/*
-const fred = new FredClient({ apiKey: 'YOUR_API_KEY' });
 
-// Get GDP data
-fred.getSeriesObservations('GDP')
-  .then(data => console.log('GDP Data:', data.observations))
-  .catch(error => console.error(error));
+/**
+ * Create a FRED client instance
+ */
+export function createFredClient(apiKey: string, config?: Partial<FredConfig>): FredClient {
+  return new FredClient({
+    apiKey,
+    ...config,
+  });
+}
 
-// Search for unemployment series
-fred.searchSeries('unemployment rate')
-  .then(data => console.log('Search Results:', data.series))
-  .catch(error => console.error(error));
+/**
+ * Validate FRED API key format
+ */
+export function isValidApiKey(apiKey: string): boolean {
+  return typeof apiKey === 'string' && apiKey.length === 32 && /^[a-f0-9]+$/i.test(apiKey);
+}
 
-// Get releases for today
-fred.getReleases({ realtime_start: new Date().toISOString().split('T')[0] })
-  .then(data => console.log('Today\'s Releases:', data.releases))
-  .catch(error => console.error(error));
-*/
+/**
+ * Format number for display
+ */
+export function formatValue(value: string | number, units?: string): string {
+  const numValue = typeof value === 'string' ? parseFloat(value) : value;
+  
+  if (isNaN(numValue)) {
+    return 'N/A';
+  }
+
+  // Format based on units
+  if (units) {
+    const lowerUnits = units.toLowerCase();
+    if (lowerUnits.includes('percent') || lowerUnits.includes('rate')) {
+      return `${numValue.toFixed(2)}%`;
+    }
+    if (lowerUnits.includes('billions')) {
+      return `${(numValue / 1000).toFixed(1)}T`;
+    }
+    if (lowerUnits.includes('millions')) {
+      return `${(numValue / 1000).toFixed(1)}B`;
+    }
+    if (lowerUnits.includes('dollars')) {
+      return `${numValue.toLocaleString()}`;
+    }
+  }
+
+  // Default formatting
+  if (numValue >= 1000000) {
+    return `${(numValue / 1000000).toFixed(1)}M`;
+  }
+  if (numValue >= 1000) {
+    return `${(numValue / 1000).toFixed(1)}K`;
+  }
+  
+  return numValue.toLocaleString();
+}
+
+/**
+ * Calculate percentage change between two values
+ */
+export function calculatePercentageChange(oldValue: number, newValue: number): number {
+  if (oldValue === 0) return 0;
+  return ((newValue - oldValue) / oldValue) * 100;
+}
+
+/**
+ * Get trending direction for a series
+ */
+export function getTrend(observations: SeriesObservation[]): 'up' | 'down' | 'stable' {
+  if (observations.length < 2) return 'stable';
+  
+  const recent = parseFloat(observations[0].value);
+  const previous = parseFloat(observations[1].value);
+  
+  if (isNaN(recent) || isNaN(previous)) return 'stable';
+  
+  const change = recent - previous;
+  const threshold = Math.abs(previous * 0.001); // 0.1% threshold
+  
+  if (change > threshold) return 'up';
+  if (change < -threshold) return 'down';
+  return 'stable';
+}
+
+// ============================================================================
+// EXPORT DEFAULT
+// ============================================================================
+
+export default FredClient;
+```
+- `/src/lib/api-clients/economics/index.ts`:
+```typescript
+export * from './fred';
+```
+
+Done! I have created the `fred.ts` file in the correct directory and exported its contents.

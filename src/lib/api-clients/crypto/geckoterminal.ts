@@ -591,6 +591,14 @@ export class GeckoTerminalAPI {
   }
 }
 
+export async function fetchGeckoTerminalMetrics(protocolSlugs: string[]): Promise<Record<string, any>> {
+  // This function is problematic as GeckoTerminal API is network-based, not protocol-slug-based.
+  // Returning an empty object to prevent 404 errors until a proper implementation can be designed.
+  console.warn("fetchGeckoTerminalMetrics is a stub and does not fetch real data.");
+  return Promise.resolve({});
+}
+
+
 // Export default instance
 export default new GeckoTerminalAPI();
 

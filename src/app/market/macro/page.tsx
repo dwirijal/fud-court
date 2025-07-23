@@ -1,8 +1,6 @@
-
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { FredClient, SeriesObservation } from '@/lib/api-clients/economics/fred';
 import { indicatorGroups, Indicator } from '@/config/fred-indicators';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -11,19 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { TrendingUp, TrendingDown, Minus, AlertCircle } from 'lucide-react';
 import { HeroSection } from '@/components/shared/HeroSection';
-
-const fredApiKey = process.env.NEXT_PUBLIC_FRED_API_KEY;
-const fredClient = fredApiKey ? new FredClient({ apiKey: fredApiKey }) : null;
-
-interface MetricData {
-  seriesId: string;
-  title: string;
-  value: string;
-  date: string;
-  change: number | null;
-  trend: 'up' | 'down' | 'stable';
-  units: string;
-}
+import { fetchFredData, MetricData } from './actions';
 
 const formatValue = (value: string, units: string) => {
     const num = parseFloat(value);
@@ -76,7 +62,7 @@ const IndicatorTable = ({ indicators, data, isLoading }: { indicators: Indicator
     if (isLoading) {
         return (
             <div className="space-y-2">
-                {[...Array(indicators.length)].map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
+                {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
             </div>
         );
     }
@@ -111,111 +97,58 @@ const IndicatorTable = ({ indicators, data, isLoading }: { indicators: Indicator
 };
 
 export default function MacroDashboardPage() {
-    const [kpiData, setKpiData] = useState<Record<string, MetricData | null>>({
-        'A191RL1Q225SBEA': null, 'UNRATE': null, 'CPIAUCSL': null, 'FEDFUNDS': null,
-    });
+    const [kpiData, setKpiData] = useState<Record<string, MetricData | null>>({});
     const [loadingKpis, setLoadingKpis] = useState(true);
     const [accordionData, setAccordionData] = useState<Record<string, Record<string, MetricData>>>({});
     const [loadingAccordions, setLoadingAccordions] = useState<Record<string, boolean>>({});
+    const [error, setError] = useState<string | null>(null);
 
-    const fetchGroupData = useCallback(async (group: typeof indicatorGroups[0]) => {
-        if (!fredClient || accordionData[group.title]) return; // Don't refetch if data exists
+    const kpiIndicators: Indicator[] = [
+        { id: 'A191RL1Q225SBEA', title: 'GDP Growth (YoY)', units: 'Percent' },
+        { id: 'UNRATE', title: 'Unemployment Rate', units: 'Percent' },
+        { id: 'CPIAUCSL', title: 'Inflation (CPI)', units: 'Index' },
+        { id: 'FEDFUNDS', title: 'Fed Funds Rate', units: 'Percent' }
+    ];
 
-        setLoadingAccordions(prev => ({ ...prev, [group.title]: true }));
-        
-        const promises = group.indicators.map(indicator => 
-            fredClient.getSeriesObservations(indicator.id, { limit: 2, sort_order: 'desc' })
-        );
-
-        const results = await Promise.allSettled(promises);
-        const groupData: Record<string, MetricData> = {};
-
-        results.forEach((result, index) => {
-            const indicator = group.indicators[index];
-            if (result.status === 'fulfilled' && result.value.observations.length > 0) {
-                const obs = result.value.observations;
-                const latest = obs[0];
-                const previous = obs[1];
-                let change = null;
-                let trend: 'up' | 'down' | 'stable' = 'stable';
-                
-                if (previous) {
-                    const latestValue = parseFloat(latest.value);
-                    const previousValue = parseFloat(previous.value);
-                    if (!isNaN(latestValue) && !isNaN(previousValue)) {
-                       change = latestValue - previousValue;
-                       if (change > 0.01) trend = 'up';
-                       if (change < -0.01) trend = 'down';
-                    }
-                }
-                
-                groupData[indicator.id] = {
-                    seriesId: indicator.id, title: indicator.title,
-                    value: formatValue(latest.value, indicator.units),
-                    date: latest.date, change, trend, units: indicator.units
-                };
+    const handleFetchData = useCallback(async (indicators: Indicator[], groupTitle?: string) => {
+        try {
+            const data = await fetchFredData(indicators);
+            if (groupTitle) {
+                setAccordionData(prev => ({ ...prev, [groupTitle]: data }));
+            } else {
+                setKpiData(data);
             }
-        });
-        
-        setAccordionData(prev => ({ ...prev, [group.title]: groupData }));
-        setLoadingAccordions(prev => ({ ...prev, [group.title]: false }));
-
-    }, [accordionData]);
-
-    useEffect(() => {
-        if (!fredClient) {
-            console.error("FRED API Key is not configured.");
-            setLoadingKpis(false);
-            return;
+        } catch (err) {
+            console.error("Failed to fetch FRED data:", err);
+            setError("Failed to load economic data. The API might be temporarily unavailable.");
+        } finally {
+            if (groupTitle) {
+                setLoadingAccordions(prev => ({ ...prev, [groupTitle]: false }));
+            } else {
+                setLoadingKpis(false);
+            }
         }
-
-        const fetchKpis = async () => {
-            const kpiIndicators: Indicator[] = [
-                { id: 'A191RL1Q225SBEA', title: 'GDP Growth (YoY)', units: 'Percent' },
-                { id: 'UNRATE', title: 'Unemployment Rate', units: 'Percent' },
-                { id: 'CPIAUCSL', title: 'Inflation (CPI)', units: 'Index' },
-                { id: 'FEDFUNDS', title: 'Fed Funds Rate', units: 'Percent' }
-            ];
-
-            const promises = kpiIndicators.map(ind => fredClient.getSeriesObservations(ind.id, { limit: 2, sort_order: 'desc' }));
-            const results = await Promise.allSettled(promises);
-            const fetchedData: Record<string, MetricData> = {};
-
-            results.forEach((result, index) => {
-                const indicator = kpiIndicators[index];
-                if (result.status === 'fulfilled' && result.value.observations.length > 0) {
-                    const obs = result.value.observations;
-                    const latest = obs[0];
-                    const previous = obs[1];
-                    let trend: 'up' | 'down' | 'stable' = 'stable';
-                    
-                    if (previous) {
-                        const change = parseFloat(latest.value) - parseFloat(previous.value);
-                        if(change > 0.01) trend = 'up';
-                        if(change < -0.01) trend = 'down';
-                    }
-                    
-                    fetchedData[indicator.id] = {
-                        seriesId: indicator.id, title: indicator.title,
-                        value: formatValue(latest.value, indicator.units),
-                        date: latest.date, change: null, trend, units: indicator.units
-                    };
-                }
-            });
-            setKpiData(fetchedData);
-            setLoadingKpis(false);
-        };
-
-        fetchKpis();
     }, []);
 
-    if (!fredClient) {
-        return (
+    useEffect(() => {
+        handleFetchData(kpiIndicators);
+    }, [handleFetchData]);
+
+    const handleAccordionChange = (value: string) => {
+        const group = indicatorGroups.find(g => g.title === value);
+        if (group && !accordionData[group.title] && !loadingAccordions[group.title]) {
+            setLoadingAccordions(prev => ({ ...prev, [group.title]: true }));
+            handleFetchData(group.indicators, group.title);
+        }
+    };
+
+    if (error) {
+         return (
             <div className="p-4 md:p-6">
                 <Alert variant="destructive">
                     <AlertCircle className="h-4 w-4" />
                     <AlertDescription>
-                        FRED API Key is not configured. Please set the NEXT_PUBLIC_FRED_API_KEY environment variable.
+                        {error}
                     </AlertDescription>
                 </Alert>
             </div>
@@ -224,43 +157,38 @@ export default function MacroDashboardPage() {
 
     return (
         <>
-        <HeroSection title="Dasbor Makro Ekonomi" description="Indikator ekonomi kunci dari Federal Reserve Economic Data (FRED)." />
-        <div className="p-4 md:p-6 space-y-6">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <KpiCard isLoading={loadingKpis} data={kpiData['A191RL1Q225SBEA']} />
-                <KpiCard isLoading={loadingKpis} data={kpiData['UNRATE']} />
-                <KpiCard isLoading={loadingKpis} data={kpiData['CPIAUCSL']} />
-                <KpiCard isLoading={loadingKpis} data={kpiData['FEDFUNDS']} />
-            </div>
+            <HeroSection title="Dasbor Makro Ekonomi" description="Indikator ekonomi kunci dari Federal Reserve Economic Data (FRED)." />
+            <div className="p-4 md:p-6 space-y-6">
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    <KpiCard isLoading={loadingKpis} data={kpiData['A191RL1Q225SBEA']} />
+                    <KpiCard isLoading={loadingKpis} data={kpiData['UNRATE']} />
+                    <KpiCard isLoading={loadingKpis} data={kpiData['CPIAUCSL']} />
+                    <KpiCard isLoading={loadingKpis} data={kpiData['FEDFUNDS']} />
+                </div>
 
-            <Accordion type="single" collapsible className="w-full" onValueChange={(value) => {
-                const group = indicatorGroups.find(g => g.title === value);
-                if (group) {
-                    fetchGroupData(group);
-                }
-            }}>
-                {indicatorGroups.map(group => (
-                    <AccordionItem value={group.title} key={group.title}>
-                        <AccordionTrigger className="text-xl font-semibold">{group.icon} {group.title}</AccordionTrigger>
-                        <AccordionContent>
-                           <Card>
-                                <CardHeader>
-                                    <CardTitle>{group.title}</CardTitle>
-                                    <p className="text-sm text-muted-foreground">{group.description}</p>
-                                </CardHeader>
-                                <CardContent>
-                                    <IndicatorTable 
-                                        indicators={group.indicators} 
-                                        data={accordionData[group.title] || {}}
-                                        isLoading={loadingAccordions[group.title] !== false}
-                                    />
-                                </CardContent>
-                            </Card>
-                        </AccordionContent>
-                    </AccordionItem>
-                ))}
-            </Accordion>
-        </div>
+                <Accordion type="single" collapsible className="w-full" onValueChange={handleAccordionChange}>
+                    {indicatorGroups.map(group => (
+                        <AccordionItem value={group.title} key={group.title}>
+                            <AccordionTrigger className="text-xl font-semibold">{group.icon} {group.title}</AccordionTrigger>
+                            <AccordionContent>
+                               <Card>
+                                    <CardHeader>
+                                        <CardTitle>{group.title}</CardTitle>
+                                        <p className="text-sm text-muted-foreground">{group.description}</p>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <IndicatorTable 
+                                            indicators={group.indicators} 
+                                            data={accordionData[group.title] || {}}
+                                            isLoading={loadingAccordions[group.title] !== false}
+                                        />
+                                    </CardContent>
+                                </Card>
+                            </AccordionContent>
+                        </AccordionItem>
+                    ))}
+                </Accordion>
+            </div>
         </>
     );
 }

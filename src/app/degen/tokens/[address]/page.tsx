@@ -6,10 +6,11 @@ import { DexScreenerClient, DexScreenerPair } from '@/lib/api-clients/crypto/dex
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
-import { DollarSign, Droplets, BarChart3, Link as LinkIcon, ArrowRightLeft, AlertTriangle, Copy, Check } from 'lucide-react';
+import { DollarSign, Droplets, BarChart3, Link as LinkIcon, ArrowRightLeft, Copy } from 'lucide-react';
 import { cn } from '@/lib/utils/utils';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 interface TokenDetailPageProps {
   params: { address: string };
@@ -20,14 +21,10 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
   const [tokenPairs, setTokenPairs] = useState<DexScreenerPair[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isCopied, setIsCopied] = useState(false);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(address);
-    setIsCopied(true);
-    setTimeout(() => {
-      setIsCopied(false);
-    }, 2000);
+    toast('Address copied to clipboard!');
   };
 
   useEffect(() => {
@@ -142,7 +139,7 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
         <div className="flex items-center gap-2">
           <p className="text-sm text-muted-foreground break-all">{address}</p>
           <Button variant="ghost" size="icon" onClick={handleCopy} className="h-7 w-7">
-            {isCopied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+            <Copy className="h-4 w-4" />
           </Button>
         </div>
       </header>

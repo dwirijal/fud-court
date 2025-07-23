@@ -110,7 +110,7 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
 
   const handleCopy = () => {
     navigator.clipboard.writeText(address);
-    toast('Address copied to clipboard!');
+    toast('Alamat disalin ke papan klip!');
   };
 
   useEffect(() => {
@@ -124,7 +124,7 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
         const response = await dexScreenerApi.getTokens(address);
         
         if (!response.pairs || response.pairs.length === 0) {
-            setError("Token not found on DexScreener.");
+            setError("Token tidak ditemukan di DexScreener.");
             setLoading(false);
             return;
         }
@@ -133,7 +133,7 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
         setTokenPools(sortedPools);
 
       } catch (err) {
-        setError('Failed to fetch token details.');
+        setError('Gagal mengambil detail token.');
         console.error(err);
       } finally {
         setLoading(false);
@@ -202,19 +202,19 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
   }
 
   if (!tokenInfo || !mostRelevantPool) {
-    return <div className="p-4 text-muted-foreground text-center">Token not found or no pools available.</div>;
+    return <div className="p-4 text-muted-foreground text-center">Token tidak ditemukan atau tidak ada pool yang tersedia.</div>;
   }
   
   const totalVolumeH24 = tokenPools.reduce((sum, pool) => sum + (pool.volume?.h24 || 0), 0);
   const totalLiquidity = tokenPools.reduce((sum, pool) => sum + (pool.liquidity?.usd || 0), 0);
   
   const faqContent = {
-    priceStats: `The current price of ${tokenInfo.name} (${mostRelevantPool.baseToken.symbol}/${mostRelevantPool.quoteToken.symbol}) on ${mostRelevantPool.dexId} is ${formatCurrency(mostRelevantPool.priceUsd, 6)}. Its 24-hour trading volume across all DEXs is reported to be at ${formatCurrency(totalVolumeH24, 0)} with a total of ${(mostRelevantPool.txns.h24.buys + mostRelevantPool.txns.h24.sells).toLocaleString()} transactions on the main pair. The token's contract address is ${mostRelevantPool.baseToken.address}, with a Fully Diluted Valuation (FDV) of ${formatCurrency(mostRelevantPool.fdv, 0)} and a total liquidity pool of ${formatCurrency(totalLiquidity, 0)}.`,
-    highLow: `Based on available data, the 24-hour price range is not directly provided. However, you can analyze the hourly price chart above to determine recent highs and lows.`,
-    liquidity: `The current total liquidity for ${tokenInfo.name} across all tracked pools is ${formatCurrency(totalLiquidity, 0)}. The liquidity for the main pair (${mostRelevantPool.baseToken.symbol}/${mostRelevantPool.quoteToken.symbol} on ${mostRelevantPool.dexId}) is ${formatCurrency(mostRelevantPool.liquidity?.usd, 0)}.`,
-    poolCreation: `The main trading pool for this token was created on ${mostRelevantPool.pairCreatedAt ? new Date(mostRelevantPool.pairCreatedAt).toLocaleDateString() : 'an unknown date'}.`,
-    exchangeRate: `The exchange rate of 1 ${tokenInfo.symbol} is currently ${formatCurrency(mostRelevantPool.priceUsd, 6)} USD.`,
-    whereToBuy: `You can buy and trade ${tokenInfo.name} on the following decentralized exchanges: ${[...new Set(tokenPools.map(p => p.dexId))].join(', ')}. Always ensure you are using the correct contract address to avoid scams.`,
+    priceStats: `Harga saat ini untuk ${tokenInfo.name} (${mostRelevantPool.baseToken.symbol}/${mostRelevantPool.quoteToken.symbol}) di ${mostRelevantPool.dexId} adalah ${formatCurrency(mostRelevantPool.priceUsd, 6)}. Volume perdagangannya dalam 24 jam terakhir dilaporkan sebesar ${formatCurrency(totalVolumeH24, 0)} dengan total ${(mostRelevantPool.txns.h24.buys + mostRelevantPool.txns.h24.sells).toLocaleString()} transaksi pada pasangan utama. Alamat kontrak token adalah ${mostRelevantPool.baseToken.address}, dengan Valuasi Terdilusi Penuh (FDV) sebesar ${formatCurrency(mostRelevantPool.fdv, 0)} dan total likuiditas sebesar ${formatCurrency(totalLiquidity, 0)}.`,
+    highLow: `Berdasarkan data yang tersedia, rentang harga 24 jam tidak disediakan secara langsung. Namun, Anda dapat menganalisis grafik harga per jam di atas untuk menentukan harga tertinggi dan terendah terbaru.`,
+    liquidity: `Likuiditas total saat ini untuk ${tokenInfo.name} di semua pool yang dilacak adalah ${formatCurrency(totalLiquidity, 0)}. Likuiditas untuk pasangan utama (${mostRelevantPool.baseToken.symbol}/${mostRelevantPool.quoteToken.symbol} di ${mostRelevantPool.dexId}) adalah ${formatCurrency(mostRelevantPool.liquidity?.usd, 0)}.`,
+    poolCreation: `Pool perdagangan utama untuk token ini dibuat pada ${mostRelevantPool.pairCreatedAt ? new Date(mostRelevantPool.pairCreatedAt).toLocaleDateString() : 'tanggal tidak diketahui'}.`,
+    exchangeRate: `Nilai tukar 1 ${tokenInfo.symbol} saat ini adalah ${formatCurrency(mostRelevantPool.priceUsd, 6)} USD.`,
+    whereToBuy: `Anda dapat membeli dan memperdagangkan ${tokenInfo.name} di bursa terdesentralisasi berikut: ${[...new Set(tokenPools.map(p => p.dexId))].join(', ')}. Selalu pastikan Anda menggunakan alamat kontrak yang benar untuk menghindari penipuan.`,
   };
 
   return (
@@ -235,7 +235,7 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
         <div className="lg:col-span-2 space-y-6">
           <Card>
             <CardHeader>
-                <CardTitle>Price Chart (Hourly)</CardTitle>
+                <CardTitle>Grafik Harga (Per Jam)</CardTitle>
             </CardHeader>
             <CardContent>
               <GeckoTerminalPriceChart network={mostRelevantPool.chainId} poolAddress={mostRelevantPool.pairAddress} />
@@ -275,17 +275,17 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
 
           <Card>
             <CardHeader>
-              <CardTitle>Trading Pairs</CardTitle>
+              <CardTitle>Pasangan Perdagangan</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Pair</TableHead>
+                      <TableHead>Pasangan</TableHead>
                       <TableHead>DEX</TableHead>
-                      <TableHead className="text-right">Price</TableHead>
-                      <TableHead className="text-right">24h Change</TableHead>
+                      <TableHead className="text-right">Harga</TableHead>
+                      <TableHead className="text-right">Perubahan 24 Jam</TableHead>
                       <TableHead className="text-right">Volume</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -315,29 +315,29 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
 
         <div className="lg:col-span-1 space-y-6">
             <Card>
-              <CardHeader><CardTitle>Token Info</CardTitle></CardHeader>
+              <CardHeader><CardTitle>Info Token</CardTitle></CardHeader>
               <CardContent className="space-y-4">
                   <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Price</span>
+                      <span className="text-sm text-muted-foreground">Harga</span>
                       <span className="font-bold">{formatCurrency(mostRelevantPool.priceUsd)}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">24h Volume</span>
+                      <span className="text-sm text-muted-foreground">Volume 24 Jam</span>
                       <span className="font-mono">{formatCurrency(totalVolumeH24, 0)}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Total Liquidity</span>
+                      <span className="text-sm text-muted-foreground">Total Likuiditas</span>
                       <span className="font-mono">{formatCurrency(totalLiquidity, 0)}</span>
                   </div>
                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Market Cap</span>
+                      <span className="text-sm text-muted-foreground">Kapitalisasi Pasar</span>
                       <span className="font-mono">{formatCurrency(mostRelevantPool.marketCap, 0)}</span>
                   </div>
                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Website</span>
+                      <span className="text-sm text-muted-foreground">Situs Web</span>
                       <Button variant="link" size="sm" asChild>
                         <a href={mostRelevantPool.url} target="_blank" rel="noopener noreferrer">
-                          View on DexScreener <ExternalLink className="h-3 w-3 ml-1"/>
+                          Lihat di DexScreener <ExternalLink className="h-3 w-3 ml-1"/>
                         </a>
                       </Button>
                   </div>
@@ -346,24 +346,24 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
 
             <Card>
               <CardHeader>
-                <CardTitle>Transactions</CardTitle>
+                <CardTitle>Transaksi</CardTitle>
               </CardHeader>
               <CardContent>
                 <Tabs defaultValue="h24" className="w-full">
                   <TabsList className="grid w-full grid-cols-4">
-                    <TabsTrigger value="h24">24h</TabsTrigger>
-                    <TabsTrigger value="h6">6h</TabsTrigger>
-                    <TabsTrigger value="h1">1h</TabsTrigger>
+                    <TabsTrigger value="h24">24j</TabsTrigger>
+                    <TabsTrigger value="h6">6j</TabsTrigger>
+                    <TabsTrigger value="h1">1j</TabsTrigger>
                     <TabsTrigger value="m5">5m</TabsTrigger>
                   </TabsList>
                   <TabsContent value="h24" className="pt-4">
                     <div className="space-y-3">
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-green-500 flex items-center gap-2"><TrendingUp/> Buys</span>
+                        <span className="text-sm text-green-500 flex items-center gap-2"><TrendingUp/> Beli</span>
                         <span className="font-mono">{mostRelevantPool.txns.h24.buys.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-red-500 flex items-center gap-2"><TrendingDown/> Sells</span>
+                        <span className="text-sm text-red-500 flex items-center gap-2"><TrendingDown/> Jual</span>
                         <span className="font-mono">{mostRelevantPool.txns.h24.sells.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between items-center border-t pt-2 mt-2">
@@ -375,11 +375,11 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
                   <TabsContent value="h6" className="pt-4">
                      <div className="space-y-3">
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-green-500 flex items-center gap-2"><TrendingUp/> Buys</span>
+                        <span className="text-sm text-green-500 flex items-center gap-2"><TrendingUp/> Beli</span>
                         <span className="font-mono">{mostRelevantPool.txns.h6.buys.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-red-500 flex items-center gap-2"><TrendingDown/> Sells</span>
+                        <span className="text-sm text-red-500 flex items-center gap-2"><TrendingDown/> Jual</span>
                         <span className="font-mono">{mostRelevantPool.txns.h6.sells.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between items-center border-t pt-2 mt-2">
@@ -391,11 +391,11 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
                   <TabsContent value="h1" className="pt-4">
                      <div className="space-y-3">
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-green-500 flex items-center gap-2"><TrendingUp/> Buys</span>
+                        <span className="text-sm text-green-500 flex items-center gap-2"><TrendingUp/> Beli</span>
                         <span className="font-mono">{mostRelevantPool.txns.h1.buys.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-red-500 flex items-center gap-2"><TrendingDown/> Sells</span>
+                        <span className="text-sm text-red-500 flex items-center gap-2"><TrendingDown/> Jual</span>
                         <span className="font-mono">{mostRelevantPool.txns.h1.sells.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between items-center border-t pt-2 mt-2">
@@ -407,11 +407,11 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
                    <TabsContent value="m5" className="pt-4">
                      <div className="space-y-3">
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-green-500 flex items-center gap-2"><TrendingUp/> Buys</span>
+                        <span className="text-sm text-green-500 flex items-center gap-2"><TrendingUp/> Beli</span>
                         <span className="font-mono">{mostRelevantPool.txns.m5.buys.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-red-500 flex items-center gap-2"><TrendingDown/> Sells</span>
+                        <span className="text-sm text-red-500 flex items-center gap-2"><TrendingDown/> Jual</span>
                         <span className="font-mono">{mostRelevantPool.txns.m5.sells.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between items-center border-t pt-2 mt-2">
@@ -429,33 +429,33 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <HelpCircle />
-            {tokenInfo.name} FAQ
+            FAQ {tokenInfo.name}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="item-1">
-              <AccordionTrigger>What are the key stats for {tokenInfo.symbol}?</AccordionTrigger>
+              <AccordionTrigger>Apa saja statistik kunci untuk {tokenInfo.symbol}?</AccordionTrigger>
               <AccordionContent>{faqContent.priceStats}</AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-2">
-              <AccordionTrigger>What is the 24-hour high and low price?</AccordionTrigger>
+              <AccordionTrigger>Berapa harga tertinggi dan terendah dalam 24 jam?</AccordionTrigger>
               <AccordionContent>{faqContent.highLow}</AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-3">
-              <AccordionTrigger>What is the current liquidity for {tokenInfo.symbol}?</AccordionTrigger>
+              <AccordionTrigger>Berapa likuiditas {tokenInfo.symbol} saat ini?</AccordionTrigger>
               <AccordionContent>{faqContent.liquidity}</AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-4">
-              <AccordionTrigger>When was the main {tokenInfo.symbol} pool created?</AccordionTrigger>
+              <AccordionTrigger>Kapan pool utama {tokenInfo.symbol} dibuat?</AccordionTrigger>
               <AccordionContent>{faqContent.poolCreation}</AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-5">
-              <AccordionTrigger>What is the exchange rate of 1 {tokenInfo.symbol} to USD?</AccordionTrigger>
+              <AccordionTrigger>Berapa nilai tukar 1 {tokenInfo.symbol} ke USD?</AccordionTrigger>
               <AccordionContent>{faqContent.exchangeRate}</AccordionContent>
             </AccordionItem>
              <AccordionItem value="item-6">
-              <AccordionTrigger>Where can I buy {tokenInfo.symbol}?</AccordionTrigger>
+              <AccordionTrigger>Di mana saya bisa membeli {tokenInfo.symbol}?</AccordionTrigger>
               <AccordionContent>{faqContent.whereToBuy}</AccordionContent>
             </AccordionItem>
           </Accordion>

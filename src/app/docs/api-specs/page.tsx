@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScreenShare, Flame, ShieldCheck, HelpCircle, Bot } from 'lucide-react';
+import { Flame, ShieldCheck, HelpCircle, Bot } from 'lucide-react';
 import * as React from "react";
 
 const GeckoTerminalIcon: React.FC<React.SVGProps<SVGElement>> = (props) => (
@@ -61,6 +61,19 @@ const DexScreenerIcon: React.FC<React.SVGProps<SVGElement>> = (props) => (
     </svg>
 );
 
+const DefiLlamaIcon: React.FC<React.SVGProps<SVGElement>> = (props) => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 24 24" 
+    width="32" 
+    height="32" 
+    fill="currentColor" 
+    {...props}
+  >
+    <path d="M16.31 4.395c-.39.39-.73.81-1.021 1.25-.29.44-.52.91-.68 1.41-.17.5-.25 1.03-.25 1.58v4.24c0 .55-.08 1.08-.25 1.58-.16.5-.39.97-.68 1.41-.29.44-.63.86-1.02 1.25-.4.39-.83.7-1.31.94-.48.24-.99.36-1.52.36s-1.04-.12-1.52-.36c-.48-.24-.91-.55-1.31-.94-.39-.39-.73-.81-1.02-1.25-.29-.44-.52-.91-.68-1.41-.17-.5-.25-1.03-.25-1.58V8.635c0-.55.08-1.08.25-1.58.16-.5.39-.97.68-1.41.29-.44.63-.86 1.02-1.25.4-.39.83-.7 1.31-.94.48-.24.99-.36 1.52-.36s1.04.12 1.52.36c.48.24.91.55 1.31.94zm-5.75 3.33v6.46c0 .19.03.37.09.53.06.16.14.31.25.44.11.13.24.23.39.31.15.08.32.12.49.12s.34-.04.49-.12c.15-.08.28-.18.39-.31.11-.13.19-.28.25-.44.06-.16.09-.34.09-.53V7.725c0-.19-.03-.37-.09-.53-.06-.16-.14-.31-.25-.44-.11-.13-.24-.23-.39-.31-.15-.08-.32-.12-.49-.12s-.34.04-.49-.12c-.15-.08-.28-.18-.39-.31-.11-.13-.19-.28-.25-.44a.92.92 0 0 0-.09-.53zm11.36-5.31C21.16.325 19.3.015 17.5.015s-3.52.42-4.95 1.25l-2.04 1.2c-.32.19-.6.41-.83.66-.23-.25-.51-.47-.83-.66l-2.04-1.2C5.39.435 3.96.015 2.16.015c-1.8 0-3.66.31-4.95 2.41C-4.21 4.875-3.32 12.315 0 16.515c3.32 4.2 8.43 6.31 11.92 6.48 3.49.17 9.9-1.93 12.08-6.48 3.56-7.51 3.8-14.03.08-16.62z"/>
+  </svg>
+);
+
 
 export default function ApiSpecsPage() {
   const apiSections = [
@@ -82,7 +95,7 @@ export default function ApiSpecsPage() {
       href: 'https://defillama.com/docs/api',
       title: 'DefiLlama API',
       description: 'Spesifikasi untuk data TVL dan DeFi dari DefiLlama.',
-      icon: <Flame className="h-8 w-8 text-primary" />,
+      icon: <DefiLlamaIcon className="text-primary" />,
       external: true,
     },
     {

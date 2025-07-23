@@ -10,6 +10,38 @@ This document outlines the design principles, color palette, typography, and com
 - **Responsive & Accessible**: The application must be usable across all major screen sizes and adhere to accessibility best practices.
 - **Thematic**: Both light and dark modes are first-class citizens and must be fully supported.
 
+## Design Tokens
+
+Design tokens are the core variables that define the visual style of the application. In this project, they are implemented as CSS variables in `src/app/globals.css`. This allows for easy theming and consistent styling.
+
+**Example: Color Token**
+
+A color like `--primary` is defined for both light and dark modes:
+
+```css
+/* In :root (light mode) */
+--primary: 222.2 47.4% 11.2%;
+
+/* In .dark (dark mode) */
+--primary: 6 90% 63%; /* #f25f4c */
+```
+
+This token is then used in components via Tailwind's utility classes, which are configured in `tailwind.config.ts`:
+
+```javascript
+// tailwind.config.ts
+...
+colors: {
+    primary: {
+        DEFAULT: 'hsl(var(--primary))',
+        foreground: 'hsl(var(--primary-foreground))',
+    },
+},
+...
+```
+
+This allows us to simply use `bg-primary` in our components, and it will adapt to the current theme automatically.
+
 ## Color Palette
 
 The color system is built using CSS variables defined in `src/app/globals.css`, following the ShadCN UI convention.
@@ -38,12 +70,64 @@ A clean, professional theme for users who prefer a brighter interface.
 
 - **Primary Font**: `Plus Jakarta Sans` is used for all text to ensure a modern, clean, and highly readable interface.
 - **Hierarchy**: A clear typographic scale is used to establish visual hierarchy.
-  - `text-5xl` to `text-6xl` for hero titles.
-  - `text-2xl` to `text-4xl` for page and card titles.
-  - `text-base` to `text-lg` for body copy.
-  - `text-sm` to `text-xs` for metadata and captions.
 
-## Components
+### Text Style Examples
+
+- **Hero Title**: Used for major page headings.
+  - `className="text-5xl md:text-8xl font-bold"`
+- **Page Title**: Used for standard page titles.
+  - `className="text-3xl font-bold"`
+- **Card Title**: Used for titles within components like `<Card>`.
+  - `className="text-xl font-semibold"`
+- **Body Copy**: Standard text for paragraphs.
+  - `className="text-base text-muted-foreground"`
+- **Caption**: Small text for metadata or less important information.
+  - `className="text-xs text-muted-foreground"`
+
+## Component Philosophy & Atomic Design
+
+While not strictly following the Atomic Design methodology, the philosophy is similar. We build small, reusable components (atoms) that are composed into larger, more complex components.
+
+### Component Example: Atom (`<Badge />`)
+
+An "atom" is the smallest possible component, like a button or a badge. It has its own properties and styles but doesn't have business logic.
+
+**`@/components/ui/badge.tsx`**:
+
+```tsx
+import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
+import { cn } from "@/lib/utils"
+
+const badgeVariants = cva(
+  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ...",
+  {
+    variants: {
+      variant: {
+        default: "border-transparent bg-primary text-primary-foreground ...",
+        secondary: "...",
+        destructive: "...",
+        outline: "text-foreground",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+)
+
+function Badge({ className, variant, ...props }: BadgeProps) {
+  return (
+    <div className={cn(badgeVariants({ variant }), className)} {...props} />
+  )
+}
+
+export { Badge, badgeVariants }
+```
+
+This atomic `Badge` component can then be used anywhere in the application to display a small piece of information, ensuring consistency.
+
+### Component Library
 
 The application relies heavily on **ShadCN UI** for its component library. This provides a foundation of accessible, unstyled components that we customize using Tailwind CSS.
 

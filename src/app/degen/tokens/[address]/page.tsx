@@ -6,7 +6,7 @@ import { DexScreenerClient, DexScreenerPair } from '@/lib/api-clients/crypto/dex
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
-import { DollarSign, Droplets, BarChart3, Link as LinkIcon } from 'lucide-react';
+import { DollarSign, Droplets, BarChart3, Link as LinkIcon, ArrowRightLeft, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils/utils';
 import Link from 'next/link';
 
@@ -29,7 +29,6 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
         const dexScreener = new DexScreenerClient();
         const response = await dexScreener.getTokens(address);
         if (response.pairs && response.pairs.length > 0) {
-          // Sort pairs by 24h volume to find the most relevant one
           const sortedPairs = response.pairs.sort((a, b) => (b.volume?.h24 || 0) - (a.volume?.h24 || 0));
           setTokenPairs(sortedPairs);
         } else {
@@ -48,7 +47,6 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
 
   const tokenInfo = useMemo(() => {
     if (!tokenPairs || tokenPairs.length === 0) return null;
-    // The base token should be our token of interest
     return tokenPairs[0].baseToken;
   }, [tokenPairs]);
 
@@ -59,6 +57,36 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
     const totalVolume = tokenPairs.reduce((sum, pair) => sum + (pair.volume?.h24 || 0), 0);
     const totalLiquidity = tokenPairs.reduce((sum, pair) => sum + (pair.liquidity?.usd || 0), 0);
     return { totalVolume, totalLiquidity };
+  }, [tokenPairs]);
+
+  const arbitrageOpportunity = useMemo(() => {
+    if (!tokenPairs || tokenPairs.length < 2) return null;
+
+    const validPairs = tokenPairs.filter(p => 
+      p.priceUsd && parseFloat(p.priceUsd) > 0 && p.liquidity?.usd && p.liquidity.usd > 1000
+    );
+
+    if (validPairs.length < 2) return null;
+
+    const sortedByPrice = [...validPairs].sort((a, b) => parseFloat(a.priceUsd!) - parseFloat(b.priceUsd!));
+    
+    const minPricePair = sortedByPrice[0];
+    const maxPricePair = sortedByPrice[sortedByPrice.length - 1];
+
+    if (minPricePair.pairAddress === maxPricePair.pairAddress) return null;
+
+    const minPrice = parseFloat(minPricePair.priceUsd!);
+    const maxPrice = parseFloat(maxPricePair.priceUsd!);
+    const profitPercentage = ((maxPrice - minPrice) / minPrice) * 100;
+
+    if (profitPercentage > 1) { // Only show significant opportunities
+      return {
+        buy: minPricePair,
+        sell: maxPricePair,
+        profit: profitPercentage,
+      };
+    }
+    return null;
   }, [tokenPairs]);
 
   const formatCurrency = (value: number | undefined | null, precision = 2) => {
@@ -130,6 +158,35 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
         </CardContent>
       </Card>
       
+      {arbitrageOpportunity && (
+        <Card className="bg-green-50 dark:bg-green-900/20 border-green-500">
+          <CardHeader>
+            <CardTitle className="flex items-center text-green-700 dark:text-green-300">
+              <ArrowRightLeft className="h-5 w-5 mr-2"/>
+              Peluang Arbitrase
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground">Beli di</p>
+              <p className="font-bold">{arbitrageOpportunity.buy.dexId}</p>
+              <p className="font-mono text-lg">{formatCurrency(parseFloat(arbitrageOpportunity.buy.priceUsd!), 6)}</p>
+            </div>
+            <div className="flex flex-col items-center">
+                <ArrowRightLeft className="h-8 w-8 text-green-600 hidden md:block" />
+                <div className="text-2xl font-bold text-green-600 my-2">
+                    +{arbitrageOpportunity.profit.toFixed(2)}%
+                </div>
+            </div>
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground">Jual di</p>
+              <p className="font-bold">{arbitrageOpportunity.sell.dexId}</p>
+              <p className="font-mono text-lg">{formatCurrency(parseFloat(arbitrageOpportunity.sell.priceUsd!), 6)}</p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle>Trading Pairs</CardTitle>
@@ -156,14 +213,14 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
                       </Link>
                     </TableCell>
                     <TableCell className="text-muted-foreground">{pair.dexId}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(parseFloat(pair.priceUsd ?? '0'))}</TableCell>
+                    <TableCell className="text-right font-mono">{formatCurrency(parseFloat(pair.priceUsd ?? '0'), 6)}</TableCell>
                     <TableCell className={cn(
                       "text-right",
                       (pair.priceChange?.h24 ?? 0) >= 0 ? 'text-green-500' : 'text-red-500'
                     )}>
                       {pair.priceChange?.h24?.toFixed(2) ?? '0.00'}%
                     </TableCell>
-                    <TableCell className="text-right">{formatCurrency(pair.volume.h24, 0)}</TableCell>
+                    <TableCell className="text-right font-mono">{formatCurrency(pair.volume.h24, 0)}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -174,3 +231,4 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
     </div>
   );
 }
+

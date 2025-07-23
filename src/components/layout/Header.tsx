@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -80,30 +81,12 @@ export function Header() {
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="text-base">Market</NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-                    <li className="row-span-3">
-                      <NavigationMenuLink asChild>
-                        <a
-                          className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-                          href="/market"
-                        >
-                          <BarChart className="h-6 w-6" />
-                          <div className="mb-2 mt-4 text-lg font-medium">
-                            Market Overview
-                          </div>
-                        </a>
-                      </NavigationMenuLink>
-                    </li>
-                    <ListItem href="/market/global" title="Global Overview" />
-                    <ListItem href="/market/crypto" title="Crypto Market" />
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger className="text-base">Crypto</NavigationMenuTrigger>
-                <NavigationMenuContent>
                   <ul className="grid w-[400px] gap-3 p-4 md:w-[600px] md:grid-cols-3 lg:w-[800px]">
                     <div className="flex flex-col">
+                      <ListItem href="/market" title="Market Overview" className="font-bold bg-muted/50" />
+                      <ListItem href="/market/global" title="Global Overview" />
+                    </div>
+                     <div className="flex flex-col">
                       <ListItem href="/coins" title="Coins Overview" className="font-bold bg-muted/50" />
                       <ListItem href="/coins/trending" title="Trending Coins" />
                       <ListItem href="/coins/search" title="Coin Search" />
@@ -117,14 +100,16 @@ export function Header() {
                       <ListItem href="/degen/new-listings" title="New Listings" />
                       <ListItem href="/degen/search" title="Degen Search" />
                     </div>
-                    <div className="flex flex-col">
+                    <div className="flex flex-col col-span-3">
                       <ListItem href="/defi" title="DeFi Analytics" className="font-bold bg-muted/50" />
-                      <ListItem href="/defi/protocols" title="Protocols" />
-                      <ListItem href="/defi/chains" title="Chains" />
-                      <ListItem href="/defi/yield" title="Yield Farming" />
-                      <ListItem href="/defi/stablecoins" title="Stablecoins" />
-                      <ListItem href="/defi/dexs" title="DEXs" />
-                      <ListItem href="/defi/options" title="Options" />
+                      <div className="grid grid-cols-3 gap-x-4">
+                        <ListItem href="/defi/protocols" title="Protocols" />
+                        <ListItem href="/defi/chains" title="Chains" />
+                        <ListItem href="/defi/yield" title="Yield Farming" />
+                        <ListItem href="/defi/stablecoins" title="Stablecoins" />
+                        <ListItem href="/defi/dexs" title="DEXs" />
+                        <ListItem href="/defi/options" title="Options" />
+                      </div>
                     </div>
                   </ul>
                 </NavigationMenuContent>
@@ -142,7 +127,7 @@ export function Header() {
                         <li className="text-sm font-medium text-foreground py-2 px-3">Project</li>
                         <ListItem href="/about" title="About" />
                         <ListItem href="/docs" title="Docs" />
-                        <ListItem href="/docs/api-specs/binance-api-spec" title="API Specs" />
+                        <ListItem href="/docs/api-specs" title="API Specs" />
                     </div>
                   </ul>
                 </NavigationMenuContent>

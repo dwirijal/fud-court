@@ -1,10 +1,11 @@
+
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowRightLeft, Copy, ArrowUp, ArrowDown } from 'lucide-react';
+import { Copy, ArrowUp, ArrowDown } from 'lucide-react';
 import { cn } from '@/lib/utils/utils';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -16,15 +17,10 @@ interface TokenDetailPageProps {
   params: { address: string };
 }
 
-interface PriceData {
-  time: string;
-  price: number;
-}
-
 const formatCurrency = (value: number | string | undefined | null, precision = 2) => {
   const numValue = typeof value === 'string' ? parseFloat(value) : value;
   if (numValue === undefined || numValue === null) return 'N/A';
-  if (numValue > 1) return `$${numValue.toLocaleString(undefined, { minimumFractionDigits: precision, maximumFractionDigits: precision })}`;
+  if (numValue > 1 || numValue < -1) return `$${numValue.toLocaleString(undefined, { minimumFractionDigits: precision, maximumFractionDigits: precision })}`;
   if (numValue === 0) return `$0.00`;
   return `$${numValue.toPrecision(4)}`;
 };
@@ -35,6 +31,7 @@ const GeckoTerminalPriceChart = ({ network, poolAddress }: { network: string; po
 
   useEffect(() => {
     const fetchChartData = async () => {
+      if(!network || !poolAddress) return;
       setLoadingChart(true);
       try {
         const api = new GeckoTerminalAPI();
@@ -78,6 +75,8 @@ const GeckoTerminalPriceChart = ({ network, poolAddress }: { network: string; po
             tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} 
             tickFormatter={(price) => formatCurrency(price, 4)}
             domain={['dataMin', 'dataMax']}
+            allowDataOverflow={false}
+            width={80}
         />
         <Tooltip
             contentStyle={{
@@ -111,28 +110,35 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
       setLoading(true);
       setError(null);
       const api = new GeckoTerminalAPI();
+
       try {
-        // First, search for the token to find its network
-        const searchResult = await api.search({ query: address });
-        const tokenData = searchResult.data.find((d: any) => d.type === 'token' && d.attributes.address.toLowerCase() === address.toLowerCase());
+        const networksResponse = await api.getNetworks();
+        const networks = networksResponse.data.map(n => n.id);
 
-        if (!tokenData) {
-          setError('Token not found on any supported network.');
-          setLoading(false);
-          return;
+        let foundNetworkId: string | null = null;
+        let foundPools: Pool[] = [];
+
+        for (const networkId of networks) {
+          try {
+            const tokenPoolsResponse = await api.getTokenPools(networkId, address, ['base_token', 'quote_token', 'dex']);
+            if (tokenPoolsResponse.data && tokenPoolsResponse.data.length > 0) {
+              foundNetworkId = networkId;
+              foundPools = tokenPoolsResponse.data;
+              break; 
+            }
+          } catch (e) {
+            // Ignore errors for networks where the token doesn't exist
+          }
         }
-
-        const networkId = tokenData.relationships.network.data.id;
-
-        // Fetch token details and its pools
-        const [tokenDetailsResponse, tokenPoolsResponse] = await Promise.all([
-            api.getToken(networkId, address),
-            api.getTokenPools(networkId, address, ['base_token', 'quote_token', 'dex'])
-        ]);
-
-        setTokenInfo(tokenDetailsResponse.data);
-        const sortedPools = tokenPoolsResponse.data.sort((a, b) => parseFloat(b.attributes.volume_usd.h24) - parseFloat(a.attributes.volume_usd.h24));
-        setTokenPools(sortedPools);
+        
+        if (foundNetworkId) {
+          const tokenDetailsResponse = await api.getToken(foundNetworkId, address);
+          setTokenInfo(tokenDetailsResponse.data);
+          const sortedPools = foundPools.sort((a, b) => parseFloat(b.attributes.volume_usd.h24) - parseFloat(a.attributes.volume_usd.h24));
+          setTokenPools(sortedPools);
+        } else {
+          setError('Token not found on any supported network.');
+        }
 
       } catch (err) {
         setError('Failed to fetch token details from GeckoTerminal.');
@@ -144,7 +150,7 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
 
     fetchTokenDetails();
   }, [address]);
-  
+
   const mostRelevantPool = useMemo(() => {
     if (tokenPools.length === 0) return null;
     return tokenPools[0];
@@ -201,7 +207,7 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
                 <CardTitle>Price Chart (Hourly)</CardTitle>
             </CardHeader>
             <CardContent>
-              <GeckoTerminalPriceChart network={mostRelevantPool.relationships.dex.data.id.split('_')[0]} poolAddress={mostRelevantPool.attributes.address} />
+              <GeckoTerminalPriceChart network={mostRelevantPool.id.split('_')[0]} poolAddress={mostRelevantPool.attributes.address} />
             </CardContent>
           </Card>
 

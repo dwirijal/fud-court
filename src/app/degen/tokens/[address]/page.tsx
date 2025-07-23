@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/accordion"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Copy, ArrowUp, ArrowDown, ExternalLink, TrendingUp, TrendingDown, HelpCircle, Check } from 'lucide-react';
+import { Copy, ArrowUp, ArrowDown, ExternalLink, TrendingUp, TrendingDown, HelpCircle, Check, ScanLine } from 'lucide-react';
 import { cn } from '@/lib/utils/utils';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -210,7 +210,7 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
   
   const faqContent = {
     priceStats: `Harga saat ini untuk ${tokenInfo.name} (${mostRelevantPool.baseToken.symbol}/${mostRelevantPool.quoteToken.symbol}) di ${mostRelevantPool.dexId} adalah ${formatCurrency(mostRelevantPool.priceUsd, 6)}. Volume perdagangannya dalam 24 jam terakhir dilaporkan sebesar ${formatCurrency(totalVolumeH24, 0)} dengan total ${(mostRelevantPool.txns.h24.buys + mostRelevantPool.txns.h24.sells).toLocaleString()} transaksi pada pasangan utama. Alamat kontrak token adalah ${mostRelevantPool.baseToken.address}, dengan Valuasi Terdilusi Penuh (FDV) sebesar ${formatCurrency(mostRelevantPool.fdv, 0)} dan total likuiditas sebesar ${formatCurrency(totalLiquidity, 0)}.`,
-    highLow: `Berdasarkan data yang tersedia, rentang harga 24 jam tidak disediakan secara langsung. Namun, Anda dapat menganalisis grafik harga per jam di atas untuk menentukan harga tertinggi dan terendah terbaru.`,
+    highLow: `Data harga tertinggi dan terendah 24 jam tidak disediakan secara eksplisit oleh API. Anda dapat menganalisis grafik harga per jam di atas untuk memperkirakan rentang harga terbaru.`,
     liquidity: `Likuiditas total saat ini untuk ${tokenInfo.name} di semua pool yang dilacak adalah ${formatCurrency(totalLiquidity, 0)}. Likuiditas untuk pasangan utama (${mostRelevantPool.baseToken.symbol}/${mostRelevantPool.quoteToken.symbol} di ${mostRelevantPool.dexId}) adalah ${formatCurrency(mostRelevantPool.liquidity?.usd, 0)}.`,
     poolCreation: `Pool perdagangan utama untuk token ini dibuat pada ${mostRelevantPool.pairCreatedAt ? new Date(mostRelevantPool.pairCreatedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : 'tanggal tidak diketahui'}.`,
     exchangeRate: `Nilai tukar 1 ${tokenInfo.symbol} saat ini adalah ${formatCurrency(mostRelevantPool.priceUsd, 6)} USD.`,
@@ -421,6 +421,42 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
                     </div>
                   </TabsContent>
                 </Tabs>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <ScanLine />
+                  Pindai &amp; Analisis Eksternal
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Button variant="link" asChild className="p-0 h-auto justify-start">
+                  <a href={`https://t.me/ttfbotbot?start=${mostRelevantPool.chainId}-${address}`} target="_blank" rel="noopener noreferrer">
+                    TTF Bot <ExternalLink className="h-3 w-3 ml-1"/>
+                  </a>
+                </Button>
+                <Button variant="link" asChild className="p-0 h-auto justify-start">
+                  <a href={`https://rugcheck.xyz/tokens/${address}`} target="_blank" rel="noopener noreferrer">
+                    RugCheck <ExternalLink className="h-3 w-3 ml-1"/>
+                  </a>
+                </Button>
+                <Button variant="link" asChild className="p-0 h-auto justify-start">
+                  <a href={`https://solsniffer.com/scanner/${address}`} target="_blank" rel="noopener noreferrer">
+                    SolSniffer <ExternalLink className="h-3 w-3 ml-1"/>
+                  </a>
+                </Button>
+                <Button variant="link" asChild className="p-0 h-auto justify-start">
+                  <a href={`https://gatekept.io/token/${address}`} target="_blank" rel="noopener noreferrer">
+                    GateKept <ExternalLink className="h-3 w-3 ml-1"/>
+                  </a>
+                </Button>
+                 <Button variant="link" asChild className="p-0 h-auto justify-start">
+                  <a href={`https://check.quillai.network/solana/${address}`} target="_blank" rel="noopener noreferrer">
+                    QuillCheck <ExternalLink className="h-3 w-3 ml-1"/>
+                  </a>
+                </Button>
               </CardContent>
             </Card>
         </div>

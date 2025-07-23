@@ -11,13 +11,14 @@ import {
 } from "@/components/ui/accordion"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Copy, ArrowUp, ArrowDown, ExternalLink, TrendingUp, TrendingDown, HelpCircle, Check, ScanLine } from 'lucide-react';
+import { Copy, ArrowUp, ArrowDown, ExternalLink, TrendingUp, TrendingDown, HelpCircle, Check, ScanLine, Shield, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils/utils';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { GeckoTerminalAPI, OHLCVData } from '@/lib/api-clients/crypto/geckoterminal';
 import { DexScreenerClient, DexScreenerPair } from '@/lib/api-clients/crypto/dexScreener';
+import { RugCheck, RugCheckReport } from '@/lib/api-clients/crypto/rugCheck';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 
@@ -105,6 +106,7 @@ const GeckoTerminalPriceChart = ({ network, poolAddress }: { network: string; po
 export default function TokenDetailPage({ params }: TokenDetailPageProps) {
   const { address } = params;
   const [tokenPools, setTokenPools] = useState<DexScreenerPair[]>([]);
+  const [rugCheckReport, setRugCheckReport] = useState<RugCheckReport | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -119,21 +121,31 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
       setLoading(true);
       setError(null);
       const dexScreenerApi = new DexScreenerClient();
+      const rugCheckApi = new RugCheck();
 
       try {
         const response = await dexScreenerApi.getTokens(address);
         
         if (!response.pairs || response.pairs.length === 0) {
-            setError("Token tidak ditemukan di DexScreener.");
+            setError("Token not found on DexScreener.");
             setLoading(false);
             return;
         }
 
         const sortedPools = response.pairs.sort((a, b) => (b.volume?.h24 || 0) - (a.volume?.h24 || 0));
         setTokenPools(sortedPools);
+        
+        // Fetch RugCheck report in parallel
+        rugCheckApi.getTokenReport(address)
+          .then(report => setRugCheckReport(report))
+          .catch(err => {
+            console.error("Failed to fetch RugCheck report:", err)
+            // It's not a critical error if this fails, so we don't set the main error state
+          });
+
 
       } catch (err) {
-        setError('Gagal mengambil detail token.');
+        setError('Failed to fetch token details from DexScreener.');
         console.error(err);
       } finally {
         setLoading(false);
@@ -207,6 +219,18 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
   
   const totalVolumeH24 = tokenPools.reduce((sum, pool) => sum + (pool.volume?.h24 || 0), 0);
   const totalLiquidity = tokenPools.reduce((sum, pool) => sum + (pool.liquidity?.usd || 0), 0);
+  
+  const getRiskScoreColor = (score: number) => {
+    if (score >= 70) return 'text-red-500';
+    if (score >= 40) return 'text-yellow-500';
+    return 'text-green-500';
+  }
+
+  const getRiskScoreIcon = (score: number) => {
+    if (score >= 70) return <ShieldAlert className="h-5 w-5" />;
+    if (score >= 40) return <Shield className="h-5 w-5" />;
+    return <ShieldCheck className="h-5 w-5" />;
+  }
   
   const faqContent = {
     priceStats: `Harga saat ini untuk ${tokenInfo.name} (${mostRelevantPool.baseToken.symbol}/${mostRelevantPool.quoteToken.symbol}) di ${mostRelevantPool.dexId} adalah ${formatCurrency(mostRelevantPool.priceUsd, 6)}. Volume perdagangannya dalam 24 jam terakhir dilaporkan sebesar ${formatCurrency(totalVolumeH24, 0)} dengan total ${(mostRelevantPool.txns.h24.buys + mostRelevantPool.txns.h24.sells).toLocaleString()} transaksi pada pasangan utama. Alamat kontrak token adalah ${mostRelevantPool.baseToken.address}, dengan Valuasi Terdilusi Penuh (FDV) sebesar ${formatCurrency(mostRelevantPool.fdv, 0)} dan total likuiditas sebesar ${formatCurrency(totalLiquidity, 0)}.`,
@@ -343,6 +367,42 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
                   </div>
               </CardContent>
             </Card>
+
+            {rugCheckReport && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    {getRiskScoreIcon(rugCheckReport.riskScore.overall)}
+                    Analisis Keamanan
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="text-center">
+                    <p className="text-sm text-muted-foreground">Skor Risiko</p>
+                    <p className={cn("text-4xl font-bold", getRiskScoreColor(rugCheckReport.riskScore.overall))}>
+                      {rugCheckReport.riskScore.overall}/100
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold mb-2">Peringatan Utama:</h4>
+                    <ul className="list-disc list-inside space-y-1 text-sm">
+                      {rugCheckReport.riskFlags.filter(f => f.type === 'critical' || f.type === 'high').slice(0, 3).map((flag, i) => (
+                        <li key={i}>{flag.title}</li>
+                      ))}
+                      {rugCheckReport.riskFlags.filter(f => f.type === 'critical' || f.type === 'high').length === 0 && (
+                        <li className="text-green-500">Tidak ada peringatan berisiko tinggi yang ditemukan.</li>
+                      )}
+                    </ul>
+                  </div>
+                   <Button variant="outline" className="w-full" asChild>
+                      <a href={`https://rugcheck.xyz/tokens/${address}`} target="_blank" rel="noopener noreferrer">
+                        Lihat Laporan Lengkap
+                        <ExternalLink className="h-4 w-4 ml-2" />
+                      </a>
+                    </Button>
+                </CardContent>
+              </Card>
+            )}
 
             <Card>
               <CardHeader>

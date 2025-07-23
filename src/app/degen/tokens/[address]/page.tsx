@@ -14,6 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Copy, ArrowUp, ArrowDown, ExternalLink, TrendingUp, TrendingDown, HelpCircle, Check, ScanLine, Shield, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils/utils';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { GeckoTerminalAPI, OHLCVData } from '@/lib/api-clients/crypto/geckoterminal';
@@ -244,13 +245,19 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
   return (
     <div className="p-4 md:p-6 space-y-6 max-w-7xl mx-auto">
       <Card>
-        <CardHeader>
-            <h1 className="text-3xl font-bold">{tokenInfo.name} ({tokenInfo.symbol})</h1>
-            <div className="flex items-center gap-2">
-            <p className="text-sm text-muted-foreground break-all">{address}</p>
-            <Button variant="ghost" size="icon" onClick={handleCopy} className="h-7 w-7">
-                <Copy className="h-4 w-4" />
-            </Button>
+        <CardHeader className="flex flex-row items-center gap-4">
+            <Avatar className="h-16 w-16">
+              <AvatarImage src={mostRelevantPool.info?.imageUrl} alt={tokenInfo.name} />
+              <AvatarFallback>{tokenInfo.symbol.slice(0, 2).toUpperCase()}</AvatarFallback>
+            </Avatar>
+            <div>
+              <h1 className="text-3xl font-bold">{tokenInfo.name} ({tokenInfo.symbol})</h1>
+              <div className="flex items-center gap-2 mt-1">
+                <p className="text-sm text-muted-foreground break-all">{address}</p>
+                <Button variant="ghost" size="icon" onClick={handleCopy} className="h-7 w-7">
+                    <Copy className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
         </CardHeader>
       </Card>

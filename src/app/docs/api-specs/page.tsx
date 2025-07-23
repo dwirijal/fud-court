@@ -3,7 +3,15 @@
 
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Terminal, ScreenShare, Flame, ShieldCheck, HelpCircle, Bot } from 'lucide-react';
+import { ScreenShare, Flame, ShieldCheck, HelpCircle, Bot } from 'lucide-react';
+
+const GeckoTerminalIcon = () => (
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM16.89 15.5C16.89 15.5 15.24 15.54 14.99 15.5C14.73 15.45 14.5 15.22 14.5 14.96V12.72C14.5 12.42 14.71 12.18 15 12.18H17.37C17.65 12.18 17.89 12.4 17.89 12.69V15.13C17.89 15.34 17.72 15.5 17.52 15.5H16.89Z"></path>
+        <path d="M10.1501 15.5C10.1501 15.5 8.50007 15.54 8.25007 15.5C7.99007 15.45 7.76007 15.22 7.76007 14.96V9.04C7.76007 8.78 7.99007 8.55 8.25007 8.5H10.1501C10.4301 8.5 10.6501 8.72 10.6501 9V14.96C10.6501 15.26 10.4201 15.5 10.1501 15.5Z"></path>
+    </svg>
+);
+
 
 export default function ApiSpecsPage() {
   const apiSections = [
@@ -11,7 +19,7 @@ export default function ApiSpecsPage() {
       href: 'https://docs.geckoterminal.com/reference/api-reference-overview',
       title: 'GeckoTerminal API',
       description: 'Spesifikasi untuk data DEX real-time dari GeckoTerminal.',
-      icon: <Terminal className="h-8 w-8 text-primary" />,
+      icon: <GeckoTerminalIcon />,
       external: true,
     },
     {
@@ -61,7 +69,7 @@ export default function ApiSpecsPage() {
           <Link href={section.href} key={section.href} target={section.external ? '_blank' : '_self'} rel={section.external ? 'noopener noreferrer' : ''}>
             <Card className="h-full hover:shadow-lg transition-shadow duration-300 group">
               <CardContent className="p-6 flex flex-col items-start gap-4">
-                <div className="p-3 bg-accent/20 rounded-lg text-accent-foreground group-hover:bg-accent/30 transition-colors">
+                <div className="p-3 bg-accent/20 rounded-lg text-primary group-hover:bg-accent/30 transition-colors">
                   {section.icon}
                 </div>
                 <div>

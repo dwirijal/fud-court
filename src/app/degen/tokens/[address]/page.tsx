@@ -136,13 +136,11 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
         const sortedPools = response.pairs.sort((a, b) => (b.volume?.h24 || 0) - (a.volume?.h24 || 0));
         setTokenPools(sortedPools);
         
-        // Fetch RugCheck report in parallel, but don't let it crash the page
         try {
           const report = await rugCheckApi.getTokenReport(address);
           setRugCheckReport(report);
         } catch (err) {
           console.warn("Could not fetch RugCheck report:", err);
-          // It's not a critical error if this fails, so we just log it and continue
         }
 
       } catch (err) {
@@ -245,19 +243,37 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
   return (
     <div className="p-4 md:p-6 space-y-6 max-w-7xl mx-auto">
       <Card>
-        <CardHeader className="flex flex-row items-center gap-4">
-            <Avatar className="h-16 w-16">
-              <AvatarImage src={mostRelevantPool.info?.imageUrl} alt={tokenInfo.name} />
-              <AvatarFallback>{tokenInfo.symbol.slice(0, 2).toUpperCase()}</AvatarFallback>
-            </Avatar>
-            <div>
-              <h1 className="text-3xl font-bold">{tokenInfo.name} ({tokenInfo.symbol})</h1>
-              <div className="flex items-center gap-2 mt-1">
-                <p className="text-sm text-muted-foreground break-all">{address}</p>
-                <Button variant="ghost" size="icon" onClick={handleCopy} className="h-7 w-7">
-                    <Copy className="h-4 w-4" />
-                </Button>
+        <CardHeader className="flex flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <Avatar className="h-16 w-16">
+                <AvatarImage src={mostRelevantPool.info?.imageUrl} alt={tokenInfo.name} />
+                <AvatarFallback>{tokenInfo.symbol.slice(0, 2).toUpperCase()}</AvatarFallback>
+              </Avatar>
+              <div>
+                <h1 className="text-3xl font-bold">{tokenInfo.name} ({tokenInfo.symbol})</h1>
+                <div className="flex items-center gap-2 mt-1">
+                  <p className="text-sm text-muted-foreground break-all">{address}</p>
+                  <Button variant="ghost" size="icon" onClick={handleCopy} className="h-7 w-7">
+                      <Copy className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
+            </div>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-right">
+              {(['m5', 'h1', 'h6', 'h24'] as const).map(tf => {
+                const change = mostRelevantPool.priceChange[tf];
+                return (
+                  <div key={tf} className="flex items-center justify-end gap-2">
+                    <span className="text-xs text-muted-foreground uppercase">{tf}</span>
+                    <span className={cn(
+                      'text-sm font-semibold',
+                      change >= 0 ? 'text-green-500' : 'text-red-500'
+                    )}>
+                      {change.toFixed(2)}%
+                    </span>
+                  </div>
+                )
+              })}
             </div>
         </CardHeader>
       </Card>

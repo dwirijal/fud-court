@@ -1,3 +1,4 @@
+
 /**
  * FRED API TypeScript Client
  * Federal Reserve Economic Data (FRED) API Client
@@ -1459,10 +1460,3 @@ export function getTrend(observations: SeriesObservation[]): 'up' | 'down' | 'st
 // ============================================================================
 
 export default FredClient;
-```
-- `/src/lib/api-clients/economics/index.ts`:
-```typescript
-export * from './fred';
-```
-
-Done! I have created the `fred.ts` file in the correct directory and exported its contents.

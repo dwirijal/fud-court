@@ -4,33 +4,15 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'images.unsplash.com',
+        hostname: 'cryptologos.cc',
         port: '',
-        pathname: '**',
+        pathname: '/logos/**',
       },
       {
         protocol: 'https',
-        hostname: 'placehold.co',
+        hostname: 'assets.coingecko.com',
         port: '',
-        pathname: '**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'firebasestorage.googleapis.com',
-        port: '',
-        pathname: '**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'static.ghost.org',
-        port: '',
-        pathname: '**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'coin-images.coingecko.com',
-        port: '',
-        pathname: '**',
+        pathname: '/coins/images/**',
       },
     ],
   },

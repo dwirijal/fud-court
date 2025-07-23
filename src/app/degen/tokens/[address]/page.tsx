@@ -11,13 +11,14 @@ import {
 } from "@/components/ui/accordion"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Copy, ArrowUp, ArrowDown, ExternalLink, TrendingUp, TrendingDown, HelpCircle } from 'lucide-react';
+import { Copy, ArrowUp, ArrowDown, ExternalLink, TrendingUp, TrendingDown, HelpCircle, Check } from 'lucide-react';
 import { cn } from '@/lib/utils/utils';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { GeckoTerminalAPI, OHLCVData } from '@/lib/api-clients/crypto/geckoterminal';
 import { DexScreenerClient, DexScreenerPair } from '@/lib/api-clients/crypto/dexScreener';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 
 interface TokenDetailPageProps {
@@ -344,21 +345,83 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
             </Card>
 
             <Card>
-                <CardHeader><CardTitle>24h Transactions</CardTitle></CardHeader>
-                <CardContent className="space-y-3">
-                    <div className="flex justify-between items-center">
+              <CardHeader>
+                <CardTitle>Transactions</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Tabs defaultValue="h24" className="w-full">
+                  <TabsList className="grid w-full grid-cols-4">
+                    <TabsTrigger value="h24">24h</TabsTrigger>
+                    <TabsTrigger value="h6">6h</TabsTrigger>
+                    <TabsTrigger value="h1">1h</TabsTrigger>
+                    <TabsTrigger value="m5">5m</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="h24" className="pt-4">
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
                         <span className="text-sm text-green-500 flex items-center gap-2"><TrendingUp/> Buys</span>
                         <span className="font-mono">{mostRelevantPool.txns.h24.buys.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
+                      </div>
+                      <div className="flex justify-between items-center">
                         <span className="text-sm text-red-500 flex items-center gap-2"><TrendingDown/> Sells</span>
                         <span className="font-mono">{mostRelevantPool.txns.h24.sells.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between items-center border-t pt-2">
+                      </div>
+                      <div className="flex justify-between items-center border-t pt-2 mt-2">
                         <span className="text-sm text-muted-foreground">Total</span>
                         <span className="font-mono">{(mostRelevantPool.txns.h24.buys + mostRelevantPool.txns.h24.sells).toLocaleString()}</span>
+                      </div>
                     </div>
-                </CardContent>
+                  </TabsContent>
+                  <TabsContent value="h6" className="pt-4">
+                     <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-green-500 flex items-center gap-2"><TrendingUp/> Buys</span>
+                        <span className="font-mono">{mostRelevantPool.txns.h6.buys.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-red-500 flex items-center gap-2"><TrendingDown/> Sells</span>
+                        <span className="font-mono">{mostRelevantPool.txns.h6.sells.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between items-center border-t pt-2 mt-2">
+                        <span className="text-sm text-muted-foreground">Total</span>
+                        <span className="font-mono">{(mostRelevantPool.txns.h6.buys + mostRelevantPool.txns.h6.sells).toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </TabsContent>
+                  <TabsContent value="h1" className="pt-4">
+                     <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-green-500 flex items-center gap-2"><TrendingUp/> Buys</span>
+                        <span className="font-mono">{mostRelevantPool.txns.h1.buys.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-red-500 flex items-center gap-2"><TrendingDown/> Sells</span>
+                        <span className="font-mono">{mostRelevantPool.txns.h1.sells.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between items-center border-t pt-2 mt-2">
+                        <span className="text-sm text-muted-foreground">Total</span>
+                        <span className="font-mono">{(mostRelevantPool.txns.h1.buys + mostRelevantPool.txns.h1.sells).toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </TabsContent>
+                   <TabsContent value="m5" className="pt-4">
+                     <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-green-500 flex items-center gap-2"><TrendingUp/> Buys</span>
+                        <span className="font-mono">{mostRelevantPool.txns.m5.buys.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-red-500 flex items-center gap-2"><TrendingDown/> Sells</span>
+                        <span className="font-mono">{mostRelevantPool.txns.m5.sells.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between items-center border-t pt-2 mt-2">
+                        <span className="text-sm text-muted-foreground">Total</span>
+                        <span className="font-mono">{(mostRelevantPool.txns.m5.buys + mostRelevantPool.txns.m5.sells).toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
             </Card>
         </div>
       </div>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -7,6 +8,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils/utils';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton'; // Import Skeleton
+import { Badge } from '@/components/ui/badge';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export default function DefiProtocolsPage() {
   const [protocols, setProtocols] = useState<Protocol[]>([]);
@@ -93,38 +101,59 @@ export default function DefiProtocolsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {protocols.map((protocol) => (
-                  <TableRow key={protocol.id}>
-                    <TableCell className="font-medium">
-                      <Link href={`/defi/protocols/${protocol.slug}`} className="block w-full h-full py-2 px-4">
-                        {protocol.name}
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      <Link href={`/defi/protocols/${protocol.slug}`} className="block w-full h-full py-2 px-4">
-                        {protocol.category}
-                      </Link>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Link href={`/defi/protocols/${protocol.slug}`} className="block w-full h-full py-2 px-4">
-                        ${protocol.tvl?.toLocaleString()}
-                      </Link>
-                    </TableCell>
-                    <TableCell className={cn(
-                      "text-right",
-                      protocol.change_1d >= 0 ? 'text-green-500' : 'text-red-500'
-                    )}>
-                      <Link href={`/defi/protocols/${protocol.slug}`} className="block w-full h-full py-2 px-4">
-                        {protocol.change_1d?.toFixed(2)}%
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      <Link href={`/defi/protocols/${protocol.slug}`} className="block w-full h-full py-2 px-4">
-                        {protocol.chains.join(', ')}
-                      </Link>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {protocols.map((protocol) => {
+                  const topChains = protocol.chains.slice(0, 3);
+                  const otherChains = protocol.chains.slice(3);
+
+                  return (
+                    <TableRow key={protocol.id}>
+                      <TableCell className="font-medium">
+                        <Link href={`/defi/protocols/${protocol.slug}`} className="block w-full h-full py-2 px-4">
+                          {protocol.name}
+                        </Link>
+                      </TableCell>
+                      <TableCell>
+                        <Link href={`/defi/protocols/${protocol.slug}`} className="block w-full h-full py-2 px-4">
+                          {protocol.category}
+                        </Link>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Link href={`/defi/protocols/${protocol.slug}`} className="block w-full h-full py-2 px-4">
+                          ${protocol.tvl?.toLocaleString()}
+                        </Link>
+                      </TableCell>
+                      <TableCell className={cn(
+                        "text-right",
+                        protocol.change_1d >= 0 ? 'text-green-500' : 'text-red-500'
+                      )}>
+                        <Link href={`/defi/protocols/${protocol.slug}`} className="block w-full h-full py-2 px-4">
+                          {protocol.change_1d?.toFixed(2)}%
+                        </Link>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex flex-wrap items-center gap-1">
+                          {topChains.map((chain) => (
+                            <Badge key={chain} variant="outline">{chain}</Badge>
+                          ))}
+                          {otherChains.length > 0 && (
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Badge variant="secondary" className="cursor-pointer">
+                                  +{otherChains.length} more
+                                </Badge>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent>
+                                {otherChains.map((chain) => (
+                                  <DropdownMenuItem key={chain}>{chain}</DropdownMenuItem>
+                                ))}
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </div>

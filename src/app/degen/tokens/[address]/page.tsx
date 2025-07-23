@@ -6,9 +6,10 @@ import { DexScreenerClient, DexScreenerPair } from '@/lib/api-clients/crypto/dex
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
-import { DollarSign, Droplets, BarChart3, Link as LinkIcon, ArrowRightLeft, AlertTriangle } from 'lucide-react';
+import { DollarSign, Droplets, BarChart3, Link as LinkIcon, ArrowRightLeft, AlertTriangle, Copy, Check } from 'lucide-react';
 import { cn } from '@/lib/utils/utils';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 interface TokenDetailPageProps {
   params: { address: string };
@@ -19,6 +20,15 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
   const [tokenPairs, setTokenPairs] = useState<DexScreenerPair[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(address);
+    setIsCopied(true);
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 2000);
+  };
 
   useEffect(() => {
     const fetchTokenDetails = async () => {
@@ -129,7 +139,12 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
     <div className="p-4 md:p-6 space-y-6 max-w-4xl mx-auto">
       <header>
         <h1 className="text-3xl font-bold">{tokenInfo.name} ({tokenInfo.symbol})</h1>
-        <p className="text-sm text-muted-foreground break-all">{address}</p>
+        <div className="flex items-center gap-2">
+          <p className="text-sm text-muted-foreground break-all">{address}</p>
+          <Button variant="ghost" size="icon" onClick={handleCopy} className="h-7 w-7">
+            {isCopied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+          </Button>
+        </div>
       </header>
 
       <Card>
@@ -231,4 +246,3 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
     </div>
   );
 }
-

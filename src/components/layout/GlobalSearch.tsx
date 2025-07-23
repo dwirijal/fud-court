@@ -2,8 +2,7 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
-import { CoinGeckoAPI } from '@/lib/api-clients/crypto/coinGecko'
-import { DexScreenerClient, DexScreenerPair } from '@/lib/api-clients/crypto/dexScreener'
+import { GeckoTerminalAPI, Pool, Token } from '@/lib/api-clients/crypto/geckoterminal';
 import { Button } from '@/components/ui/button'
 import {
   CommandDialog,
@@ -15,12 +14,7 @@ import {
 } from '@/components/ui/command'
 import { Search, Compass, CandlestickChart } from 'lucide-react'
 
-interface CoinSuggestion {
-  id: string
-  name: string
-  symbol: string;
-  thumb: string;
-}
+type SearchResult = (Pool | Token) & { network: string };
 
 const isContractAddress = (query: string): boolean => {
   return /^0x[a-fA-F0-9]{40}$/.test(query);
@@ -30,8 +24,7 @@ export function GlobalSearch() {
   const router = useRouter()
   const [open, setOpen] = React.useState(false)
   const [query, setQuery] = React.useState('')
-  const [coinSuggestions, setCoinSuggestions] = React.useState<CoinSuggestion[]>([])
-  const [dexPairs, setDexPairs] = React.useState<DexScreenerPair[]>([])
+  const [searchResults, setSearchResults] = React.useState<SearchResult[]>([])
   const [loading, setLoading] = React.useState(false)
 
   React.useEffect(() => {
@@ -47,35 +40,23 @@ export function GlobalSearch() {
 
   React.useEffect(() => {
     if (!query) {
-      setCoinSuggestions([])
-      setDexPairs([])
+      setSearchResults([])
       return
     }
 
     const fetchSuggestions = async () => {
       setLoading(true)
       try {
-        const coinGecko = new CoinGeckoAPI()
-        const dexScreener = new DexScreenerClient()
-
-        if (isContractAddress(query)) {
-          // It's a contract address, use getTokens from DexScreener
-          const tokenResults = await dexScreener.getTokens(query).catch(() => ({ pairs: [] }));
-          setDexPairs(tokenResults.pairs?.slice(0, 10) || []);
-          setCoinSuggestions([]); // Clear coin suggestions
-        } else {
-          // It's a text query, use search from both
-          const [coinResults, dexResults] = await Promise.all([
-            coinGecko.search(query).catch(() => ({ coins: [] })),
-            dexScreener.search(query).catch(() => ({ pairs: [] })),
-          ])
-  
-          setCoinSuggestions(coinResults.coins?.slice(0, 5) || [])
-          setDexPairs(dexResults.pairs?.slice(0, 5) || [])
-        }
-
+        const api = new GeckoTerminalAPI();
+        const response = await api.search({ query, include: ['network'] });
+        const resultsWithNetwork = response.data.map((item: any) => ({
+          ...item,
+          network: item.relationships?.network?.data?.id ?? 'unknown'
+        }));
+        setSearchResults(resultsWithNetwork.slice(0, 10)); // Limit to 10 results
       } catch (error) {
         console.error("Search failed:", error)
+        setSearchResults([]);
       } finally {
         setLoading(false)
       }
@@ -93,6 +74,38 @@ export function GlobalSearch() {
     command()
   }, [])
 
+  const renderItem = (item: SearchResult) => {
+    if (item.type === 'token') {
+      const token = item as Token;
+      return (
+        <CommandItem
+          key={item.id}
+          value={`token-${item.id}`}
+          onSelect={() => runCommand(() => router.push(`/degen/tokens/${token.attributes.address}`))}
+        >
+          <Compass className="mr-2 h-4 w-4" />
+          {token.attributes.name} ({token.attributes.symbol})
+          <span className='ml-2 text-xs text-muted-foreground'>on {item.network}</span>
+        </CommandItem>
+      );
+    }
+    if (item.type === 'pool') {
+      const pool = item as Pool;
+      return (
+        <CommandItem
+          key={item.id}
+          value={`pool-${item.id}`}
+          onSelect={() => runCommand(() => router.push(`/degen/tokens/${pool.relationships.base_token.data.id.split('_')[1]}`))}
+        >
+          <CandlestickChart className="mr-2 h-4 w-4" />
+          {pool.attributes.name}
+          <span className='ml-2 text-xs text-muted-foreground'>on {item.network}</span>
+        </CommandItem>
+      );
+    }
+    return null;
+  }
+
   return (
     <>
       <Button
@@ -109,45 +122,20 @@ export function GlobalSearch() {
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput 
-          placeholder="Search for a coin or pair by name or address..." 
+          placeholder="Search for a token or pair by name or address..." 
           value={query}
           onValueChange={setQuery}
         />
         <CommandList>
           {loading && <CommandEmpty>Loading...</CommandEmpty>}
           
-          {coinSuggestions.length === 0 && dexPairs.length === 0 && !loading && query.length > 2 && (
+          {searchResults.length === 0 && !loading && query.length > 2 && (
              <CommandEmpty>No results found.</CommandEmpty>
           )}
 
-          {coinSuggestions.length > 0 && (
-            <CommandGroup heading="Coins">
-              {coinSuggestions.map((coin) => (
-                <CommandItem
-                  key={coin.id}
-                  value={`coin-${coin.id}`}
-                  onSelect={() => runCommand(() => router.push(`/coins/${coin.id}`))}
-                >
-                  <Compass className="mr-2 h-4 w-4" />
-                  {coin.name} ({coin.symbol})
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          )}
-
-          {dexPairs.length > 0 && (
-            <CommandGroup heading="DEX Pairs">
-              {dexPairs.map((pair) => (
-                <CommandItem
-                  key={pair.pairAddress}
-                  value={`pair-${pair.pairAddress}`}
-                  onSelect={() => runCommand(() => router.push(`/degen/tokens/${pair.baseToken.address}`))}
-                >
-                  <CandlestickChart className="mr-2 h-4 w-4" />
-                  {pair.baseToken.symbol}/{pair.quoteToken.symbol}
-                  <span className='ml-2 text-xs text-muted-foreground'>({pair.dexId})</span>
-                </CommandItem>
-              ))}
+          {searchResults.length > 0 && (
+            <CommandGroup heading="Results">
+              {searchResults.map(item => renderItem(item))}
             </CommandGroup>
           )}
         </CommandList>

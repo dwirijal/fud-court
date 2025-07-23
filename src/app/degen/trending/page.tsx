@@ -1,45 +1,49 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { DexScreenerClient, DexScreenerPair } from '@/lib/api-clients/crypto/dexScreener';
+import { GeckoTerminalAPI, Pool } from '@/lib/api-clients/crypto/geckoterminal';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils/utils';
 import Link from 'next/link';
-import { Skeleton } from '@/components/ui/skeleton'; // Import Skeleton
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function DegenTrendingPage() {
-  const [trendingPairs, setTrendingPairs] = useState<DexScreenerPair[]>([]);
+  const [trendingPools, setTrendingPools] = useState<Pool[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchTrendingPairs = async () => {
+    const fetchTrendingPools = async () => {
       try {
-        const dexScreener = new DexScreenerClient();
-        // DexScreener's getTrendingPairs uses search internally, so it might return many results.
-        // We'll just display them as is for now.
-        const response = await dexScreener.getTrendingPairs(); 
-        setTrendingPairs(response.pairs || []);
+        const api = new GeckoTerminalAPI();
+        const response = await api.getTrendingPools(['base_token', 'quote_token', 'dex']);
+        setTrendingPools(response.data);
       } catch (err) {
-        setError('Failed to fetch trending DEX pairs data.');
+        setError('Failed to fetch trending DEX pools data.');
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchTrendingPairs();
+    fetchTrendingPools();
   }, []);
+
+  const formatCurrency = (value: string | number | undefined, precision = 2) => {
+    const num = typeof value === 'string' ? parseFloat(value) : value;
+    if (num === undefined || num === null) return 'N/A';
+    return `$${num.toLocaleString(undefined, { minimumFractionDigits: precision, maximumFractionDigits: precision })}`;
+  }
 
   if (error) {
     return <div className="p-4 text-red-500">Error: {error}</div>;
   }
 
-  if (loading || !trendingPairs.length) {
+  if (loading || !trendingPools.length) {
     return (
       <div className="p-4">
-        <h1 className="text-2xl font-bold mb-4">Trending DEX Pairs</h1>
+        <h1 className="text-2xl font-bold mb-4">Trending DEX Pools</h1>
         <Card>
           <CardHeader>
             <Skeleton className="h-6 w-1/2 mb-4" />
@@ -79,10 +83,10 @@ export default function DegenTrendingPage() {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Trending DEX Pairs</h1>
+      <h1 className="text-2xl font-bold mb-4">Trending DEX Pools</h1>
       <Card>
         <CardHeader>
-          <CardTitle>Top Trending Pairs</CardTitle>
+          <CardTitle>Top Trending Pools</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
@@ -90,7 +94,7 @@ export default function DegenTrendingPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Pair</TableHead>
-                  <TableHead>Chain</TableHead>
+                  <TableHead>Network</TableHead>
                   <TableHead>DEX</TableHead>
                   <TableHead className="text-right">Price (USD)</TableHead>
                   <TableHead className="text-right">24h Change (%)</TableHead>
@@ -98,39 +102,39 @@ export default function DegenTrendingPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {trendingPairs.map((pair) => (
-                  <TableRow key={pair.pairAddress}>
+                {trendingPools.map((pool) => (
+                  <TableRow key={pool.id}>
                     <TableCell className="font-medium">
-                      <Link href={`/degen/tokens/${pair.baseToken.address}`} className="block w-full h-full py-2 px-4">
-                        {pair.baseToken.symbol}/{pair.quoteToken.symbol}
+                      <Link href={`/degen/tokens/${pool.relationships.base_token.data.id.split('_')[1]}`} className="block w-full h-full py-2 px-4">
+                        {pool.attributes.name}
                       </Link>
                     </TableCell>
                     <TableCell>
-                      <Link href={`/degen/tokens/${pair.baseToken.address}`} className="block w-full h-full py-2 px-4">
-                        {pair.chainId}
+                      <Link href={`/degen/tokens/${pool.relationships.base_token.data.id.split('_')[1]}`} className="block w-full h-full py-2 px-4">
+                        {pool.id.split('_')[0]}
                       </Link>
                     </TableCell>
                     <TableCell>
-                      <Link href={`/degen/tokens/${pair.baseToken.address}`} className="block w-full h-full py-2 px-4">
-                        {pair.dexId}
+                      <Link href={`/degen/tokens/${pool.relationships.base_token.data.id.split('_')[1]}`} className="block w-full h-full py-2 px-4">
+                        {pool.relationships.dex.data.id.split('_')[1]}
                       </Link>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Link href={`/degen/tokens/${pair.baseToken.address}`} className="block w-full h-full py-2 px-4">
-                        ${parseFloat(pair.priceUsd || '0').toFixed(6)}
+                      <Link href={`/degen/tokens/${pool.relationships.base_token.data.id.split('_')[1]}`} className="block w-full h-full py-2 px-4">
+                        {formatCurrency(pool.attributes.base_token_price_usd, 6)}
                       </Link>
                     </TableCell>
                     <TableCell className={cn(
                       "text-right",
-                      pair.priceChange.h24 >= 0 ? 'text-green-500' : 'text-red-500'
+                      parseFloat(pool.attributes.price_change_percentage.h24) >= 0 ? 'text-green-500' : 'text-red-500'
                     )}>
-                      <Link href={`/degen/tokens/${pair.baseToken.address}`} className="block w-full h-full py-2 px-4">
-                        {pair.priceChange.h24?.toFixed(2)}%
+                      <Link href={`/degen/tokens/${pool.relationships.base_token.data.id.split('_')[1]}`} className="block w-full h-full py-2 px-4">
+                        {parseFloat(pool.attributes.price_change_percentage.h24).toFixed(2)}%
                       </Link>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Link href={`/degen/tokens/${pair.baseToken.address}`} className="block w-full h-full py-2 px-4">
-                        ${pair.volume.h24?.toLocaleString()}
+                      <Link href={`/degen/tokens/${pool.relationships.base_token.data.id.split('_')[1]}`} className="block w-full h-full py-2 px-4">
+                        {formatCurrency(pool.attributes.volume_usd.h24)}
                       </Link>
                     </TableCell>
                   </TableRow>

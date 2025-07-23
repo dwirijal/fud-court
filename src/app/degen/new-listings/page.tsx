@@ -1,47 +1,65 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { DexScreenerClient, DexScreenerPair } from '@/lib/api-clients/crypto/dexScreener';
+import { GeckoTerminalAPI, Pool } from '@/lib/api-clients/crypto/geckoterminal';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils/utils';
 import Link from 'next/link';
-import { Skeleton } from '@/components/ui/skeleton'; // Import Skeleton
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function NewListingsPage() {
-  const [newPairs, setNewPairs] = useState<DexScreenerPair[]>([]);
+  const [newPools, setNewPools] = useState<Pool[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchNewListings = async () => {
+    const fetchNewPools = async () => {
       try {
-        const dexScreener = new DexScreenerClient();
-        // Search for a common token (e.g., USDT) to get a broad range of pairs
-        // Then filter and sort by creation time to simulate new listings.
-        const searchResults = await dexScreener.search('USDT'); 
-        
-        const sortedPairs = (searchResults.pairs || [])
-          .filter(pair => pair.pairCreatedAt) // Ensure pairCreatedAt exists
-          .sort((a, b) => (b.pairCreatedAt || 0) - (a.pairCreatedAt || 0)); // Sort descending
-
-        setNewPairs(sortedPairs.slice(0, 50)); // Take top 50 newest pairs
+        const api = new GeckoTerminalAPI();
+        const response = await api.getNewPools(['base_token', 'quote_token', 'dex']);
+        setNewPools(response.data);
       } catch (err) {
-        setError('Failed to fetch new listings data.');
+        setError('Failed to fetch new pools data.');
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchNewListings();
+    fetchNewPools();
   }, []);
+
+  const formatCurrency = (value: string | number | undefined, precision = 2) => {
+    const num = typeof value === 'string' ? parseFloat(value) : value;
+    if (num === undefined || num === null) return 'N/A';
+    return `$${num.toLocaleString(undefined, { minimumFractionDigits: precision, maximumFractionDigits: precision })}`;
+  }
+
+  const getTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    
+    let interval = seconds / 31536000;
+    if (interval > 1) return Math.floor(interval) + " years ago";
+    interval = seconds / 2592000;
+    if (interval > 1) return Math.floor(interval) + " months ago";
+    interval = seconds / 86400;
+    if (interval > 1) return Math.floor(interval) + " days ago";
+    interval = seconds / 3600;
+    if (interval > 1) return Math.floor(interval) + " hours ago";
+    interval = seconds / 60;
+    if (interval > 1) return Math.floor(interval) + " minutes ago";
+    return Math.floor(seconds) + " seconds ago";
+  }
+
 
   if (error) {
     return <div className="p-4 text-red-500">Error: {error}</div>;
   }
 
-  if (loading || !newPairs.length) {
+  if (loading || !newPools.length) {
     return (
       <div className="p-4">
         <h1 className="text-2xl font-bold mb-4">New Token Listings</h1>
@@ -87,7 +105,7 @@ export default function NewListingsPage() {
       <h1 className="text-2xl font-bold mb-4">New Token Listings</h1>
       <Card>
         <CardHeader>
-          <CardTitle>Recently Listed Pairs (Simulated)</CardTitle>
+          <CardTitle>Recently Created Pools</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
@@ -95,7 +113,7 @@ export default function NewListingsPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Pair</TableHead>
-                  <TableHead>Chain</TableHead>
+                  <TableHead>Network</TableHead>
                   <TableHead>DEX</TableHead>
                   <TableHead className="text-right">Price (USD)</TableHead>
                   <TableHead className="text-right">24h Volume</TableHead>
@@ -103,36 +121,36 @@ export default function NewListingsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {newPairs.map((pair) => (
-                  <TableRow key={pair.pairAddress}>
+                {newPools.map((pool) => (
+                  <TableRow key={pool.id}>
                     <TableCell className="font-medium">
-                      <Link href={`/degen/tokens/${pair.baseToken.address}`} className="block w-full h-full py-2 px-4">
-                        {pair.baseToken.symbol}/{pair.quoteToken.symbol}
+                      <Link href={`/degen/tokens/${pool.relationships.base_token.data.id.split('_')[1]}`} className="block w-full h-full py-2 px-4">
+                        {pool.attributes.name}
                       </Link>
                     </TableCell>
-                    <TableCell>
-                      <Link href={`/degen/tokens/${pair.baseToken.address}`} className="block w-full h-full py-2 px-4">
-                        {pair.chainId}
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      <Link href={`/degen/tokens/${pair.baseToken.address}`} className="block w-full h-full py-2 px-4">
-                        {pair.dexId}
+                     <TableCell>
+                       <Link href={`/degen/tokens/${pool.relationships.base_token.data.id.split('_')[1]}`} className="block w-full h-full py-2 px-4">
+                         {pool.id.split('_')[0]}
+                       </Link>
+                     </TableCell>
+                     <TableCell>
+                        <Link href={`/degen/tokens/${pool.relationships.base_token.data.id.split('_')[1]}`} className="block w-full h-full py-2 px-4">
+                          {pool.relationships.dex.data.id.split('_')[1]}
+                        </Link>
+                     </TableCell>
+                    <TableCell className="text-right">
+                      <Link href={`/degen/tokens/${pool.relationships.base_token.data.id.split('_')[1]}`} className="block w-full h-full py-2 px-4">
+                        {formatCurrency(pool.attributes.base_token_price_usd, 6)}
                       </Link>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Link href={`/degen/tokens/${pair.baseToken.address}`} className="block w-full h-full py-2 px-4">
-                        ${parseFloat(pair.priceUsd || '0').toFixed(6)}
-                      </Link>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Link href={`/degen/tokens/${pair.baseToken.address}`} className="block w-full h-full py-2 px-4">
-                        ${pair.volume.h24?.toLocaleString()}
+                      <Link href={`/degen/tokens/${pool.relationships.base_token.data.id.split('_')[1]}`} className="block w-full h-full py-2 px-4">
+                        {formatCurrency(pool.attributes.volume_usd.h24)}
                       </Link>
                     </TableCell>
                     <TableCell>
-                      <Link href={`/degen/tokens/${pair.baseToken.address}`} className="block w-full h-full py-2 px-4">
-                        {pair.pairCreatedAt ? new Date(pair.pairCreatedAt).toLocaleString() : 'N/A'}
+                      <Link href={`/degen/tokens/${pool.relationships.base_token.data.id.split('_')[1]}`} className="block w-full h-full py-2 px-4">
+                        {getTimeAgo(pool.attributes.pool_created_at)}
                       </Link>
                     </TableCell>
                   </TableRow>

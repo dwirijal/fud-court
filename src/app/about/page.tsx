@@ -1,6 +1,7 @@
+
 'use client';
 
-import { HeroSection } from '@/components/shared/HeroSection';
+import { AnimatedHero } from '@/components/shared/AnimatedHero';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Bot, Zap, TrendingUp, Users } from 'lucide-react';
 import Link from 'next/link';
@@ -26,10 +27,7 @@ export default function AboutPage() {
 
   return (
     <>
-      <HeroSection
-        title="Tentang Fud Court"
-        description="Klaritas dalam Kekacauan Cryptocurrency."
-      />
+      <AnimatedHero />
       <div className="container mx-auto max-w-5xl py-12 px-4 md:px-6">
         <div className="prose dark:prose-invert max-w-none text-lg text-center mb-12">
           <p>

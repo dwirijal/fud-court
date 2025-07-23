@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -7,24 +8,40 @@ import { ArrowRight } from 'lucide-react';
 export default function ApiSpecsPage() {
   const apiSections = [
     {
-      href: '/docs/api-specs/binance-api-spec',
-      title: 'Binance API',
-      description: 'Spesifikasi untuk data pasar dari Binance.',
+      href: 'https://docs.geckoterminal.com/reference/api-reference-overview',
+      title: 'GeckoTerminal API',
+      description: 'Spesifikasi untuk data DEX real-time dari GeckoTerminal.',
+      external: true,
     },
     {
-      href: '/docs/api-specs/coinGecko-api-spec',
-      title: 'CoinGecko API',
-      description: 'Spesifikasi untuk data harga dan pasar dari CoinGecko.',
+      href: 'https://docs.dexscreener.com/',
+      title: 'DexScreener API',
+      description: 'Spesifikasi alternatif untuk data pasangan DEX dari DexScreener.',
+      external: true,
     },
     {
-      href: '/docs/api-specs/defillama-api-spec',
+      href: 'https://defillama.com/docs/api',
       title: 'DefiLlama API',
       description: 'Spesifikasi untuk data TVL dan DeFi dari DefiLlama.',
+      external: true,
     },
     {
-      href: '/docs/api-specs/dexScreener-api-spec',
-      title: 'DexScreener API',
-      description: 'Spesifikasi untuk data pasangan DEX real-time dari DexScreener.',
+      href: 'https://alternative.me/crypto/api/',
+      title: 'Alternative.me API',
+      description: 'API untuk Fear & Greed Index dan data sentimen lainnya.',
+      external: true,
+    },
+    {
+      href: 'https://docs.rugcheck.xyz/',
+      title: 'RugCheck.xyz API',
+      description: 'Spesifikasi untuk analisis keamanan token dan deteksi penipuan.',
+      external: true,
+    },
+    {
+      href: 'https://www.coingecko.com/en/api/documentation',
+      title: 'CoinGecko API',
+      description: 'Spesifikasi untuk data harga dan pasar dari CoinGecko.',
+      external: true,
     },
   ];
 
@@ -35,7 +52,7 @@ export default function ApiSpecsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {apiSections.map((section) => (
-          <Link href={section.href} key={section.href}>
+          <Link href={section.href} key={section.href} target={section.external ? '_blank' : '_self'} rel={section.external ? 'noopener noreferrer' : ''}>
             <Card className="h-full hover:shadow-lg transition-shadow">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-xl">{section.title}</CardTitle>

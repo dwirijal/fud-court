@@ -3,9 +3,15 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Copy, ArrowUp, ArrowDown, ExternalLink, TrendingUp, TrendingDown } from 'lucide-react';
+import { Copy, ArrowUp, ArrowDown, ExternalLink, TrendingUp, TrendingDown, HelpCircle } from 'lucide-react';
 import { cn } from '@/lib/utils/utils';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -174,24 +180,18 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
   
   if (loading) {
     return (
-      <div className="p-4 md:p-6 space-y-4 max-w-5xl mx-auto">
-        <Skeleton className="h-8 w-2/3" />
-        <Skeleton className="h-4 w-full" />
-        <Card>
-          <CardContent className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Skeleton className="h-20 w-full" />
-            <Skeleton className="h-20 w-full" />
-            <Skeleton className="h-20 w-full" />
-          </CardContent>
-        </Card>
-        <Card>
-            <CardHeader><Skeleton className="h-6 w-1/3" /></CardHeader>
-            <CardContent><Skeleton className="h-96 w-full" /></CardContent>
-        </Card>
-        <Card>
-            <CardHeader><Skeleton className="h-6 w-1/3" /></CardHeader>
-            <CardContent><Skeleton className="h-40 w-full" /></CardContent>
-        </Card>
+      <div className="p-4 md:p-6 space-y-4 max-w-7xl mx-auto">
+        <Skeleton className="h-24 w-full" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-6">
+                 <Skeleton className="h-96 w-full" />
+                 <Skeleton className="h-40 w-full" />
+            </div>
+            <div className="lg:col-span-1 space-y-6">
+                <Skeleton className="h-48 w-full" />
+                <Skeleton className="h-32 w-full" />
+            </div>
+        </div>
       </div>
     );
   }
@@ -208,17 +208,19 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
   const totalLiquidity = tokenPools.reduce((sum, pool) => sum + (pool.liquidity?.usd || 0), 0);
   
   return (
-    <div className="p-4 md:p-6 space-y-6 max-w-5xl mx-auto">
-      <header>
-        <h1 className="text-3xl font-bold">{tokenInfo.name} ({tokenInfo.symbol})</h1>
-        <div className="flex items-center gap-2">
-          <p className="text-sm text-muted-foreground break-all">{address}</p>
-          <Button variant="ghost" size="icon" onClick={handleCopy} className="h-7 w-7">
-            <Copy className="h-4 w-4" />
-          </Button>
-        </div>
-      </header>
-
+    <div className="p-4 md:p-6 space-y-6 max-w-7xl mx-auto">
+      <Card>
+        <CardHeader>
+            <h1 className="text-3xl font-bold">{tokenInfo.name} ({tokenInfo.symbol})</h1>
+            <div className="flex items-center gap-2">
+            <p className="text-sm text-muted-foreground break-all">{address}</p>
+            <Button variant="ghost" size="icon" onClick={handleCopy} className="h-7 w-7">
+                <Copy className="h-4 w-4" />
+            </Button>
+            </div>
+        </CardHeader>
+      </Card>
+      
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <Card>
@@ -351,6 +353,50 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
             </Card>
         </div>
       </div>
+      <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+                <HelpCircle />
+                Frequently Asked Questions
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="item-1">
+                <AccordionTrigger>Apa itu token "degen"?</AccordionTrigger>
+                <AccordionContent>
+                  Token "degen" adalah istilah slang untuk cryptocurrency yang sangat spekulatif dan berisiko tinggi. Token-token ini seringkali baru, memiliki likuiditas rendah, dan sangat fluktuatif. Berinvestasi di dalamnya bisa menghasilkan keuntungan besar, tetapi juga kerugian total. Lakukan riset Anda sendiri (DYOR).
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-2">
+                <AccordionTrigger>Bagaimana cara mengevaluasi risiko?</AccordionTrigger>
+                <AccordionContent>
+                  Perhatikan metrik-metrik berikut:
+                  <ul className="list-disc pl-5 mt-2 space-y-1">
+                    <li><strong>Likuiditas:</strong> Likuiditas yang rendah berarti sulit untuk menjual token dalam jumlah besar tanpa mempengaruhi harganya secara drastis.</li>
+                    <li><strong>Volume:</strong> Volume perdagangan yang rendah menunjukkan kurangnya minat. Waspadalah terhadap lonjakan volume yang tiba-tiba dan tidak wajar.</li>
+                    <li><strong>Distribusi Holder:</strong> Jika beberapa dompet memegang sebagian besar pasokan, mereka dapat memanipulasi harga. (Alat untuk ini akan segera hadir!)</li>
+                    <li><strong>Usia Kontrak:</strong> Kontrak yang sangat baru lebih berisiko.</li>
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-3">
+                <AccordionTrigger>Apa itu peluang arbitrase?</AccordionTrigger>
+                <AccordionContent>
+                  Arbitrase adalah praktik membeli aset di satu pasar dan secara bersamaan menjualnya di pasar lain dengan harga lebih tinggi, mengambil keuntungan dari selisih harga. Kartu "Peluang Arbitrase" kami menyoroti ketika harga token ini berbeda secara signifikan di berbagai bursa terdesentralisasi (DEX), tetapi selalu perhitungkan biaya gas dan slippage.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-4">
+                <AccordionTrigger>Mengapa data terkadang berbeda antar DEX?</AccordionTrigger>
+                <AccordionContent>
+                  Perbedaan harga dan volume terjadi karena setiap bursa terdesentralisasi (DEX) memiliki kumpulan likuiditasnya sendiri. Pasar yang tidak efisien atau perdagangan besar di satu DEX dapat menyebabkan perbedaan harga sementara dibandingkan dengan DEX lainnya.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </CardContent>
+        </Card>
     </div>
   );
 }
+
+    

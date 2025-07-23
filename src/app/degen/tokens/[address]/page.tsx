@@ -207,6 +207,15 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
   const totalVolumeH24 = tokenPools.reduce((sum, pool) => sum + (pool.volume?.h24 || 0), 0);
   const totalLiquidity = tokenPools.reduce((sum, pool) => sum + (pool.liquidity?.usd || 0), 0);
   
+  const faqContent = {
+    priceStats: `The current price of ${tokenInfo.name} (${mostRelevantPool.baseToken.symbol}/${mostRelevantPool.quoteToken.symbol}) on ${mostRelevantPool.dexId} is ${formatCurrency(mostRelevantPool.priceUsd, 6)}. Its 24-hour trading volume across all DEXs is reported to be at ${formatCurrency(totalVolumeH24, 0)} with a total of ${(mostRelevantPool.txns.h24.buys + mostRelevantPool.txns.h24.sells).toLocaleString()} transactions on the main pair. The token's contract address is ${mostRelevantPool.baseToken.address}, with a Fully Diluted Valuation (FDV) of ${formatCurrency(mostRelevantPool.fdv, 0)} and a total liquidity pool of ${formatCurrency(totalLiquidity, 0)}.`,
+    highLow: `Based on available data, the 24-hour price range is not directly provided. However, you can analyze the hourly price chart above to determine recent highs and lows.`,
+    liquidity: `The current total liquidity for ${tokenInfo.name} across all tracked pools is ${formatCurrency(totalLiquidity, 0)}. The liquidity for the main pair (${mostRelevantPool.baseToken.symbol}/${mostRelevantPool.quoteToken.symbol} on ${mostRelevantPool.dexId}) is ${formatCurrency(mostRelevantPool.liquidity?.usd, 0)}.`,
+    poolCreation: `The main trading pool for this token was created on ${mostRelevantPool.pairCreatedAt ? new Date(mostRelevantPool.pairCreatedAt).toLocaleDateString() : 'an unknown date'}.`,
+    exchangeRate: `The exchange rate of 1 ${tokenInfo.symbol} is currently ${formatCurrency(mostRelevantPool.priceUsd, 6)} USD.`,
+    whereToBuy: `You can buy and trade ${tokenInfo.name} on the following decentralized exchanges: ${[...new Set(tokenPools.map(p => p.dexId))].join(', ')}. Always ensure you are using the correct contract address to avoid scams.`,
+  };
+
   return (
     <div className="p-4 md:p-6 space-y-6 max-w-7xl mx-auto">
       <Card>
@@ -354,49 +363,41 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
         </div>
       </div>
       <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-                <HelpCircle />
-                Frequently Asked Questions
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="item-1">
-                <AccordionTrigger>Apa itu token "degen"?</AccordionTrigger>
-                <AccordionContent>
-                  Token "degen" adalah istilah slang untuk cryptocurrency yang sangat spekulatif dan berisiko tinggi. Token-token ini seringkali baru, memiliki likuiditas rendah, dan sangat fluktuatif. Berinvestasi di dalamnya bisa menghasilkan keuntungan besar, tetapi juga kerugian total. Lakukan riset Anda sendiri (DYOR).
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-2">
-                <AccordionTrigger>Bagaimana cara mengevaluasi risiko?</AccordionTrigger>
-                <AccordionContent>
-                  Perhatikan metrik-metrik berikut:
-                  <ul className="list-disc pl-5 mt-2 space-y-1">
-                    <li><strong>Likuiditas:</strong> Likuiditas yang rendah berarti sulit untuk menjual token dalam jumlah besar tanpa mempengaruhi harganya secara drastis.</li>
-                    <li><strong>Volume:</strong> Volume perdagangan yang rendah menunjukkan kurangnya minat. Waspadalah terhadap lonjakan volume yang tiba-tiba dan tidak wajar.</li>
-                    <li><strong>Distribusi Holder:</strong> Jika beberapa dompet memegang sebagian besar pasokan, mereka dapat memanipulasi harga. (Alat untuk ini akan segera hadir!)</li>
-                    <li><strong>Usia Kontrak:</strong> Kontrak yang sangat baru lebih berisiko.</li>
-                  </ul>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-3">
-                <AccordionTrigger>Apa itu peluang arbitrase?</AccordionTrigger>
-                <AccordionContent>
-                  Arbitrase adalah praktik membeli aset di satu pasar dan secara bersamaan menjualnya di pasar lain dengan harga lebih tinggi, mengambil keuntungan dari selisih harga. Kartu "Peluang Arbitrase" kami menyoroti ketika harga token ini berbeda secara signifikan di berbagai bursa terdesentralisasi (DEX), tetapi selalu perhitungkan biaya gas dan slippage.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-4">
-                <AccordionTrigger>Mengapa data terkadang berbeda antar DEX?</AccordionTrigger>
-                <AccordionContent>
-                  Perbedaan harga dan volume terjadi karena setiap bursa terdesentralisasi (DEX) memiliki kumpulan likuiditasnya sendiri. Pasar yang tidak efisien atau perdagangan besar di satu DEX dapat menyebabkan perbedaan harga sementara dibandingkan dengan DEX lainnya.
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </CardContent>
-        </Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <HelpCircle />
+            {tokenInfo.name} FAQ
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="item-1">
+              <AccordionTrigger>What are the key stats for {tokenInfo.symbol}?</AccordionTrigger>
+              <AccordionContent>{faqContent.priceStats}</AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-2">
+              <AccordionTrigger>What is the 24-hour high and low price?</AccordionTrigger>
+              <AccordionContent>{faqContent.highLow}</AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-3">
+              <AccordionTrigger>What is the current liquidity for {tokenInfo.symbol}?</AccordionTrigger>
+              <AccordionContent>{faqContent.liquidity}</AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-4">
+              <AccordionTrigger>When was the main {tokenInfo.symbol} pool created?</AccordionTrigger>
+              <AccordionContent>{faqContent.poolCreation}</AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-5">
+              <AccordionTrigger>What is the exchange rate of 1 {tokenInfo.symbol} to USD?</AccordionTrigger>
+              <AccordionContent>{faqContent.exchangeRate}</AccordionContent>
+            </AccordionItem>
+             <AccordionItem value="item-6">
+              <AccordionTrigger>Where can I buy {tokenInfo.symbol}?</AccordionTrigger>
+              <AccordionContent>{faqContent.whereToBuy}</AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </CardContent>
+      </Card>
     </div>
   );
 }
-
-    

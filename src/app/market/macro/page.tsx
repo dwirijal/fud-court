@@ -11,8 +11,8 @@ import { TrendingUp, TrendingDown, Minus, AlertCircle } from 'lucide-react';
 import { HeroSection } from '@/components/shared/HeroSection';
 import { fetchFredData, MetricData } from './actions';
 
-const formatValue = (value: string, units: string) => {
-    const num = parseFloat(value);
+const formatValue = (value: string | number, units: string) => {
+    const num = parseFloat(String(value));
     if (isNaN(num)) return 'N/A';
     
     if (units.toLowerCase().includes('percent')) return `${num.toFixed(2)}%`;
@@ -62,7 +62,7 @@ const IndicatorTable = ({ indicators, data, isLoading }: { indicators: Indicator
     if (isLoading) {
         return (
             <div className="space-y-2">
-                {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
+                {[...Array(indicators.length)].map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
             </div>
         );
     }
@@ -86,7 +86,7 @@ const IndicatorTable = ({ indicators, data, isLoading }: { indicators: Indicator
                             <TableCell className="text-right">{metric ? metric.value : 'N/A'}</TableCell>
                             <TableCell className="text-right">{metric ? new Date(metric.date).toLocaleDateString() : 'N/A'}</TableCell>
                             <TableCell className={`text-right ${metric && metric.change && metric.change > 0 ? 'text-green-500' : metric && metric.change && metric.change < 0 ? 'text-red-500' : ''}`}>
-                                {metric && metric.change !== null ? formatValue(metric.change.toString(), metric.units) : 'N/A'}
+                                {metric && metric.change !== null ? formatValue(metric.change, metric.units) : 'N/A'}
                             </TableCell>
                         </TableRow>
                     )
@@ -97,7 +97,7 @@ const IndicatorTable = ({ indicators, data, isLoading }: { indicators: Indicator
 };
 
 export default function MacroDashboardPage() {
-    const [kpiData, setKpiData] = useState<Record<string, MetricData | null>>({});
+    const [kpiData, setKpiData] = useState<Record<string, MetricData>>({});
     const [loadingKpis, setLoadingKpis] = useState(true);
     const [accordionData, setAccordionData] = useState<Record<string, Record<string, MetricData>>>({});
     const [loadingAccordions, setLoadingAccordions] = useState<Record<string, boolean>>({});
@@ -119,7 +119,8 @@ export default function MacroDashboardPage() {
                 setKpiData(data);
             }
         } catch (err) {
-            console.error("Failed to fetch FRED data:", err);
+            const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+            console.error("Failed to fetch FRED data:", errorMessage);
             setError("Failed to load economic data. The API might be temporarily unavailable.");
         } finally {
             if (groupTitle) {
@@ -136,7 +137,7 @@ export default function MacroDashboardPage() {
 
     const handleAccordionChange = (value: string) => {
         const group = indicatorGroups.find(g => g.title === value);
-        if (group && !accordionData[group.title] && !loadingAccordions[group.title]) {
+        if (group && !accordionData[group.title] && loadingAccordions[group.title] !== true) {
             setLoadingAccordions(prev => ({ ...prev, [group.title]: true }));
             handleFetchData(group.indicators, group.title);
         }
@@ -180,7 +181,7 @@ export default function MacroDashboardPage() {
                                         <IndicatorTable 
                                             indicators={group.indicators} 
                                             data={accordionData[group.title] || {}}
-                                            isLoading={loadingAccordions[group.title] !== false}
+                                            isLoading={loadingAccordions[group.title] === true || (loadingAccordions[group.title] === undefined && !accordionData[group.title])}
                                         />
                                     </CardContent>
                                 </Card>

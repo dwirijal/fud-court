@@ -24,7 +24,7 @@ const formatValue = (value: string, units: string) => {
 };
 
 export async function fetchFredData(indicators: Indicator[]): Promise<Record<string, MetricData>> {
-  const fredApiKey = process.env.FRED_API_KEY;
+  const fredApiKey = process.env.NEXT_PUBLIC_FRED_API_KEY;
 
   if (!fredApiKey) {
     throw new Error('FRED API Key is not configured on the server.');
@@ -57,7 +57,7 @@ export async function fetchFredData(indicators: Indicator[]): Promise<Record<str
         let change: number | null = null;
         let trend: 'up' | 'down' | 'stable' = 'stable';
 
-        if (previous) {
+        if (previous && latest.value !== '.' && previous.value !== '.') {
             const latestValue = parseFloat(latest.value);
             const previousValue = parseFloat(previous.value);
             if (!isNaN(latestValue) && !isNaN(previousValue)) {

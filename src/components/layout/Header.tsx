@@ -35,6 +35,9 @@ const ListItem = React.forwardRef<
           {...props}
         >
           <div className="text-sm font-medium leading-none">{title}</div>
+           <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+            {children}
+          </p>
         </a>
       </NavigationMenuLink>
     </li>
@@ -83,25 +86,35 @@ export function Header() {
                 <NavigationMenuContent>
                   <ul className="grid w-[400px] gap-3 p-4 md:w-[600px] md:grid-cols-3 lg:w-[800px]">
                     <div className="flex flex-col">
-                      <ListItem href="/market" title="Market Overview" className="font-bold bg-muted/50" />
-                      <ListItem href="/market/global" title="Global Overview" />
+                       <ListItem href="/market" title="Market Dashboard" className="font-bold bg-muted/50">
+                        A snapshot of key financial and crypto market indicators.
+                       </ListItem>
+                       <ListItem href="/market/global" title="Global Economic Dashboard">
+                        View in-depth global macroeconomic data and indicators.
+                       </ListItem>
                     </div>
                      <div className="flex flex-col">
-                      <ListItem href="/coins" title="Coins Overview" className="font-bold bg-muted/50" />
+                      <ListItem href="/coins" title="Coins Overview" className="font-bold bg-muted/50" >
+                        Explore detailed data for all cryptocurrencies.
+                      </ListItem>
                       <ListItem href="/coins/trending" title="Trending Coins" />
                       <ListItem href="/coins/search" title="Coin Search" />
                       <ListItem href="/coins/watchlist" title="My Watchlist" />
                       <ListItem href="/coins/compare" title="Compare Coins" />
                     </div>
                     <div className="flex flex-col">
-                      <ListItem href="/degen" title="Degen Trading" className="font-bold bg-muted/50" />
+                      <ListItem href="/degen" title="Degen Trading" className="font-bold bg-muted/50">
+                        Tools and data for decentralized and experimental trading.
+                      </ListItem>
                       <ListItem href="/degen/pairs" title="Hot Trading Pairs" />
                       <ListItem href="/degen/trending" title="Trending Pairs" />
                       <ListItem href="/degen/new-listings" title="New Listings" />
                       <ListItem href="/degen/search" title="Degen Search" />
                     </div>
                     <div className="flex flex-col col-span-3">
-                      <ListItem href="/defi" title="DeFi Analytics" className="font-bold bg-muted/50" />
+                      <ListItem href="/defi" title="DeFi Analytics" className="font-bold bg-muted/50">
+                        Dive deep into decentralized finance data and opportunities.
+                      </ListItem>
                       <div className="grid grid-cols-3 gap-x-4">
                         <ListItem href="/defi/protocols" title="Protocols" />
                         <ListItem href="/defi/chains" title="Chains" />
@@ -122,7 +135,6 @@ export function Header() {
                         <li className="text-sm font-medium text-foreground py-2 px-3">Learn</li>
                         <ListItem href="/economic/news" title="Economic News" />
                         <ListItem href="/article/learn" title="Learning Hub" />
-                        <ListItem href="/market/macro" title="Macro Dashboard" />
                     </div>
                     <div>
                         <li className="text-sm font-medium text-foreground py-2 px-3">Project</li>

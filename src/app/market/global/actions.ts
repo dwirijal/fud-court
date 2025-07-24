@@ -1,3 +1,4 @@
+
 'use server';
 
 import { FredClient } from '@/lib/api-clients/economics/fred';
@@ -17,9 +18,9 @@ const formatValue = (value: string, units: string) => {
     const num = parseFloat(value);
     if (isNaN(num)) return 'N/A';
     
-    if (units.toLowerCase().includes('percent')) return `${num.toFixed(2)}%`;
+    if (units.toLowerCase().includes('percent') || units.toLowerCase().includes('rate')) return `${num.toFixed(2)}%`;
     if (units.toLowerCase().includes('billions')) return `${num.toFixed(2)}B`;
-    if (units.toLowerCase().includes('thousands of persons')) return `${(num/1000).toFixed(2)}M`;
+    if (units.toLowerCase().includes('thousands')) return `${(num/1000).toFixed(2)}M`;
     return num.toLocaleString(undefined, {maximumFractionDigits: 2});
 };
 
@@ -34,7 +35,11 @@ export async function fetchFredData(indicators: Indicator[]): Promise<Record<str
   const fetchedData: Record<string, MetricData> = {};
 
   const promises = indicators.map(indicator => 
-      fredClient.getSeriesObservations(indicator.id, { limit: 2, sort_order: 'desc' })
+      fredClient.getSeriesObservations(indicator.id, { 
+        limit: 2, 
+        sort_order: 'desc',
+        units: indicator.units.includes('Growth Rate') ? 'pc1' : 'lin'
+      })
         .then(response => ({ indicator, response }))
         .catch(error => ({ indicator, error }))
   );
@@ -51,13 +56,15 @@ export async function fetchFredData(indicators: Indicator[]): Promise<Record<str
       }
 
       if (response.observations && response.observations.length > 0) {
-        const obs = response.observations;
+        const obs = response.observations.filter(o => o.value !== '.');
+        if (obs.length === 0) continue;
+
         const latest = obs[0];
         const previous = obs.length > 1 ? obs[1] : null;
         let change: number | null = null;
         let trend: 'up' | 'down' | 'stable' = 'stable';
 
-        if (previous && latest.value !== '.' && previous.value !== '.') {
+        if (previous) {
             const latestValue = parseFloat(latest.value);
             const previousValue = parseFloat(previous.value);
             if (!isNaN(latestValue) && !isNaN(previousValue)) {
@@ -67,10 +74,20 @@ export async function fetchFredData(indicators: Indicator[]): Promise<Record<str
             }
         }
         
+        let displayValue = latest.value;
+        // The API returns the direct percent change value when units=pc1
+        if (indicator.units.includes('Growth Rate')) {
+          const numVal = parseFloat(latest.value);
+          displayValue = isNaN(numVal) ? 'N/A' : `${numVal.toFixed(2)}%`;
+        } else {
+          displayValue = formatValue(latest.value, indicator.units);
+        }
+
+
         fetchedData[indicator.id] = {
             seriesId: indicator.id, 
             title: indicator.title,
-            value: formatValue(latest.value, indicator.units),
+            value: displayValue,
             date: latest.date, 
             change, 
             trend, 

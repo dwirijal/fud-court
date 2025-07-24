@@ -13,6 +13,7 @@ Built with Next.js and leveraging a modern tech stack, Fud Court serves as an al
 ## Core Features
 
 - **📊 Macro Sentiment Score**: A proprietary 5-component model that calculates an overall market health score based on Market Cap, Volume, Fear & Greed Index, ATH distance, and Market Breadth. (See [formula.md](formula.md) for details)
+- **📊 Global Economic Dashboard**: An advanced dashboard featuring key economic indicators from FRED (Federal Reserve Economic Data). Includes interactive charts with technical analysis overlays like Moving Averages, RSI, and MACD to provide deep market context.
 - **📈 Live Crypto Markets**: Real-time cryptocurrency data, including prices, market caps, and historical sparklines, powered by the CoinGecko API, with robust currency conversion and infinite scroll for seamless browsing.  **(Data now fetched from Supabase)**
 - **💰 DeFi TVL Metrics**: Track Total Value Locked (TVL) for various DeFi protocols, providing insights into the decentralized finance ecosystem.
 - **📝 Headless CMS Integration**: View content from a Ghost CMS backend.

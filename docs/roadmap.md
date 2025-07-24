@@ -89,13 +89,10 @@ This document outlines the development roadmap for Fud Court, a dashboard for ad
 - [C] **Page**: `/defi/dexs/[protocol]` (Individual DEX Analytics)
 - [C] **Page**: `/defi/options` (Options DEX Overview)
 
-## Future Milestones & Suggested Improvements
+## v0.7.0: Economic Data Integration (Completed)
 
-- **Milestone**: Portfolio Tracking
-- **Milestone**: Advanced Charting Tools
-- **Milestone**: Mobile App (React Native)
-- **Milestone**: API for third-party developers
-- **Refactor**: Improve the implementation of Next.js Server and Client Components to prevent rendering issues.
-    - **Updated**: Significant refactoring has been done to address these issues.
-- [ ] **Testing**: Increase test coverage for all new features.
-- [ ] **New Task**: Implement global search functionality in the navbar.
+- [x] **Feature**: Integrate FRED (Federal Reserve Economic Data) API.
+- [U] **Page**: `/market/global`: Advanced dashboard for global economic indicators.
+- [x] **Enhancement**: Implemented advanced charting with technical analysis (SMA, RSI, MACD) using Recharts.
+- [x] **Enhancement**: Refactored data fetching to handle historical data series.
+- [x] **Enhancement**: Created a responsive sidebar layout for indicator categories.
